@@ -2,7 +2,7 @@
 
 Upgrade target: live 88780 `PoSeManagerV2` proxy →
 implementation containing the protocol fix for issue #667 (independent
-on-chain witness quorum verification, [PR #710](https://github.com/chainofclaw/COC/pull/710)).
+on-chain witness quorum verification, [PR #710](https://github.com/palimesh/palimesh/pull/710)).
 
 ## Pre-flight
 
@@ -11,8 +11,8 @@ on-chain witness quorum verification, [PR #710](https://github.com/chainofclaw/C
 | OZ storage layout compatibility | `npx hardhat run scripts/upgrade-pose-manager-v2-667.js --network coc` (step 1 internally — validates without writing) |
 | Local dry-run upgrade simulation | `npx hardhat run scripts/test-upgrade-dry-run-667.js` |
 | Proxy owner is the expected Safe | `cast call <PROXY> "owner()"` (or via `eth_call`); compare to `POSE_MULTISIG_ADDRESS` |
-| ABI in `@chainofclaw/soul@2.1.0` matches new impl | Already done (claw-mem PR #50, merged) |
-| Aggregator/agent fleet running PR #713 (off-chain v2 path) | Check `coc-agent --version` on each operator host |
+| ABI in `@palimesh/soul@2.1.0` matches new impl | Already done (claw-mem PR #50, merged) |
+| Aggregator/agent fleet running PR #713 (off-chain v2 path) | Check `palimesh-agent --version` on each operator host |
 
 ## Order of operations
 
@@ -22,7 +22,7 @@ The Safe multisig owns the proxy; this step deploys the new impl bytecode but do
 
 ```bash
 cd contracts
-COC_RPC_URL=https://prod-1.coc:28780 \
+PALI_RPC_URL=https://prod-1.coc:28780 \
 npx hardhat run scripts/upgrade-pose-manager-v2-667.js --network coc
 ```
 
@@ -31,7 +31,7 @@ Outputs `tmp/upgrade-667-prepared.json` with the new impl address. Commit `.open
 ### 2. Propose the Safe tx
 
 ```bash
-COC_RPC_URL=https://prod-1.coc:28780 \
+PALI_RPC_URL=https://prod-1.coc:28780 \
 SAFE_TX_SERVICE_URL=https://<safe-tx-service-for-88780> \
 POSE_MULTISIG_ADDRESS=0x<safe-address> \
 PROPOSER_PRIVATE_KEY=0x<one-of-the-safe-signers> \
@@ -49,7 +49,7 @@ Open the proposal in the Safe UI (Safe Wallet). The other owners review and sign
 
 Per the plan (`docs/plans/skills-https-github-com-ngplateform-cla-whimsical-stearns.md`):
 
-1. **Pause aggregator submissions** — configure `coc-agent` to skip `flushBatchV2` rounds (operational flag); existing receipts queue in mempool / agent state.
+1. **Pause aggregator submissions** — configure `palimesh-agent` to skip `flushBatchV2` rounds (operational flag); existing receipts queue in mempool / agent state.
 2. **Wait for dispute window** — current epoch's batches must clear the 2-epoch dispute window (~2 hours on 88780). The new `_validateWitnessQuorumV2` does not touch existing storage; in-flight batches are unaffected, but easier to verify when there's no in-flight churn.
 3. **Multisig executes** the proposal via Safe UI. The tx is `proxy.upgradeToAndCall(newImpl, "0x")`; gas budget ~80k.
 4. **Verify on-chain**:
@@ -58,7 +58,7 @@ Per the plan (`docs/plans/skills-https-github-com-ngplateform-cla-whimsical-stea
    cast storage <PROXY> 0x360894a13ba1a3210667c828492db98dca3e2076cc3735a920a3ca505d382bbc
    ```
    Should now decode to the address in `tmp/upgrade-667-prepared.json:newImpl`.
-5. **Resume aggregators** — un-pause `coc-agent`.
+5. **Resume aggregators** — un-pause `palimesh-agent`.
 6. **Smoke test the new path** — submit one v2-metadata batch from an aggregator and confirm `ReceiptBatchMetadataSubmitted` event emits.
 
 ### 4. Roll forward and monitor
@@ -95,6 +95,6 @@ behaviour, just slower to settle (no metadata path available).
       first.
 - [ ] **Identify the Safe owner set + threshold** — required to estimate
       signing-round duration; coordinate signer availability.
-- [ ] **Aggregator pause mechanism** — confirm `coc-agent` has a runtime
+- [ ] **Aggregator pause mechanism** — confirm `palimesh-agent` has a runtime
       flag (or graceful stop) that holds new batches without losing
       in-mempool receipts.

@@ -107,7 +107,7 @@ export function computeRevealDigest(
 ): `0x${string}` {
   return solidityPackedKeccak256(
     ["string", "bytes32", "bytes32", "uint8", "bytes32", "bytes32", "bytes32"],
-    ["coc-fault:", challengeId, targetNodeId, faultType, evidenceLeafHash, salt, solidityPackedKeccak256(["bytes"], [evidenceData])],
+    ["palimesh-fault:", challengeId, targetNodeId, faultType, evidenceLeafHash, salt, solidityPackedKeccak256(["bytes"], [evidenceData])],
   ) as `0x${string}`;
 }
 

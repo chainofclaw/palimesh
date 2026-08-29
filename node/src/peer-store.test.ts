@@ -10,7 +10,7 @@ import { tmpdir } from "node:os"
 import { join } from "node:path"
 
 function createTempPath(): string {
-  const dir = mkdtempSync(join(tmpdir(), "coc-peer-store-"))
+  const dir = mkdtempSync(join(tmpdir(), "palimesh-peer-store-"))
   return join(dir, "peers.json")
 }
 
@@ -134,7 +134,7 @@ test("PeerStore: updating existing peer refreshes lastSeen", () => {
 })
 
 test("PeerStore: load from non-existent file returns empty", async () => {
-  const store = new PeerStore({ filePath: "/tmp/nonexistent-coc-peers.json" })
+  const store = new PeerStore({ filePath: "/tmp/nonexistent-palimesh-peers.json" })
   const loaded = await store.load()
   assert.strictEqual(loaded.length, 0)
 })

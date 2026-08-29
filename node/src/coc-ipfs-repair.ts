@@ -4,7 +4,7 @@
  * Periodically sweeps the local blockstore's pin set, asks the DHT how
  * many peers currently claim to hold each CID, and if that count is
  * below `minReplicas` (default 2, same threshold the HTTP PUT handler
- * uses for its `X-COC-Replicas-Warning` header), calls `pushToK` to
+ * uses for its `X-Palimesh-Replicas-Warning` header), calls `pushToK` to
  * top the replica count back up.
  *
  * This is the "self-healing" half of the Phase C design: C3.1 reports
@@ -25,7 +25,7 @@ import { createRequire } from "node:module"
 import { CID } from "multiformats/cid"
 import type { IpfsBlockstore } from "./ipfs-blockstore.ts"
 import type { DhtNetwork } from "./dht-network.ts"
-import type { PushToKResult } from "./coc-ipfs-wiring.ts"
+import type { PushToKResult } from "./palimesh-ipfs-wiring.ts"
 import type { CidString } from "./ipfs-types.ts"
 import { decodeManifest, ErasureError, MAX_STRIPES, validateParams, type ErasureManifest } from "./ipfs-erasure.ts"
 import { createLogger } from "./logger.ts"
@@ -51,7 +51,7 @@ const ReedSolomon = require("@ronomon/reed-solomon") as {
 
 const CODEC_DAG_CBOR = 0x71
 
-const log = createLogger("coc-ipfs-repair")
+const log = createLogger("palimesh-ipfs-repair")
 
 // Default sweep cadence. 10 min matches the plan's §C3.3 spec — short
 // enough that a peer crash is repaired within one interval, long enough
@@ -60,7 +60,7 @@ const log = createLogger("coc-ipfs-repair")
 // amortized. Configurable via the constructor for tests.
 const DEFAULT_TICK_INTERVAL_MS = 10 * 60 * 1000
 // Minimum replica count before we trigger repair. Deliberately matches
-// the HTTP `X-COC-Replicas-Warning` floor from C3.1 so operator
+// the HTTP `X-Palimesh-Replicas-Warning` floor from C3.1 so operator
 // thresholds stay consistent across the stack.
 const DEFAULT_MIN_REPLICAS = 2
 // Cap how many CIDs we repair per tick. A single long tick that tried
@@ -80,7 +80,7 @@ export interface IpfsRepairDeps {
   blockstore: Pick<IpfsBlockstore, "listPins" | "get" | "has" | "put" | "pin">
   /** DHT we query for current replica counts (via findProviders). */
   dht: Pick<DhtNetwork, "findProviders">
-  /** Push helper supplied by coc-ipfs-wiring. Repair calls this for each under-replicated CID. */
+  /** Push helper supplied by palimesh-ipfs-wiring. Repair calls this for each under-replicated CID. */
   pushToK: (cid: string, bytes: Uint8Array) => Promise<PushToKResult>
   /** Tick interval in ms. Default 10 min. */
   tickIntervalMs?: number

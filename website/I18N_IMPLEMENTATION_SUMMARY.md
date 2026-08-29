@@ -1,4 +1,4 @@
-# COC Website 国际化实施总结
+# Palimesh Website 国际化实施总结
 
 ## ✅ 已完成工作
 
@@ -209,4 +209,4 @@ import { Link } from '@/i18n/routing'
 
 ---
 
-**国际化让COC面向全球!** 🌍🚀
+**国际化让Palimesh面向全球!** 🌍🚀

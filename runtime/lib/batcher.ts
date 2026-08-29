@@ -1,5 +1,5 @@
 /**
- * Batcher for COC Optimistic Rollup.
+ * Batcher for Palimesh Optimistic Rollup.
  *
  * Collects L2 blocks, compresses them via the rollup batch codec, and
  * submits the compressed data to L1 for data availability. This enables

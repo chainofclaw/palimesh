@@ -47,7 +47,7 @@ case "$ACTION" in
       down
     else
       echo "==> Test FAILED — leaving fixture up for inspection."
-      echo "    docker logs coc-h15-node-1   # …"
+      echo "    docker logs palimesh-h15-node-1   # …"
       echo "    bash $SCRIPT_DIR/run-h15.sh down  # to clean up"
       exit 1
     fi

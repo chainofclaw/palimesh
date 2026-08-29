@@ -34,7 +34,7 @@ function createLegacySnapshot(blockCount: number): string {
 }
 
 test("migrate-legacy: no legacy file", async () => {
-  const tmpDir = mkdtempSync(join(tmpdir(), "coc-migrate-test-"))
+  const tmpDir = mkdtempSync(join(tmpdir(), "palimesh-migrate-test-"))
 
   try {
     const result = await migrateLegacySnapshot(tmpDir)
@@ -47,7 +47,7 @@ test("migrate-legacy: no legacy file", async () => {
 })
 
 test("migrate-legacy: empty blocks array", async () => {
-  const tmpDir = mkdtempSync(join(tmpdir(), "coc-migrate-test-"))
+  const tmpDir = mkdtempSync(join(tmpdir(), "palimesh-migrate-test-"))
 
   try {
     writeFileSync(
@@ -65,7 +65,7 @@ test("migrate-legacy: empty blocks array", async () => {
 })
 
 test("migrate-legacy: successful migration", async () => {
-  const tmpDir = mkdtempSync(join(tmpdir(), "coc-migrate-test-"))
+  const tmpDir = mkdtempSync(join(tmpdir(), "palimesh-migrate-test-"))
 
   try {
     // Write legacy snapshot with 5 blocks, each with 2 txs
@@ -117,7 +117,7 @@ test("migrate-legacy: successful migration", async () => {
 })
 
 test("migrate-legacy: skip if LevelDB already has data", async () => {
-  const tmpDir = mkdtempSync(join(tmpdir(), "coc-migrate-test-"))
+  const tmpDir = mkdtempSync(join(tmpdir(), "palimesh-migrate-test-"))
 
   try {
     // Pre-populate LevelDB
@@ -152,7 +152,7 @@ test("migrate-legacy: skip if LevelDB already has data", async () => {
 })
 
 test("migrate-legacy: preserves block data integrity", async () => {
-  const tmpDir = mkdtempSync(join(tmpdir(), "coc-migrate-test-"))
+  const tmpDir = mkdtempSync(join(tmpdir(), "palimesh-migrate-test-"))
 
   try {
     writeFileSync(join(tmpDir, "chain.json"), createLegacySnapshot(3))

@@ -31,9 +31,9 @@ const RPC = "http://209.74.64.88:28780"   // upstream validator-1 (canonical)
 const CHAIN_ID = 18780n
 const DEPLOYER_KEY = "0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80"  // anvil 0
 const GAS_PRICE = 5_000_000_000n          // 5 gwei
-const REGISTRIES_PATH = "/passinger/projects/ClawdBot/COC/contracts/deployed-registries-newchain.json"
-const ARTIFACT_BASE = "/passinger/projects/ClawdBot/COC/contracts/artifacts/contracts-src/governance"
-const VALIDATOR_REGISTRY_ARTIFACT = "/passinger/projects/ClawdBot/COC/contracts/artifacts/contracts-src/governance/ValidatorRegistry.sol/ValidatorRegistry.json"
+const REGISTRIES_PATH = "/passinger/projects/ClawdBot/Palimesh/contracts/deployed-registries-newchain.json"
+const ARTIFACT_BASE = "/passinger/projects/ClawdBot/Palimesh/contracts/artifacts/contracts-src/governance"
+const VALIDATOR_REGISTRY_ARTIFACT = "/passinger/projects/ClawdBot/Palimesh/contracts/artifacts/contracts-src/governance/ValidatorRegistry.sol/ValidatorRegistry.json"
 
 const TREASURY_SIGNERS = [
   "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266",  // anvil 0 (deployer)

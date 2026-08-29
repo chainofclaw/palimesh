@@ -1,4 +1,4 @@
-# COC Implementation Roadmap (Solution 2)
+# Palimesh Implementation Roadmap (Solution 2)
 
 Date: 2026-02-11
 
@@ -94,6 +94,6 @@ Exit Criteria:
 ## 6. Release Readiness Checklist
 
 - specs frozen and versioned
-- all tests pass via `bash COC/scripts/quality-gate.sh`
+- all tests pass via `bash Palimesh/scripts/quality-gate.sh`
 - security review for replay/slash/dispute paths
 - observability and audit logs enabled for nodeops actions

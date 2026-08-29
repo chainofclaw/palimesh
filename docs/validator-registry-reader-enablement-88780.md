@@ -1,7 +1,7 @@
 # ValidatorRegistryReader Enablement on 88780 — Operations SOP
 
 > **✅ EXECUTED IN PRODUCTION — 2026-06-10.** The reader is now **live on every
-> 88780 node**. The current validators (v1–v5) each staked 32 COC on-chain (B4)
+> 88780 node**. The current validators (v1–v5) each staked 32 PALI on-chain (B4)
 > and all nodes were brought up with `validatorRegistryAddress` set +
 > `pollIntervalMs = 30000`, fronted by an atomic restart (B5). On-chain
 > `getActiveValidators()` returns **5** and each node logged
@@ -117,15 +117,15 @@ curl -s http://209.74.64.88:38780 -H 'content-type:application/json' \
 ## Step 2 — enable the reader on each node
 
 Once the 6 validators are on-chain registered, add the env var to each
-node's `coc-node@*.env` file:
+node's `palimesh-node@*.env` file:
 
 ```ini
-# /etc/coc/node-<N>.env
-COC_VALIDATOR_REGISTRY_ADDRESS=0x4441299c118373fDC96bE1983d42C79e19CDb4F0
+# /etc/palimesh/node-<N>.env
+PALI_VALIDATOR_REGISTRY_ADDRESS=0x4441299c118373fDC96bE1983d42C79e19CDb4F0
 # Optional — defaults to http://127.0.0.1:<rpcPort>
-COC_VALIDATOR_REGISTRY_RPC_URL=http://127.0.0.1:38780
+PALI_VALIDATOR_REGISTRY_RPC_URL=http://127.0.0.1:38780
 # Optional — defaults to 60_000ms
-# COC_VALIDATOR_REGISTRY_POLL_INTERVAL_MS=60000
+# PALI_VALIDATOR_REGISTRY_POLL_INTERVAL_MS=60000
 ```
 
 (There's no `validatorRegistryAddress` field in the existing JSON config;
@@ -141,14 +141,14 @@ For each validator host (one at a time, in order v1, v3, v4, v5, obs-1, v2):
 ```bash
 # Edit env file on the host
 ssh -i ~/.ssh/openclaw_server_key root@<host> '
-  echo "COC_VALIDATOR_REGISTRY_ADDRESS=0x4441299c118373fDC96bE1983d42C79e19CDb4F0" >> /etc/coc/node-<unit>.env
-  systemctl restart coc-node@<unit>
+  echo "PALI_VALIDATOR_REGISTRY_ADDRESS=0x4441299c118373fDC96bE1983d42C79e19CDb4F0" >> /etc/palimesh/node-<unit>.env
+  systemctl restart palimesh-node@<unit>
 '
 
 # Wait for the new node to rejoin BFT (~30s) before doing the next.
 # Verify: probe RPC eth_blockNumber + check log for "reader initialized" line.
 ssh -i ~/.ssh/openclaw_server_key root@<host> \
-  'journalctl -u coc-node@<unit> -n 100 --no-pager | grep "reader initialized\|BFT validator set updated"'
+  'journalctl -u palimesh-node@<unit> -n 100 --no-pager | grep "reader initialized\|BFT validator set updated"'
 ```
 
 Expected log lines after restart:
@@ -190,7 +190,7 @@ Once all 6 nodes have the reader active:
    ```
 
 5. **Verify on-chain BFT participation** — query each node's RPC for
-   `coc_validatorSet()` (or `eth_call ValidatorRegistry.getActiveValidators()`).
+   `pali_validatorSet()` (or `eth_call ValidatorRegistry.getActiveValidators()`).
    Both should report 7.
 
 6. **Block production** — chain continues at ~2-3s/block with the new
@@ -208,8 +208,8 @@ the BFT coordinator rejects the set), roll back per node:
 ```bash
 # Remove the env var line
 ssh root@<host> '
-  sed -i "/COC_VALIDATOR_REGISTRY_ADDRESS/d" /etc/coc/node-<unit>.env
-  systemctl restart coc-node@<unit>
+  sed -i "/PALI_VALIDATOR_REGISTRY_ADDRESS/d" /etc/palimesh/node-<unit>.env
+  systemctl restart palimesh-node@<unit>
 '
 ```
 
@@ -229,7 +229,7 @@ ssh root@<host> 'cat /var/lib/coc/node-<unit>/validator-registry-reader.state.js
 # Expected: {"lastScannedBlock":"<current head>"}
 
 # 2. Most recent reader scan tick + active set on this node:
-ssh root@<host> 'journalctl -u coc-node@<unit> -n 200 --no-pager \
+ssh root@<host> 'journalctl -u palimesh-node@<unit> -n 200 --no-pager \
   | grep -E "reader initialized|validator set updated|scan tick failed" \
   | tail -10'
 
@@ -242,7 +242,7 @@ curl -s http://209.74.64.88:38780 -H 'content-type:application/json' \
 
 # 4. BFT round currently running with the new set:
 curl -s http://209.74.64.88:38780 -H 'content-type:application/json' \
-  -d '{"jsonrpc":"2.0","id":1,"method":"coc_getBftStatus"}'
+  -d '{"jsonrpc":"2.0","id":1,"method":"pali_getBftStatus"}'
 # Look at `validators` field — should match the on-chain active set.
 ```
 

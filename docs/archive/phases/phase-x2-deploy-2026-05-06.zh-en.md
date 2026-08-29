@@ -101,7 +101,7 @@ cd /passinger/projects/ClawdBot/COC/contracts && node check-staked.mjs
 # expected output: "active set: 3 validators"
 
 # 2. Re-add validatorRegistryAddress to native configs
-ssh clawchain-server '
+ssh palimesh-server '
 python3 -c "
 import json
 ADDR = \"0x162700d1613DfEC978032A909DE02643bC55df1A\"
@@ -115,10 +115,10 @@ for n in [1,2,3]:
 '
 
 # 3. Rolling restart
-ssh clawchain-server 'systemctl restart coc-node@1 coc-node@2 coc-node@3'
+ssh palimesh-server 'systemctl restart coc-node@1 coc-node@2 coc-node@3'
 
 # 4. Verify reader loaded all 3
-ssh clawchain-server 'grep "validator set updated from ValidatorRegistry" /var/log/coc/node-1.log | tail -1'
+ssh palimesh-server 'grep "validator set updated from ValidatorRegistry" /var/log/coc/node-1.log | tail -1'
 # expected: "count":3, ids includes all three core addresses
 ```
 

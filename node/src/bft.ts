@@ -89,7 +89,7 @@ export interface BftRoundState {
  * the chain advances past the divergent vote rather than stalling.
  *
  * The relaxed flag is plumbed through `BftRoundConfig` from
- * `BftCoordinatorConfig` and ultimately from `COC_DEV_RELAXED_QUORUM=1`
+ * `BftCoordinatorConfig` and ultimately from `PALI_DEV_RELAXED_QUORUM=1`
  * env. Production code paths must NEVER set it true on a non-dev chain.
  */
 export function quorumThreshold(
@@ -437,7 +437,7 @@ export interface EquivocationEvidence {
   detectedAtMs: number
   /**
    * Phase I3b: the two BFT signatures over the conflicting block hashes.
-   * When present, runtime/coc-relayer can submit the pair to the on-chain
+   * When present, runtime/palimesh-relayer can submit the pair to the on-chain
    * EquivocationDetector contract for permissionless slashing. Optional
    * because legacy callers / tests record votes without sigs.
    */
@@ -588,7 +588,7 @@ export class EquivocationDetector {
    * so an equivocator that selectively targets vote-recipient subsets ends up
    * detected on one node and invisible on the others. By gossiping evidence,
    * every node converges on the same equivocation history (required for
-   * consistent slashing, on-chain reporting, and `coc_getEquivocations` parity
+   * consistent slashing, on-chain reporting, and `pali_getEquivocations` parity
    * across nodes).
    *
    * Returns:

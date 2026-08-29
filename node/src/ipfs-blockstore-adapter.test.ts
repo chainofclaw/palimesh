@@ -35,16 +35,16 @@ describe("InterfaceBlockstoreAdapter", () => {
     const returned = await adapter.put(cid, bytes)
     assert.equal(returned.toString(), cid.toString())
     assert.equal(await adapter.has(cid), true)
-    // `get` returns a Buffer (COC's blockstore reads via fs.readFile);
+    // `get` returns a Buffer (Palimesh's blockstore reads via fs.readFile);
     // Buffer is a Uint8Array subtype — compare on byte content.
     assert.deepEqual(Buffer.from(await adapter.get(cid)), Buffer.from(bytes))
 
-    // The bytes are visible through COC's native string-keyed API too.
+    // The bytes are visible through Palimesh's native string-keyed API too.
     const native = await store.get(cid.toString())
     assert.deepEqual(Buffer.from(native.bytes), Buffer.from(bytes))
   })
 
-  it("get falls through COC's fetchRemote hook (C1.3)", async () => {
+  it("get falls through Palimesh's fetchRemote hook (C1.3)", async () => {
     const bytes = new TextEncoder().encode("remote block")
     const cid = await rawCid(bytes)
     let fetchCalled = false
@@ -77,7 +77,7 @@ describe("InterfaceBlockstoreAdapter", () => {
     assert.equal(adapter.reads, 3)
   })
 
-  it("delete is a no-op — the adapter must not drop COC blocks", async () => {
+  it("delete is a no-op — the adapter must not drop Palimesh blocks", async () => {
     const adapter = new InterfaceBlockstoreAdapter(store)
     const bytes = new TextEncoder().encode("keep me")
     const cid = await rawCid(bytes)

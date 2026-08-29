@@ -27,7 +27,7 @@ function formatUptime(seconds: number): string {
 
 export default async function NetworkPage() {
   const [nodeInfo, gasPrice, syncing, peerCount, protocolVersion] = await Promise.all([
-    rpcCall<NodeInfo>('coc_nodeInfo').catch(() => null),
+    rpcCall<NodeInfo>('pali_nodeInfo').catch(() => null),
     rpcCall<string>('eth_gasPrice').catch(() => '0x0'),
     rpcCall<boolean | object>('eth_syncing').catch(() => false),
     rpcCall<string>('net_peerCount').catch(() => '0x0'),
@@ -124,7 +124,7 @@ export default async function NetworkPage() {
           </div>
           <div className="flex items-center gap-2">
             <span className="font-medium w-28">Network:</span>
-            <code className="bg-blue-100 px-3 py-1 rounded">ChainOfClaw (COC)</code>
+            <code className="bg-blue-100 px-3 py-1 rounded">Palimesh (Palimesh)</code>
           </div>
         </div>
       </div>

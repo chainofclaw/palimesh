@@ -1,14 +1,14 @@
-# COC 公链技术白皮书
+# Palimesh 公链技术白皮书
 
 ## 执行摘要
 
-COC (ChainOfClaw) 是一条 EVM 兼容的公链，创新性地将**链上结算**(On-Chain Settlement)与**链下证明**(Off-Chain Proof)结合，通过 PoSe (Proof-of-Service) 机制实现**存储证明层**。
-COC 的目标不是做”通用叙事”的公链复制，而是为 OpenClaw AI Agent 生态提供可验证服务与自动结算的基础设施。
+Palimesh (Palimesh) 是一条 EVM 兼容的公链，创新性地将**链上结算**(On-Chain Settlement)与**链下证明**(Off-Chain Proof)结合，通过 PoSe (Proof-of-Service) 机制实现**存储证明层**。
+Palimesh 的目标不是做”通用叙事”的公链复制，而是为 OpenClaw AI Agent 生态提供可验证服务与自动结算的基础设施。
 
 核心创新：
 - **PoSe v2 协议**：使用 EIP-712 签名和见证人仲裁的无许可故障证明
 - **IPFS 兼容存储**：每个区块链节点都可以存储和验证数据
-- **OpenClaw AI Agent 原生设计**：COC 作为 AI Agent 的信任与结算底座，提供可验证服务证明、自动奖惩与身份注册基础设施（Agent-to-Agent 协作编排待后续版本）
+- **OpenClaw AI Agent 原生设计**：Palimesh 作为 AI Agent 的信任与结算底座，提供可验证服务证明、自动奖惩与身份注册基础设施（Agent-to-Agent 协作编排待后续版本）
 - **多层共识**：支持确定性轮转、降级模式、可选 BFT 协调器
 - **混合网络**：HTTP 八卦协议 + TCP Wire 协议 + DHT 网络同时运行
 
@@ -26,7 +26,7 @@ COC 的目标不是做”通用叙事”的公链复制，而是为 OpenClaw AI 
 
 ### 1.2 解决方案设计
 
-COC 采用**分层验证架构**：
+Palimesh 采用**分层验证架构**：
 
 ```
 Layer 1: EVM Layer (链上计算)
@@ -827,7 +827,7 @@ if (!p2pRateLimiter.allow(clientIp)) {
 
 ### 6.2 与主流公链对比（按架构取舍）
 
-| 维度 | COC | Ethereum | Solana | Polygon PoS | Arbitrum / Optimism |
+| 维度 | Palimesh | Ethereum | Solana | Polygon PoS | Arbitrum / Optimism |
 |------|-----|----------|--------|-------------|---------------------|
 | **架构层级** | L1 | L1 | L1 | Ethereum 侧链（PoS，向 Ethereum 提交 checkpoint） | Optimistic Rollup（L2） |
 | **执行环境** | EVM | EVM | SVM | EVM | EVM |
@@ -838,17 +838,17 @@ if (!p2pRateLimiter.allow(clientIp)) {
 | **生态定位** | OpenClaw AI Agent 原生链 + EVM 兼容 | 安全性与流动性基座 | 高吞吐、低延迟执行 | 低成本 EVM 生态扩展 | 继承 Ethereum 流动性、降低执行成本 |
 
 **可站住脚的判断（非绝对结论）**：
-1. 若核心需求是“AI Agent 服务证据可验证 + 可客观惩罚 + 奖励闭环”，COC 的 PoSe 机制更直接。
+1. 若核心需求是“AI Agent 服务证据可验证 + 可客观惩罚 + 奖励闭环”，Palimesh 的 PoSe 机制更直接。
 2. 若核心需求是“最强资产安全背书与流动性深度”，Ethereum 及其主流 L2 仍是首选。
 3. 若核心需求是“极低延迟高吞吐执行”，Solana 具备优势，但开发栈与 EVM 生态差异较大。
 4. 若核心需求是“EVM 低成本部署”，Polygon 与 Arbitrum/Optimism 更成熟，但并不原生提供离链存储 QoS 证明。
 
 **关键定位声明**：
-COC 不主张在“通用吞吐、生态规模、资产安全背书”这些维度全面优于所有主流链；其真正创新在于把**可验证服务证明、可客观惩罚、奖励闭环**直接纳入 AI Agent 基础设施协议面。
+Palimesh 不主张在“通用吞吐、生态规模、资产安全背书”这些维度全面优于所有主流链；其真正创新在于把**可验证服务证明、可客观惩罚、奖励闭环**直接纳入 AI Agent 基础设施协议面。
 
 ### 6.3 与存储网络对比（Filecoin / Arweave / Storj）
 
-| 维度 | COC | Filecoin | Arweave | Storj |
+| 维度 | Palimesh | Filecoin | Arweave | Storj |
 |------|-----|----------|---------|-------|
 | **主定位** | 通用链执行 + 服务证明 + 存储承诺 | 去中心化存储市场 | 永久数据网络 | 去中心化对象存储服务 |
 | **合约能力** | EVM 智能合约 | 支持 FVM/FEVM 合约 | 支持 SmartWeave/AO 等可编程范式 | 非链上合约平台 |
@@ -857,9 +857,9 @@ COC 不主张在“通用吞吐、生态规模、资产安全背书”这些维�
 | **典型场景** | OpenClaw AI Agent 状态与服务结算 | 冷/温数据存储与检索市场 | 长期归档与永久发布 | 私有文件与对象存储 |
 
 **结论**：
-1. Filecoin 与 Arweave 在“存储持久性经济模型”上更强，COC 在“链上执行 + 服务可证明结算”上更强。
+1. Filecoin 与 Arweave 在“存储持久性经济模型”上更强，Palimesh 在“链上执行 + 服务可证明结算”上更强。
 2. Storj 更像工程化云存储网络，不以链上共识执行为核心目标。
-3. COC 的定位不是替代全部存储网络，而是为 OpenClaw AI Agent 生态提供“可执行 + 可验证 + 可奖惩”的一体化底座。
+3. PALI 的定位不是替代全部存储网络，而是为 OpenClaw AI Agent 生态提供“可执行 + 可验证 + 可奖惩”的一体化底座。
 
 ### 6.4 汇总决策矩阵
 
@@ -871,7 +871,7 @@ COC 不主张在“通用吞吐、生态规模、资产安全背书”这些维�
 需求：是否必须实现“证据可验证 + 客观惩罚 + 奖励闭环”？
 │
 ├─ 是 → 是否同时需要链上合约编排？
-│       ├─ 是 → COC（OpenClaw AI Agent 原生）
+│       ├─ 是 → Palimesh（OpenClaw AI Agent 原生）
 │       └─ 否 → 可评估专用存储网络 + 外部仲裁层
 │
 └─ 否 → 是否优先追求既有 EVM 生态与流动性？
@@ -879,7 +879,7 @@ COC 不主张在“通用吞吐、生态规模、资产安全背书”这些维�
         └─ 否 → 评估 Solana 或专用存储网络（按业务目标取舍）
 ```
 
-### 6.5 COC 技术创新与独特定位（可论证）
+### 6.5 PALI 技术创新与独特定位（可论证）
 
 | 创新点 | 对应机制 | 与常见方案的关键差异 | 可验证结果 |
 |--------|----------|----------------------|------------|
@@ -949,7 +949,7 @@ Pin 管理：增量维护（非固定毫秒承诺）
 ### 单节点开发
 
 ```bash
-COC_DATA_DIR=/tmp/coc-dev \
+PALI_DATA_DIR=/tmp/coc-dev \
 node --experimental-strip-types node/src/index.ts
 ```
 
@@ -970,20 +970,20 @@ bash scripts/start-devnet.sh 3    # 启动 3 节点 devnet
 
 > **🟡 Canary 阶段 (88780)** — 下例展示代码默认端口
 > (`18780/19780/5001/19781`)。**接入实时 canary 测试网**
-> (chainId `88780`):设 `COC_CHAIN_ID=88780`,按
+> (chainId `88780`):设 `PALI_CHAIN_ID=88780`,按
 > [`public-endpoints-88780.zh.md`](./public-endpoints-88780.zh.md) 取权威
-> RPC URL (`https://rpc.chainofclaw.io`)、合约地址、faucet、explorer、速率限制。
+> RPC URL (`https://rpc.palimesh.io`)、合约地址、faucet、explorer、速率限制。
 > 外部 operator 完整 stake + BFT 纳入流程见
 > [`external-validator-onboarding.zh.md`](./external-validator-onboarding.zh.md)。
 
 1. **配置环境变量**：
    ```bash
-   COC_CHAIN_ID=1
-   COC_RPC_BIND=0.0.0.0
-   COC_RPC_PORT=18780
-   COC_P2P_PORT=19780
-   COC_IPFS_PORT=5001
-   COC_WIRE_PORT=19781
+   PALI_CHAIN_ID=1
+   PALI_RPC_BIND=0.0.0.0
+   PALI_RPC_PORT=18780
+   PALI_P2P_PORT=19780
+   PALI_IPFS_PORT=5001
+   PALI_WIRE_PORT=19781
    ```
 
 2. **启动节点**：
@@ -1002,7 +1002,7 @@ bash scripts/start-devnet.sh 3    # 启动 3 节点 devnet
 
 ## 九、总结
 
-COC 是一条为**数据服务定制**的公链：
+Palimesh 是一条为**数据服务定制**的公链：
 
 1. **PoSe v2**：无许可的分布式故障证明，通过见证人仲裁
 2. **IPFS 兼容**：每个节点都可以存储，任何人都可以验证

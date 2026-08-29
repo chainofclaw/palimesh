@@ -188,7 +188,7 @@ export interface ManifestVerifyResult {
 export interface ManifestVerifyOptions {
   /**
    * #727: a trusted signer address configured offline (e.g. via
-   * COC_REWARD_MANIFEST_SIGNER). When set, takes priority over the
+   * PALI_REWARD_MANIFEST_SIGNER). When set, takes priority over the
    * manifest's self-claimed `generatorAddress` — the recovered signer
    * must match this value. When unset the function falls back to
    * `manifest.generatorAddress`; if THAT is also missing the signature

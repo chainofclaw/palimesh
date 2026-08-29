@@ -1,6 +1,6 @@
-# COC 节点运维 Runbook
+# Palimesh 节点运维 Runbook
 
-COC 验证节点的运维 SOP — 注册、stake 生命周期、slash 响应、治理参与、监控、事件分诊。
+Palimesh 验证节点的运维 SOP — 注册、stake 生命周期、slash 响应、治理参与、监控、事件分诊。
 
 本文档面向 canary testnet(`chainId 88780` — 网络参数权威见 [`public-endpoints-88780.zh.md`](./public-endpoints-88780.zh.md))的节点 operators。早期 Prowl testnet(`chainId 18780`)已于 2026-05-12 退役 — 其文档保存于 [`docs/archive/prowl-18780/`](./archive/prowl-18780/) 作历史参考。Devnet(`chainId 88888` H15 fork-off)仅用于 fixture 测试 — 见 `tests/multinode-integration/README.md`。
 
@@ -55,10 +55,10 @@ cast send --rpc-url $RPC --private-key $OPERATOR_KEY \
 `registerNode` 更复杂 — 需要一个 `ownershipSig` 证明 operator 控制 BFT 签名密钥：
 
 ```js
-// ownershipSig = personal_sign(keccak256("coc-register:" || poseNodeId || operator_address))
+// ownershipSig = personal_sign(keccak256("palimesh-register:" || poseNodeId || operator_address))
 const message = ethers.solidityPacked(
   ["string", "bytes32", "address"],
-  ["coc-register:", poseNodeId, operatorAddress],
+  ["palimesh-register:", poseNodeId, operatorAddress],
 )
 const ownershipSig = await wallet.signMessage(ethers.getBytes(keccak256(message)))
 ```
@@ -100,8 +100,8 @@ PoSe 侧：`PoSeManagerV2` 当前没有干净的 unstake 路径；通过元数�
 - 如果你的节点正在出当前 round，集群出块跌破 4-of-5 quorum
 
 ### 3.2 分诊（按顺序）
-1. **停节点。** `systemctl stop coc-node` 或 kill docker 容器。继续运行 = 继续签名 = 更多 slash。
-2. **抓取状态。** Tar `/data/coc/leveldb` + `~/.coc/keys` + `journalctl -u coc-node --since '1h ago'`。从 explorer 保存 `EquivocationProven` 日志 + tx hash。
+1. **停节点。** `systemctl stop palimesh-node` 或 kill docker 容器。继续运行 = 继续签名 = 更多 slash。
+2. **抓取状态。** Tar `/data/coc/leveldb` + `~/.coc/keys` + `journalctl -u palimesh-node --since '1h ago'`。从 explorer 保存 `EquivocationProven` 日志 + tx hash。
 3. **复现 double-sign。** 检测器合约 emit `(nodeId, signer, height, hashA, hashB, evidenceHash)`。`cast logs --address $DETECTOR --from-block <slash_block-1> --to-block <slash_block+1>` 提取两个冲突的 block hash。
 4. **诊断。** 常见原因：
    - **两节点共享 key**：复制的 VM、并行运行的备份。检查 `journalctl` 中是否有同一 height/phase 来自不同 IP 的两次 BFT 签名事件。
@@ -172,15 +172,15 @@ cast send --rpc-url $RPC --private-key $YOUR_KEY \
 | 信号 | RPC 方法 / 来源 | 告警阈值 |
 |---|---|---|
 | 出块滞后 | 集群 max(`eth_blockNumber`) - 本地 | > 5 块持续 > 60 s |
-| BFT round 不前进 | `coc_getBftStatus` | round 年龄 > 600 s (NO_PROGRESS_TIMEOUT) |
-| Equivocation 计数上升 | `coc_getEquivocationsTotal` | 非零立即触发 |
+| BFT round 不前进 | `pali_getBftStatus` | round 年龄 > 600 s (NO_PROGRESS_TIMEOUT) |
+| Equivocation 计数上升 | `pali_getEquivocationsTotal` | 非零立即触发 |
 | 验证节点 inactive | `ValidatorRegistry.getValidator(nodeId).active` | false → 呼叫 operator |
 | 活跃验证者数 | `ValidatorRegistry.getActiveValidators().length` | < 4 (失去 4-of-5 BFT quorum) |
-| Wire peer 数 | `coc_getNetworkStats.wireConnected` | < 2 |
+| Wire peer 数 | `pali_getNetworkStats.wireConnected` | < 2 |
 | 磁盘剩余 | OS 级 | `/data/coc` < 10 GB |
 | 内存 | OS 级 | RSS > 8 GB |
 
-Explorer `/validators` 页面读 `coc_getValidators`（来源同 BFT 用的 `ValidatorRegistry.getActiveValidators()` 数据）— 收藏作为一目了然的快速查看。
+Explorer `/validators` 页面读 `pali_getValidators`（来源同 BFT 用的 `ValidatorRegistry.getActiveValidators()` 数据）— 收藏作为一目了然的快速查看。
 
 ---
 
@@ -189,11 +189,11 @@ Explorer `/validators` 页面读 `coc_getValidators`（来源同 BFT 用的 `Val
 ### 6.1 干净重启节点
 ```bash
 # Stop 接受 SIGTERM 并完成进行中的 BFT round 后退出
-systemctl stop coc-node
+systemctl stop palimesh-node
 # 等进程退出；应 < 30 s
-journalctl -u coc-node -f | grep "graceful shutdown"
+journalctl -u palimesh-node -f | grep "graceful shutdown"
 # 然后启动
-systemctl start coc-node
+systemctl start palimesh-node
 ```
 
 ### 6.2 把现有 hardcoded 验证节点迁移到 ValidatorRegistry-driven 模式

@@ -40,7 +40,7 @@ export function buildSignMessage(action: string, data: SignedActionData): string
   const sorted = Object.keys(data).sort().reduce((acc, key) => {
     return { ...acc, [key]: data[key] }
   }, {} as Record<string, unknown>)
-  return `COC Forum ${action}\n${JSON.stringify(sorted)}`
+  return `Palimesh Forum ${action}\n${JSON.stringify(sorted)}`
 }
 
 export function parseSignMessage(message: string): ParsedSignMessage | null {
@@ -48,9 +48,9 @@ export function parseSignMessage(message: string): ParsedSignMessage | null {
   if (firstLineEnd === -1) return null
 
   const header = message.slice(0, firstLineEnd)
-  if (!header.startsWith('COC Forum ')) return null
+  if (!header.startsWith('Palimesh Forum ')) return null
 
-  const action = header.slice('COC Forum '.length)
+  const action = header.slice('Palimesh Forum '.length)
   if (!/^[A-Za-z][A-Za-z0-9_-]{0,63}$/.test(action)) return null
 
   let data: unknown

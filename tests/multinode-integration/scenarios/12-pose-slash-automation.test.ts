@@ -15,7 +15,7 @@
  *      validator's stake reduced or active flag flipped)
  *
  * The same `EquivocationDetectorClient` class is used by
- * runtime/coc-relayer.ts (Phase I3c), so a green test here means the
+ * runtime/palimesh-relayer.ts (Phase I3c), so a green test here means the
  * relayer's auto-slash path is also green when the BFT layer feeds it
  * EquivocationEvidence with signatures attached.
  *
@@ -31,7 +31,7 @@ import { EquivocationDetectorClient } from "../../../runtime/lib/equivocation-de
 import type { EquivocationEvidence } from "../../../node/src/bft.ts"
 
 const RPC = "http://localhost:38790"
-const DEPLOYED_PATH = "/passinger/projects/ClawdBot/COC/tests/multinode-integration/configs-h15/deployed-pose.json"
+const DEPLOYED_PATH = "/passinger/projects/ClawdBot/Palimesh/tests/multinode-integration/configs-h15/deployed-pose.json"
 
 // Same anvil-1 key the H15 fixture uses for h15-node-2 — gives us a
 // validator that's actually registered + active in ValidatorRegistry, so

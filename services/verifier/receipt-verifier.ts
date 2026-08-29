@@ -33,7 +33,7 @@ export class ReceiptVerifier {
     // nonce registry: their bogus-sig receipt consumed the nonce, then
     // the real challenger's later receipt got "nonce replay detected"
     // even though it was the legitimate one. Currently all callers
-    // (node/src/pose-engine.ts, runtime/coc-agent.ts) pair receipts with
+    // (node/src/pose-engine.ts, runtime/palimesh-agent.ts) pair receipts with
     // locally-issued challenges so the attack isn't reachable today, but
     // the defensive ordering is fail-fast and survives future endpoints
     // being added that take (challenge, receipt) from clients.

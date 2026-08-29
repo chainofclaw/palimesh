@@ -35,16 +35,16 @@ async function rpcCallRaw(port: number, method: string, params?: unknown[]): Pro
 }
 
 test("RPC Extended Methods", async (t) => {
-  const prevDevAccounts = process.env.COC_DEV_ACCOUNTS
-  process.env.COC_DEV_ACCOUNTS = "1"
+  const prevDevAccounts = process.env.PALI_DEV_ACCOUNTS
+  process.env.PALI_DEV_ACCOUNTS = "1"
   // The module-level rate limiter is shared across all tests in this
   // fixture. With ~65 subtests each making several requests, the 200/60s
   // budget is exhausted before later tests run, masking real assertion
   // failures behind opaque -32005. Bypass for the duration of the suite.
-  const prevRateLimitDisabled = process.env.COC_RPC_RATE_LIMIT_DISABLED
-  process.env.COC_RPC_RATE_LIMIT_DISABLED = "1"
+  const prevRateLimitDisabled = process.env.PALI_RPC_RATE_LIMIT_DISABLED
+  process.env.PALI_RPC_RATE_LIMIT_DISABLED = "1"
   const chainId = 18780
-  const dataDir = "/tmp/coc-rpc-ext-test-" + Date.now()
+  const dataDir = "/tmp/palimesh-rpc-ext-test-" + Date.now()
   const rewardManifestDir = join(dataDir, "reward-manifests")
   const evm = await EvmChain.create(chainId)
   await evm.prefund([
@@ -74,7 +74,7 @@ test("RPC Extended Methods", async (t) => {
       discoveryPendingPeers: 0,
       discoveryIdentityFailures: 0,
     }),
-    // Stub for #108: coc_getPeers exposes the same shape as admin_peers.
+    // Stub for #108: pali_getPeers exposes the same shape as admin_peers.
     getPeers: () => [
       { id: "node-2", url: "http://10.0.0.2:29780" },
       { id: "node-3", url: "http://10.0.0.3:29780", advertisedUrl: "http://203.0.113.3:29780" },
@@ -186,7 +186,7 @@ test("RPC Extended Methods", async (t) => {
     // wallet call shape is `params: [address, JSON.stringify(typedData)]`.
     // ethers.signTypedData, viem.signTypedData, web3.eth.signTypedDataV4,
     // and the MetaMask `ethereum.request` API all pass the typedData as
-    // a stringified JSON. Pre-fix COC's handler required the object form
+    // a stringified JSON. Pre-fix Palimesh's handler required the object form
     // and rejected stringified payloads with -32602 "invalid typedData:
     // expected object" — every browser-wallet integration broke.
     //
@@ -1060,16 +1060,16 @@ test("RPC Extended Methods", async (t) => {
     }
   })
 
-  await t.test("#122: eth_getBalance / eth_getTransactionCount / coc_getContractInfo reject malformed addresses with -32602", async () => {
+  await t.test("#122: eth_getBalance / eth_getTransactionCount / pali_getContractInfo reject malformed addresses with -32602", async () => {
     // Pre-fix bugs:
     //   - eth_getBalance returned -32603 with the raw input echoed back
     //     ("Invalid address input=not-an-address")
     //   - eth_getTransactionCount accepted short-hex like "0x123" and
     //     forwarded to evm (similar input leak)
-    //   - coc_getContractInfo returned null for any malformed input,
+    //   - pali_getContractInfo returned null for any malformed input,
     //     indistinguishable from "no deployed contract"
     const bads = ["not-an-address", "0x", "0x123", "0x" + "g".repeat(40), "0x" + "f".repeat(41)]
-    for (const method of ["eth_getBalance", "eth_getTransactionCount", "coc_getContractInfo"]) {
+    for (const method of ["eth_getBalance", "eth_getTransactionCount", "pali_getContractInfo"]) {
       for (const badAddr of bads) {
         const params = method.startsWith("eth_") ? [badAddr, "latest"] : [badAddr]
         const r = await fetch(`http://127.0.0.1:${port}`, {
@@ -1091,7 +1091,7 @@ test("RPC Extended Methods", async (t) => {
     assert.match(nonce as string, /^0x[0-9a-f]+$/i, "valid eth_getTransactionCount must return hex")
   })
 
-  await t.test("#120: coc_getTransactionsByAddress rejects malformed addresses with -32602", async () => {
+  await t.test("#120: pali_getTransactionsByAddress rejects malformed addresses with -32602", async () => {
     // Pre-fix: typo or junk address silently returned [] (it just missed
     // the per-address index), masking client mistakes as "no transactions".
     for (const badAddr of ["", "not-an-address", "0x", "0x123", "0x" + "g".repeat(40), "0x" + "f".repeat(41)]) {
@@ -1099,7 +1099,7 @@ test("RPC Extended Methods", async (t) => {
         method: "POST",
         headers: { "content-type": "application/json" },
         body: JSON.stringify({
-          jsonrpc: "2.0", id: 1, method: "coc_getTransactionsByAddress",
+          jsonrpc: "2.0", id: 1, method: "pali_getTransactionsByAddress",
           params: [badAddr, 50],
         }),
       })
@@ -1110,7 +1110,7 @@ test("RPC Extended Methods", async (t) => {
     // Sanity: a valid address still works (and returns an array since the
     // test fixture chain has no getTransactionsByAddress hook → falls
     // through to the empty-array path).
-    const ok = await rpcCall(port, "coc_getTransactionsByAddress", ["0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266", 50])
+    const ok = await rpcCall(port, "pali_getTransactionsByAddress", ["0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266", 50])
     assert.ok(Array.isArray(ok), "valid address must return an array")
   })
 
@@ -1640,12 +1640,12 @@ test("RPC Extended Methods", async (t) => {
     assert.ok(typeof entry.s === "string", `s must be present, got ${entry.s}`)
   })
 
-  await t.test("coc_nodeInfo returns node metadata", async () => {
-    const info = await rpcCall(port, "coc_nodeInfo")
+  await t.test("pali_nodeInfo returns node metadata", async () => {
+    const info = await rpcCall(port, "pali_nodeInfo")
     assert.ok(typeof info === "object")
-    assert.strictEqual(info.clientVersion, "COC/0.2")
+    assert.strictEqual(info.clientVersion, "Palimesh/0.2")
     // #561: chainId returned as 0x-prefixed hex quantity (parity with
-    // eth_chainId + coc_chainStats.chainId; Ethereum JSON-RPC contract).
+    // eth_chainId + pali_chainStats.chainId; Ethereum JSON-RPC contract).
     assert.strictEqual(info.chainId, `0x${chainId.toString(16)}`)
     assert.ok(typeof info.blockHeight === "number" || typeof info.blockHeight === "string")
     assert.ok(typeof info.mempool === "object")
@@ -1654,38 +1654,38 @@ test("RPC Extended Methods", async (t) => {
     // nodeVersion, platform, arch removed from public endpoint (info disclosure)
   })
 
-  await t.test("#561: coc_nodeInfo.chainId is 0x-prefixed hex (parity with eth_chainId)", async () => {
-    // Pre-fix coc_nodeInfo emitted chainId as a raw JS number (e.g. 88780)
+  await t.test("#561: pali_nodeInfo.chainId is 0x-prefixed hex (parity with eth_chainId)", async () => {
+    // Pre-fix pali_nodeInfo emitted chainId as a raw JS number (e.g. 88780)
     // while sibling methods returned hex ("0x15acc"). Clients aggregating
     // chainId from multiple endpoints saw `88780 !== "0x15acc"` and
     // concluded the node was misconfigured. Same format-drift family as
     // #517 (nextProposalBlock decimal vs hex on same response).
     //
-    // Both coc_nodeInfo and eth_chainId derive from the same `chainId`
+    // Both pali_nodeInfo and eth_chainId derive from the same `chainId`
     // argument passed to handleRpc, so they must match exactly. The test
-    // fixture's coc_chainStats reads from chain.cfg.chainId (a separate
+    // fixture's pali_chainStats reads from chain.cfg.chainId (a separate
     // source that may be unset in the fixture) — that cross-method
     // divergence is its own pre-existing concern; this regression pins
-    // only the format and the eth_chainId<->coc_nodeInfo parity.
-    const info = await rpcCall(port, "coc_nodeInfo")
+    // only the format and the eth_chainId<->pali_nodeInfo parity.
+    const info = await rpcCall(port, "pali_nodeInfo")
     const ethId = await rpcCall(port, "eth_chainId")
-    assert.equal(typeof info.chainId, "string", `coc_nodeInfo.chainId must be a string, got ${typeof info.chainId}`)
-    assert.match(info.chainId, /^0x[0-9a-f]+$/i, `coc_nodeInfo.chainId must be 0x-prefixed hex, got ${JSON.stringify(info.chainId)}`)
-    assert.strictEqual(info.chainId, ethId, `coc_nodeInfo.chainId (${info.chainId}) must match eth_chainId (${ethId})`)
+    assert.equal(typeof info.chainId, "string", `pali_nodeInfo.chainId must be a string, got ${typeof info.chainId}`)
+    assert.match(info.chainId, /^0x[0-9a-f]+$/i, `pali_nodeInfo.chainId must be 0x-prefixed hex, got ${JSON.stringify(info.chainId)}`)
+    assert.strictEqual(info.chainId, ethId, `pali_nodeInfo.chainId (${info.chainId}) must match eth_chainId (${ethId})`)
   })
 
-  await t.test("#607: coc_validators.nextProposalBlock is 0x-prefixed hex (closing #517 format drift)", async () => {
+  await t.test("#607: pali_validators.nextProposalBlock is 0x-prefixed hex (closing #517 format drift)", async () => {
     // Pre-fix `nextProposalBlock: Number(h)` emitted a decimal JS number
     // (e.g. 88751) while every sibling block-height field on the same
     // response shape returned 0x-prefixed hex per Ethereum JSON-RPC
-    // convention (`currentHeight: "0x15a8e"`, `coc_chainStats.blockHeight:
+    // convention (`currentHeight: "0x15a8e"`, `pali_chainStats.blockHeight:
     // "0x15a8e"`, `eth_blockNumber: "0x15a8e"`).  Clients aggregating
     // block numbers from multiple fields saw the same height twice in
     // two different formats and concluded the response was corrupted.
     // Same format-drift family as #561 (chainId) and the historical
     // #517 (next-proposer decimal vs hex) — closes the remaining
     // instance the comment at #561 explicitly identified.
-    const result = await rpcCall(port, "coc_validators") as {
+    const result = await rpcCall(port, "pali_validators") as {
       validators: Array<{ id: string; isCurrentProposer: boolean; nextProposalBlock: unknown }>
       currentHeight: string
       nextProposer: string
@@ -1707,7 +1707,7 @@ test("RPC Extended Methods", async (t) => {
 
   await t.test("web3_clientVersion returns version string", async () => {
     const version = await rpcCall(port, "web3_clientVersion")
-    assert.strictEqual(version, "COC/0.2")
+    assert.strictEqual(version, "Palimesh/0.2")
   })
 
   await t.test("net_version returns chain ID string", async () => {
@@ -1737,8 +1737,8 @@ test("RPC Extended Methods", async (t) => {
     assert.ok(id.startsWith("0x"))
   })
 
-  await t.test("coc_getNetworkStats returns network info", async () => {
-    const stats = await rpcCall(port, "coc_getNetworkStats")
+  await t.test("pali_getNetworkStats returns network info", async () => {
+    const stats = await rpcCall(port, "pali_getNetworkStats")
     assert.ok(typeof stats === "object")
     assert.ok(stats.blockHeight.startsWith("0x"))
     assert.ok(typeof stats.peerCount === "number")
@@ -1754,8 +1754,8 @@ test("RPC Extended Methods", async (t) => {
     assert.equal(stats.bft.enabled, false)
   })
 
-  await t.test("coc_getRewardManifest returns settled reward summary", async () => {
-    const manifest = await rpcCall(port, "coc_getRewardManifest", [7])
+  await t.test("pali_getRewardManifest returns settled reward summary", async () => {
+    const manifest = await rpcCall(port, "pali_getRewardManifest", [7])
     assert.ok(typeof manifest === "object")
     assert.equal(manifest.epochId, 7)
     assert.equal(manifest.rewardRoot, `0x${"11".repeat(32)}`)
@@ -1764,8 +1764,8 @@ test("RPC Extended Methods", async (t) => {
     assert.equal(manifest.leaves, 1)
   })
 
-  await t.test("coc_getRewardClaim returns proof payload", async () => {
-    const claim = await rpcCall(port, "coc_getRewardClaim", [7, `0x${"22".repeat(32)}`])
+  await t.test("pali_getRewardClaim returns proof payload", async () => {
+    const claim = await rpcCall(port, "pali_getRewardClaim", [7, `0x${"22".repeat(32)}`])
     assert.ok(typeof claim === "object")
     assert.equal(claim.epochId, 7)
     assert.equal(claim.amount, "100")
@@ -1773,27 +1773,27 @@ test("RPC Extended Methods", async (t) => {
     assert.equal(claim.settled, true)
   })
 
-  await t.test("coc_getBftStatus returns disabled status", async () => {
-    const status = await rpcCall(port, "coc_getBftStatus")
+  await t.test("pali_getBftStatus returns disabled status", async () => {
+    const status = await rpcCall(port, "pali_getBftStatus")
     assert.ok(typeof status === "object")
     assert.equal(status.enabled, false)
     assert.equal(status.active, false)
   })
 
-  await t.test("coc_getGovernanceStats returns governance info", async () => {
-    const stats = await rpcCall(port, "coc_getGovernanceStats")
+  await t.test("pali_getGovernanceStats returns governance info", async () => {
+    const stats = await rpcCall(port, "pali_getGovernanceStats")
     assert.ok(typeof stats === "object")
     // No governance module in basic ChainEngine, should return enabled: false
     assert.equal(stats.enabled, false)
   })
 
-  await t.test("coc_getProposals returns empty without governance", async () => {
-    const proposals = await rpcCall(port, "coc_getProposals")
+  await t.test("pali_getProposals returns empty without governance", async () => {
+    const proposals = await rpcCall(port, "pali_getProposals")
     assert.ok(Array.isArray(proposals))
     assert.equal(proposals.length, 0)
   })
 
-  await t.test("#436: coc_getProposals/getDaoProposals/getFaction validate input BEFORE backend-config short-circuit", async () => {
+  await t.test("#436: pali_getProposals/getDaoProposals/getFaction validate input BEFORE backend-config short-circuit", async () => {
     // Same family as #432 / PR #431 but for the 3 handlers that return
     // a successful empty result (`[]` or `null`) instead of methodNotFound
     // when governance is off. Pre-fix, garbage input shapes silently got
@@ -1811,42 +1811,42 @@ test("RPC Extended Methods", async (t) => {
       return await r.json() as { error?: { code: number; message: string }; result?: unknown }
     }
 
-    // coc_getProposals — non-string filter must reject even without governance.
+    // pali_getProposals — non-string filter must reject even without governance.
     for (const bad of [true, false, 42, {}, [1, 2]]) {
-      const r = await probe("coc_getProposals", [bad])
+      const r = await probe("pali_getProposals", [bad])
       assert.equal(r.error?.code, -32602,
-        `coc_getProposals(${JSON.stringify(bad)}) must be -32602 (not silent []), got ${JSON.stringify(r)}`)
+        `pali_getProposals(${JSON.stringify(bad)}) must be -32602 (not silent []), got ${JSON.stringify(r)}`)
     }
     // Sanity: valid shape returns [] (not error) without governance.
     {
-      const r = await probe("coc_getProposals", [])
-      assert.equal(r.error, undefined, `coc_getProposals([]) without governance must return empty array, got ${JSON.stringify(r)}`)
+      const r = await probe("pali_getProposals", [])
+      assert.equal(r.error, undefined, `pali_getProposals([]) without governance must return empty array, got ${JSON.stringify(r)}`)
       assert.deepEqual(r.result, [])
     }
 
-    // coc_getDaoProposals — non-string/non-object filter must reject.
+    // pali_getDaoProposals — non-string/non-object filter must reject.
     for (const bad of [true, false, 42, [1, 2]]) {
-      const r = await probe("coc_getDaoProposals", [bad])
+      const r = await probe("pali_getDaoProposals", [bad])
       assert.equal(r.error?.code, -32602,
-        `coc_getDaoProposals(${JSON.stringify(bad)}) must be -32602 (not silent []), got ${JSON.stringify(r)}`)
+        `pali_getDaoProposals(${JSON.stringify(bad)}) must be -32602 (not silent []), got ${JSON.stringify(r)}`)
     }
     // Bad nested shape must also reject.
     {
-      const r = await probe("coc_getDaoProposals", [{ status: 42 }])
+      const r = await probe("pali_getDaoProposals", [{ status: 42 }])
       assert.equal(r.error?.code, -32602,
-        `coc_getDaoProposals({status:42}) must reject, got ${JSON.stringify(r)}`)
+        `pali_getDaoProposals({status:42}) must reject, got ${JSON.stringify(r)}`)
     }
     {
-      const r = await probe("coc_getDaoProposals", [])
-      assert.equal(r.error, undefined, `coc_getDaoProposals([]) without governance must return empty array`)
+      const r = await probe("pali_getDaoProposals", [])
+      assert.equal(r.error, undefined, `pali_getDaoProposals([]) without governance must return empty array`)
       assert.deepEqual(r.result, [])
     }
 
-    // coc_getFaction — non-string / non-0x-prefix address must reject.
+    // pali_getFaction — non-string / non-0x-prefix address must reject.
     for (const bad of [[], [null], [42], [true], [{}], [[1, 2]], ["not-0x-prefixed"]]) {
-      const r = await probe("coc_getFaction", bad)
+      const r = await probe("pali_getFaction", bad)
       assert.equal(r.error?.code, -32602,
-        `coc_getFaction(${JSON.stringify(bad)}) must be -32602 (not silent null), got ${JSON.stringify(r)}`)
+        `pali_getFaction(${JSON.stringify(bad)}) must be -32602 (not silent null), got ${JSON.stringify(r)}`)
     }
     // #505: malformed-but-0x-prefixed addresses must ALSO reject — pre-fix
     // the loose `startsWith("0x")` check accepted any prefixed string and
@@ -1855,16 +1855,16 @@ test("RPC Extended Methods", async (t) => {
     for (const bad of ["0x", "0x123", "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb9226", /* 39 chars */
                         "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb922665", /* 41 chars */
                         "0xZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ"]) {
-      const r = await probe("coc_getFaction", [bad])
+      const r = await probe("pali_getFaction", [bad])
       assert.equal(r.error?.code, -32602,
-        `coc_getFaction("${bad}") must be -32602 (malformed address), got ${JSON.stringify(r)}`)
+        `pali_getFaction("${bad}") must be -32602 (malformed address), got ${JSON.stringify(r)}`)
       assert.match(r.error!.message, /invalid address/i,
-        `coc_getFaction error must mention "invalid address", got "${r.error!.message}"`)
+        `pali_getFaction error must mention "invalid address", got "${r.error!.message}"`)
     }
     // Sanity: valid address shape returns null (not error) without governance.
     {
-      const r = await probe("coc_getFaction", ["0x0000000000000000000000000000000000000001"])
-      assert.equal(r.error, undefined, `coc_getFaction(valid_address) without governance must return null`)
+      const r = await probe("pali_getFaction", ["0x0000000000000000000000000000000000000001"])
+      assert.equal(r.error, undefined, `pali_getFaction(valid_address) without governance must return null`)
       assert.equal(r.result, null)
     }
   })
@@ -1876,7 +1876,7 @@ test("RPC Extended Methods", async (t) => {
     )
   })
 
-  // PoW stub methods — COC uses PoSe consensus, no mining
+  // PoW stub methods — Palimesh uses PoSe consensus, no mining
   await t.test("eth_getWork returns 3 zero hashes", async () => {
     const result = await rpcCall(port, "eth_getWork")
     assert.ok(Array.isArray(result))
@@ -1935,13 +1935,13 @@ test("RPC Extended Methods", async (t) => {
     assert.match(json.error!.message as string, /^invalid to address/)
   })
 
-  await t.test("#100: coc_getValidators returns an array (not a single string) without governance", async () => {
+  await t.test("#100: pali_getValidators returns an array (not a single string) without governance", async () => {
     // This RPC test fixture builds a ChainEngine without on-chain governance,
     // so we exercise the fallback path. Pre-fix, the fallback returned
     // `chain.expectedProposer(height + 1n)` — a single string — which
     // contradicted the method's name and broke array-shaped client code.
-    const result = await rpcCall(port, "coc_getValidators") as unknown
-    assert.ok(Array.isArray(result), `coc_getValidators must return an array, got: ${typeof result}`)
+    const result = await rpcCall(port, "pali_getValidators") as unknown
+    assert.ok(Array.isArray(result), `pali_getValidators must return an array, got: ${typeof result}`)
     // Every entry should be an object with at least an `id` field.
     const arr = result as Array<Record<string, unknown>>
     for (const v of arr) {
@@ -1954,8 +1954,8 @@ test("RPC Extended Methods", async (t) => {
     assert.equal(arr[0].id, "node-1")
   })
 
-  await t.test("coc_getEquivocations maps persisted BFT evidence fields", async () => {
-    const result = await rpcCall(port, "coc_getEquivocations", [0])
+  await t.test("pali_getEquivocations maps persisted BFT evidence fields", async () => {
+    const result = await rpcCall(port, "pali_getEquivocations", [0])
     assert.ok(Array.isArray(result))
     assert.deepEqual(result, [
       {
@@ -2189,8 +2189,8 @@ test("RPC Extended Methods", async (t) => {
     assert.equal(earliestBlock!.number, "0x0")
   })
 
-  await t.test("#108 part-2: coc_getPeers exposes the public peer list (id + url)", async () => {
-    const peers = await rpcCall(port, "coc_getPeers") as Array<{ id: string; url: string }>
+  await t.test("#108 part-2: pali_getPeers exposes the public peer list (id + url)", async () => {
+    const peers = await rpcCall(port, "pali_getPeers") as Array<{ id: string; url: string }>
     assert.ok(Array.isArray(peers), "must return an array")
     assert.equal(peers.length, 2)
     // Second peer in the stub has advertisedUrl — it should win over url
@@ -2202,8 +2202,8 @@ test("RPC Extended Methods", async (t) => {
     assert.equal(node2!.url, "http://10.0.0.2:29780", "url falls back when no advertisedUrl")
   })
 
-  await t.test("#108: coc_erasureStatus bridges the existing /api/v0/erasure/status path to RPC", async () => {
-    const result = await rpcCall(port, "coc_erasureStatus", ["bafy-mock-manifest"])
+  await t.test("#108: pali_erasureStatus bridges the existing /api/v0/erasure/status path to RPC", async () => {
+    const result = await rpcCall(port, "pali_erasureStatus", ["bafy-mock-manifest"])
     assert.ok(typeof result === "object" && result !== null)
     const status = result as { fileSize: number; scheme: string; n: number; m: number; stripes: unknown[] }
     assert.equal(status.fileSize, 1_048_576)
@@ -2213,24 +2213,24 @@ test("RPC Extended Methods", async (t) => {
     assert.ok(Array.isArray(status.stripes) && status.stripes.length === 1)
   })
 
-  await t.test("#108: coc_erasureStatus rejects missing CID with -32602", async () => {
+  await t.test("#108: pali_erasureStatus rejects missing CID with -32602", async () => {
     const r = await fetch(`http://127.0.0.1:${port}`, {
       method: "POST",
       headers: { "content-type": "application/json" },
-      body: JSON.stringify({ jsonrpc: "2.0", id: 1, method: "coc_erasureStatus", params: [""] }),
+      body: JSON.stringify({ jsonrpc: "2.0", id: 1, method: "pali_erasureStatus", params: [""] }),
     })
     const json = await r.json() as { error?: { code: number; message: string } }
     assert.ok(json.error)
     assert.equal(json.error!.code, -32602)
   })
 
-  await t.test("#106: coc_getEquivocationsTotal returns the count of all evidence entries", async () => {
+  await t.test("#106: pali_getEquivocationsTotal returns the count of all evidence entries", async () => {
     // The operator runbook tells operators to alert on this metric, but
     // pre-fix the method threw "method not supported". The fixture
     // injects one mock equivocation via getBftEquivocations, so the count
     // should be 1.
-    const result = await rpcCall(port, "coc_getEquivocationsTotal")
-    assert.equal(typeof result, "number", `coc_getEquivocationsTotal must return a number, got ${typeof result}`)
+    const result = await rpcCall(port, "pali_getEquivocationsTotal")
+    assert.equal(typeof result, "number", `pali_getEquivocationsTotal must return a number, got ${typeof result}`)
     assert.equal(result, 1, "fixture has exactly one mock equivocation, so total must be 1")
   })
 
@@ -2548,7 +2548,7 @@ test("RPC Extended Methods", async (t) => {
     assert.match(okId as string, /^0x[0-9a-f]+$/i, "valid filter must return id")
   })
 
-  await t.test("#146/#515: coc_dhtFindProviders / coc_ipfsFetchBlockFromPeer reject malformed CIDs via JSON-RPC error field", async () => {
+  await t.test("#146/#515: pali_dhtFindProviders / pali_ipfsFetchBlockFromPeer reject malformed CIDs via JSON-RPC error field", async () => {
     // Pre-fix these handlers returned `{result: {providers: [], error: "..."}}`
     // (or `{result: {bytes: null, error: "..."}}`), wrapping the error
     // inside the result body. Clients that check `response.error` per
@@ -2561,7 +2561,7 @@ test("RPC Extended Methods", async (t) => {
       })
       return await r.json() as { result?: unknown; error?: { code: number; message: string } }
     }
-    // (a) coc_dhtFindProviders with no/empty/bad CID → -32602
+    // (a) pali_dhtFindProviders with no/empty/bad CID → -32602
     const invalidCidParams = [
       [],
       [""],
@@ -2573,15 +2573,15 @@ test("RPC Extended Methods", async (t) => {
       ["not-a-cid"],
     ]
     for (const params of invalidCidParams) {
-      const j = await probeError("coc_dhtFindProviders", params)
-      assert.ok(j.error, `coc_dhtFindProviders(${JSON.stringify(params)}) must error, got result=${JSON.stringify(j.result)}`)
+      const j = await probeError("pali_dhtFindProviders", params)
+      assert.ok(j.error, `pali_dhtFindProviders(${JSON.stringify(params)}) must error, got result=${JSON.stringify(j.result)}`)
       assert.equal(j.error!.code, -32602)
       assert.match(j.error!.message, /invalid cid|cid must/i)
       assert.equal(j.result, undefined, "errors must be in error field, not result body")
     }
-    // (b) coc_ipfsFetchBlockFromPeer same shape
+    // (b) pali_ipfsFetchBlockFromPeer same shape
     for (const params of [...invalidCidParams, ["foo\0bar"]]) {
-      const j = await probeError("coc_ipfsFetchBlockFromPeer", params)
+      const j = await probeError("pali_ipfsFetchBlockFromPeer", params)
       assert.ok(j.error)
       assert.equal(j.error!.code, -32602)
       assert.match(j.error!.message, /invalid cid|cid must/i)
@@ -2596,19 +2596,19 @@ test("RPC Extended Methods", async (t) => {
       "bafybeibbaty5wl7jqgcwyouemb5jerxoisdoxwldqdue5dd6evw6lgalhy",
     ]
     for (const cid of validCids) {
-      const providers = await probeError("coc_dhtFindProviders", [cid])
+      const providers = await probeError("pali_dhtFindProviders", [cid])
       assert.equal(providers.error, undefined, `valid cid ${cid} must not be -32602`)
       assert.deepEqual(providers.result, { providers: [] })
-      const fetched = await probeError("coc_ipfsFetchBlockFromPeer", [cid])
+      const fetched = await probeError("pali_ipfsFetchBlockFromPeer", [cid])
       assert.equal(fetched.error, undefined, `valid cid ${cid} must not be -32602`)
       assert.deepEqual(fetched.result, { bytes: null })
     }
-    // (d) coc_resolveDid / coc_getDIDDocument on a node without DID config
+    // (d) pali_resolveDid / pali_getDIDDocument on a node without DID config
     // → -32601 method not available (not -32603 internal-error).
     // #432: shape-valid args still hit the -32601 path (DID resolver not
     // configured); garbage input (empty params) gets -32602 via the new
     // validate-before-config-check ordering.
-    for (const method of ["coc_resolveDid", "coc_getDIDDocument"]) {
+    for (const method of ["pali_resolveDid", "pali_getDIDDocument"]) {
       const j = await probeError(method, ["did:coc:agent-shape-valid"])
       assert.ok(j.error)
       assert.equal(j.error!.code, -32601, `${method} with valid shape must be -32601 when not configured, got ${j.error!.code}`)
@@ -2637,13 +2637,13 @@ test("RPC Extended Methods", async (t) => {
     }
     // (a) Single-string-arg handlers: empty/numeric/boolean → -32602
     const stringArgMethods = [
-      "coc_resolveDid",
-      "coc_getDIDDocument",
-      "coc_getAgentCapabilities",
-      "coc_getDelegations",
-      "coc_getAgentLineage",
-      "coc_getVerificationMethods",
-      "coc_getCredentialAnchor",
+      "pali_resolveDid",
+      "pali_getDIDDocument",
+      "pali_getAgentCapabilities",
+      "pali_getDelegations",
+      "pali_getAgentLineage",
+      "pali_getVerificationMethods",
+      "pali_getCredentialAnchor",
     ]
     for (const method of stringArgMethods) {
       for (const bad of [[], [null], [42], [true], [{}], [[1, 2]]]) {
@@ -2657,17 +2657,17 @@ test("RPC Extended Methods", async (t) => {
       assert.equal(ok.error?.code, -32601,
         `${method}("agent-shape-valid") must be -32601 (not configured), got ${JSON.stringify(ok)}`)
     }
-    // (b) coc_getDaoProposal: proposalId is string. Same garbage shapes.
+    // (b) pali_getDaoProposal: proposalId is string. Same garbage shapes.
     for (const bad of [[], [null], [42], [true], [""]]) {
-      const j = await probeError("coc_getDaoProposal", bad)
+      const j = await probeError("pali_getDaoProposal", bad)
       assert.equal(j.error?.code, -32602,
-        `coc_getDaoProposal(${JSON.stringify(bad)}) must be -32602, got ${j.error?.code}`)
+        `pali_getDaoProposal(${JSON.stringify(bad)}) must be -32602, got ${j.error?.code}`)
     }
-    const okDao = await probeError("coc_getDaoProposal", ["valid-id"])
+    const okDao = await probeError("pali_getDaoProposal", ["valid-id"])
     assert.equal(okDao.error?.code, -32601,
-      `coc_getDaoProposal("valid-id") must be -32601 (governance not enabled), got ${JSON.stringify(okDao)}`)
-    // (c) coc_submitProposal / coc_voteProposal: first param must be object.
-    for (const method of ["coc_submitProposal", "coc_voteProposal"]) {
+      `pali_getDaoProposal("valid-id") must be -32601 (governance not enabled), got ${JSON.stringify(okDao)}`)
+    // (c) pali_submitProposal / pali_voteProposal: first param must be object.
+    for (const method of ["pali_submitProposal", "pali_voteProposal"]) {
       for (const bad of [[], [null], ["not-object"], [42], [[1, 2]]]) {
         const j = await probeError(method, bad)
         assert.equal(j.error?.code, -32602,
@@ -3235,7 +3235,7 @@ test("RPC Extended Methods", async (t) => {
     assert.doesNotMatch(r2.error!.message, /version=|INVALID_ARGUMENT|code=/, "must not leak ethers internals")
   })
 
-  await t.test("#184/#606: coc_chainStats does not crash + chainId matches eth_chainId (no '0x1' lie)", async () => {
+  await t.test("#184/#606: pali_chainStats does not crash + chainId matches eth_chainId (no '0x1' lie)", async () => {
     // #184 (original): pre-fix `chain.cfg.chainId.toString(16)` assumed
     // chainId was always set, but ChainEngineConfig.chainId is optional
     // in the type. Bare undefined.toString() leaked as
@@ -3243,7 +3243,7 @@ test("RPC Extended Methods", async (t) => {
     // The fix landed `?? "1"` literal fallback.
     //
     // #606 (this PR): the "1" literal silently lied — same node returned
-    // chainId `0x1` from coc_chainStats and the real chainId (e.g.
+    // chainId `0x1` from pali_chainStats and the real chainId (e.g.
     // `0x495c` = 18780) from eth_chainId. Two endpoints disagreed about
     // which chain you're on, breaking client connection-validation
     // logic that compares the two. Replace the literal with the RPC
@@ -3252,12 +3252,12 @@ test("RPC Extended Methods", async (t) => {
     // This fixture deliberately does NOT pass chainId to ChainEngine
     // (see line 38-48), so chain.cfg.chainId is undefined — direct
     // repro for both bugs.
-    const stats = await rpcCall(port, "coc_chainStats") as Record<string, unknown>
+    const stats = await rpcCall(port, "pali_chainStats") as Record<string, unknown>
     assert.ok(typeof stats === "object" && stats !== null, "must return an object")
     // The two endpoints must agree.
     const ethChainId = await rpcCall(port, "eth_chainId") as string
     assert.equal(stats.chainId, ethChainId,
-      `coc_chainStats.chainId (${stats.chainId}) must match eth_chainId (${ethChainId}) — same node, same chain`)
+      `pali_chainStats.chainId (${stats.chainId}) must match eth_chainId (${ethChainId}) — same node, same chain`)
     assert.notEqual(stats.chainId, "0x1",
       `chainId must NOT fall back to the literal "0x1" — that was the #184 bug fallback that lied`)
     assert.ok(typeof stats.blockHeight === "string", "blockHeight must be hex")
@@ -3266,15 +3266,15 @@ test("RPC Extended Methods", async (t) => {
     assert.doesNotMatch(JSON.stringify(stats), /Cannot read properties|undefined.*reading/, "must not leak TypeError")
   })
 
-  await t.test("#479: coc_chainStats pendingTxCount matches txpool_status.pending semantic (not raw mempool size)", async () => {
-    // Pre-fix `coc_chainStats.pendingTxCount = chain.mempool.stats().size`
+  await t.test("#479: pali_chainStats pendingTxCount matches txpool_status.pending semantic (not raw mempool size)", async () => {
+    // Pre-fix `pali_chainStats.pendingTxCount = chain.mempool.stats().size`
     // returned the total mempool size — pending + queued lumped together.
     // Meanwhile txpool_status correctly split pending (contiguous-from-
     // onchain-nonce) and queued (gap-nonce) per #386. The two endpoints
     // from the same node disagreed on what "pending" meant.
     //
     // Live testnet 88780 reproduction (server-1):
-    //   coc_chainStats → {"pendingTxCount":65,...}
+    //   pali_chainStats → {"pendingTxCount":65,...}
     //   txpool_status  → {"pending":"0x0","queued":"0x41"}    (0x41 = 65)
     // → all 65 txs were stuck gap-queued, none includable now, yet the
     //   explorer dashboard showed "Pending Txs: 65" misleading users.
@@ -3299,7 +3299,7 @@ test("RPC Extended Methods", async (t) => {
     const signed = await wallet.signTransaction(tx)
     await rpcCall(port, "eth_sendRawTransaction", [signed])
 
-    const stats = await rpcCall(port, "coc_chainStats") as {
+    const stats = await rpcCall(port, "pali_chainStats") as {
       pendingTxCount: number
       queuedTxCount: number
       mempoolSize: number
@@ -3326,12 +3326,12 @@ test("RPC Extended Methods", async (t) => {
     assert.equal(
       parseInt(status.pending, 16),
       stats.pendingTxCount,
-      `coc_chainStats.pendingTxCount (${stats.pendingTxCount}) must match txpool_status.pending (${parseInt(status.pending, 16)})`,
+      `pali_chainStats.pendingTxCount (${stats.pendingTxCount}) must match txpool_status.pending (${parseInt(status.pending, 16)})`,
     )
     assert.equal(
       parseInt(status.queued, 16),
       stats.queuedTxCount,
-      `coc_chainStats.queuedTxCount (${stats.queuedTxCount}) must match txpool_status.queued (${parseInt(status.queued, 16)})`,
+      `pali_chainStats.queuedTxCount (${stats.queuedTxCount}) must match txpool_status.queued (${parseInt(status.queued, 16)})`,
     )
   })
 
@@ -3417,7 +3417,7 @@ test("RPC Extended Methods", async (t) => {
     // -32602 "invalid block number: [object Object]" — both broken shape
     // handling AND leaks the V8 toString output (same anti-pattern as
     // #194/#220/#226/#497). debug_getRawBlock / debug_getRawReceipts
-    // shared the same bug behind the COC_DEBUG_RPC gate.
+    // shared the same bug behind the PALI_DEBUG_RPC gate.
     //
     // Live testnet 88780 repro:
     //   eth_getBlockTransactionCountByNumber [{"blockNumber":"0x1"}]
@@ -3753,7 +3753,7 @@ test("RPC Extended Methods", async (t) => {
     assert.equal(longStr.id, "9999999999999999999", "string id echoed verbatim")
   })
 
-  await t.test("#218: coc_submitProposal rejects malformed stakeAmount without leaking V8 BigInt error", async () => {
+  await t.test("#218: pali_submitProposal rejects malformed stakeAmount without leaking V8 BigInt error", async () => {
     // Pre-fix `BigInt(proposalParams.stakeAmount)` threw a V8 SyntaxError
     // when stakeAmount was an object/array/non-digit-string and the
     // outer catch leaked the V8 wording verbatim. Path is normally
@@ -3775,7 +3775,7 @@ test("RPC Extended Methods", async (t) => {
           method: "POST",
           headers: { "content-type": "application/json" },
           body: JSON.stringify({
-            jsonrpc: "2.0", id: 1, method: "coc_submitProposal",
+            jsonrpc: "2.0", id: 1, method: "pali_submitProposal",
             params: [{ type: "add_validator", targetId: "v4", proposer: "node-1", stakeAmount }],
           }),
         })
@@ -3806,7 +3806,7 @@ test("RPC Extended Methods", async (t) => {
     }
   })
 
-  await t.test("#537: coc_submitProposal validates stakeAmount BEFORE the governance-module gate", async () => {
+  await t.test("#537: pali_submitProposal validates stakeAmount BEFORE the governance-module gate", async () => {
     // The fixture chain has no governance module, so hasGovernance() is
     // false. Pre-fix the stakeAmount shape check ran AFTER that gate, so
     // a malformed stakeAmount surfaced -32601 "governance not enabled" —
@@ -3821,7 +3821,7 @@ test("RPC Extended Methods", async (t) => {
         method: "POST",
         headers: { "content-type": "application/json" },
         body: JSON.stringify({
-          jsonrpc: "2.0", id: 1, method: "coc_submitProposal",
+          jsonrpc: "2.0", id: 1, method: "pali_submitProposal",
           params: [{ type: "add_validator", targetId: "v4", proposer: "node-1", stakeAmount }],
         }),
       })
@@ -3846,7 +3846,7 @@ test("RPC Extended Methods", async (t) => {
       `module-availability error must mention governance, got "${valid.error?.message}"`)
   })
 
-  await t.test("#220: coc_submitProposal / coc_voteProposal reject null/undefined params[0] (no V8 NPE leak)", async () => {
+  await t.test("#220: pali_submitProposal / pali_voteProposal reject null/undefined params[0] (no V8 NPE leak)", async () => {
     // Pre-fix `(payload.params ?? [])[0] as Record<...>` was a no-op
     // cast. With params=[] / [null] the next line accessed .proposer /
     // .voterId on undefined/null and threw V8 "Cannot read properties
@@ -3868,7 +3868,7 @@ test("RPC Extended Methods", async (t) => {
         })
         return await r.json() as { error?: { code: number; message: string }; result?: unknown }
       }
-      const methods = ["coc_submitProposal", "coc_voteProposal"]
+      const methods = ["pali_submitProposal", "pali_voteProposal"]
       const badPayloads: unknown[][] = [[], [null], [undefined], ["string-not-object"], [42], [[1, 2]]]
       for (const method of methods) {
         for (const params of badPayloads) {
@@ -3881,23 +3881,23 @@ test("RPC Extended Methods", async (t) => {
         }
       }
       // Sanity: a well-shaped object still reaches the stub (no error).
-      const ok1 = await probe("coc_submitProposal", [{ type: "x", targetId: "y", proposer: "node-1" }])
+      const ok1 = await probe("pali_submitProposal", [{ type: "x", targetId: "y", proposer: "node-1" }])
       assert.equal(ok1.error, undefined, "well-shaped submit must NOT error")
-      const ok2 = await probe("coc_voteProposal", [{ proposalId: "p1", voterId: "node-1", approve: true }])
+      const ok2 = await probe("pali_voteProposal", [{ proposalId: "p1", voterId: "node-1", approve: true }])
       assert.equal(ok2.error, undefined, "well-shaped vote must NOT error")
     } finally {
       delete (chain as unknown as Record<string, unknown>).governance
     }
   })
 
-  await t.test("#296: coc_submitProposal rejects non-string type/targetId/proposer/targetAddress (no Record-cast no-op)", async () => {
+  await t.test("#296: pali_submitProposal rejects non-string type/targetId/proposer/targetAddress (no Record-cast no-op)", async () => {
     // Pre-fix `rawParams as Record<string, string>` was a TypeScript
     // runtime no-op. Any field shape (number, boolean, array, object)
     // silently flowed through to chain.governance.submitProposal(). The
     // resulting proposal record stored non-string values in string slots;
     // downstream filters / serializers either rejected with -32603 V8
     // errors or echoed the coerced garbage back. Same anti-pattern as
-    // #551 (coc_voteProposal field strict validation); same validation-
+    // #551 (pali_voteProposal field strict validation); same validation-
     // order rule as #432/#538.
     const submittedCalls: Array<{ type: string; targetId: string; proposer: string; opts: Record<string, unknown> }> = []
     const governanceStub296 = {
@@ -3912,7 +3912,7 @@ test("RPC Extended Methods", async (t) => {
         const r = await fetch(`http://127.0.0.1:${port}`, {
           method: "POST",
           headers: { "content-type": "application/json" },
-          body: JSON.stringify({ jsonrpc: "2.0", id: 1, method: "coc_submitProposal", params }),
+          body: JSON.stringify({ jsonrpc: "2.0", id: 1, method: "pali_submitProposal", params }),
         })
         return await r.json() as { error?: { code: number; message: string }; result?: unknown }
       }
@@ -3951,7 +3951,7 @@ test("RPC Extended Methods", async (t) => {
     }
   })
 
-  await t.test("#551: coc_voteProposal validates inner fields (no silent Boolean/String coercion)", async () => {
+  await t.test("#551: pali_voteProposal validates inner fields (no silent Boolean/String coercion)", async () => {
     // Pre-fix the handler validated the outer-object shape but immediately
     // ran every inner field through `String()`/`Boolean()` — a missing
     // `approve` field silently coerced to `false` (a flipped NO vote),
@@ -3968,7 +3968,7 @@ test("RPC Extended Methods", async (t) => {
         const r = await fetch(`http://127.0.0.1:${port}`, {
           method: "POST",
           headers: { "content-type": "application/json" },
-          body: JSON.stringify({ jsonrpc: "2.0", id: 1, method: "coc_voteProposal", params }),
+          body: JSON.stringify({ jsonrpc: "2.0", id: 1, method: "pali_voteProposal", params }),
         })
         return await r.json() as { error?: { code: number; message: string }; result?: unknown }
       }
@@ -3999,12 +3999,12 @@ test("RPC Extended Methods", async (t) => {
     }
   })
 
-  await t.test("#226: coc_getProposals + coc_getDaoProposals + coc_getEquivocations reject malformed filter params", async () => {
+  await t.test("#226: pali_getProposals + pali_getDaoProposals + pali_getEquivocations reject malformed filter params", async () => {
     // Pre-fix:
-    // - coc_getProposals(true) → `as string | undefined` runtime no-op → silent no-filter → return all
-    // - coc_getDaoProposals(true,false) → silent bypass of both branches → silent no-filter
-    // - coc_getEquivocations(-100) → Number coercion allowed negative sinceMs
-    // - coc_getEquivocations({}) → Number({}) = NaN → undefined-ish behavior in getter
+    // - pali_getProposals(true) → `as string | undefined` runtime no-op → silent no-filter → return all
+    // - pali_getDaoProposals(true,false) → silent bypass of both branches → silent no-filter
+    // - pali_getEquivocations(-100) → Number coercion allowed negative sinceMs
+    // - pali_getEquivocations({}) → Number({}) = NaN → undefined-ish behavior in getter
     // Same class as #220/#224 — silent coercion masking malformed input.
     const proposalsList: Array<Record<string, unknown>> = []
     const governanceStub226 = {
@@ -4022,52 +4022,52 @@ test("RPC Extended Methods", async (t) => {
         return await r.json() as { error?: { code: number; message: string }; result?: unknown }
       }
 
-      // coc_getProposals — non-string filter must reject
+      // pali_getProposals — non-string filter must reject
       for (const bad of [true, false, 42, {}, [1, 2]]) {
-        const r = await probe("coc_getProposals", [bad])
+        const r = await probe("pali_getProposals", [bad])
         assert.equal(r.error?.code, -32602,
-          `coc_getProposals(${JSON.stringify(bad)}) must be -32602, got ${JSON.stringify(r)}`)
+          `pali_getProposals(${JSON.stringify(bad)}) must be -32602, got ${JSON.stringify(r)}`)
         assert.match(r.error!.message, /status filter/i)
       }
       // Unknown status string must reject
-      const rUnknown = await probe("coc_getProposals", ["unknown-status"])
+      const rUnknown = await probe("pali_getProposals", ["unknown-status"])
       assert.equal(rUnknown.error?.code, -32602, "unknown status must be -32602")
       assert.match(rUnknown.error!.message, /status filter|must be one of/i)
       // Sanity: undefined/null/empty string/valid status all OK
       for (const ok of [null, undefined, "", "pending", "approved"]) {
-        const r = await probe("coc_getProposals", ok === undefined ? [] : [ok])
-        assert.equal(r.error, undefined, `coc_getProposals(${JSON.stringify(ok)}) must succeed`)
+        const r = await probe("pali_getProposals", ok === undefined ? [] : [ok])
+        assert.equal(r.error, undefined, `pali_getProposals(${JSON.stringify(ok)}) must succeed`)
       }
 
-      // coc_getDaoProposals — non-string/non-object filter must reject
+      // pali_getDaoProposals — non-string/non-object filter must reject
       for (const bad of [true, false, 42, [1, 2]]) {
-        const r = await probe("coc_getDaoProposals", [bad])
+        const r = await probe("pali_getDaoProposals", [bad])
         assert.equal(r.error?.code, -32602,
-          `coc_getDaoProposals(${JSON.stringify(bad)}) must be -32602, got ${JSON.stringify(r)}`)
+          `pali_getDaoProposals(${JSON.stringify(bad)}) must be -32602, got ${JSON.stringify(r)}`)
         assert.match(r.error!.message, /filter|expected/i)
       }
       // Object with non-string field must reject
-      const rBadStatus = await probe("coc_getDaoProposals", [{ status: 42 }])
+      const rBadStatus = await probe("pali_getDaoProposals", [{ status: 42 }])
       assert.equal(rBadStatus.error?.code, -32602, "filter.status non-string must be -32602")
       // Sanity: valid object/string/omitted
       for (const ok of [null, undefined, "", "pending", { status: "pending" }, { type: "add_validator" }]) {
-        const r = await probe("coc_getDaoProposals", ok === undefined ? [] : [ok])
-        assert.equal(r.error, undefined, `coc_getDaoProposals(${JSON.stringify(ok)}) must succeed`)
+        const r = await probe("pali_getDaoProposals", ok === undefined ? [] : [ok])
+        assert.equal(r.error, undefined, `pali_getDaoProposals(${JSON.stringify(ok)}) must succeed`)
       }
 
-      // coc_getEquivocations — non-integer/negative sinceMs must reject
+      // pali_getEquivocations — non-integer/negative sinceMs must reject
       // (NaN can't traverse JSON.stringify → null, so skip it; null is the
       // "omitted" sentinel and is accepted.)
       for (const bad of [-1, -100, 1.5, "now", true, {}, [123]]) {
-        const r = await probe("coc_getEquivocations", [bad])
+        const r = await probe("pali_getEquivocations", [bad])
         assert.equal(r.error?.code, -32602,
-          `coc_getEquivocations(${JSON.stringify(bad)}) must be -32602, got ${JSON.stringify(r)}`)
+          `pali_getEquivocations(${JSON.stringify(bad)}) must be -32602, got ${JSON.stringify(r)}`)
         assert.match(r.error!.message, /sinceMs/i)
       }
       // Sanity: 0/positive/null/undefined OK
       for (const ok of [0, 1000, 1_700_000_000_000, null, undefined]) {
-        const r = await probe("coc_getEquivocations", ok === undefined ? [] : [ok])
-        assert.equal(r.error, undefined, `coc_getEquivocations(${JSON.stringify(ok)}) must succeed`)
+        const r = await probe("pali_getEquivocations", ok === undefined ? [] : [ok])
+        assert.equal(r.error, undefined, `pali_getEquivocations(${JSON.stringify(ok)}) must succeed`)
       }
     } finally {
       delete (chain as unknown as Record<string, unknown>).governance
@@ -4101,7 +4101,7 @@ test("RPC Extended Methods", async (t) => {
       `must not leak ReferenceError on bool, got ${r3.error!.message}`)
   })
 
-  await t.test("#234: coc_submit/vote/getDaoProposal return -32601 when governance disabled (not -32603)", async () => {
+  await t.test("#234: pali_submit/vote/getDaoProposal return -32601 when governance disabled (not -32603)", async () => {
     // Pre-fix the plain `new Error("governance not enabled")` fell through
     // the outer catch's generic -32603 path. JSON-RPC §5.1 reserves
     // -32603 for genuine server faults; "feature not enabled on this
@@ -4118,9 +4118,9 @@ test("RPC Extended Methods", async (t) => {
       return await r.json() as { error?: { code: number; message: string }; result?: unknown }
     }
     const methods: Array<[string, unknown[]]> = [
-      ["coc_submitProposal", [{ type: "add_validator", targetId: "v1", proposer: "n1" }]],
-      ["coc_voteProposal", [{ proposalId: "p1", voterId: "n1", approve: true }]],
-      ["coc_getDaoProposal", ["p1"]],
+      ["pali_submitProposal", [{ type: "add_validator", targetId: "v1", proposer: "n1" }]],
+      ["pali_voteProposal", [{ proposalId: "p1", voterId: "n1", approve: true }]],
+      ["pali_getDaoProposal", ["p1"]],
     ]
     for (const [method, params] of methods) {
       const r = await probe(method, params)
@@ -4166,7 +4166,7 @@ test("RPC Extended Methods", async (t) => {
     assert.equal(ok3.error, undefined, "empty object filter must succeed")
   })
 
-  await t.test("#248: coc_erasureStatus rejects non-string manifest CID", async () => {
+  await t.test("#248: pali_erasureStatus rejects non-string manifest CID", async () => {
     // Pre-fix `String((payload.params ?? [])[0] ?? "")` silently coerced
     // 123 → "123", true → "true", {} → "[object Object]" and forwarded
     // bogus CIDs to the erasure getter. Same anti-pattern as #240/#242/#246.
@@ -4174,21 +4174,21 @@ test("RPC Extended Methods", async (t) => {
       const r = await fetch(`http://127.0.0.1:${port}`, {
         method: "POST",
         headers: { "content-type": "application/json" },
-        body: JSON.stringify({ jsonrpc: "2.0", id: 1, method: "coc_erasureStatus", params }),
+        body: JSON.stringify({ jsonrpc: "2.0", id: 1, method: "pali_erasureStatus", params }),
       })
       return await r.json() as { error?: { code: number; message: string }; result?: unknown }
     }
     for (const bad of [123, true, false, {}, [1, 2]]) {
       const r = await probe([bad])
       assert.equal(r.error?.code, -32602,
-        `coc_erasureStatus(${JSON.stringify(bad)}) must be -32602, got ${JSON.stringify(r)}`)
+        `pali_erasureStatus(${JSON.stringify(bad)}) must be -32602, got ${JSON.stringify(r)}`)
       assert.match(r.error!.message, /manifest CID|expected string/i)
     }
     // Missing/null/empty → -32602 "missing"
     for (const empty of [[], [null], [""]]) {
       const r = await probe(empty)
       assert.equal(r.error?.code, -32602,
-        `coc_erasureStatus(${JSON.stringify(empty)}) must be -32602, got ${JSON.stringify(r)}`)
+        `pali_erasureStatus(${JSON.stringify(empty)}) must be -32602, got ${JSON.stringify(r)}`)
     }
     // Sanity: well-shaped string passes shape validation and reaches
     // the stub fixture's getErasureStatus.
@@ -4197,7 +4197,7 @@ test("RPC Extended Methods", async (t) => {
       `valid CID must pass shape validation, got ${JSON.stringify(ok)}`)
   })
 
-  await t.test("#250: coc_ipfsFetchBlockFromPeer rejects non-string excludePeerId (preserves omitted)", async () => {
+  await t.test("#250: pali_ipfsFetchBlockFromPeer rejects non-string excludePeerId (preserves omitted)", async () => {
     // Pre-fix `String((payload.params ?? [])[1] ?? "")` silently coerced
     // numbers/bools to ad-hoc peer IDs ("123", "true"), making the
     // exclude filter match nothing useful. Same anti-pattern as
@@ -4207,7 +4207,7 @@ test("RPC Extended Methods", async (t) => {
       const r = await fetch(`http://127.0.0.1:${port}`, {
         method: "POST",
         headers: { "content-type": "application/json" },
-        body: JSON.stringify({ jsonrpc: "2.0", id: 1, method: "coc_ipfsFetchBlockFromPeer", params }),
+        body: JSON.stringify({ jsonrpc: "2.0", id: 1, method: "pali_ipfsFetchBlockFromPeer", params }),
       })
       return await r.json() as { error?: { code: number; message: string }; result?: unknown }
     }
@@ -4232,7 +4232,7 @@ test("RPC Extended Methods", async (t) => {
       `valid excludePeerId string must pass shape, got ${JSON.stringify(okStr)}`)
   })
 
-  await t.test("#251: coc_dhtFindProviders rejects non-integer maxK (preserves omitted)", async () => {
+  await t.test("#251: pali_dhtFindProviders rejects non-integer maxK (preserves omitted)", async () => {
     // Pre-fix `Number((payload.params ?? [])[1] ?? 3)` silently mapped
     // every malformed maxK to a clamped default: true → 1, "huge" → NaN→3,
     // {} → NaN→3, -5 → fallback 3, 1.7 → Math.floor → 1. Clients with
@@ -4242,7 +4242,7 @@ test("RPC Extended Methods", async (t) => {
       const r = await fetch(`http://127.0.0.1:${port}`, {
         method: "POST",
         headers: { "content-type": "application/json" },
-        body: JSON.stringify({ jsonrpc: "2.0", id: 1, method: "coc_dhtFindProviders", params }),
+        body: JSON.stringify({ jsonrpc: "2.0", id: 1, method: "pali_dhtFindProviders", params }),
       })
       return await r.json() as { error?: { code: number; message: string }; result?: unknown }
     }
@@ -4412,13 +4412,13 @@ test("RPC Extended Methods", async (t) => {
         return await r.json() as { error?: { code: number; message: string }; result?: unknown }
       }
       const methods = [
-        "coc_resolveDid",
-        "coc_getDIDDocument",
-        "coc_getAgentCapabilities",
-        "coc_getDelegations",
-        "coc_getAgentLineage",
-        "coc_getVerificationMethods",
-        "coc_getCredentialAnchor",
+        "pali_resolveDid",
+        "pali_getDIDDocument",
+        "pali_getAgentCapabilities",
+        "pali_getDelegations",
+        "pali_getAgentLineage",
+        "pali_getVerificationMethods",
+        "pali_getCredentialAnchor",
       ]
       for (const method of methods) {
         // Non-string shapes → -32602
@@ -4444,7 +4444,7 @@ test("RPC Extended Methods", async (t) => {
     }
   })
 
-  await t.test("#252: coc_getRewardManifest / coc_getRewardClaim reject non-integer epochId (no Number() coercion)", async () => {
+  await t.test("#252: pali_getRewardManifest / pali_getRewardClaim reject non-integer epochId (no Number() coercion)", async () => {
     // Pre-fix `Number((payload.params ?? [])[0] ?? -1)` silently coerced
     // `true`→1, `[1]`→1, `"1"`→1, `null`→0 — every non-integer that JS
     // happens to know how to coerce became a real epochId lookup. Same
@@ -4460,35 +4460,35 @@ test("RPC Extended Methods", async (t) => {
     }
     // Non-integer epochId shapes must be rejected with -32602
     for (const bad of [true, false, "1", "5", [1], [1, 2], {}, 1.5, -1, -0.5]) {
-      const m = await probe("coc_getRewardManifest", [bad])
+      const m = await probe("pali_getRewardManifest", [bad])
       assert.equal(m.error?.code, -32602,
-        `coc_getRewardManifest(${JSON.stringify(bad)}) must be -32602, got ${JSON.stringify(m)}`)
-      const c = await probe("coc_getRewardClaim", [bad, `0x${"22".repeat(32)}`])
+        `pali_getRewardManifest(${JSON.stringify(bad)}) must be -32602, got ${JSON.stringify(m)}`)
+      const c = await probe("pali_getRewardClaim", [bad, `0x${"22".repeat(32)}`])
       assert.equal(c.error?.code, -32602,
-        `coc_getRewardClaim(${JSON.stringify(bad)}, ...) must be -32602, got ${JSON.stringify(c)}`)
+        `pali_getRewardClaim(${JSON.stringify(bad)}, ...) must be -32602, got ${JSON.stringify(c)}`)
     }
     // Missing param → -32602 missing
-    const missing = await probe("coc_getRewardManifest", [])
+    const missing = await probe("pali_getRewardManifest", [])
     assert.equal(missing.error?.code, -32602)
     assert.match(missing.error!.message, /missing|epochId/i)
     // null param → -32602 missing
-    const nullCase = await probe("coc_getRewardManifest", [null])
+    const nullCase = await probe("pali_getRewardManifest", [null])
     assert.equal(nullCase.error?.code, -32602)
-    // coc_getRewardClaim with non-string nodeId
+    // pali_getRewardClaim with non-string nodeId
     for (const bad of [123, true, {}, [1]]) {
-      const r = await probe("coc_getRewardClaim", [7, bad])
+      const r = await probe("pali_getRewardClaim", [7, bad])
       assert.equal(r.error?.code, -32602,
-        `coc_getRewardClaim(7, ${JSON.stringify(bad)}) must be -32602, got ${JSON.stringify(r)}`)
+        `pali_getRewardClaim(7, ${JSON.stringify(bad)}) must be -32602, got ${JSON.stringify(r)}`)
     }
     // Sanity: well-shaped lookups still resolve (epoch 7 manifest is pre-loaded)
-    const okM = await probe("coc_getRewardManifest", [7])
+    const okM = await probe("pali_getRewardManifest", [7])
     assert.equal(okM.error, undefined, `well-shaped getRewardManifest must succeed: ${JSON.stringify(okM)}`)
     assert.equal((okM.result as { epochId: number }).epochId, 7)
-    const okC = await probe("coc_getRewardClaim", [7, `0x${"22".repeat(32)}`])
+    const okC = await probe("pali_getRewardClaim", [7, `0x${"22".repeat(32)}`])
     assert.equal(okC.error, undefined, `well-shaped getRewardClaim must succeed: ${JSON.stringify(okC)}`)
   })
 
-  await t.test("#424: coc_getRewardManifest / coc_getRewardClaim validate epochId/nodeId before the rewardManifestDir short-circuit", async () => {
+  await t.test("#424: pali_getRewardManifest / pali_getRewardClaim validate epochId/nodeId before the rewardManifestDir short-circuit", async () => {
     // Pre-fix the handler ran `if (!rewardManifestDir) return null` BEFORE
     // `requireIntegerParam` / `requireStringParam`, so any node where the
     // manifest dir wasn't configured (every read-only fullnode on
@@ -4517,25 +4517,25 @@ test("RPC Extended Methods", async (t) => {
       // Garbage epochId must still be -32602, NOT silent null,
       // even though the backend has no manifest dir configured.
       for (const bad of [true, false, "1", "5", [1], {}, 1.5, -1]) {
-        const m = await probe("coc_getRewardManifest", [bad])
+        const m = await probe("pali_getRewardManifest", [bad])
         assert.equal(m.error?.code, -32602,
           `unconfigured backend: getRewardManifest(${JSON.stringify(bad)}) must be -32602, got ${JSON.stringify(m)}`)
-        const c = await probe("coc_getRewardClaim", [bad, `0x${"22".repeat(32)}`])
+        const c = await probe("pali_getRewardClaim", [bad, `0x${"22".repeat(32)}`])
         assert.equal(c.error?.code, -32602,
           `unconfigured backend: getRewardClaim(${JSON.stringify(bad)}, ...) must be -32602, got ${JSON.stringify(c)}`)
       }
       // Garbage nodeId on otherwise valid epoch must also reject.
       for (const bad of [123, true, {}, [1]]) {
-        const r = await probe("coc_getRewardClaim", [7, bad])
+        const r = await probe("pali_getRewardClaim", [7, bad])
         assert.equal(r.error?.code, -32602,
           `unconfigured backend: getRewardClaim(7, ${JSON.stringify(bad)}) must be -32602, got ${JSON.stringify(r)}`)
       }
       // Sanity: VALID input on unconfigured backend returns null (the
       // documented behaviour when no manifest dir is configured).
-      const okM = await probe("coc_getRewardManifest", [7])
+      const okM = await probe("pali_getRewardManifest", [7])
       assert.equal(okM.error, undefined, `valid input must not error, got ${JSON.stringify(okM)}`)
       assert.equal(okM.result, null, "valid input + unconfigured dir → null")
-      const okC = await probe("coc_getRewardClaim", [7, `0x${"22".repeat(32)}`])
+      const okC = await probe("pali_getRewardClaim", [7, `0x${"22".repeat(32)}`])
       assert.equal(okC.error, undefined, `valid input must not error, got ${JSON.stringify(okC)}`)
       assert.equal(okC.result, null, "valid input + unconfigured dir → null")
     } finally {
@@ -4543,7 +4543,7 @@ test("RPC Extended Methods", async (t) => {
     }
   })
 
-  await t.test("#254: coc_getTransactionsByAddress rejects non-integer limit/offset and non-boolean reverse", async () => {
+  await t.test("#254: pali_getTransactionsByAddress rejects non-integer limit/offset and non-boolean reverse", async () => {
     // Pre-fix `Number((params)[1] ?? 50)` silently coerced `true`→1, `"5"`→5,
     // `[3]`→3, `{}`→NaN→fallback. `(params[2] !== false)` accepted every
     // non-false value (`0`, `"false"`, `null`, `""`) as reverse=true. Same
@@ -4552,7 +4552,7 @@ test("RPC Extended Methods", async (t) => {
       const r = await fetch(`http://127.0.0.1:${port}`, {
         method: "POST",
         headers: { "content-type": "application/json" },
-        body: JSON.stringify({ jsonrpc: "2.0", id: 1, method: "coc_getTransactionsByAddress", params }),
+        body: JSON.stringify({ jsonrpc: "2.0", id: 1, method: "pali_getTransactionsByAddress", params }),
       })
       return await r.json() as { error?: { code: number; message: string }; result?: unknown }
     }
@@ -4589,7 +4589,7 @@ test("RPC Extended Methods", async (t) => {
     }
   })
 
-  await t.test("#258: coc_getContracts rejects non-integer/non-bool fields inside the pagination object (no Number/!== coercion)", async () => {
+  await t.test("#258: pali_getContracts rejects non-integer/non-bool fields inside the pagination object (no Number/!== coercion)", async () => {
     // Pre-fix the object-field variant of #254: `Number(opts.limit ?? 50)`
     // coerced `true`→1, `"5"`→5, `[5]`→5; `opts.reverse !== false`
     // accepted `0`/`"false"`/`null` as truthy → reverse=true (opposite
@@ -4599,7 +4599,7 @@ test("RPC Extended Methods", async (t) => {
       const r = await fetch(`http://127.0.0.1:${port}`, {
         method: "POST",
         headers: { "content-type": "application/json" },
-        body: JSON.stringify({ jsonrpc: "2.0", id: 1, method: "coc_getContracts", params }),
+        body: JSON.stringify({ jsonrpc: "2.0", id: 1, method: "pali_getContracts", params }),
       })
       return await r.json() as { error?: { code: number; message: string }; result?: unknown }
     }
@@ -4639,14 +4639,14 @@ test("RPC Extended Methods", async (t) => {
     }
   })
 
-  await t.test("#485: coc_getTransactionsByAddress logs have full wire shape (parity with eth_getTransactionReceipt.logs)", async () => {
+  await t.test("#485: pali_getTransactionsByAddress logs have full wire shape (parity with eth_getTransactionReceipt.logs)", async () => {
     // Pre-fix the persistent layer stripped logs to {address, topics, data}
     // when writing the receipt (chain-engine-persistent.ts:1229), and this
     // endpoint passed them straight through. Clients got a 3-field log
     // while eth_getTransactionReceipt returned the full 9-field log
     // (blockNumber/blockHash/transactionHash/transactionIndex/logIndex/
     // removed). Live 88780 reproduction (this iteration):
-    //   coc_getTransactionsByAddress.logs[0] = {address, topics, data}
+    //   pali_getTransactionsByAddress.logs[0] = {address, topics, data}
     //   eth_getTransactionReceipt.logs[0]    = {address, topics, data,
     //     blockNumber, blockHash, transactionHash, transactionIndex,
     //     logIndex, removed}
@@ -4689,7 +4689,7 @@ test("RPC Extended Methods", async (t) => {
     const recViaHash = await rpcCall(port, "eth_getTransactionReceipt", [callBody.result]) as {
       logs: Array<Record<string, unknown>>
     }
-    const txsByAddr = await rpcCall(port, "coc_getTransactionsByAddress", [wallet.address.toLowerCase(), 10, true, 0]) as Array<{
+    const txsByAddr = await rpcCall(port, "pali_getTransactionsByAddress", [wallet.address.toLowerCase(), 10, true, 0]) as Array<{
       hash: string
       logs: Array<Record<string, unknown>>
     }>
@@ -4699,32 +4699,32 @@ test("RPC Extended Methods", async (t) => {
     if (!callTxEntry) return
 
     assert.equal(callTxEntry.logs.length, 1, "must have exactly 1 log")
-    const cocLog = callTxEntry.logs[0]
+    const paliLog = callTxEntry.logs[0]
     const recLog = recViaHash.logs[0]
 
     // The required wire shape: 9 fields, all present.
     for (const required of ["address", "topics", "data", "blockNumber", "blockHash", "transactionHash", "transactionIndex", "logIndex", "removed"]) {
       assert.ok(
-        cocLog[required] !== undefined,
-        `coc_getTransactionsByAddress log must include "${required}" (pre-fix only address/topics/data were present)`,
+        paliLog[required] !== undefined,
+        `pali_getTransactionsByAddress log must include "${required}" (pre-fix only address/topics/data were present)`,
       )
     }
 
     // Type parity with eth_getTransactionReceipt.logs[].
-    assert.equal(typeof cocLog.transactionIndex, "string", `transactionIndex must be hex string`)
-    assert.equal(typeof cocLog.logIndex, "string", `logIndex must be hex string`)
-    assert.equal(typeof cocLog.removed, "boolean", `removed must be boolean`)
+    assert.equal(typeof paliLog.transactionIndex, "string", `transactionIndex must be hex string`)
+    assert.equal(typeof paliLog.logIndex, "string", `logIndex must be hex string`)
+    assert.equal(typeof paliLog.removed, "boolean", `removed must be boolean`)
 
     // Value parity for the same log via two endpoints.
-    assert.equal(cocLog.address, recLog.address, "log.address parity")
-    assert.equal(cocLog.transactionHash, recLog.transactionHash, "log.transactionHash parity")
-    assert.equal(cocLog.logIndex, recLog.logIndex, "log.logIndex parity (block-global)")
-    assert.equal(cocLog.transactionIndex, recLog.transactionIndex, "log.transactionIndex parity")
-    assert.equal(cocLog.blockNumber, recLog.blockNumber, "log.blockNumber parity")
-    assert.equal(cocLog.blockHash, recLog.blockHash, "log.blockHash parity")
+    assert.equal(paliLog.address, recLog.address, "log.address parity")
+    assert.equal(paliLog.transactionHash, recLog.transactionHash, "log.transactionHash parity")
+    assert.equal(paliLog.logIndex, recLog.logIndex, "log.logIndex parity (block-global)")
+    assert.equal(paliLog.transactionIndex, recLog.transactionIndex, "log.transactionIndex parity")
+    assert.equal(paliLog.blockNumber, recLog.blockNumber, "log.blockNumber parity")
+    assert.equal(paliLog.blockHash, recLog.blockHash, "log.blockHash parity")
   })
 
-  await t.test("#531: coc_getTransactionsByAddress.input is EVM calldata, not the RLP envelope", async () => {
+  await t.test("#531: pali_getTransactionsByAddress.input is EVM calldata, not the RLP envelope", async () => {
     // Pre-fix this endpoint emitted `input: tx.rawTx` — the full RLP-encoded
     // signed tx (envelope byte + chainId + nonce + gas + value + sig + …).
     // But eth_getTransactionByHash.input is the EVM calldata only (msg.data).
@@ -4779,7 +4779,7 @@ test("RPC Extended Methods", async (t) => {
     if (!transferBody.result) return
     if (chain.proposeNextBlock) await chain.proposeNextBlock()
 
-    const txsByAddr = await rpcCall(port, "coc_getTransactionsByAddress", [wallet.address.toLowerCase(), 20, true, 0]) as Array<{
+    const txsByAddr = await rpcCall(port, "pali_getTransactionsByAddress", [wallet.address.toLowerCase(), 20, true, 0]) as Array<{
       hash: string
       input: string
       rawTx: string
@@ -5214,7 +5214,7 @@ test("RPC Extended Methods", async (t) => {
     // from formatRawTransaction, which for type-2 txs falls back to
     // maxFeePerGas (ethers normalizes parsed.gasPrice = undefined for
     // EIP-1559). Indexers, block explorers, and fee-rebate calculators
-    // saw the wrong number for every type-2 tx on COC.
+    // saw the wrong number for every type-2 tx on Palimesh.
     const { Wallet, parseEther } = await import("ethers")
     const wallet = new Wallet(`0x${"09".repeat(32)}`)
     await evm.prefund([{ address: wallet.address, balanceWei: parseEther("10").toString() }])
@@ -5392,7 +5392,7 @@ test("RPC Extended Methods", async (t) => {
     // ethers v6 Transaction.from() returns parsed.from/to in EIP-55
     // checksum case; formatRawTransaction relayed it untouched. Geth +
     // Erigon always lowercase addresses in JSON-RPC responses; the rest
-    // of COC's API (receipts, block.miner, eth_getLogs, eth_getBalance)
+    // of Palimesh's API (receipts, block.miner, eth_getLogs, eth_getBalance)
     // also lowercases. dApps that string-compare `tx.from === receipt.from`
     // fail for every non-all-lowercase address.
     const { Wallet: EW456 } = await import("ethers")
@@ -5708,7 +5708,7 @@ test("RPC Extended Methods", async (t) => {
     //   3. Pre-fix the response omits the accessList field entirely; the
     //      formatRawTransaction helper never copied it from the parsed RLP.
     // Indexers, MEV bots, gas-cost tooling all silently saw `undefined` for
-    // every type-1/2 tx on COC, treating them as if they had no access list.
+    // every type-1/2 tx on Palimesh, treating them as if they had no access list.
     const { Wallet } = await import("ethers")
     const wallet = new Wallet(`0x${"07".repeat(32)}`)
     await evm.prefund([{ address: wallet.address, balanceWei: "1000000000000000000" }])
@@ -5907,13 +5907,13 @@ test("RPC Extended Methods", async (t) => {
   })
 
   if (prevDevAccounts === undefined) {
-    delete process.env.COC_DEV_ACCOUNTS
+    delete process.env.PALI_DEV_ACCOUNTS
   } else {
-    process.env.COC_DEV_ACCOUNTS = prevDevAccounts
+    process.env.PALI_DEV_ACCOUNTS = prevDevAccounts
   }
   if (prevRateLimitDisabled === undefined) {
-    delete process.env.COC_RPC_RATE_LIMIT_DISABLED
+    delete process.env.PALI_RPC_RATE_LIMIT_DISABLED
   } else {
-    process.env.COC_RPC_RATE_LIMIT_DISABLED = prevRateLimitDisabled
+    process.env.PALI_RPC_RATE_LIMIT_DISABLED = prevRateLimitDisabled
   }
 })

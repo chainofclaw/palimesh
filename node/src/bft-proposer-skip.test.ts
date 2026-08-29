@@ -23,7 +23,7 @@ import {
  *      PROPOSER_UNREACHABLE_FAST_TIMEOUT_MS (15s) 替代 600s 触发 fallback
  *   4. unreachable 标记 60s TTL,持续 unreachable 期间会被 BFT timeout / wire 事件刷新
  *
- * PR-1M (chainofclaw/COC#635): markProposerUnreachable 的唯一触发源
+ * PR-1M (palimesh/palimesh#635): markProposerUnreachable 的唯一触发源
  * onProposerStuck 只在收到 propose 后才会 fire。"完全停止 propose" 的 validator
  * 永远不会被标记,每个 slot 都落 600s 慢路径(88780 2026-05-16 实测 444-624s/slot)。
  * 修复:checkNoProgressWatchdog 在链停滞超过 PROPOSER_MISS_ROUND_TIMEOUT_MS 后,

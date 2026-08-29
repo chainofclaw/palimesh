@@ -59,7 +59,7 @@ export interface BftCoordinatorConfig {
    * reach quorum. Loses Byzantine safety. Plumbed through BftRoundConfig
    * to BftRound.handlePrepare/handleCommit's hasQuorum() calls.
    *
-   * Wiring: read from `COC_DEV_RELAXED_QUORUM=1` env in node/src/index.ts.
+   * Wiring: read from `PALI_DEV_RELAXED_QUORUM=1` env in node/src/index.ts.
    * MUST be false on any production chain.
    */
   relaxedQuorum?: boolean
@@ -68,7 +68,7 @@ export interface BftCoordinatorConfig {
    * diagnostic shows ≥2/3 of OTHER validators converged on a (hash,
    * stateRoot) pair the local node could not reproduce. This means peers
    * have advanced past us; the local node is silently behind. The parent
-   * (coc-node) wires this to an immediate snap-sync request so the lagging
+   * (palimesh-node) wires this to an immediate snap-sync request so the lagging
    * node catches up instead of waiting for the next syncIntervalMs tick
    * (which has been observed to leave nodes permanently stuck when the
    * proposer round-robin rotates back to a lagging validator).
@@ -989,7 +989,7 @@ export class BftCoordinator {
         // Phase H4: if ≥2/3 of OTHER validators converged on a
         // (blockHash, stateRoot) pair our local node couldn't reproduce,
         // peers WILL finalize via relaxedQuorum and advance past us. Fire
-        // the onPeerQuorumDiverged callback so the parent (coc-node) can
+        // the onPeerQuorumDiverged callback so the parent (palimesh-node) can
         // trigger an immediate snap-sync to catch up — without it the
         // proposer round-robin eventually rotates back to the lagging
         // node and the chain deadlocks (2026-04-30 testnet stall at

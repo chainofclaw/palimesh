@@ -1,5 +1,5 @@
 name: Bug Report
-description: Report a bug in COC node, explorer, website, or contracts
+description: Report a bug in Palimesh node, explorer, website, or contracts
 title: "[Bug]: "
 labels: ["bug"]
 body:

@@ -1,6 +1,6 @@
-# COC Node Operator Runbook
+# Palimesh Node Operator Runbook
 
-Operational SOP for running a COC validator node — registration, stake lifecycle, slash response, governance participation, monitoring, and incident triage.
+Operational SOP for running a Palimesh validator node — registration, stake lifecycle, slash response, governance participation, monitoring, and incident triage.
 
 This document targets operators of the canary testnet (`chainId 88780` — see [`public-endpoints-88780.md`](./public-endpoints-88780.md) for the canonical network parameters). The earlier Prowl testnet (`chainId 18780`) was decommissioned 2026-05-12 — its docs are preserved under [`docs/archive/prowl-18780/`](./archive/prowl-18780/) for historical reference. Devnet (`chainId 88888` H15 fork-off) is for fixture testing only — see `tests/multinode-integration/README.md`.
 
@@ -55,10 +55,10 @@ Reverts if:
 `registerNode` is more involved — needs an `ownershipSig` proving the operator controls the BFT signing key:
 
 ```js
-// ownershipSig = personal_sign(keccak256("coc-register:" || poseNodeId || operator_address))
+// ownershipSig = personal_sign(keccak256("palimesh-register:" || poseNodeId || operator_address))
 const message = ethers.solidityPacked(
   ["string", "bytes32", "address"],
-  ["coc-register:", poseNodeId, operatorAddress],
+  ["palimesh-register:", poseNodeId, operatorAddress],
 )
 const ownershipSig = await wallet.signMessage(ethers.getBytes(keccak256(message)))
 ```
@@ -100,8 +100,8 @@ If the on-chain `EquivocationDetector.submitEvidence` fires against your nodeId:
 - Block production falls below 4-of-5 quorum if your node was carrying the round
 
 ### 3.2 Triage (in order)
-1. **Stop the node.** `systemctl stop coc-node` or kill the docker container. Keep running = signing more = more slashes.
-2. **Capture state.** Tar `/data/coc/leveldb` + `~/.coc/keys` + `journalctl -u coc-node --since '1h ago'`. Save the `EquivocationProven` log + tx hash from the explorer.
+1. **Stop the node.** `systemctl stop palimesh-node` or kill the docker container. Keep running = signing more = more slashes.
+2. **Capture state.** Tar `/data/coc/leveldb` + `~/.coc/keys` + `journalctl -u palimesh-node --since '1h ago'`. Save the `EquivocationProven` log + tx hash from the explorer.
 3. **Reproduce the double-sign.** The detector contract emits `(nodeId, signer, height, hashA, hashB, evidenceHash)`. `cast logs --address $DETECTOR --from-block <slash_block-1> --to-block <slash_block+1>` extracts the two conflicting block hashes.
 4. **Diagnose.** Common causes:
    - **Two nodes sharing a key**: replicated VM, restored backup running in parallel. Check `journalctl` for two BFT signing events at same height/phase from different IPs.
@@ -172,15 +172,15 @@ A complete dev-cycle reference exists at `tests/integration/governance-dao-lifec
 | Signal | RPC method / source | Alert threshold |
 |---|---|---|
 | Block production lag | `eth_blockNumber` cluster max - local | > 5 blocks for > 60 s |
-| BFT round not advancing | `coc_getBftStatus` | round age > 600 s (NO_PROGRESS_TIMEOUT) |
-| Equivocation count rising | `coc_getEquivocationsTotal` | any non-zero, immediate |
+| BFT round not advancing | `pali_getBftStatus` | round age > 600 s (NO_PROGRESS_TIMEOUT) |
+| Equivocation count rising | `pali_getEquivocationsTotal` | any non-zero, immediate |
 | Validator inactive | `ValidatorRegistry.getValidator(nodeId).active` | false → page operator |
 | Active validator count | `ValidatorRegistry.getActiveValidators().length` | < 4 (loses 4-of-5 BFT quorum) |
-| Wire peer count | `coc_getNetworkStats.wireConnected` | < 2 |
+| Wire peer count | `pali_getNetworkStats.wireConnected` | < 2 |
 | Disk free | OS-level | < 10 GB on `/data/coc` |
 | Memory | OS-level | RSS > 8 GB |
 
-The explorer at `/validators` reads `coc_getValidators` (which sources from the same `ValidatorRegistry.getActiveValidators()` data the node uses for BFT) — bookmark it for a quick at-a-glance view.
+The explorer at `/validators` reads `pali_getValidators` (which sources from the same `ValidatorRegistry.getActiveValidators()` data the node uses for BFT) — bookmark it for a quick at-a-glance view.
 
 ---
 
@@ -189,11 +189,11 @@ The explorer at `/validators` reads `coc_getValidators` (which sources from the 
 ### 6.1 Restart a node cleanly
 ```bash
 # Stop accepts SIGTERM and finishes the in-flight BFT round before exiting
-systemctl stop coc-node
+systemctl stop palimesh-node
 # Wait for the process to exit; should be < 30 s
-journalctl -u coc-node -f | grep "graceful shutdown"
+journalctl -u palimesh-node -f | grep "graceful shutdown"
 # Then start
-systemctl start coc-node
+systemctl start palimesh-node
 ```
 
 ### 6.2 Migrate an existing hardcoded validator to ValidatorRegistry-driven mode

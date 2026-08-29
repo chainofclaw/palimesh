@@ -139,7 +139,7 @@ test("PersistentStateTrie: storage operations", async () => {
 })
 
 test("PersistentStateTrie: persistence across instances", async () => {
-  const tmpDir = mkdtempSync(join(tmpdir(), "coc-trie-test-"))
+  const tmpDir = mkdtempSync(join(tmpdir(), "palimesh-trie-test-"))
 
   try {
     let stateRoot: string
@@ -295,7 +295,7 @@ test("PersistentStateTrie: discard clears caches", async () => {
 // --- GH #6 regression: v6 CheckpointDB stack must return to 0 after each
 // commit or revert. If commit() doesn't pop the frame, every applyBlock
 // leaks a frame and state drifts per-validator under any mid-block revert.
-// See plans/coc-evm-abstract-turtle.md (Phase A4).
+// See plans/palimesh-evm-abstract-turtle.md (Phase A4).
 
 // Peek into the private v6 Trie instance to read its CheckpointDB stack.
 function checkpointStackDepth(trie: PersistentStateTrie): number {
@@ -513,7 +513,7 @@ test("PersistentStateTrie: committed mid-block storage writes persist and are re
 })
 
 // --- Phase B contract: forkForDryRun isolation.
-// See plans/coc-phase-b-stateroot-vote.md §B2.1-2.
+// See plans/palimesh-phase-b-stateroot-vote.md §B2.1-2.
 // These tests lock in the "fork writes must never touch shared LevelDB" and
 // "fork mutations don't change the parent's committed root" invariants that
 // the speculative BFT stateRoot vote relies on.
@@ -673,7 +673,7 @@ test("PersistentStateTrie: stateRoot() returns null on a fresh trie before any c
 })
 
 test("PersistentStateTrie: stateRoot() restored after init() loads STATE_ROOT_KEY", async () => {
-  const tmpDir = mkdtempSync(join(tmpdir(), "coc-trie-fallback-"))
+  const tmpDir = mkdtempSync(join(tmpdir(), "palimesh-trie-fallback-"))
   try {
     let committed: string
 

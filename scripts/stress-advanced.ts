@@ -1,5 +1,5 @@
 /**
- * COC Advanced Stress Test — finds hidden bugs on the live 3-node testnet.
+ * Palimesh Advanced Stress Test — finds hidden bugs on the live 3-node testnet.
  *
  * 20 tests across 4 categories:
  *   A. RPC boundary tests (eth_call, no tx)
@@ -41,7 +41,7 @@ async function waitTx(hash: string): Promise<ethers.TransactionReceipt | null> {
 
 async function main() {
   console.log("══════════════════════════════════════════════════════")
-  console.log("  COC Advanced Stress Test")
+  console.log("  Palimesh Advanced Stress Test")
   console.log("══════════════════════════════════════════════════════")
   console.log(`  RPC: ${RPC}`)
   console.log(`  Height: ${await provider.getBlockNumber()}\n`)

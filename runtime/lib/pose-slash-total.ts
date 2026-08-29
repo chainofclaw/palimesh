@@ -13,7 +13,7 @@
  *
  * The pure helpers in this file are framework-agnostic: callers feed in
  * already-fetched challenge + node records and get back the sum. The
- * actual RPC/event scan stays in `coc-relayer.ts` so this module is
+ * actual RPC/event scan stays in `palimesh-relayer.ts` so this module is
  * unit-testable without mocking a Contract instance.
  */
 

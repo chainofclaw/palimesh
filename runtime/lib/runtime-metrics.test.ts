@@ -20,7 +20,7 @@ describe("runtime-metrics", () => {
   })
 
   it("writeMetricsSnapshot writes JSON atomically", () => {
-    const dir = mkdtempSync(join(tmpdir(), "coc-runtime-metrics-"))
+    const dir = mkdtempSync(join(tmpdir(), "palimesh-runtime-metrics-"))
     try {
       const path = join(dir, "agent-metrics.json")
       writeFileSync(path, "{\"old\":true}")
@@ -80,17 +80,17 @@ describe("runtime-metrics", () => {
       },
     })
 
-    assert.match(content, /coc_agent_generated_at_ms 123/)
-    assert.match(content, /coc_agent_protocol_version 2/)
-    assert.match(content, /coc_agent_pending_v2 2/)
-    assert.match(content, /coc_agent_metrics_write_failed_total 7/)
-    assert.match(content, /coc_agent_metrics_prom_write_failed_total 8/)
-    assert.match(content, /coc_agent_tick_overlap_skipped_total 9/)
-    assert.match(content, /coc_agent_tick_overlap_log_suppressed_total 10/)
+    assert.match(content, /pali_agent_generated_at_ms 123/)
+    assert.match(content, /pali_agent_protocol_version 2/)
+    assert.match(content, /pali_agent_pending_v2 2/)
+    assert.match(content, /pali_agent_metrics_write_failed_total 7/)
+    assert.match(content, /pali_agent_metrics_prom_write_failed_total 8/)
+    assert.match(content, /pali_agent_tick_overlap_skipped_total 9/)
+    assert.match(content, /pali_agent_tick_overlap_log_suppressed_total 10/)
   })
 
   it("writePrometheusMetrics writes prom text atomically", () => {
-    const dir = mkdtempSync(join(tmpdir(), "coc-runtime-metrics-prom-"))
+    const dir = mkdtempSync(join(tmpdir(), "palimesh-runtime-metrics-prom-"))
     try {
       const path = join(dir, "agent-metrics.prom")
       writeFileSync(path, "old_data 1\n")
@@ -120,8 +120,8 @@ describe("runtime-metrics", () => {
       assert.equal(existsSync(path), true)
       assert.equal(existsSync(`${path}.tmp`), false)
       const text = readFileSync(path, "utf-8")
-      assert.match(text, /coc_agent_protocol_version 1/)
-      assert.match(text, /coc_agent_pending_v1 3/)
+      assert.match(text, /pali_agent_protocol_version 1/)
+      assert.match(text, /pali_agent_pending_v1 3/)
     } finally {
       rmSync(dir, { recursive: true, force: true })
     }

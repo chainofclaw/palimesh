@@ -1,5 +1,5 @@
 /**
- * Cron stress worker — high-intensity COC testnet stability tests.
+ * Cron stress worker — high-intensity Palimesh testnet stability tests.
  * Called by cron-stress.sh every minute. Outputs a single JSON line.
  *
  * 5-round rotation (all rounds execute on-chain txs now):
@@ -17,20 +17,20 @@ import { HARDHAT_DEV_PRIVATE_KEYS, resolvePrivateKeyForRpc } from "./lib/key-saf
 
 const RPC_URL = process.argv[2] || "http://127.0.0.1:28780"
 const DEPLOYER_KEY = resolvePrivateKeyForRpc({
-  envValue: process.env.COC_STRESS_PRIVATE_KEY ?? process.env.DEPLOYER_PRIVATE_KEY,
-  envName: "COC_STRESS_PRIVATE_KEY",
+  envValue: process.env.PALI_STRESS_PRIVATE_KEY ?? process.env.DEPLOYER_PRIVATE_KEY,
+  envName: "PALI_STRESS_PRIVATE_KEY",
   fallbackDevKey: HARDHAT_DEV_PRIVATE_KEYS[0],
   rpcUrl: RPC_URL,
   label: "cron stress worker",
 })
 const CONFIRM_TIMEOUT_S = 20
-const STATE_PATH = "/tmp/coc-stress-contracts.json"
+const STATE_PATH = "/tmp/palimesh-stress-contracts.json"
 
 const COUNTER_BYTECODE = "0x608080604052346100155760ea908161001b8239f35b600080fdfe6080806040526004361015601257600080fd5b600090813560e01c90816306661abd146098575063d09de08a14603457600080fd5b3460955780600319360112609557805460001981146081576001018082556040519081527f38ac789ed44572701765277c4d0970f2db1c1a571ed39e84358095ae4eaa542060203392a280f35b634e487b7160e01b82526011600452602482fd5b80fd5b90503460b0578160031936011260b057602091548152f35b5080fdfea26469706673582212200601b4a0ea9a382d6b93facedeb52573bce750d3c0caad9dc838e0429eb5861b64736f6c63430008180033"
 const COUNTER_ABI = ["function increment()", "function count() view returns (uint256)"]
 
 let HEAVY_BYTECODE = ""
-try { HEAVY_BYTECODE = readFileSync("/root/coc-stress/heavy-bytecode.txt", "utf-8").trim() } catch {}
+try { HEAVY_BYTECODE = readFileSync("/root/palimesh-stress/heavy-bytecode.txt", "utf-8").trim() } catch {}
 const HEAVY_ABI = [
   "function fibonacci(uint256 n) view returns (uint256)",
   "function sortArray(uint256[] arr) pure returns (uint256[])",
@@ -156,7 +156,7 @@ async function round3(wallet: ethers.Wallet, provider: ethers.JsonRpcProvider): 
   const checks: string[] = []
   let ok = 0
 
-  const stats0 = await provider.send("coc_chainStats", []).catch(() => null) as any
+  const stats0 = await provider.send("pali_chainStats", []).catch(() => null) as any
   checks.push(`p0=${stats0?.pendingTxCount ?? "?"}`)
 
   // Send tx
@@ -167,7 +167,7 @@ async function round3(wallet: ethers.Wallet, provider: ethers.JsonRpcProvider): 
   } catch { return { sent: 1, confirmed: 0, detail: `mempool:send_fail` } }
 
   await new Promise(r => setTimeout(r, 500))
-  const stats1 = await provider.send("coc_chainStats", []).catch(() => null) as any
+  const stats1 = await provider.send("pali_chainStats", []).catch(() => null) as any
   if ((stats1?.pendingTxCount ?? 0) > (stats0?.pendingTxCount ?? 0)) { ok++; checks.push("pending+") } else { checks.push("pending=") }
 
   const pendingTx = await provider.getTransaction(txHash!).catch(() => null)

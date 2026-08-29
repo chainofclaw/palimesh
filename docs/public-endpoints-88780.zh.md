@@ -11,7 +11,7 @@
 
 | 参数 | 值 |
 |------|-----|
-| **名称** | ChainOfClaw Canary 测试网 |
+| **名称** | Palimesh Canary 测试网 |
 | **chainId(十进制)** | 88780 |
 | **chainId(十六进制)** | `0x15acc` |
 | **状态** | Canary — 对外部 operator 开放,prod-candidate 稳定性长跑 |
@@ -21,7 +21,7 @@
 | **区块 gas 上限** | ~30,000,000 |
 | **Validator 数** | 链上动态,经 `ValidatorRegistry.getActiveValidators()` —— 截至 2026-06-10 **5 个 active**(当前单运营方;欢迎外部 operator,见下)。上限 21(`MAX_VALIDATORS`) |
 | **Quorum** | ⌈2/3 × N⌉(当前 5 中 4) |
-| **原生代币符号** | COC |
+| **原生代币符号** | Palimesh |
 | **原生代币 decimals** | 18 |
 
 ## 公开 RPC + WebSocket + Faucet + Explorer
@@ -30,11 +30,11 @@
 
 | 端点 | URL |
 |------|-----|
-| **JSON-RPC** | `https://rpc.chainofclaw.io` |
-| **WebSocket** | `wss://rpc.chainofclaw.io/ws` |
-| **Faucet** | `https://faucet.chainofclaw.io`(每地址 24 小时 10 COC) |
-| **区块浏览器** | `https://explorer.chainofclaw.io` |
-| **状态页** | `https://chainofclaw.io/network` |
+| **JSON-RPC** | `https://rpc.palimesh.io` |
+| **WebSocket** | `wss://rpc.palimesh.io/ws` |
+| **Faucet** | `https://faucet.palimesh.io`(每地址 24 小时 10 PALI) |
+| **区块浏览器** | `https://explorer.palimesh.io` |
+| **状态页** | `https://palimesh.io/network` |
 
 ### 速率限制(per-IP、per-sender)
 
@@ -61,7 +61,7 @@
 | **MultiSigWallet** | `0x3c055D83a9aA12Bba4a2ed53F8970DF4081eBC7E` | 升级权威(immutable,非 proxy) |
 | **PoSeManagerV2** | `0x256eb949C50d5F2af8699191b1Bc043203263549` | PoSe v2 结算:challenge、receipt、witness quorum、slash |
 | **PoSeManager**(v1) | `0x91e1D4aBcb68476368E8Ec02d61456a08Ae43BD8` | Legacy PoSe v1,sunset 窗口由 `v1SunsetEpoch` 控制 |
-| **ValidatorRegistry** | `0x4441299c118373fDC96bE1983d42C79e19CDb4F0` | 基于 stake 的 BFT validator 注册(permissionless `stake()`,32 COC min,21 active 上限) |
+| **ValidatorRegistry** | `0x4441299c118373fDC96bE1983d42C79e19CDb4F0` | 基于 stake 的 BFT validator 注册(permissionless `stake()`,32 PALI min,21 active 上限) |
 | **EquivocationDetector** | `0xa5dcE830e917176c1091fd6112F41E47692C510e` | 链上证明驱动 slash;permissionless `submitEvidence` |
 | **InsuranceFund** | `0x0546E0D98A18e110D3dFCFA150Bcd1C0a589d688` | slash 收入 20%;治理控制支出 |
 | **GovernanceDAO** | `0x4b9485670eA389Aeab7aC04d48bb2b42D0e8bdc7` | `FactionRegistry` 之上的双院 DAO;需 verified faction 资格 |
@@ -80,23 +80,23 @@
 自定义网络条目:
 
 ```
-网络名称:           ChainOfClaw Canary
-RPC URL:           https://rpc.chainofclaw.io
+网络名称:           Palimesh Canary
+RPC URL:           https://rpc.palimesh.io
 chainId:           88780  (0x15acc)
-代币符号:           COC
-区块浏览器 URL:     https://explorer.chainofclaw.io
+代币符号:           Palimesh
+区块浏览器 URL:     https://explorer.palimesh.io
 ```
 
 ### ethers.js / viem
 
 ```ts
 import { JsonRpcProvider } from "ethers"
-const provider = new JsonRpcProvider("https://rpc.chainofclaw.io")
+const provider = new JsonRpcProvider("https://rpc.palimesh.io")
 // chainId 首次调用时自动检测。
 
 // WebSocket 订阅:
 import { WebSocketProvider } from "ethers"
-const ws = new WebSocketProvider("wss://rpc.chainofclaw.io/ws")
+const ws = new WebSocketProvider("wss://rpc.palimesh.io/ws")
 ws.on("block", (n) => console.log("新块:", n))
 ```
 
@@ -107,22 +107,22 @@ import { defineChain } from "viem"
 
 export const coc88780 = defineChain({
   id: 88780,
-  name: "ChainOfClaw Canary",
-  nativeCurrency: { name: "COC", symbol: "COC", decimals: 18 },
-  rpcUrls: { default: { http: ["https://rpc.chainofclaw.io"] } },
-  blockExplorers: { default: { name: "COC Explorer", url: "https://explorer.chainofclaw.io" } },
+  name: "Palimesh Canary",
+  nativeCurrency: { name: "Palimesh", symbol: "Palimesh", decimals: 18 },
+  rpcUrls: { default: { http: ["https://rpc.palimesh.io"] } },
+  blockExplorers: { default: { name: "Palimesh Explorer", url: "https://explorer.palimesh.io" } },
 })
 
 const client = createPublicClient({ chain: coc88780, transport: http() })
 ```
 
-### 获取测试 COC
+### 获取测试 Palimesh
 
-Faucet 每地址 24 小时滴 **10 COC**(够典型开发探索;不足以质押作 validator——见
-[external-validator-onboarding.md](./external-validator-onboarding.md) 的 32-COC stake bootstrap 路径)。
+Faucet 每地址 24 小时滴 **10 PALI**(够典型开发探索;不足以质押作 validator——见
+[external-validator-onboarding.md](./external-validator-onboarding.md) 的 32-Palimesh stake bootstrap 路径)。
 
 ```bash
-curl -X POST https://faucet.chainofclaw.io/faucet/request \
+curl -X POST https://faucet.palimesh.io/faucet/request \
   -H 'content-type: application/json' \
   -d '{"address":"0xYourAddressHere"}'
 ```
@@ -132,7 +132,7 @@ curl -X POST https://faucet.chainofclaw.io/faucet/request \
 Canary 网络欢迎外部 operator。简要概览:
 
 1. 搭建节点(见 [operations-manual.zh.md](./operations-manual.zh.md))
-2. 从你的 validator 签名密钥 EOA 经 `ValidatorRegistry.stake(nodeId, pubkeyNode)` 质押 32 COC
+2. 从你的 validator 签名密钥 EOA 经 `ValidatorRegistry.stake(nodeId, pubkeyNode)` 质押 32 PALI
 3. 链上 stake 事件后一个 poll 周期(~60s)内你的节点被 BFT 纳入——**与现有 operator 无需手动协调**
    (底层机制见 [`validator-registry-reader-enablement-88780.md`](./validator-registry-reader-enablement-88780.md))
 4. 退出:`requestUnstake()` → 等 `UNSTAKE_LOCKUP`(14 天)→ `withdrawStake()`
@@ -150,7 +150,7 @@ Canary 网络欢迎外部 operator。简要概览:
 | 链停 / 多签密钥丢失 / 大规模节点丢失恢复 | [`disaster-recovery-88780.md`](./disaster-recovery-88780.md) |
 | 上线前 checklist(运营视角) | [`canary-launch-checklist-88780.md`](./canary-launch-checklist-88780.md) |
 | 报告漏洞 | [`SECURITY.md`](../SECURITY.md) |
-| 白皮书 | [`COC_whitepaper.zh.md`](./COC_whitepaper.zh.md) ([English](./COC_whitepaper.en.md)) |
+| 白皮书 | [`palimesh_whitepaper.zh.md`](./palimesh_whitepaper.zh.md) ([English](./palimesh_whitepaper.en.md)) |
 | 架构深入 | [`architecture-whitepaper.zh.md`](./architecture-whitepaper.zh.md) ([English](./architecture-whitepaper.en.md)) |
 
 ## 已退役:Prowl 测试网(chainId 18780)
@@ -161,7 +161,7 @@ Prowl 测试网(`chainId 18780`)于 2026-05-12 退役,由 88780 接替。描述 
 ## 报告端点问题
 
 - **RPC / WSS / Faucet / Explorer 不可用或降级**:查看
-  <https://chainofclaw.io/network> 的状态。若状态绿但客户端仍失败,在
-  <https://github.com/chainofclaw/COC/issues/new> 提公开 issue
+  <https://palimesh.io/network> 的状态。若状态绿但客户端仍失败,在
+  <https://github.com/palimesh/palimesh/issues/new> 提公开 issue
 - **疑似端点安全问题**:见 [SECURITY.md](../SECURITY.md)
 - **意外被限流**:确认客户端遵守 240 req/min/IP,考虑运行本地 archive 节点用于高吞吐访问

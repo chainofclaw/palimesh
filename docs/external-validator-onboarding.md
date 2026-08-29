@@ -10,7 +10,7 @@
 ## Who this is for
 
 Operators outside the founding team who want to run a 88780 validator.
-Adding a validator on 88780 is **permissionless**: any 32-COC stake on
+Adding a validator on 88780 is **permissionless**: any 32-Palimesh stake on
 the `ValidatorRegistry` contract gets you into the active BFT set within
 one poll cycle (~60s) — no manual coordination with existing operators.
 
@@ -26,7 +26,7 @@ multisig-coordinated bootstrap.
 | **Node hardware** | 4 cores / 16 GB RAM / 250 GB SSD minimum (8/32/500 recommended for canary headroom). Public IP with stable DNS or static IP |
 | **Network** | TCP 28780 (RPC) + 29780 (wire P2P) reachable from peers; 18781 (WebSocket optional). Outbound to other validators on the same ports |
 | **OS** | Linux (Ubuntu 22.04+ tested); systemd; Node.js 22+ for the chain engine |
-| **32 COC stake** | Hard requirement (`MIN_STAKE` in `ValidatorRegistry`). Plus a few extra COC for gas. Get via faucet (capped at 10 COC/24h) or buy/borrow OTC during canary; mainnet TGE will introduce a market |
+| **32 PALI stake** | Hard requirement (`MIN_STAKE` in `ValidatorRegistry`). Plus a few extra Palimesh for gas. Get via faucet (capped at 10 PALI/24h) or buy/borrow OTC during canary; mainnet TGE will introduce a market |
 | **Validator signing key** | A fresh secp256k1 keypair. **Do not reuse** a wallet key — slashes burn this key's stake and you don't want the same key in MetaMask |
 
 ## Step 0 — Generate the validator signing key
@@ -61,16 +61,16 @@ signing key, the stake is locked forever (no social recovery yet).
 
 ## Step 1 — Pre-fund the signing-key EOA
 
-The signing-key EOA needs ≥ 32 COC for the stake transaction plus a small
-gas buffer. The faucet caps at 10 COC/24h per address — so:
+The signing-key EOA needs ≥ 32 PALI for the stake transaction plus a small
+gas buffer. The faucet caps at 10 PALI/24h per address — so:
 
 ```bash
 # Approach 1: pre-fund from an existing wallet (preferred for adults)
-# Send 32.1 COC from your funded wallet to the address from Step 0.
+# Send 32.1 PALI from your funded wallet to the address from Step 0.
 
 # Approach 2: hit faucet 4 times over 4 days (only viable for testing)
 for i in 1 2 3 4; do
-  curl -X POST https://faucet.chainofclaw.io/faucet/request \
+  curl -X POST https://faucet.palimesh.io/faucet/request \
     -H 'content-type: application/json' \
     -d "{\"address\":\"$(jq -r .address ~/.coc/keys/validator.json)\"}"
   echo "  ...wait 24h, repeat"
@@ -81,11 +81,11 @@ Verify balance:
 
 ```bash
 ADDR=$(jq -r .address ~/.coc/keys/validator.json)
-curl -s https://rpc.chainofclaw.io \
+curl -s https://rpc.palimesh.io \
   -H 'content-type: application/json' \
   -d "{\"jsonrpc\":\"2.0\",\"id\":1,\"method\":\"eth_getBalance\",\"params\":[\"$ADDR\",\"latest\"]}" \
   | jq -r .result \
-  | xargs -I{} node -e "console.log(parseInt('{}',16)/1e18, 'COC')"
+  | xargs -I{} node -e "console.log(parseInt('{}',16)/1e18, 'Palimesh')"
 # Expect: ≥ 32.1
 ```
 
@@ -96,7 +96,7 @@ full node bringup. Quick summary:
 
 ```bash
 # Clone + install
-git clone https://github.com/chainofclaw/COC.git ~/coc && cd ~/coc
+git clone https://github.com/palimesh/palimesh.git ~/coc && cd ~/coc
 npm install  # workspace install
 
 # Config — minimum viable
@@ -110,7 +110,7 @@ npm install  # workspace install
 # current live seed peers, always copy from the canonical
 # `public-endpoints-88780.md` rather than this example (which may list a
 # scaled-out node). The five entries below are the live v1–v5 set.
-cat > /etc/coc/node-1.json <<EOF
+cat > /etc/palimesh/node-1.json <<EOF
 {
   "chainId": 88780,
   "nodeId": "$(jq -r .nodeId ~/.coc/keys/validator.json)",
@@ -135,17 +135,17 @@ cat > /etc/coc/node-1.json <<EOF
 EOF
 
 # Env — point at the ValidatorRegistry so the reader picks up your stake
-cat > /etc/coc/node-1.env <<EOF
-COC_NODE_KEY=$(jq -r .privateKey ~/.coc/keys/validator.json)
-COC_VALIDATOR_REGISTRY_ADDRESS=0x4441299c118373fDC96bE1983d42C79e19CDb4F0
-COC_NODE_CONFIG=/etc/coc/node-1.json
-COC_DATA_DIR=/var/lib/coc/node-1
+cat > /etc/palimesh/node-1.env <<EOF
+PALI_NODE_KEY=$(jq -r .privateKey ~/.coc/keys/validator.json)
+PALI_VALIDATOR_REGISTRY_ADDRESS=0x4441299c118373fDC96bE1983d42C79e19CDb4F0
+PALI_NODE_CONFIG=/etc/palimesh/node-1.json
+PALI_DATA_DIR=/var/lib/coc/node-1
 EOF
-chmod 600 /etc/coc/node-1.env
+chmod 600 /etc/palimesh/node-1.env
 
 # systemd unit + start
-systemctl enable --now coc-node@1
-journalctl -u coc-node@1 -f
+systemctl enable --now palimesh-node@1
+journalctl -u palimesh-node@1 -f
 ```
 
 Wait for snap-sync to finish:
@@ -169,7 +169,7 @@ node -e '
   const fs = require("fs");
   const k = JSON.parse(fs.readFileSync(process.env.HOME + "/.coc/keys/validator.json"));
 
-  const RPC = "https://rpc.chainofclaw.io";
+  const RPC = "https://rpc.palimesh.io";
   const REGISTRY = "0x4441299c118373fDC96bE1983d42C79e19CDb4F0";
   const ABI = ["function stake(bytes32 nodeId, bytes pubkeyNode) external payable"];
 
@@ -197,7 +197,7 @@ mined block:  <N>  status: 1
 ```
 
 If the tx reverts with:
-- `InsufficientBond` — fund the signer EOA up to 32 COC and retry
+- `InsufficientBond` — fund the signer EOA up to 32 PALI and retry
 - `InvalidNodeId` — your `nodeId` doesn't match `keccak256(pubkey[1:])`; regenerate via Step 0
 - `AlreadyRegistered` — this `nodeId` is already in the registry (either you've staked before, or someone else used the same nodeId — virtually impossible with random key gen)
 - `ValidatorSetFull` — all 21 slots taken. Wait for an active validator to `requestUnstake()`, or watch for them to be slashed out
@@ -210,7 +210,7 @@ sees the `ValidatorRegistered` event and the reader updates BFT:
 
 ```bash
 # Expected log on YOUR node:
-journalctl -u coc-node@1 -n 100 --no-pager | grep -E "reader initialized|validator set updated"
+journalctl -u palimesh-node@1 -n 100 --no-pager | grep -E "reader initialized|validator set updated"
 # Should show:
 #   [INFO][validator-registry-reader] reader initialized
 #     activeCount: 7  (was 6 before your stake)
@@ -222,14 +222,14 @@ Cross-verify by polling any existing validator's RPC:
 
 ```bash
 # Public RPC reads through to the cluster
-curl -s https://rpc.chainofclaw.io \
+curl -s https://rpc.palimesh.io \
   -H 'content-type: application/json' \
-  -d '{"jsonrpc":"2.0","id":1,"method":"coc_getBftStatus"}' | jq .
+  -d '{"jsonrpc":"2.0","id":1,"method":"pali_getBftStatus"}' | jq .
 # Look at result.validators — should include your address
 ```
 
 Within a few BFT rounds (so within a couple of minutes), your node should
-start signing prepare/commit messages and your `coc_getBftStatus` shows
+start signing prepare/commit messages and your `pali_getBftStatus` shows
 `prepareVotes` / `commitVotes` incrementing.
 
 ## Step 5 — Run
@@ -237,8 +237,8 @@ start signing prepare/commit messages and your `coc_getBftStatus` shows
 Validator life:
 
 - **Monitoring**: hit your node's `/metrics` (port 9100) for Prometheus.
-  Key metrics: `coc_block_height` (must keep up with peers, gap > 5 blocks
-  sustained = problem), `coc_bft_round_phase`, `coc_validator_active`
+  Key metrics: `pali_block_height` (must keep up with peers, gap > 5 blocks
+  sustained = problem), `pali_bft_round_phase`, `pali_validator_active`
 - **Rewards**: PoSe v2 emission lands on your nodeId after each finalized
   epoch (currently dormant on 88780 — emission turn-on is a separate
   governance event). Track via `PoSeManagerV2.pendingWithdrawals(yourAddr)`
@@ -263,7 +263,7 @@ node -e '
   const k = JSON.parse(fs.readFileSync(process.env.HOME + "/.coc/keys/validator.json"));
   const ABI = ["function requestUnstake(bytes32 nodeId) external"];
   (async () => {
-    const w = new Wallet(k.privateKey, new JsonRpcProvider("https://rpc.chainofclaw.io"));
+    const w = new Wallet(k.privateKey, new JsonRpcProvider("https://rpc.palimesh.io"));
     const c = new Contract("0x4441299c118373fDC96bE1983d42C79e19CDb4F0", ABI, w);
     const tx = await c.requestUnstake(k.nodeId);
     console.log("unstake-request tx:", tx.hash);
@@ -297,15 +297,15 @@ verify the legitimate exit.
 
 | Symptom | Likely cause | Fix |
 |---------|-------------|-----|
-| `stake()` reverts with `InsufficientBond` | Signer EOA < 32 COC | Fund 32.1 COC and retry |
-| Node syncs but `coc_getBftStatus` shows you not voting | Reader hasn't picked up stake event | Check node log for `reader initialized` line; confirm `COC_VALIDATOR_REGISTRY_ADDRESS` env is set; wait one more poll cycle |
+| `stake()` reverts with `InsufficientBond` | Signer EOA < 32 PALI | Fund 32.1 PALI and retry |
+| Node syncs but `pali_getBftStatus` shows you not voting | Reader hasn't picked up stake event | Check node log for `reader initialized` line; confirm `PALI_VALIDATOR_REGISTRY_ADDRESS` env is set; wait one more poll cycle |
 | Wire-peer connection refused from other validators | Firewall on port 29780 (or 39780 for v1) | Open inbound TCP port matching `wirePort` in config |
 | Node falls behind 5+ blocks sustained | Hardware/network too weak | See chaos memory `coc-88780-2026-05-26-chaos-engineering-T1-T8.md` § T1 — at minimum: 4 cores, decent network round-trip to other validators |
 | Got slashed unexpectedly | Equivocation — most likely two nodes signed same height | Stop ALL instances using this signing key. File a public issue with the EquivocationDetector event log + your operational story |
 
 For anything not in this table, post on
-<https://github.com/chainofclaw/COC/discussions> with your validator
-address (NOT your private key) and `journalctl -u coc-node@1 -n 500`.
+<https://github.com/palimesh/palimesh/discussions> with your validator
+address (NOT your private key) and `journalctl -u palimesh-node@1 -n 500`.
 
 ## See also
 

@@ -27,7 +27,7 @@ has explicit evidence linked — no "trust me, it's done" entries.
    and [`validator-registry-reader-enablement-88780.md`](./validator-registry-reader-enablement-88780.md).
    *Owner*: core team
    *Current*: **Closed 2026-06-10.** The current validators (v1–v5) each
-   `stake(nodeId, pubkeyNode)` 32 COC on-chain (B4), and every node was brought
+   `stake(nodeId, pubkeyNode)` 32 PALI on-chain (B4), and every node was brought
    up with `validatorRegistryAddress` set (B5). On-chain
    `getActiveValidators()` returns **5 active**; nodes log
    `BFT validator set updated from ValidatorRegistry count=5`. The validator set
@@ -38,7 +38,7 @@ has explicit evidence linked — no "trust me, it's done" entries.
    dry-run, is tracked separately as Gate 7.
 
 2. **☐ Last 30 days continuous block production without manual intervention**
-   *Evidence*: Grafana dashboard `coc-overview` panel "Block height per
+   *Evidence*: Grafana dashboard `palimesh-overview` panel "Block height per
    node, 30d retrospective" — must show no flat lines > 60s except during
    scheduled rolling upgrade windows (which must themselves be logged).
    *Owner*: ops
@@ -96,7 +96,7 @@ has explicit evidence linked — no "trust me, it's done" entries.
    corruption.
 
 8. **☐ Public RPC endpoint hardened**
-   *Evidence*: `https://rpc.chainofclaw.io` survives 10K req/min DDoS test
+   *Evidence*: `https://rpc.palimesh.io` survives 10K req/min DDoS test
    (k6 / Artillery) without degrading validator-internal RPCs. Cloudflare
    or equivalent CDN/WAF in front.
    *Owner*: ops
@@ -106,20 +106,20 @@ has explicit evidence linked — no "trust me, it's done" entries.
 
 9. **☐ Faucet sustainable model**
    *Evidence*: faucet survives 100 drip requests/hour over 24h continuous,
-   maintains balance ≥ 1000 COC (refill automation in place).
+   maintains balance ≥ 1000 PALI (refill automation in place).
    *Owner*: ops
    *Current*: Open. Current faucet code at `faucet/` is testnet-tuned
-   (10 COC drip, 24h cooldown). Refill cron job for canary phase is
-   missing; needs SOP + alert if balance drops below 500 COC.
+   (10 PALI drip, 24h cooldown). Refill cron job for canary phase is
+   missing; needs SOP + alert if balance drops below 500 PALI.
 
 10. **🟡 Grafana dashboards committed + Prometheus alerts wired**
-    *Evidence*: 4 dashboards (`docker/grafana/dashboards/coc-{overview,consensus,network,resources}.json`)
+    *Evidence*: 4 dashboards (`docker/grafana/dashboards/palimesh-{overview,consensus,network,resources}.json`)
     + 11 alerts in `ops/alerts/prometheus-rules.yml` (4 groups: availability,
     security, performance, network), each mapped to a section in
     [`observability-runbook-88780.md`](./observability-runbook-88780.md)
     (Stage 6). SLO encoding: `SlowBlockProduction` (block p99 proxy),
     `EquivocationDetected` (clean-record gate), `LowPeerCount` /
-    `coc_validators_active` panel (BFT quorum), `HighMempoolBacklog`
+    `pali_validators_active` panel (BFT quorum), `HighMempoolBacklog`
     (mempool ack proxy).
     *Owner*: ops
     *Current*: Assets + per-alert SOP shipped. Outstanding sub-tasks
@@ -129,7 +129,7 @@ has explicit evidence linked — no "trust me, it's done" entries.
     - Wire Alertmanager `runbook_url` annotations to point at the new
       runbook URL once docs are public-served;
     - Optional: add `ValidatorQuorumAtRisk` alert
-      (`coc_validators_active < 5`) to preempt chaos-T2-style 2-down
+      (`pali_validators_active < 5`) to preempt chaos-T2-style 2-down
       restart races.
     - Reconcile dev-stack `docker/prometheus/alerts.yml` against the
       canonical `ops/alerts/prometheus-rules.yml` (or deprecate it).
@@ -137,7 +137,7 @@ has explicit evidence linked — no "trust me, it's done" entries.
 ### Discoverability
 
 11. **☐ Public docs site published**
-    *Evidence*: `https://chainofclaw.io/en/docs` is reachable, renders the
+    *Evidence*: `https://palimesh.io/en/docs` is reachable, renders the
     new 88780-canary doc tree (whitepaper, architecture, operations, canary
     launch, security categories), and locale switch (zh / en) works.
     *Owner*: web/frontend
@@ -182,7 +182,7 @@ completes around 2026-06-24).
 A list of conditions that revert the launch even if all 11 gates are ☑:
 
 - Any open `priority:critical` issue in
-  [chainofclaw/COC issues](https://github.com/chainofclaw/COC/issues)
+  [palimesh/Palimesh issues](https://github.com/palimesh/palimesh/issues)
 - Chain block production has stalled in the last 7 days
 - A multisig signer is unreachable (3-of-5 still safe but cushion eroded)
 - Active validator count (`ValidatorRegistry.getActiveValidators().length`,

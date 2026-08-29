@@ -1,21 +1,21 @@
 #!/usr/bin/env bash
-# Generate genesis configuration + per-node config files for COC testnet
+# Generate genesis configuration + per-node config files for Palimesh testnet
 # Usage: bash scripts/generate-genesis.sh [validators_count] [output_dir]
 #
 # Environment variables:
-#   COC_CHAIN_ID    - chain ID (default: 18780)
-#   COC_BOOT_HOST   - single host for all nodes (bare-metal mode)
-#   COC_DOCKER=1    - Docker mode: each node same ports, hostname=node-N
-#   COC_ENABLE_ADMIN_RPC - expose admin_* RPC on generated node configs (default: false)
-#   COC_DHT_REQUIRE_AUTHENTICATED_VERIFY - require authenticated DHT verify (default: true)
-#   COC_P2P_AUTH_MODE - P2P inbound auth mode (default: enforce)
-#   COC_POSE_AUTH_MODE - PoSe inbound auth mode (default: enforce)
-#   COC_POSE_USE_GOVERNANCE_CHALLENGER_AUTH - use governance challenger auth (default: true)
-#   COC_POSE_USE_ONCHAIN_CHALLENGER_AUTH - use on-chain challenger auth (default: false)
-#   COC_POSE_ONCHAIN_AUTH_RPC_URL - required when on-chain challenger auth is enabled
-#   COC_POSE_ONCHAIN_AUTH_POSE_MANAGER - required when on-chain challenger auth is enabled
-#   COC_POSE_ONCHAIN_AUTH_MIN_OPERATOR_NODES - minimum operator nodes for on-chain auth (default: 1)
-#   COC_POSE_ONCHAIN_AUTH_FAIL_OPEN - allow open on on-chain auth failure (default: false)
+#   PALI_CHAIN_ID    - chain ID (default: 18780)
+#   PALI_BOOT_HOST   - single host for all nodes (bare-metal mode)
+#   PALI_DOCKER=1    - Docker mode: each node same ports, hostname=node-N
+#   PALI_ENABLE_ADMIN_RPC - expose admin_* RPC on generated node configs (default: false)
+#   PALI_DHT_REQUIRE_AUTHENTICATED_VERIFY - require authenticated DHT verify (default: true)
+#   PALI_P2P_AUTH_MODE - P2P inbound auth mode (default: enforce)
+#   PALI_POSE_AUTH_MODE - PoSe inbound auth mode (default: enforce)
+#   PALI_POSE_USE_GOVERNANCE_CHALLENGER_AUTH - use governance challenger auth (default: true)
+#   PALI_POSE_USE_ONCHAIN_CHALLENGER_AUTH - use on-chain challenger auth (default: false)
+#   PALI_POSE_ONCHAIN_AUTH_RPC_URL - required when on-chain challenger auth is enabled
+#   PALI_POSE_ONCHAIN_AUTH_POSE_MANAGER - required when on-chain challenger auth is enabled
+#   PALI_POSE_ONCHAIN_AUTH_MIN_OPERATOR_NODES - minimum operator nodes for on-chain auth (default: 1)
+#   PALI_POSE_ONCHAIN_AUTH_FAIL_OPEN - allow open on on-chain auth failure (default: false)
 #
 # Outputs:
 #   genesis.json          - shared chain parameters
@@ -26,9 +26,9 @@ set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 VALIDATORS="${1:-3}"
 OUT_DIR="${2:-${ROOT}/configs/prowl-testnet}"
-CHAIN_ID="${COC_CHAIN_ID:-18780}"
-BOOT_HOST="${COC_BOOT_HOST:-}"
-DOCKER_MODE="${COC_DOCKER:-0}"
+CHAIN_ID="${PALI_CHAIN_ID:-18780}"
+BOOT_HOST="${PALI_BOOT_HOST:-}"
+DOCKER_MODE="${PALI_DOCKER:-0}"
 
 mkdir -p "$OUT_DIR"
 
@@ -49,16 +49,16 @@ const outDir = '${OUT_DIR}';
 const chainId = ${CHAIN_ID};
 const bootHost = '${BOOT_HOST}';
 const dockerMode = '${DOCKER_MODE}' === '1';
-const enableAdminRpc = ['1', 'true', 'yes', 'on'].includes(String(process.env.COC_ENABLE_ADMIN_RPC ?? 'false').toLowerCase());
-const dhtRequireAuthenticatedVerify = ['1', 'true', 'yes', 'on'].includes(String(process.env.COC_DHT_REQUIRE_AUTHENTICATED_VERIFY ?? 'true').toLowerCase());
-const p2pInboundAuthMode = String(process.env.COC_P2P_AUTH_MODE ?? 'enforce');
-const poseInboundAuthMode = String(process.env.COC_POSE_AUTH_MODE ?? 'enforce');
-const poseUseGovernanceChallengerAuth = ['1', 'true', 'yes', 'on'].includes(String(process.env.COC_POSE_USE_GOVERNANCE_CHALLENGER_AUTH ?? 'true').toLowerCase());
-const poseUseOnchainChallengerAuth = ['1', 'true', 'yes', 'on'].includes(String(process.env.COC_POSE_USE_ONCHAIN_CHALLENGER_AUTH ?? 'false').toLowerCase());
-const poseOnchainAuthRpcUrl = String(process.env.COC_POSE_ONCHAIN_AUTH_RPC_URL ?? '');
-const poseOnchainAuthPoseManagerAddress = String(process.env.COC_POSE_ONCHAIN_AUTH_POSE_MANAGER ?? '');
-const poseOnchainAuthMinOperatorNodes = Number(process.env.COC_POSE_ONCHAIN_AUTH_MIN_OPERATOR_NODES ?? '1');
-const poseOnchainAuthFailOpen = ['1', 'true', 'yes', 'on'].includes(String(process.env.COC_POSE_ONCHAIN_AUTH_FAIL_OPEN ?? 'false').toLowerCase());
+const enableAdminRpc = ['1', 'true', 'yes', 'on'].includes(String(process.env.PALI_ENABLE_ADMIN_RPC ?? 'false').toLowerCase());
+const dhtRequireAuthenticatedVerify = ['1', 'true', 'yes', 'on'].includes(String(process.env.PALI_DHT_REQUIRE_AUTHENTICATED_VERIFY ?? 'true').toLowerCase());
+const p2pInboundAuthMode = String(process.env.PALI_P2P_AUTH_MODE ?? 'enforce');
+const poseInboundAuthMode = String(process.env.PALI_POSE_AUTH_MODE ?? 'enforce');
+const poseUseGovernanceChallengerAuth = ['1', 'true', 'yes', 'on'].includes(String(process.env.PALI_POSE_USE_GOVERNANCE_CHALLENGER_AUTH ?? 'true').toLowerCase());
+const poseUseOnchainChallengerAuth = ['1', 'true', 'yes', 'on'].includes(String(process.env.PALI_POSE_USE_ONCHAIN_CHALLENGER_AUTH ?? 'false').toLowerCase());
+const poseOnchainAuthRpcUrl = String(process.env.PALI_POSE_ONCHAIN_AUTH_RPC_URL ?? '');
+const poseOnchainAuthPoseManagerAddress = String(process.env.PALI_POSE_ONCHAIN_AUTH_POSE_MANAGER ?? '');
+const poseOnchainAuthMinOperatorNodes = Number(process.env.PALI_POSE_ONCHAIN_AUTH_MIN_OPERATOR_NODES ?? '1');
+const poseOnchainAuthFailOpen = ['1', 'true', 'yes', 'on'].includes(String(process.env.PALI_POSE_ONCHAIN_AUTH_FAIL_OPEN ?? 'false').toLowerCase());
 const validatorsRaw = await readFile(outDir + '/validators.json', 'utf-8');
 const validators = JSON.parse(validatorsRaw);
 const count = validators.length;
@@ -73,7 +73,7 @@ try {
   for (let i = 1; i <= count; i++) {
     try {
       const env = await readFile(outDir + '/validator-' + i + '.env', 'utf-8');
-      const match = env.match(/COC_NODE_KEY=(.+)/);
+      const match = env.match(/PALI_NODE_KEY=(.+)/);
       if (match) privateKeys.push({ index: i, address: validators[i-1], privateKey: match[1].trim() });
     } catch {}
   }
@@ -86,7 +86,7 @@ const deployerWallet = Wallet.createRandom();
 // Genesis: shared chain parameters
 const genesis = {
   chainId,
-  chainName: 'COC Prowl Testnet',
+  chainName: 'Palimesh Prowl Testnet',
   blockTimeMs: 3000,
   syncIntervalMs: 5000,
   finalityDepth: 3,
@@ -112,7 +112,7 @@ const genesis = {
 
 if (poseUseOnchainChallengerAuth) {
   if (!poseOnchainAuthRpcUrl || !poseOnchainAuthPoseManagerAddress) {
-    throw new Error('COC_POSE_ONCHAIN_AUTH_RPC_URL and COC_POSE_ONCHAIN_AUTH_POSE_MANAGER are required when COC_POSE_USE_ONCHAIN_CHALLENGER_AUTH=true');
+    throw new Error('PALI_POSE_ONCHAIN_AUTH_RPC_URL and PALI_POSE_ONCHAIN_AUTH_POSE_MANAGER are required when PALI_POSE_USE_ONCHAIN_CHALLENGER_AUTH=true');
   }
   genesis.poseOnchainAuthRpcUrl = poseOnchainAuthRpcUrl;
   genesis.poseOnchainAuthPoseManagerAddress = poseOnchainAuthPoseManagerAddress;

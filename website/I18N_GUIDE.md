@@ -1,8 +1,8 @@
-# COC Website 国际化(i18n)指南
+# Palimesh Website 国际化(i18n)指南
 
 ## ✅ 已完成
 
-COC Website现已支持5种语言的完整国际化:
+Palimesh Website现已支持5种语言的完整国际化:
 
 - 🇨🇳 **中文** (zh) - 默认语言
 - 🇺🇸 **English** (en)  
@@ -262,4 +262,4 @@ A: next-intl支持代码分割，只加载当前页面需要的翻译。
 
 ---
 
-**国际化支持让COC网站真正面向全球用户! 🌍**
+**国际化支持让Palimesh网站真正面向全球用户! 🌍**

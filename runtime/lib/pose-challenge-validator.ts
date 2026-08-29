@@ -1,7 +1,7 @@
 /**
  * pose-challenge-validator.ts — #747 (#667 F4, audit follow-up 2026-05-26).
  *
- * Pre-fix `runtime/coc-node.ts:/pose/challenge` accepted an arbitrary
+ * Pre-fix `runtime/palimesh-node.ts:/pose/challenge` accepted an arbitrary
  * caller-supplied `challengeId` string. Combined with the witness path
  * never verifying the challenger's identity (#667 main issue), this
  * gave the challenger a free degree of freedom: pre-mine a pool of
@@ -17,7 +17,7 @@
  *
  * Legacy v1 payloads (no `version: 2` field, no challengerSig) are
  * accepted in lenient mode so existing in-flight callers keep working
- * during the rollout; the gate is `COC_POSE_REQUIRE_VERIFIED_CHALLENGE=1`.
+ * during the rollout; the gate is `PALI_POSE_REQUIRE_VERIFIED_CHALLENGE=1`.
  *
  * Rejections all return deterministic error messages — never echo
  * client input (#322 class).

@@ -1,5 +1,5 @@
 /**
- * Shared wallet / bytecode helpers for COC stress / probe scripts.
+ * Shared wallet / bytecode helpers for Palimesh stress / probe scripts.
  *
  * Consolidates the signing + init-wrapper logic previously duplicated across
  * scripts/tps-benchmark.ts (signTx / signDeployTx) and the Ralph-loop probes.
@@ -7,11 +7,11 @@
 
 import { ethers, Wallet, Transaction, HDNodeWallet, JsonRpcProvider } from "ethers"
 
-/** Hardhat / anvil deterministic dev mnemonic — funded on COC test chains. */
+/** Hardhat / anvil deterministic dev mnemonic — funded on Palimesh test chains. */
 export const TEST_MNEMONIC =
   "test test test test test test test test test test test junk"
 
-/** Hardhat account #0 private key (10M ETH on COC genesis). */
+/** Hardhat account #0 private key (10M ETH on Palimesh genesis). */
 export const FUNDED_PK =
   "0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80"
 

@@ -110,7 +110,7 @@ export interface NodeConfig {
   dhtRequireAuthenticatedVerify: boolean
   // Persistent storage for DHT provider records (CID → peers-who-have-it).
   // Without this, restart wipes all advertise records and old CIDs become
-  // unreachable via `coc_dhtFindProviders` until re-PUT triggers a fresh
+  // unreachable via `pali_dhtFindProviders` until re-PUT triggers a fresh
   // self-announce. Path lives under `dataDir`.
   dhtProviderStorePath: string
   // State snapshot sync
@@ -121,22 +121,22 @@ export interface NodeConfig {
   // of its K-closest peers so the data survives the origin going down.
   // Default 3. Clamped at runtime to `min(replicationFactor, peerCount-1)`
   // by the wiring layer; peerCount < 2 ⇒ skip with a once-per-minute warn
-  // (see coc-ipfs-wiring.ts).
+  // (see palimesh-ipfs-wiring.ts).
   ipfsReplicationFactor: number
   // Phase C3.1: minimum replica count before the HTTP PUT handler emits
-  // an `X-COC-Replicas-Warning` header. Default 2, matching K=3 with
+  // an `X-Palimesh-Replicas-Warning` header. Default 2, matching K=3 with
   // 1 slack. Single-peer deployments should set 1 to silence the warning.
   ipfsMinReplicas: number
   // Phase S1: optional IPFS blockstore size cap in bytes. When set, the
   // blockstore LRU-evicts non-pinned blocks once on-disk usage exceeds
   // this value. Light-mode peers should cap to fit a tmpfs/quota
   // envelope (e.g. 100MB); archive nodes leave it unset to retain all
-  // history. Env override: `COC_IPFS_MAX_BYTES`.
+  // history. Env override: `PALI_IPFS_MAX_BYTES`.
   ipfsMaxStorageBytes?: number
   /**
-   * #9: optional Bearer-token (via `X-COC-IPFS-Admin-Token` header) that
+   * #9: optional Bearer-token (via `X-Palimesh-IPFS-Admin-Token` header) that
    * authorizes destructive IPFS admin ops (repo/gc, block/rm, pin/rm)
-   * and `/api/v0/add` from non-loopback origins. Env: `COC_IPFS_ADMIN_TOKEN`.
+   * and `/api/v0/add` from non-loopback origins. Env: `PALI_IPFS_ADMIN_TOKEN`.
    * When unset, those ops are loopback-only (secure default).
    */
   ipfsAdminAuthToken?: string
@@ -144,25 +144,25 @@ export interface NodeConfig {
    * #9: opt-in anonymous `/api/v0/add` tier. Default false — non-loopback
    * non-token callers are 403'd, matching the existing admin-gate model
    * on repo/gc, block/rm, pin/rm. Operators who want public gateway
-   * uploads MUST set `COC_IPFS_ANONYMOUS_ADD=true` AND review the
+   * uploads MUST set `PALI_IPFS_ANONYMOUS_ADD=true` AND review the
    * per-IP / global byte budgets below.
    */
   ipfsAnonymousAddAllowed: boolean
   /**
    * #9: per-source-IP byte budget for the anonymous add tier (default
-   * 100 MB / day). Env: `COC_IPFS_ANONYMOUS_ADD_PER_IP_MB`. Ignored
+   * 100 MB / day). Env: `PALI_IPFS_ANONYMOUS_ADD_PER_IP_MB`. Ignored
    * when `ipfsAnonymousAddAllowed=false`.
    */
   ipfsAnonymousAddPerIpBytes: number
   /**
    * #9: aggregate cap across all anonymous IPs (Sybil defense, default
-   * 10 GB / day). Env: `COC_IPFS_ANONYMOUS_ADD_TOTAL_GB`. Ignored when
+   * 10 GB / day). Env: `PALI_IPFS_ANONYMOUS_ADD_TOTAL_GB`. Ignored when
    * `ipfsAnonymousAddAllowed=false`.
    */
   ipfsAnonymousAddTotalBytes: number
   /**
    * #9: sliding-window length for the anonymous add budgets in ms
-   * (default 24h). Env: `COC_IPFS_ANONYMOUS_ADD_WINDOW_MS`.
+   * (default 24h). Env: `PALI_IPFS_ANONYMOUS_ADD_WINDOW_MS`.
    */
   ipfsAnonymousAddWindowMs: number
   // Node identity key (hex private key for signing)
@@ -177,7 +177,7 @@ export interface NodeConfig {
   nodeMode: "full" | "archive" | "light" | "sequencer"
   // Block signature enforcement: "off" = ignore, "monitor" = warn, "enforce" = reject
   signatureEnforcement: "off" | "monitor" | "enforce"
-  // DID identity contracts (optional — enables coc_resolveDid RPC)
+  // DID identity contracts (optional — enables pali_resolveDid RPC)
   soulRegistryAddress?: string
   didRegistryAddress?: string
   // Governance module
@@ -240,7 +240,7 @@ export interface NodeConfig {
 export async function loadNodeConfig(): Promise<NodeConfig> {
   const dataDir = resolveDataDir()
   await mkdir(dataDir, { recursive: true })
-  const configPath = process.env.COC_NODE_CONFIG || join(dataDir, "node-config.json")
+  const configPath = process.env.PALI_NODE_CONFIG || join(dataDir, "node-config.json")
 
   let user = {}
   try {
@@ -262,18 +262,18 @@ export async function loadNodeConfig(): Promise<NodeConfig> {
   const userPoseNonceRegistryPath = typeof (user as Record<string, unknown>).poseNonceRegistryPath === "string"
     ? ((user as Record<string, unknown>).poseNonceRegistryPath as string)
     : undefined
-  const poseNonceRegistryPath = process.env.COC_POSE_NONCE_REGISTRY_PATH
+  const poseNonceRegistryPath = process.env.PALI_POSE_NONCE_REGISTRY_PATH
     || userPoseNonceRegistryPath
     || join(dataDir, "pose-nonce-registry.log")
   const poseNonceRegistryTtlMs = safeParseInt(
-    process.env.COC_POSE_NONCE_REGISTRY_TTL_MS,
+    process.env.PALI_POSE_NONCE_REGISTRY_TTL_MS,
     Number((user as Record<string, unknown>).poseNonceRegistryTtlMs ?? (7 * 24 * 60 * 60 * 1000)),
   )
   const poseNonceRegistryMaxEntries = safeParseInt(
-    process.env.COC_POSE_NONCE_REGISTRY_MAX_ENTRIES,
+    process.env.PALI_POSE_NONCE_REGISTRY_MAX_ENTRIES,
     Number((user as Record<string, unknown>).poseNonceRegistryMaxEntries ?? 500_000),
   )
-  const p2pRequireInboundAuthEnv = process.env.COC_P2P_REQUIRE_INBOUND_AUTH
+  const p2pRequireInboundAuthEnv = process.env.PALI_P2P_REQUIRE_INBOUND_AUTH
   const p2pRequireInboundAuthFromEnv = p2pRequireInboundAuthEnv !== undefined
     ? (p2pRequireInboundAuthEnv === "1" || p2pRequireInboundAuthEnv.toLowerCase() === "true")
     : undefined
@@ -282,7 +282,7 @@ export async function loadNodeConfig(): Promise<NodeConfig> {
     ? userRequireInboundAuthRaw
     : undefined
 
-  const p2pInboundAuthModeEnv = process.env.COC_P2P_AUTH_MODE
+  const p2pInboundAuthModeEnv = process.env.PALI_P2P_AUTH_MODE
   const p2pInboundAuthModeRaw = p2pInboundAuthModeEnv
     ?? (user as Record<string, unknown>).p2pInboundAuthMode
   const p2pInboundAuthMode = normalizeInboundAuthMode(p2pInboundAuthModeRaw)
@@ -293,7 +293,7 @@ export async function loadNodeConfig(): Promise<NodeConfig> {
         : "enforce")
   const p2pRequireInboundAuth = p2pInboundAuthMode === "enforce"
   // #732 / #733: roster-check toggles. Default true (secure default).
-  // Operators can disable via COC_*_REQUIRE_ROSTER=0 or user config bool.
+  // Operators can disable via PALI_*_REQUIRE_ROSTER=0 or user config bool.
   const parseRosterFlag = (envName: string, userField: string): boolean => {
     const envRaw = process.env[envName]
     if (envRaw !== undefined) return !(envRaw === "0" || envRaw.toLowerCase() === "false")
@@ -302,28 +302,28 @@ export async function loadNodeConfig(): Promise<NodeConfig> {
     return true
   }
   const p2pInboundAuthRequireRoster = parseRosterFlag(
-    "COC_P2P_AUTH_REQUIRE_ROSTER", "p2pInboundAuthRequireRoster")
+    "PALI_P2P_AUTH_REQUIRE_ROSTER", "p2pInboundAuthRequireRoster")
   const inboundWireRequireRoster = parseRosterFlag(
-    "COC_WIRE_REQUIRE_ROSTER", "inboundWireRequireRoster")
+    "PALI_WIRE_REQUIRE_ROSTER", "inboundWireRequireRoster")
   const p2pAuthMaxClockSkewMs = safeParseInt(
-    process.env.COC_P2P_AUTH_MAX_CLOCK_SKEW_MS,
+    process.env.PALI_P2P_AUTH_MAX_CLOCK_SKEW_MS,
     Number((user as Record<string, unknown>).p2pAuthMaxClockSkewMs ?? 120_000),
   )
   const userP2PAuthNonceRegistryPath = typeof (user as Record<string, unknown>).p2pAuthNonceRegistryPath === "string"
     ? ((user as Record<string, unknown>).p2pAuthNonceRegistryPath as string)
     : undefined
-  const p2pAuthNonceRegistryPath = process.env.COC_P2P_AUTH_NONCE_REGISTRY_PATH
+  const p2pAuthNonceRegistryPath = process.env.PALI_P2P_AUTH_NONCE_REGISTRY_PATH
     || userP2PAuthNonceRegistryPath
     || join(dataDir, "p2p-auth-nonce.log")
   const p2pAuthNonceTtlMs = safeParseInt(
-    process.env.COC_P2P_AUTH_NONCE_TTL_MS,
+    process.env.PALI_P2P_AUTH_NONCE_TTL_MS,
     Number((user as Record<string, unknown>).p2pAuthNonceTtlMs ?? (24 * 60 * 60 * 1000)),
   )
   const p2pAuthNonceMaxEntries = safeParseInt(
-    process.env.COC_P2P_AUTH_NONCE_MAX_ENTRIES,
+    process.env.PALI_P2P_AUTH_NONCE_MAX_ENTRIES,
     Number((user as Record<string, unknown>).p2pAuthNonceMaxEntries ?? 100_000),
   )
-  const poseRequireInboundAuthEnv = process.env.COC_POSE_REQUIRE_INBOUND_AUTH
+  const poseRequireInboundAuthEnv = process.env.PALI_POSE_REQUIRE_INBOUND_AUTH
   const poseRequireInboundAuthFromEnv = poseRequireInboundAuthEnv !== undefined
     ? (poseRequireInboundAuthEnv === "1" || poseRequireInboundAuthEnv.toLowerCase() === "true")
     : undefined
@@ -331,7 +331,7 @@ export async function loadNodeConfig(): Promise<NodeConfig> {
   const poseRequireInboundAuthFromUser = typeof userPoseRequireInboundAuthRaw === "boolean"
     ? userPoseRequireInboundAuthRaw
     : undefined
-  const poseInboundAuthModeEnv = process.env.COC_POSE_AUTH_MODE
+  const poseInboundAuthModeEnv = process.env.PALI_POSE_AUTH_MODE
   const poseInboundAuthModeRaw = poseInboundAuthModeEnv
     ?? (user as Record<string, unknown>).poseInboundAuthMode
   const poseInboundAuthMode = normalizeInboundAuthMode(poseInboundAuthModeRaw)
@@ -342,123 +342,123 @@ export async function loadNodeConfig(): Promise<NodeConfig> {
         : "enforce")
   const poseRequireInboundAuth = poseInboundAuthMode === "enforce"
   const poseAuthMaxClockSkewMs = safeParseInt(
-    process.env.COC_POSE_AUTH_MAX_CLOCK_SKEW_MS,
+    process.env.PALI_POSE_AUTH_MAX_CLOCK_SKEW_MS,
     Number((user as Record<string, unknown>).poseAuthMaxClockSkewMs ?? 120_000),
   )
   const userPoseAuthNonceRegistryPath = typeof (user as Record<string, unknown>).poseAuthNonceRegistryPath === "string"
     ? ((user as Record<string, unknown>).poseAuthNonceRegistryPath as string)
     : undefined
-  const poseAuthNonceRegistryPath = process.env.COC_POSE_AUTH_NONCE_REGISTRY_PATH
+  const poseAuthNonceRegistryPath = process.env.PALI_POSE_AUTH_NONCE_REGISTRY_PATH
     || userPoseAuthNonceRegistryPath
     || join(dataDir, "pose-auth-nonce.log")
   const poseAuthNonceTtlMs = safeParseInt(
-    process.env.COC_POSE_AUTH_NONCE_TTL_MS,
+    process.env.PALI_POSE_AUTH_NONCE_TTL_MS,
     Number((user as Record<string, unknown>).poseAuthNonceTtlMs ?? (24 * 60 * 60 * 1000)),
   )
   const poseAuthNonceMaxEntries = safeParseInt(
-    process.env.COC_POSE_AUTH_NONCE_MAX_ENTRIES,
+    process.env.PALI_POSE_AUTH_NONCE_MAX_ENTRIES,
     Number((user as Record<string, unknown>).poseAuthNonceMaxEntries ?? 100_000),
   )
   const userPoseAllowedChallengers = (user as Record<string, unknown>).poseAllowedChallengers
   const poseAllowedChallengersFromUser = Array.isArray(userPoseAllowedChallengers)
     ? userPoseAllowedChallengers.filter((x): x is string => typeof x === "string")
     : []
-  const poseAllowedChallengers = process.env.COC_POSE_ALLOWED_CHALLENGERS
-    ? process.env.COC_POSE_ALLOWED_CHALLENGERS
+  const poseAllowedChallengers = process.env.PALI_POSE_ALLOWED_CHALLENGERS
+    ? process.env.PALI_POSE_ALLOWED_CHALLENGERS
       .split(",")
       .map((x) => x.trim())
       .filter((x) => x.length > 0)
     : poseAllowedChallengersFromUser
   const poseUseGovernanceChallengerAuth = parseBooleanFlag(
-    process.env.COC_POSE_USE_GOVERNANCE_CHALLENGER_AUTH
+    process.env.PALI_POSE_USE_GOVERNANCE_CHALLENGER_AUTH
       ?? (user as Record<string, unknown>).poseUseGovernanceChallengerAuth,
     false,
   )
   const poseUseOnchainChallengerAuth = parseBooleanFlag(
-    process.env.COC_POSE_USE_ONCHAIN_CHALLENGER_AUTH
+    process.env.PALI_POSE_USE_ONCHAIN_CHALLENGER_AUTH
       ?? (user as Record<string, unknown>).poseUseOnchainChallengerAuth,
     false,
   )
-  const poseOnchainAuthRpcUrl = typeof process.env.COC_POSE_ONCHAIN_AUTH_RPC_URL === "string"
-    ? process.env.COC_POSE_ONCHAIN_AUTH_RPC_URL
+  const poseOnchainAuthRpcUrl = typeof process.env.PALI_POSE_ONCHAIN_AUTH_RPC_URL === "string"
+    ? process.env.PALI_POSE_ONCHAIN_AUTH_RPC_URL
     : typeof (user as Record<string, unknown>).poseOnchainAuthRpcUrl === "string"
       ? ((user as Record<string, unknown>).poseOnchainAuthRpcUrl as string)
       : ""
-  const poseOnchainAuthPoseManagerAddress = typeof process.env.COC_POSE_ONCHAIN_AUTH_POSE_MANAGER === "string"
-    ? process.env.COC_POSE_ONCHAIN_AUTH_POSE_MANAGER
+  const poseOnchainAuthPoseManagerAddress = typeof process.env.PALI_POSE_ONCHAIN_AUTH_POSE_MANAGER === "string"
+    ? process.env.PALI_POSE_ONCHAIN_AUTH_POSE_MANAGER
     : typeof (user as Record<string, unknown>).poseOnchainAuthPoseManagerAddress === "string"
       ? ((user as Record<string, unknown>).poseOnchainAuthPoseManagerAddress as string)
       : ""
   const poseOnchainAuthMinOperatorNodes = safeParseInt(
-    process.env.COC_POSE_ONCHAIN_AUTH_MIN_OPERATOR_NODES,
+    process.env.PALI_POSE_ONCHAIN_AUTH_MIN_OPERATOR_NODES,
     Number((user as Record<string, unknown>).poseOnchainAuthMinOperatorNodes ?? 1),
   )
   const poseOnchainAuthTimeoutMs = safeParseInt(
-    process.env.COC_POSE_ONCHAIN_AUTH_TIMEOUT_MS,
+    process.env.PALI_POSE_ONCHAIN_AUTH_TIMEOUT_MS,
     Number((user as Record<string, unknown>).poseOnchainAuthTimeoutMs ?? 3_000),
   )
   const poseOnchainAuthFailOpen = parseBooleanFlag(
-    process.env.COC_POSE_ONCHAIN_AUTH_FAIL_OPEN
+    process.env.PALI_POSE_ONCHAIN_AUTH_FAIL_OPEN
       ?? (user as Record<string, unknown>).poseOnchainAuthFailOpen,
     false,
   )
   const poseChallengerAuthCacheTtlMs = safeParseInt(
-    process.env.COC_POSE_CHALLENGER_AUTH_CACHE_TTL_MS,
+    process.env.PALI_POSE_CHALLENGER_AUTH_CACHE_TTL_MS,
     Number((user as Record<string, unknown>).poseChallengerAuthCacheTtlMs ?? 30_000),
   )
   const dhtRequireAuthenticatedVerify = parseBooleanFlag(
-    process.env.COC_DHT_REQUIRE_AUTHENTICATED_VERIFY
+    process.env.PALI_DHT_REQUIRE_AUTHENTICATED_VERIFY
       ?? (user as Record<string, unknown>).dhtRequireAuthenticatedVerify,
     true,
   )
 
   // Bind addresses: env vars override config, default to 0.0.0.0 (or 127.0.0.1 in dev mode)
-  const devMode = parseBooleanFlag(process.env.COC_DEV_MODE ?? (user as Record<string, unknown>).devMode, false)
+  const devMode = parseBooleanFlag(process.env.PALI_DEV_MODE ?? (user as Record<string, unknown>).devMode, false)
   const defaultBind = devMode ? "127.0.0.1" : "0.0.0.0"
-  const rpcBind = process.env.COC_RPC_BIND
+  const rpcBind = process.env.PALI_RPC_BIND
     ?? (typeof (user as Record<string, unknown>).rpcBind === "string" ? (user as Record<string, unknown>).rpcBind as string : defaultBind)
-  const p2pBind = process.env.COC_P2P_BIND
+  const p2pBind = process.env.PALI_P2P_BIND
     ?? (typeof (user as Record<string, unknown>).p2pBind === "string" ? (user as Record<string, unknown>).p2pBind as string : defaultBind)
-  const wsBind = process.env.COC_WS_BIND
+  const wsBind = process.env.PALI_WS_BIND
     ?? (typeof (user as Record<string, unknown>).wsBind === "string" ? (user as Record<string, unknown>).wsBind as string : defaultBind)
-  const ipfsBind = process.env.COC_IPFS_BIND
+  const ipfsBind = process.env.PALI_IPFS_BIND
     ?? (typeof (user as Record<string, unknown>).ipfsBind === "string" ? (user as Record<string, unknown>).ipfsBind as string : defaultBind)
-  const wireBind = process.env.COC_WIRE_BIND
+  const wireBind = process.env.PALI_WIRE_BIND
     ?? (typeof (user as Record<string, unknown>).wireBind === "string" ? (user as Record<string, unknown>).wireBind as string : defaultBind)
 
   // RPC authentication token (optional)
-  const rpcAuthToken = process.env.COC_RPC_AUTH_TOKEN
+  const rpcAuthToken = process.env.PALI_RPC_AUTH_TOKEN
     ?? (typeof (user as Record<string, unknown>).rpcAuthToken === "string"
       ? (user as Record<string, unknown>).rpcAuthToken as string : undefined)
 
   // DID identity contract addresses
-  const soulRegistryAddress = process.env.COC_SOUL_REGISTRY_ADDRESS
+  const soulRegistryAddress = process.env.PALI_SOUL_REGISTRY_ADDRESS
     ?? (user as Record<string, unknown>).soulRegistryAddress as string | undefined
-  const didRegistryAddress = process.env.COC_DID_REGISTRY_ADDRESS
+  const didRegistryAddress = process.env.PALI_DID_REGISTRY_ADDRESS
     ?? (user as Record<string, unknown>).didRegistryAddress as string | undefined
 
   // Admin RPC namespace
   const enableAdminRpc = parseBooleanFlag(
-    process.env.COC_ENABLE_ADMIN_RPC ?? (user as Record<string, unknown>).enableAdminRpc,
+    process.env.PALI_ENABLE_ADMIN_RPC ?? (user as Record<string, unknown>).enableAdminRpc,
     false,
   )
   const allowLoopbackRpcAuth = parseBooleanFlag(
-    process.env.COC_RPC_ALLOW_LOOPBACK_ADMIN ?? (user as Record<string, unknown>).allowLoopbackRpcAuth,
+    process.env.PALI_RPC_ALLOW_LOOPBACK_ADMIN ?? (user as Record<string, unknown>).allowLoopbackRpcAuth,
     false,
   )
 
   // Node running mode
-  const nodeModeRaw = process.env.COC_NODE_MODE ?? (user as Record<string, unknown>).nodeMode
+  const nodeModeRaw = process.env.PALI_NODE_MODE ?? (user as Record<string, unknown>).nodeMode
   const nodeMode = normalizeNodeMode(nodeModeRaw)
 
   // Phase S2: IPFS blockstore size cap. Resolution order:
-  //   1. `COC_IPFS_MAX_BYTES` env (truthy non-zero number)
+  //   1. `PALI_IPFS_MAX_BYTES` env (truthy non-zero number)
   //   2. user config `ipfsMaxStorageBytes` (number)
   //   3. nodeMode default: light → 100 MB, others → unlimited
   // Setting the env to "0" or "unlimited" forces unbounded for explicit
   // overrides (e.g. running a light node on a host with abundant disk).
   const ipfsMaxStorageBytes = ((): number | undefined => {
-    const envRaw = process.env.COC_IPFS_MAX_BYTES
+    const envRaw = process.env.PALI_IPFS_MAX_BYTES
     if (envRaw !== undefined) {
       if (envRaw === "0" || envRaw.toLowerCase() === "unlimited") return undefined
       const parsed = Number(envRaw)
@@ -471,15 +471,15 @@ export async function loadNodeConfig(): Promise<NodeConfig> {
   })()
   // #9: IPFS admin token + anonymous /api/v0/add policy. Env overrides
   // user config. Anonymous tier is opt-in; default secure (admin-only).
-  const ipfsAdminAuthToken = process.env.COC_IPFS_ADMIN_TOKEN
+  const ipfsAdminAuthToken = process.env.PALI_IPFS_ADMIN_TOKEN
     ?? (typeof (user as Record<string, unknown>).ipfsAdminAuthToken === "string"
       ? (user as Record<string, unknown>).ipfsAdminAuthToken as string : undefined)
   const ipfsAnonymousAddAllowed = parseBooleanFlag(
-    process.env.COC_IPFS_ANONYMOUS_ADD ?? (user as Record<string, unknown>).ipfsAnonymousAddAllowed,
+    process.env.PALI_IPFS_ANONYMOUS_ADD ?? (user as Record<string, unknown>).ipfsAnonymousAddAllowed,
     false,
   )
   const ipfsAnonymousAddPerIpBytes = ((): number => {
-    const envRaw = process.env.COC_IPFS_ANONYMOUS_ADD_PER_IP_MB
+    const envRaw = process.env.PALI_IPFS_ANONYMOUS_ADD_PER_IP_MB
     if (envRaw !== undefined) {
       const n = Number(envRaw)
       if (Number.isFinite(n) && n > 0) return Math.floor(n * 1024 * 1024)
@@ -489,7 +489,7 @@ export async function loadNodeConfig(): Promise<NodeConfig> {
     return 100 * 1024 * 1024 // 100 MB
   })()
   const ipfsAnonymousAddTotalBytes = ((): number => {
-    const envRaw = process.env.COC_IPFS_ANONYMOUS_ADD_TOTAL_GB
+    const envRaw = process.env.PALI_IPFS_ANONYMOUS_ADD_TOTAL_GB
     if (envRaw !== undefined) {
       const n = Number(envRaw)
       if (Number.isFinite(n) && n > 0) return Math.floor(n * 1024 * 1024 * 1024)
@@ -499,7 +499,7 @@ export async function loadNodeConfig(): Promise<NodeConfig> {
     return 10 * 1024 * 1024 * 1024 // 10 GB
   })()
   const ipfsAnonymousAddWindowMs = ((): number => {
-    const envRaw = process.env.COC_IPFS_ANONYMOUS_ADD_WINDOW_MS
+    const envRaw = process.env.PALI_IPFS_ANONYMOUS_ADD_WINDOW_MS
     if (envRaw !== undefined) {
       const n = Number(envRaw)
       if (Number.isFinite(n) && n > 0) return Math.floor(n)
@@ -510,36 +510,36 @@ export async function loadNodeConfig(): Promise<NodeConfig> {
   })()
 
   const hardfork = normalizeHardfork(
-    process.env.COC_EVM_HARDFORK ?? (user as Record<string, unknown>).hardfork,
+    process.env.PALI_EVM_HARDFORK ?? (user as Record<string, unknown>).hardfork,
     Hardfork.Shanghai,
   )
   const hardforkSchedule = normalizeHardforkSchedule(
-    process.env.COC_EVM_HARDFORK_SCHEDULE,
+    process.env.PALI_EVM_HARDFORK_SCHEDULE,
     (user as Record<string, unknown>).hardforkSchedule,
   )
 
   // Block signature enforcement mode
-  const sigEnforcementRaw = process.env.COC_SIGNATURE_ENFORCEMENT
+  const sigEnforcementRaw = process.env.PALI_SIGNATURE_ENFORCEMENT
     ?? (user as Record<string, unknown>).signatureEnforcement
   const signatureEnforcement = normalizeSigEnforcement(sigEnforcementRaw)
 
   // Governance module
   const enableGovernance = parseBooleanFlag(
-    process.env.COC_ENABLE_GOVERNANCE ?? (user as Record<string, unknown>).enableGovernance,
+    process.env.PALI_ENABLE_GOVERNANCE ?? (user as Record<string, unknown>).enableGovernance,
     false,
   )
 
   // Phase I1: block reward distribution.
   const enableBlockReward = parseBooleanFlag(
-    process.env.COC_BLOCK_REWARD_ENABLED ?? (user as Record<string, unknown>).enableBlockReward,
+    process.env.PALI_BLOCK_REWARD_ENABLED ?? (user as Record<string, unknown>).enableBlockReward,
     false,
   )
-  const blockRewardWeiRaw = process.env.COC_BLOCK_REWARD_WEI
+  const blockRewardWeiRaw = process.env.PALI_BLOCK_REWARD_WEI
     ?? (user as Record<string, unknown>).blockRewardWei
   const blockRewardWei = typeof blockRewardWeiRaw === "string" && /^[0-9]+$/.test(blockRewardWeiRaw)
     ? blockRewardWeiRaw
     : "0"
-  const blockRewardHalvingIntervalRaw = process.env.COC_BLOCK_REWARD_HALVING_INTERVAL_BLOCKS
+  const blockRewardHalvingIntervalRaw = process.env.PALI_BLOCK_REWARD_HALVING_INTERVAL_BLOCKS
     ?? (user as Record<string, unknown>).blockRewardHalvingIntervalBlocks
   const blockRewardHalvingIntervalBlocks = typeof blockRewardHalvingIntervalRaw === "string"
     && /^[0-9]+$/.test(blockRewardHalvingIntervalRaw)
@@ -548,7 +548,7 @@ export async function loadNodeConfig(): Promise<NodeConfig> {
 
   // Phase I2: EIP-1559 fee distribution.
   const enableFeeDistribution = parseBooleanFlag(
-    process.env.COC_FEE_DISTRIBUTION_ENABLED ?? (user as Record<string, unknown>).enableFeeDistribution,
+    process.env.PALI_FEE_DISTRIBUTION_ENABLED ?? (user as Record<string, unknown>).enableFeeDistribution,
     false,
   )
   const userValidatorStakes = (user as Record<string, unknown>).validatorStakes
@@ -563,19 +563,19 @@ export async function loadNodeConfig(): Promise<NodeConfig> {
 
   // ValidatorRegistry on-chain integration (Sprint 4 of Phase F+G).
   // Optional: when omitted, BFT uses the hardcoded `validators` config.
-  const validatorRegistryAddressRaw = process.env.COC_VALIDATOR_REGISTRY_ADDRESS
+  const validatorRegistryAddressRaw = process.env.PALI_VALIDATOR_REGISTRY_ADDRESS
     ?? (user as Record<string, unknown>).validatorRegistryAddress
   const validatorRegistryAddress = typeof validatorRegistryAddressRaw === "string" && /^0x[0-9a-fA-F]{40}$/.test(validatorRegistryAddressRaw)
     ? validatorRegistryAddressRaw
     : undefined
-  const validatorRegistryFromBlockRaw = process.env.COC_VALIDATOR_REGISTRY_FROM_BLOCK
+  const validatorRegistryFromBlockRaw = process.env.PALI_VALIDATOR_REGISTRY_FROM_BLOCK
     ?? (user as Record<string, unknown>).validatorRegistryFromBlock
   const validatorRegistryFromBlock = typeof validatorRegistryFromBlockRaw === "number"
     ? validatorRegistryFromBlockRaw
     : (typeof validatorRegistryFromBlockRaw === "string" && /^\d+$/.test(validatorRegistryFromBlockRaw)
       ? parseInt(validatorRegistryFromBlockRaw, 10)
       : undefined)
-  const validatorRegistryPollIntervalMsRaw = process.env.COC_VALIDATOR_REGISTRY_POLL_INTERVAL_MS
+  const validatorRegistryPollIntervalMsRaw = process.env.PALI_VALIDATOR_REGISTRY_POLL_INTERVAL_MS
     ?? (user as Record<string, unknown>).validatorRegistryPollIntervalMs
   const validatorRegistryPollIntervalMs = typeof validatorRegistryPollIntervalMsRaw === "number"
     ? validatorRegistryPollIntervalMsRaw
@@ -599,7 +599,7 @@ export async function loadNodeConfig(): Promise<NodeConfig> {
 
   // advertisedP2pUrl: env var > user config; undefined means "advertise as-is"
   const userAdvertised = (user as Record<string, unknown>).advertisedP2pUrl
-  const advertisedP2pUrl = process.env.COC_ADVERTISED_P2P_URL
+  const advertisedP2pUrl = process.env.PALI_ADVERTISED_P2P_URL
     ?? (typeof userAdvertised === "string" && userAdvertised.length > 0 ? userAdvertised : undefined)
 
   return {
@@ -640,11 +640,11 @@ export async function loadNodeConfig(): Promise<NodeConfig> {
     p2pMaxPeers: 50,
     p2pMaxDiscoveredPerBatch: 200,
     p2pRateLimitWindowMs: safeParseInt(
-      process.env.COC_P2P_RATE_LIMIT_WINDOW_MS,
+      process.env.PALI_P2P_RATE_LIMIT_WINDOW_MS,
       Number((user as Record<string, unknown>).p2pRateLimitWindowMs ?? 60_000),
     ),
     p2pRateLimitMaxRequests: safeParseInt(
-      process.env.COC_P2P_RATE_LIMIT_MAX_REQUESTS,
+      process.env.PALI_P2P_RATE_LIMIT_MAX_REQUESTS,
       Number((user as Record<string, unknown>).p2pRateLimitMaxRequests ?? 240),
     ),
     p2pRequireInboundAuth,
@@ -724,7 +724,7 @@ export async function loadNodeConfig(): Promise<NodeConfig> {
     poseOnchainAuthTimeoutMs,
     poseOnchainAuthFailOpen,
     poseChallengerAuthCacheTtlMs,
-    // env var COC_ADVERTISED_P2P_URL wins over user config
+    // env var PALI_ADVERTISED_P2P_URL wins over user config
     ...(advertisedP2pUrl !== undefined ? { advertisedP2pUrl } : {}),
     dhtRequireAuthenticatedVerify,
     rpcBind,
@@ -754,7 +754,7 @@ export async function loadNodeConfig(): Promise<NodeConfig> {
     validatorRegistryPollIntervalMs,
     didEnabled: user.didEnabled ?? false,
     didAuthMode: user.didAuthMode ?? "off",
-    evmEngine: normalizeEvmEngine(process.env.COC_EVM_ENGINE ?? (user as Record<string, unknown>).evmEngine),
+    evmEngine: normalizeEvmEngine(process.env.PALI_EVM_ENGINE ?? (user as Record<string, unknown>).evmEngine),
     storage: { ...storageDefaults, ...userStorage },
 
     // Sequencer mode: strip consensus overhead for maximum L2 throughput
@@ -874,18 +874,18 @@ function parseBooleanFlag(input: unknown, fallback: boolean): boolean {
 }
 
 async function resolveNodeKey(dataDir: string): Promise<string> {
-  // Priority 1: environment variable (validate format). COC_NODE_KEY is
-  // canonical; COC_NODE_PK is accepted for older runtime/deployment files.
-  const canonicalEnvKey = process.env.COC_NODE_KEY?.trim()
-  const legacyEnvKey = process.env.COC_NODE_PK?.trim()
+  // Priority 1: environment variable (validate format). PALI_NODE_KEY is
+  // canonical; PALI_NODE_PK is accepted for older runtime/deployment files.
+  const canonicalEnvKey = process.env.PALI_NODE_KEY?.trim()
+  const legacyEnvKey = process.env.PALI_NODE_PK?.trim()
   if (canonicalEnvKey || legacyEnvKey) {
     if (canonicalEnvKey && legacyEnvKey && canonicalEnvKey !== legacyEnvKey) {
-      throw new Error("COC_NODE_KEY and COC_NODE_PK are both set but differ")
+      throw new Error("PALI_NODE_KEY and PALI_NODE_PK are both set but differ")
     }
 
     const envKey = canonicalEnvKey ?? legacyEnvKey!
     if (!isValidPrivateKeyHex(envKey)) {
-      throw new Error("COC_NODE_KEY/COC_NODE_PK env var must be a 0x-prefixed 64-character hex string (66 chars total)")
+      throw new Error("PALI_NODE_KEY/PALI_NODE_PK env var must be a 0x-prefixed 64-character hex string (66 chars total)")
     }
     return envKey
   }
@@ -911,7 +911,7 @@ function isValidPrivateKeyHex(key: string): boolean {
 }
 
 function resolveDataDir(): string {
-  const raw = process.env.COC_DATA_DIR || `${homedir()}/.clawdbot/coc`
+  const raw = process.env.PALI_DATA_DIR || `${homedir()}/.clawdbot/coc`
   if (raw.startsWith("~/")) {
     return join(homedir(), raw.slice(2))
   }

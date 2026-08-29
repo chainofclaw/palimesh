@@ -17,7 +17,7 @@ require_gcloud
 stop_one() {
   local name="$1" zone="$2"
   local state
-  state=$(gcloud compute instances describe "$name" --zone="$zone" --project="$COC_GCP_PROJECT" \
+  state=$(gcloud compute instances describe "$name" --zone="$zone" --project="$PALI_GCP_PROJECT" \
     --format="value(status)" 2>/dev/null || echo MISSING)
   if [[ "$state" == "MISSING" ]]; then
     echo "  $name: not found"
@@ -28,13 +28,13 @@ stop_one() {
     return
   fi
   echo "  $name ($zone): stopping..."
-  gcloud compute instances stop "$name" --zone="$zone" --project="$COC_GCP_PROJECT" --quiet
+  gcloud compute instances stop "$name" --zone="$zone" --project="$PALI_GCP_PROJECT" --quiet
 }
 
 case "${1:-}" in
-  burst-1) stop_one "$COC_BURST_1_NAME" "$COC_BURST_1_ZONE" ;;
-  burst-2) stop_one "$COC_BURST_2_NAME" "$COC_BURST_2_ZONE" ;;
-  burst-3) stop_one "$COC_BURST_3_NAME" "$COC_BURST_3_ZONE" ;;
+  burst-1) stop_one "$PALI_BURST_1_NAME" "$PALI_BURST_1_ZONE" ;;
+  burst-2) stop_one "$PALI_BURST_2_NAME" "$PALI_BURST_2_ZONE" ;;
+  burst-3) stop_one "$PALI_BURST_3_NAME" "$PALI_BURST_3_ZONE" ;;
   all-bursts)
     while read -r name zone; do
       stop_one "$name" "$zone"

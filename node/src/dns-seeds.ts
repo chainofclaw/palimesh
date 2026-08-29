@@ -4,8 +4,8 @@
  * Resolves TXT records from DNS seed domains to discover
  * bootstrap peers for the network.
  *
- * TXT record format: "coc-peer:<id>:<url>"
- * Example: "coc-peer:node-1:http://192.168.1.1:19780"
+ * TXT record format: "palimesh-peer:<id>:<url>"
+ * Example: "palimesh-peer:node-1:http://192.168.1.1:19780"
  */
 
 import { resolveTxt } from "node:dns/promises"
@@ -14,7 +14,7 @@ import { createLogger } from "./logger.ts"
 
 const log = createLogger("dns-seeds")
 
-const DNS_PEER_PREFIX = "coc-peer:"
+const DNS_PEER_PREFIX = "palimesh-peer:"
 
 export interface DnsSeedConfig {
   seeds: string[]      // DNS domain names to query

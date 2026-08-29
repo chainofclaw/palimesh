@@ -11,7 +11,7 @@
 //   4. write structured JSON report
 //
 // Synthetic check loop (check-prod.mjs --watch) is a SEPARATE pm2 process
-// (coc-synthetic) running at 60s cadence for fast MTTD on prod-side
+// (palimesh-synthetic) running at 60s cadence for fast MTTD on prod-side
 // availability. This loop runs at 30 min cadence because active probes
 // each emit ~4 on-chain txs, and we don't want to spam the chain.
 
@@ -24,7 +24,7 @@ import { refundFaucet, restartValidators } from './remediate.mjs'
 
 const cfg = {
   intervalMs: Number(process.env.HEALTH_LOOP_INTERVAL_SEC || '1800') * 1000, // 30 min
-  reportDir: process.env.HEALTH_REPORT_DIR || '/var/log/coc-synthetic',
+  reportDir: process.env.HEALTH_REPORT_DIR || '/var/log/palimesh-synthetic',
   // Run stress every N ticks (default 4 = ~2 hours). Stress pushes ~32 txs
   // through mempool + EVM and is heavier than the standard active probe.
   stressEveryNTicks: Number(process.env.HEALTH_STRESS_EVERY || '4'),

@@ -235,7 +235,7 @@ export default function TechnologyPage() {
                   <th className="px-6 py-4 text-left text-sm font-display font-semibold text-text-primary">{t('comparison.dimensions.barrier')}</th>
                   <th className="px-6 py-4 text-left text-sm font-display font-semibold text-text-primary">PoW</th>
                   <th className="px-6 py-4 text-left text-sm font-display font-semibold text-text-primary">PoS</th>
-                  <th className="px-6 py-4 text-left text-sm font-display font-semibold text-accent-cyan border-l-2 border-accent-cyan/30">COC (PoSe)</th>
+                  <th className="px-6 py-4 text-left text-sm font-display font-semibold text-accent-cyan border-l-2 border-accent-cyan/30">Palimesh (PoSe)</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-text-muted/10">
@@ -244,14 +244,14 @@ export default function TechnologyPage() {
                   pow={t('comparison.pow.barrier')}
                   pos={t('comparison.pos.barrier')}
                   coc={t('comparison.coc.barrier')}
-                  cocBetter
+                  paliBetter
                 />
                 <ComparisonRow
                   dimension={t('comparison.dimensions.centralization')}
                   pow={t('comparison.pow.centralization')}
                   pos={t('comparison.pos.centralization')}
                   coc={t('comparison.coc.centralization')}
-                  cocBetter
+                  paliBetter
                 />
                 <ComparisonRow
                   dimension={t('comparison.dimensions.energy')}
@@ -264,21 +264,21 @@ export default function TechnologyPage() {
                   pow={t('comparison.pow.reward')}
                   pos={t('comparison.pos.reward')}
                   coc={t('comparison.coc.reward')}
-                  cocBetter
+                  paliBetter
                 />
                 <ComparisonRow
                   dimension={t('comparison.dimensions.decentralization')}
                   pow={t('comparison.pow.decentralization')}
                   pos={t('comparison.pos.decentralization')}
                   coc={t('comparison.coc.decentralization')}
-                  cocBetter
+                  paliBetter
                 />
                 <ComparisonRow
                   dimension={t('comparison.dimensions.automation')}
                   pow={t('comparison.pow.automation')}
                   pos={t('comparison.pos.automation')}
                   coc={t('comparison.coc.automation')}
-                  cocBetter
+                  paliBetter
                 />
               </tbody>
             </table>
@@ -461,13 +461,13 @@ function ComparisonRow({
   pow,
   pos,
   coc,
-  cocBetter = false,
+  paliBetter = false,
 }: {
   dimension: string
   pow: string
   pos: string
   coc: string
-  cocBetter?: boolean
+  paliBetter?: boolean
 }) {
   return (
     <tr className="hover:bg-bg-secondary/30 transition-colors">
@@ -475,11 +475,11 @@ function ComparisonRow({
       <td className="px-6 py-4 text-text-secondary font-body">{pow}</td>
       <td className="px-6 py-4 text-text-secondary font-body">{pos}</td>
       <td className={`px-6 py-4 border-l-2 border-accent-cyan/30 font-body ${
-        cocBetter
+        paliBetter
           ? 'bg-accent-cyan/10 font-semibold text-accent-cyan'
           : 'text-text-secondary'
       }`}>
-        {cocBetter && <span className="text-accent-cyan mr-2">✓</span>}
+        {paliBetter && <span className="text-accent-cyan mr-2">✓</span>}
         {coc}
       </td>
     </tr>

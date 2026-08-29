@@ -7,7 +7,7 @@ export default function PlanPage() {
   const locale = useLocale()
 
   // Determine whitepaper filename based on locale
-  const whitepaperFile = locale === 'zh' ? 'COC_whitepaper.zh.md' : 'COC_whitepaper.en.md'
+  const whitepaperFile = locale === 'zh' ? 'palimesh_whitepaper.zh.md' : 'palimesh_whitepaper.en.md'
   const downloadLabel = locale === 'zh' ? '下载白皮书 (Markdown)' : 'Download Whitepaper (Markdown)'
 
   return (

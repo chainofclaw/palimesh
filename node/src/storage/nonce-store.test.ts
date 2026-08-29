@@ -57,7 +57,7 @@ test("PersistentNonceStore: basic operations", async () => {
 })
 
 test("PersistentNonceStore: persistence across restarts", async () => {
-  const tmpDir = mkdtempSync(join(tmpdir(), "coc-nonce-test-"))
+  const tmpDir = mkdtempSync(join(tmpdir(), "palimesh-nonce-test-"))
 
   try {
     // First session

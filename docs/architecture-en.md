@@ -1,4 +1,4 @@
-# COC (ChainOfClaw) Technical Architecture Documentation
+# Palimesh (Palimesh) Technical Architecture Documentation
 
 > **Version**: v1.1.0
 > **Last Updated**: 2026-02-16
@@ -8,7 +8,7 @@
 
 ## 1. System Overview
 
-COC is an EVM-compatible blockchain built on PoSe (Proof of Service) consensus. It uses a challenge-response mechanism to verify storage, relay, and uptime services provided by nodes, enabling incentivized and penalized decentralized service networks.
+Palimesh is an EVM-compatible blockchain built on PoSe (Proof of Service) consensus. It uses a challenge-response mechanism to verify storage, relay, and uptime services provided by nodes, enabling incentivized and penalized decentralized service networks.
 
 ### 1.1 Core Features
 
@@ -38,7 +38,7 @@ COC is an EVM-compatible blockchain built on PoSe (Proof of Service) consensus. 
 └─────────────────────────────────────────────┘
                     ↓ JSON-RPC
 ┌─────────────────────────────────────────────┐
-│          L2 Node Layer (COC Nodes)           │
+│          L2 Node Layer (Palimesh Nodes)           │
 │  ┌──────────┐  ┌──────────┐  ┌──────────┐  │
 │  │RPC Service│  │EVM Engine│  │Consensus │  │
 │  └──────────┘  └──────────┘  └──────────┘  │
@@ -63,7 +63,7 @@ COC is an EVM-compatible blockchain built on PoSe (Proof of Service) consensus. 
 
 - **chain-engine**: Block production, finality, state snapshots
 - **evm.ts**: EthereumJS VM for smart contract execution
-- **rpc.ts**: JSON-RPC service (57+ methods including eth_*, coc_*, txpool_*)
+- **rpc.ts**: JSON-RPC service (57+ methods including eth_*, pali_*, txpool_*)
 - **websocket-rpc.ts**: WebSocket RPC (eth_subscribe with validation and limits)
 - **consensus.ts**: Consensus engine with degraded mode and auto-recovery
 - **mempool.ts**: Transaction pool with EIP-1559 effective gas price sorting
@@ -77,9 +77,9 @@ COC is an EVM-compatible blockchain built on PoSe (Proof of Service) consensus. 
 
 #### 2.2.2 Runtime (`runtime/`)
 
-- **coc-agent.ts**: Challenger/aggregator agent, drives epoch validation loop
-- **coc-node.ts**: HTTP server, responds to PoSe challenge requests
-- **coc-relayer.ts**: L1-L2 relayer, submits epoch finalization and disputes
+- **palimesh-agent.ts**: Challenger/aggregator agent, drives epoch validation loop
+- **palimesh-node.ts**: HTTP server, responds to PoSe challenge requests
+- **palimesh-relayer.ts**: L1-L2 relayer, submits epoch finalization and disputes
 
 #### 2.2.3 Services Layer (`services/`)
 
@@ -391,7 +391,7 @@ function _verifyOwnership(
     if (sig.length != 65) revert InvalidOwnershipProof();
 
     bytes32 messageHash = keccak256(
-        abi.encodePacked("coc-register:", nodeId, msg.sender)
+        abi.encodePacked("palimesh-register:", nodeId, msg.sender)
     );
     bytes32 ethSignedHash = keccak256(
         abi.encodePacked("\x19Ethereum Signed Message:\n32", messageHash)
@@ -715,7 +715,7 @@ scoring:
 {
   "level": "info",
   "timestamp": "2026-02-14T12:34:56Z",
-  "module": "coc-agent",
+  "module": "palimesh-agent",
   "event": "challenge_completed",
   "data": {
     "nodeId": "0xabc...",
@@ -755,6 +755,6 @@ scoring:
 
 ---
 
-**Maintainers**: COC Core Team
-**Contact**: dev@chainofclaw.org
+**Maintainers**: Palimesh Core Team
+**Contact**: dev@palimesh.io
 **License**: MIT

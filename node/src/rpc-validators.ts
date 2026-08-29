@@ -9,7 +9,7 @@
  *   - websocket-rpc.ts        — WebSocket JSON-RPC + subscriptions
  *   - ipfs-http.ts            — Kubo-compat /api/v0/* endpoints
  *   - pose-http.ts            — PoSe v1/v2 HTTP routes
- *   - runtime/coc-node.ts     — node-local POST endpoints
+ *   - runtime/palimesh-node.ts     — node-local POST endpoints
  *
  * Design constraints (must preserve, otherwise breaks RPC clients):
  *
@@ -24,7 +24,7 @@
  *       -32601  method not found / method disabled
  *       -32602  invalid params
  *       -32603  internal server error
- *     plus the COC custom:
+ *     plus the Palimesh custom:
  *       -32005  limit exceeded (#132, #200, #208, #224)
  *
  *   - Helper-thrown messages must NOT leak V8 internals (TypeError /
@@ -37,7 +37,7 @@ import type { Hex } from "./blockchain-types.ts"
 
 // ---------------------------------------------------------------------------
 // Standardized error throws — replaces literal `throw { code: -32602, ... }`
-// strewn across rpc.ts / ipfs-http.ts / pose-http.ts / coc-node.ts.
+// strewn across rpc.ts / ipfs-http.ts / pose-http.ts / palimesh-node.ts.
 // ---------------------------------------------------------------------------
 
 /** Throw JSON-RPC §5.1 -32602 "invalid params". Never returns. */
@@ -60,7 +60,7 @@ export function parseError(message: string): never {
   throw { code: -32700, message }
 }
 
-/** Throw COC-custom -32005 "limit exceeded" (too many filters, oversized batch, etc.). Never returns. */
+/** Throw Palimesh-custom -32005 "limit exceeded" (too many filters, oversized batch, etc.). Never returns. */
 export function limitExceeded(message: string): never {
   throw { code: -32005, message }
 }
@@ -70,7 +70,7 @@ export function internalError(message: string): never {
   throw { code: -32603, message }
 }
 
-/** Throw COC-custom -32003 "unauthorized" (admin RPC gated, etc.). Never returns. */
+/** Throw Palimesh-custom -32003 "unauthorized" (admin RPC gated, etc.). Never returns. */
 export function unauthorized(message: string): never {
   throw { code: -32003, message }
 }
@@ -166,7 +166,7 @@ export function optionalHexParam(params: unknown[], index: number): Hex | undefi
  * #122: strict 20-byte address validator. requireHexParam accepts any
  * hex up to 66 chars, so "0x123" slipped through and downstream code
  * either echoed back the raw input (eth_getBalance) or silently missed
- * the index (coc_getContractInfo). Use this at the RPC boundary for
+ * the index (pali_getContractInfo). Use this at the RPC boundary for
  * methods whose param is documented as an Ethereum address.
  */
 export function requireAddressParam(params: unknown[], index: number, name = "address"): Hex {
@@ -339,7 +339,7 @@ export function requireStringParam(params: unknown[], index: number, name: strin
  * #252: Generic non-negative integer-param validator. Pre-fix
  * `Number((params)[idx] ?? -1)` silently coerced `true`→1, `[1]`→1,
  * `"1"`→1, `null`→0 so callers got hits for non-integer inputs.
- * Used for epochId in `coc_getRewardManifest` / `coc_getRewardClaim`.
+ * Used for epochId in `pali_getRewardManifest` / `pali_getRewardClaim`.
  * Same anti-pattern as #120/#220/#226/#240/#242.
  */
 export function requireIntegerParam(params: unknown[], index: number, name: string): number {
@@ -357,7 +357,7 @@ export function requireIntegerParam(params: unknown[], index: number, name: stri
  * #254: Optional non-negative integer with default. Treats `undefined`
  * and `null` as "omitted" and returns the supplied default; rejects
  * any other non-integer shape with -32602. Pre-fix the
- * `Number((params)[idx] ?? N)` idiom in `coc_getTransactionsByAddress`
+ * `Number((params)[idx] ?? N)` idiom in `pali_getTransactionsByAddress`
  * (and similar paginated handlers) silently coerced `true`→1, `"5"`→5,
  * `[3]`→3, `{}`→NaN→fallback. Same family as #252/#251/#224.
  */
@@ -613,7 +613,7 @@ export function validateTxCallFields(callParams: Record<string, unknown>): void 
  *
  *   {[address]: {balance?, nonce?, code?, state?, stateDiff?}, …}
  *
- * COC's EVM doesn't wire this through to callRaw, but pre-fix the param
+ * Palimesh's EVM doesn't wire this through to callRaw, but pre-fix the param
  * was silently ignored — including bogus shapes (string, array, non-empty
  * object). Tenderly-style simulators and viem's
  * `eth_call(..., overrides)` got back results computed WITHOUT their
@@ -796,7 +796,7 @@ export function sanitizeEthersError(err: unknown, fallbackMsg = "encoding failed
  * V8 version (the format has changed between major Node versions).
  *
  * Pre-fix sites: rpc.ts:246/496, ipfs-http.ts (kubo /api/v0/* POST
- * bodies #232), pose-http.ts (#176), coc-node.ts (#222). All replace
+ * bodies #232), pose-http.ts (#176), palimesh-node.ts (#222). All replace
  * the raw exception message with a generic phrase.
  */
 export function sanitizeJsonParseError(_err: unknown): string {

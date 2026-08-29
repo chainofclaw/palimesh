@@ -1,4 +1,4 @@
-# COC Anti-Sybil Attack Mechanisms
+# Palimesh Anti-Sybil Attack Mechanisms
 
 > **Version**: v1.0.0
 > **Last Updated**: 2026-02-16
@@ -172,7 +172,7 @@ function requiredBond(address operator) external view returns (uint256) {
 #### 3.1.4 Agent-Side Call
 
 ```typescript
-// runtime/coc-agent.ts
+// runtime/palimesh-agent.ts
 
 async function ensureNodeRegistered(): Promise<void> {
   const signer = getSigner();
@@ -237,7 +237,7 @@ Prevent same physical machine from registering multiple virtual nodes (e.g., via
 #### 4.1.2 Fingerprint Algorithm
 
 ```typescript
-// runtime/coc-agent.ts
+// runtime/palimesh-agent.ts
 
 import { hostname, networkInterfaces } from "node:os";
 
@@ -275,7 +275,7 @@ machine:node-1.example.com:00:1A:2B:3C:4D:5E:0x04abc123...
 #### 4.1.3 endpointCommitment Uniqueness
 
 ```typescript
-// runtime/coc-agent.ts
+// runtime/palimesh-agent.ts
 
 const fingerprint = computeMachineFingerprint(pubkey);
 const endpointCommitment = keccak256(toUtf8Bytes(fingerprint));
@@ -494,7 +494,7 @@ Use ECDSA signature + `abi.encodePacked` to construct message.
 
 **Signature Message**:
 ```
-abi.encodePacked("coc-register:", nodeId, msg.sender)
+abi.encodePacked("palimesh-register:", nodeId, msg.sender)
 ```
 
 **Contract Verification**:
@@ -510,7 +510,7 @@ function _verifyOwnership(
 
     // Construct message
     bytes32 messageHash = keccak256(
-        abi.encodePacked("coc-register:", nodeId, msg.sender)
+        abi.encodePacked("palimesh-register:", nodeId, msg.sender)
     );
 
     // EIP-191 prefix
@@ -550,7 +550,7 @@ function _pubkeyToAddress(bytes calldata pubkey) internal pure returns (address)
 #### 7.1.3 Agent-Side Signing
 
 ```typescript
-// runtime/coc-agent.ts
+// runtime/palimesh-agent.ts
 
 async function ensureNodeRegistered(): Promise<void> {
   const signer = getSigner();
@@ -558,7 +558,7 @@ async function ensureNodeRegistered(): Promise<void> {
 
   // Construct signature message (matches contract)
   const message = Buffer.concat([
-    Buffer.from("coc-register:", "utf8"),
+    Buffer.from("palimesh-register:", "utf8"),
     Buffer.from(nodeId.slice(2), "hex"),
     Buffer.from(signer.address.slice(2), "hex"),
   ]);
@@ -985,7 +985,7 @@ verifyRelayResult: async (challenge, receipt) => {
    }
    ```
 
-2. Update coc-agent.ts
+2. Update palimesh-agent.ts
    ```typescript
    const nonceRegistry = new PersistentNonceRegistry("./data/nonces");
    ```
@@ -1228,13 +1228,13 @@ This section explains how validators block Sybil cheating at runtime, mapped to 
 
 ### 12.5 Operational Guidance
 
-1. Wire `coc_getNetworkStats` to alerts with focus on `authRejected`, `discoveryIdentityFailures`, and `dht.verifyFailures`.  
+1. Wire `pali_getNetworkStats` to alerts with focus on `authRejected`, `discoveryIdentityFailures`, and `dht.verifyFailures`.  
 2. Use dedicated RPC for on-chain authorization queries and enforce request timeout.  
 3. During rollout, run `monitor` for 24h first, then switch to `enforce` with rollback playbook ready.  
 
 ---
 
-**Maintainers**: COC Security Team
-**Contact**: security@chainofclaw.org
+**Maintainers**: Palimesh Security Team
+**Contact**: security@palimesh.io
 **Last Audit**: 2026-02-14
 **License**: MIT

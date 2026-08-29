@@ -1,12 +1,12 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# Emergency containment helper for coc-explorer compromise response.
+# Emergency containment helper for palimesh-explorer compromise response.
 # This script intentionally keeps explorer offline after containment.
 
 QUARANTINE_BASE="${QUARANTINE_BASE:-/root/quarantine}"
 TIMESTAMP="$(date +%Y%m%d-%H%M%S)"
-QUARANTINE_DIR="${QUARANTINE_BASE}/coc-explorer-incident-${TIMESTAMP}"
+QUARANTINE_DIR="${QUARANTINE_BASE}/palimesh-explorer-incident-${TIMESTAMP}"
 IOC_FILE="${IOC_FILE:-}"
 BLOCK_IPS=()
 
@@ -77,9 +77,9 @@ ss -plant > "${QUARANTINE_DIR}/sockets.txt" || true
 journalctl --since '2 hours ago' > "${QUARANTINE_DIR}/journal-last-2h.log" || true
 
 log "Stopping explorer services (pm2/systemd/docker) ..."
-pm2 stop coc-explorer >/dev/null 2>&1 || true
-systemctl stop coc-explorer.service >/dev/null 2>&1 || true
-docker stop coc-explorer >/dev/null 2>&1 || true
+pm2 stop palimesh-explorer >/dev/null 2>&1 || true
+systemctl stop palimesh-explorer.service >/dev/null 2>&1 || true
+docker stop palimesh-explorer >/dev/null 2>&1 || true
 
 log "Terminating suspicious miner/downloader process patterns..."
 pkill -f 'CeuzT0b|i1LT1A|RPEiZT|oHdzPs5h|/let|xmrig|stratum' >/dev/null 2>&1 || true

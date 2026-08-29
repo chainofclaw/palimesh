@@ -1,6 +1,6 @@
-# COC Website
+# Palimesh Website
 
-COC (ChainOfClaw) 项目官方网站 - 基于 Next.js 15 构建的现代化Web应用，支持5种语言国际化。
+Palimesh (Palimesh) 项目官方网站 - 基于 Next.js 15 构建的现代化Web应用，支持5种语言国际化。
 
 ## 🌍 多语言支持
 
@@ -41,7 +41,7 @@ COC (ChainOfClaw) 项目官方网站 - 基于 Next.js 15 构建的现代化Web�
 ### 🔗 外部集成
 
 - **区块浏览器**: 链接到独立运行的 explorer (http://localhost:3000)
-- **RPC节点**: 连接到本地或远程 COC 节点 (默认 http://127.0.0.1:18780)
+- **RPC节点**: 连接到本地或远程 Palimesh 节点 (默认 http://127.0.0.1:18780)
 
 ## 快速开始
 
@@ -111,10 +111,10 @@ website/
 
 ### RPC调用
 
-网站通过 `src/lib/provider.ts` 和 `src/lib/rpc.ts` 与COC节点交互:
+网站通过 `src/lib/provider.ts` 和 `src/lib/rpc.ts` 与Palimesh节点交互:
 
 - 标准以太坊RPC方法 (via ethers.js)
-- 自定义COC方法 (`coc_nodeInfo`, `coc_validators`)
+- 自定义Palimesh方法 (`pali_nodeInfo`, `pali_validators`)
 - WebSocket实时订阅 (用于网络状态更新)
 
 ### 组件设计
@@ -139,8 +139,8 @@ vercel deploy
 ### Docker
 
 ```bash
-docker build -t coc-website .
-docker run -p 3001:3001 coc-website
+docker build -t palimesh-website .
+docker run -p 3001:3001 palimesh-website
 ```
 
 ### 手动部署
@@ -155,8 +155,8 @@ npm start
 
 | 变量名 | 说明 | 默认值 |
 |--------|------|--------|
-| `NEXT_PUBLIC_RPC_URL` | COC节点RPC地址 | `http://127.0.0.1:18780` |
-| `NEXT_PUBLIC_WS_URL` | COC节点WebSocket地址 | `ws://127.0.0.1:18781` |
+| `NEXT_PUBLIC_RPC_URL` | Palimesh节点RPC地址 | `http://127.0.0.1:18780` |
+| `NEXT_PUBLIC_WS_URL` | Palimesh节点WebSocket地址 | `ws://127.0.0.1:18781` |
 
 ## 许可证
 

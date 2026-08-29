@@ -230,137 +230,137 @@ describe("validateConfig", () => {
 })
 
 describe("loadNodeConfig", () => {
-  it("accepts legacy COC_NODE_PK as a node key fallback", async () => {
-    const tempDir = await mkdtemp(join(tmpdir(), "coc-config-node-key-"))
+  it("accepts legacy PALI_NODE_PK as a node key fallback", async () => {
+    const tempDir = await mkdtemp(join(tmpdir(), "palimesh-config-node-key-"))
     const previousEnv = {
-      COC_DATA_DIR: process.env.COC_DATA_DIR,
-      COC_NODE_CONFIG: process.env.COC_NODE_CONFIG,
-      COC_NODE_KEY: process.env.COC_NODE_KEY,
-      COC_NODE_PK: process.env.COC_NODE_PK,
+      PALI_DATA_DIR: process.env.PALI_DATA_DIR,
+      PALI_NODE_CONFIG: process.env.PALI_NODE_CONFIG,
+      PALI_NODE_KEY: process.env.PALI_NODE_KEY,
+      PALI_NODE_PK: process.env.PALI_NODE_PK,
     }
 
     try {
-      process.env.COC_DATA_DIR = tempDir
-      delete process.env.COC_NODE_CONFIG
-      delete process.env.COC_NODE_KEY
-      process.env.COC_NODE_PK = NODE_KEY_A
+      process.env.PALI_DATA_DIR = tempDir
+      delete process.env.PALI_NODE_CONFIG
+      delete process.env.PALI_NODE_KEY
+      process.env.PALI_NODE_PK = NODE_KEY_A
 
       const cfg = await loadNodeConfig()
       assert.equal(cfg.nodePrivateKey, NODE_KEY_A)
     } finally {
-      if (previousEnv.COC_DATA_DIR === undefined) delete process.env.COC_DATA_DIR
-      else process.env.COC_DATA_DIR = previousEnv.COC_DATA_DIR
-      if (previousEnv.COC_NODE_CONFIG === undefined) delete process.env.COC_NODE_CONFIG
-      else process.env.COC_NODE_CONFIG = previousEnv.COC_NODE_CONFIG
-      if (previousEnv.COC_NODE_KEY === undefined) delete process.env.COC_NODE_KEY
-      else process.env.COC_NODE_KEY = previousEnv.COC_NODE_KEY
-      if (previousEnv.COC_NODE_PK === undefined) delete process.env.COC_NODE_PK
-      else process.env.COC_NODE_PK = previousEnv.COC_NODE_PK
+      if (previousEnv.PALI_DATA_DIR === undefined) delete process.env.PALI_DATA_DIR
+      else process.env.PALI_DATA_DIR = previousEnv.PALI_DATA_DIR
+      if (previousEnv.PALI_NODE_CONFIG === undefined) delete process.env.PALI_NODE_CONFIG
+      else process.env.PALI_NODE_CONFIG = previousEnv.PALI_NODE_CONFIG
+      if (previousEnv.PALI_NODE_KEY === undefined) delete process.env.PALI_NODE_KEY
+      else process.env.PALI_NODE_KEY = previousEnv.PALI_NODE_KEY
+      if (previousEnv.PALI_NODE_PK === undefined) delete process.env.PALI_NODE_PK
+      else process.env.PALI_NODE_PK = previousEnv.PALI_NODE_PK
       await rm(tempDir, { recursive: true, force: true })
     }
   })
 
-  it("rejects conflicting COC_NODE_KEY and COC_NODE_PK values", async () => {
-    const tempDir = await mkdtemp(join(tmpdir(), "coc-config-node-key-conflict-"))
+  it("rejects conflicting PALI_NODE_KEY and PALI_NODE_PK values", async () => {
+    const tempDir = await mkdtemp(join(tmpdir(), "palimesh-config-node-key-conflict-"))
     const previousEnv = {
-      COC_DATA_DIR: process.env.COC_DATA_DIR,
-      COC_NODE_CONFIG: process.env.COC_NODE_CONFIG,
-      COC_NODE_KEY: process.env.COC_NODE_KEY,
-      COC_NODE_PK: process.env.COC_NODE_PK,
+      PALI_DATA_DIR: process.env.PALI_DATA_DIR,
+      PALI_NODE_CONFIG: process.env.PALI_NODE_CONFIG,
+      PALI_NODE_KEY: process.env.PALI_NODE_KEY,
+      PALI_NODE_PK: process.env.PALI_NODE_PK,
     }
 
     try {
-      process.env.COC_DATA_DIR = tempDir
-      delete process.env.COC_NODE_CONFIG
-      process.env.COC_NODE_KEY = NODE_KEY_A
-      process.env.COC_NODE_PK = NODE_KEY_B
+      process.env.PALI_DATA_DIR = tempDir
+      delete process.env.PALI_NODE_CONFIG
+      process.env.PALI_NODE_KEY = NODE_KEY_A
+      process.env.PALI_NODE_PK = NODE_KEY_B
 
       await assert.rejects(
         () => loadNodeConfig(),
-        /COC_NODE_KEY and COC_NODE_PK are both set but differ/,
+        /PALI_NODE_KEY and PALI_NODE_PK are both set but differ/,
       )
     } finally {
-      if (previousEnv.COC_DATA_DIR === undefined) delete process.env.COC_DATA_DIR
-      else process.env.COC_DATA_DIR = previousEnv.COC_DATA_DIR
-      if (previousEnv.COC_NODE_CONFIG === undefined) delete process.env.COC_NODE_CONFIG
-      else process.env.COC_NODE_CONFIG = previousEnv.COC_NODE_CONFIG
-      if (previousEnv.COC_NODE_KEY === undefined) delete process.env.COC_NODE_KEY
-      else process.env.COC_NODE_KEY = previousEnv.COC_NODE_KEY
-      if (previousEnv.COC_NODE_PK === undefined) delete process.env.COC_NODE_PK
-      else process.env.COC_NODE_PK = previousEnv.COC_NODE_PK
+      if (previousEnv.PALI_DATA_DIR === undefined) delete process.env.PALI_DATA_DIR
+      else process.env.PALI_DATA_DIR = previousEnv.PALI_DATA_DIR
+      if (previousEnv.PALI_NODE_CONFIG === undefined) delete process.env.PALI_NODE_CONFIG
+      else process.env.PALI_NODE_CONFIG = previousEnv.PALI_NODE_CONFIG
+      if (previousEnv.PALI_NODE_KEY === undefined) delete process.env.PALI_NODE_KEY
+      else process.env.PALI_NODE_KEY = previousEnv.PALI_NODE_KEY
+      if (previousEnv.PALI_NODE_PK === undefined) delete process.env.PALI_NODE_PK
+      else process.env.PALI_NODE_PK = previousEnv.PALI_NODE_PK
       await rm(tempDir, { recursive: true, force: true })
     }
   })
 
   it("does not trust loopback RPC callers unless explicitly enabled", async () => {
-    const tempDir = await mkdtemp(join(tmpdir(), "coc-config-loopback-auth-"))
+    const tempDir = await mkdtemp(join(tmpdir(), "palimesh-config-loopback-auth-"))
     const previousEnv = {
-      COC_DATA_DIR: process.env.COC_DATA_DIR,
-      COC_NODE_CONFIG: process.env.COC_NODE_CONFIG,
-      COC_RPC_ALLOW_LOOPBACK_ADMIN: process.env.COC_RPC_ALLOW_LOOPBACK_ADMIN,
+      PALI_DATA_DIR: process.env.PALI_DATA_DIR,
+      PALI_NODE_CONFIG: process.env.PALI_NODE_CONFIG,
+      PALI_RPC_ALLOW_LOOPBACK_ADMIN: process.env.PALI_RPC_ALLOW_LOOPBACK_ADMIN,
     }
 
     try {
-      process.env.COC_DATA_DIR = tempDir
-      delete process.env.COC_NODE_CONFIG
-      delete process.env.COC_RPC_ALLOW_LOOPBACK_ADMIN
+      process.env.PALI_DATA_DIR = tempDir
+      delete process.env.PALI_NODE_CONFIG
+      delete process.env.PALI_RPC_ALLOW_LOOPBACK_ADMIN
 
       const defaultCfg = await loadNodeConfig()
       assert.equal(defaultCfg.allowLoopbackRpcAuth, false)
 
-      process.env.COC_RPC_ALLOW_LOOPBACK_ADMIN = "1"
+      process.env.PALI_RPC_ALLOW_LOOPBACK_ADMIN = "1"
       const enabledCfg = await loadNodeConfig()
       assert.equal(enabledCfg.allowLoopbackRpcAuth, true)
     } finally {
-      if (previousEnv.COC_DATA_DIR === undefined) delete process.env.COC_DATA_DIR
-      else process.env.COC_DATA_DIR = previousEnv.COC_DATA_DIR
-      if (previousEnv.COC_NODE_CONFIG === undefined) delete process.env.COC_NODE_CONFIG
-      else process.env.COC_NODE_CONFIG = previousEnv.COC_NODE_CONFIG
-      if (previousEnv.COC_RPC_ALLOW_LOOPBACK_ADMIN === undefined) delete process.env.COC_RPC_ALLOW_LOOPBACK_ADMIN
-      else process.env.COC_RPC_ALLOW_LOOPBACK_ADMIN = previousEnv.COC_RPC_ALLOW_LOOPBACK_ADMIN
+      if (previousEnv.PALI_DATA_DIR === undefined) delete process.env.PALI_DATA_DIR
+      else process.env.PALI_DATA_DIR = previousEnv.PALI_DATA_DIR
+      if (previousEnv.PALI_NODE_CONFIG === undefined) delete process.env.PALI_NODE_CONFIG
+      else process.env.PALI_NODE_CONFIG = previousEnv.PALI_NODE_CONFIG
+      if (previousEnv.PALI_RPC_ALLOW_LOOPBACK_ADMIN === undefined) delete process.env.PALI_RPC_ALLOW_LOOPBACK_ADMIN
+      else process.env.PALI_RPC_ALLOW_LOOPBACK_ADMIN = previousEnv.PALI_RPC_ALLOW_LOOPBACK_ADMIN
       await rm(tempDir, { recursive: true, force: true })
     }
   })
 
   it("loads hardfork from config file and lets env override it", async () => {
-    const tempDir = await mkdtemp(join(tmpdir(), "coc-config-hardfork-"))
+    const tempDir = await mkdtemp(join(tmpdir(), "palimesh-config-hardfork-"))
     const configPath = join(tempDir, "node-config.json")
     const previousEnv = {
-      COC_DATA_DIR: process.env.COC_DATA_DIR,
-      COC_NODE_CONFIG: process.env.COC_NODE_CONFIG,
-      COC_EVM_HARDFORK: process.env.COC_EVM_HARDFORK,
+      PALI_DATA_DIR: process.env.PALI_DATA_DIR,
+      PALI_NODE_CONFIG: process.env.PALI_NODE_CONFIG,
+      PALI_EVM_HARDFORK: process.env.PALI_EVM_HARDFORK,
     }
 
     try {
       await writeFile(configPath, JSON.stringify({ hardfork: Hardfork.London }), "utf-8")
-      process.env.COC_DATA_DIR = tempDir
-      process.env.COC_NODE_CONFIG = configPath
-      delete process.env.COC_EVM_HARDFORK
+      process.env.PALI_DATA_DIR = tempDir
+      process.env.PALI_NODE_CONFIG = configPath
+      delete process.env.PALI_EVM_HARDFORK
 
       const fromFile = await loadNodeConfig()
       assert.equal(fromFile.hardfork, Hardfork.London)
 
-      process.env.COC_EVM_HARDFORK = Hardfork.Cancun
+      process.env.PALI_EVM_HARDFORK = Hardfork.Cancun
       const fromEnv = await loadNodeConfig()
       assert.equal(fromEnv.hardfork, Hardfork.Cancun)
     } finally {
-      if (previousEnv.COC_DATA_DIR === undefined) delete process.env.COC_DATA_DIR
-      else process.env.COC_DATA_DIR = previousEnv.COC_DATA_DIR
-      if (previousEnv.COC_NODE_CONFIG === undefined) delete process.env.COC_NODE_CONFIG
-      else process.env.COC_NODE_CONFIG = previousEnv.COC_NODE_CONFIG
-      if (previousEnv.COC_EVM_HARDFORK === undefined) delete process.env.COC_EVM_HARDFORK
-      else process.env.COC_EVM_HARDFORK = previousEnv.COC_EVM_HARDFORK
+      if (previousEnv.PALI_DATA_DIR === undefined) delete process.env.PALI_DATA_DIR
+      else process.env.PALI_DATA_DIR = previousEnv.PALI_DATA_DIR
+      if (previousEnv.PALI_NODE_CONFIG === undefined) delete process.env.PALI_NODE_CONFIG
+      else process.env.PALI_NODE_CONFIG = previousEnv.PALI_NODE_CONFIG
+      if (previousEnv.PALI_EVM_HARDFORK === undefined) delete process.env.PALI_EVM_HARDFORK
+      else process.env.PALI_EVM_HARDFORK = previousEnv.PALI_EVM_HARDFORK
       await rm(tempDir, { recursive: true, force: true })
     }
   })
 
   it("loads hardforkSchedule from config file and lets env override it", async () => {
-    const tempDir = await mkdtemp(join(tmpdir(), "coc-config-hardfork-schedule-"))
+    const tempDir = await mkdtemp(join(tmpdir(), "palimesh-config-hardfork-schedule-"))
     const configPath = join(tempDir, "node-config.json")
     const previousEnv = {
-      COC_DATA_DIR: process.env.COC_DATA_DIR,
-      COC_NODE_CONFIG: process.env.COC_NODE_CONFIG,
-      COC_EVM_HARDFORK_SCHEDULE: process.env.COC_EVM_HARDFORK_SCHEDULE,
+      PALI_DATA_DIR: process.env.PALI_DATA_DIR,
+      PALI_NODE_CONFIG: process.env.PALI_NODE_CONFIG,
+      PALI_EVM_HARDFORK_SCHEDULE: process.env.PALI_EVM_HARDFORK_SCHEDULE,
     }
 
     try {
@@ -370,9 +370,9 @@ describe("loadNodeConfig", () => {
           { blockNumber: 50, hardfork: Hardfork.Shanghai },
         ],
       }), "utf-8")
-      process.env.COC_DATA_DIR = tempDir
-      process.env.COC_NODE_CONFIG = configPath
-      delete process.env.COC_EVM_HARDFORK_SCHEDULE
+      process.env.PALI_DATA_DIR = tempDir
+      process.env.PALI_NODE_CONFIG = configPath
+      delete process.env.PALI_EVM_HARDFORK_SCHEDULE
 
       const fromFile = await loadNodeConfig()
       assert.deepEqual(fromFile.hardforkSchedule, [
@@ -380,7 +380,7 @@ describe("loadNodeConfig", () => {
         { blockNumber: 50, hardfork: Hardfork.Shanghai },
       ])
 
-      process.env.COC_EVM_HARDFORK_SCHEDULE = JSON.stringify([
+      process.env.PALI_EVM_HARDFORK_SCHEDULE = JSON.stringify([
         { blockNumber: 0, hardfork: Hardfork.Shanghai },
         { blockNumber: 100, hardfork: Hardfork.Cancun },
       ])
@@ -391,12 +391,12 @@ describe("loadNodeConfig", () => {
         { blockNumber: 100, hardfork: Hardfork.Cancun },
       ])
     } finally {
-      if (previousEnv.COC_DATA_DIR === undefined) delete process.env.COC_DATA_DIR
-      else process.env.COC_DATA_DIR = previousEnv.COC_DATA_DIR
-      if (previousEnv.COC_NODE_CONFIG === undefined) delete process.env.COC_NODE_CONFIG
-      else process.env.COC_NODE_CONFIG = previousEnv.COC_NODE_CONFIG
-      if (previousEnv.COC_EVM_HARDFORK_SCHEDULE === undefined) delete process.env.COC_EVM_HARDFORK_SCHEDULE
-      else process.env.COC_EVM_HARDFORK_SCHEDULE = previousEnv.COC_EVM_HARDFORK_SCHEDULE
+      if (previousEnv.PALI_DATA_DIR === undefined) delete process.env.PALI_DATA_DIR
+      else process.env.PALI_DATA_DIR = previousEnv.PALI_DATA_DIR
+      if (previousEnv.PALI_NODE_CONFIG === undefined) delete process.env.PALI_NODE_CONFIG
+      else process.env.PALI_NODE_CONFIG = previousEnv.PALI_NODE_CONFIG
+      if (previousEnv.PALI_EVM_HARDFORK_SCHEDULE === undefined) delete process.env.PALI_EVM_HARDFORK_SCHEDULE
+      else process.env.PALI_EVM_HARDFORK_SCHEDULE = previousEnv.PALI_EVM_HARDFORK_SCHEDULE
       await rm(tempDir, { recursive: true, force: true })
     }
   })

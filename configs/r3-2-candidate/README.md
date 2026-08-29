@@ -1,4 +1,4 @@
-# COC R3.2 Prod-Candidate Testnet (chainId 88780)
+# Palimesh R3.2 Prod-Candidate Testnet (chainId 88780)
 
 This directory holds the public configuration for the R3.2 prod-candidate
 chain. It is the rehearsal environment for mainnet bring-up.
@@ -19,7 +19,7 @@ Per-validator private keys live at `~/.coc/keys/88780-prod-candidate/`
 bash scripts/generate-validator-keys.sh 5 ~/.coc/keys/88780-prod-candidate/
 ```
 
-Each validator-N.env contains `COC_NODE_KEY` + `COC_NODE_ID`.
+Each validator-N.env contains `PALI_NODE_KEY` + `PALI_NODE_ID`.
 `validators-private.json` (mode 0600) holds the index-mapped
 `{address, privateKey}` pairs for genesis editing — also never committed.
 
@@ -47,8 +47,8 @@ ValidatorRegistry reader path).
 
 This config is **inert** until the chain is bootstrapped:
 
-1. Spin up validator-1's coc-node with `COC_NODE_CONFIG` pointing at
-   `genesis.json` and `COC_NODE_KEY` from `validator-1.env`.
+1. Spin up validator-1's palimesh-node with `PALI_NODE_CONFIG` pointing at
+   `genesis.json` and `PALI_NODE_KEY` from `validator-1.env`.
 2. Bring up validator-2..5 once validator-1 is producing.
 3. Deploy 10 governance contracts via
    `contracts/deploy-all-registries-newchain.mjs` with

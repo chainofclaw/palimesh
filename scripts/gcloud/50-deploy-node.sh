@@ -3,7 +3,7 @@
 # a single gcloud VM. Idempotent: re-running re-applies the latest config.
 #
 # Prereq: bootstrap-5-fullnode-deploy.sh has been run once on this workstation
-# and produced /tmp/coc-5-fullnode/deploy-vars-server-N.sh.
+# and produced /tmp/palimesh-5-fullnode/deploy-vars-server-N.sh.
 #
 # Usage:
 #   bash 50-deploy-node.sh anchor-1
@@ -17,15 +17,15 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 . "$SCRIPT_DIR/_lib.sh"
 require_gcloud
 
-BUNDLE_DIR=/tmp/coc-5-fullnode
-DEPLOY_SCRIPT="$COC_REPO_ROOT/scripts/deploy-fullnode.sh"
+BUNDLE_DIR=/tmp/palimesh-5-fullnode
+DEPLOY_SCRIPT="$PALI_REPO_ROOT/scripts/deploy-fullnode.sh"
 
 if [[ ! -d "$BUNDLE_DIR" ]] || ! ls "$BUNDLE_DIR"/deploy-vars-server-*.sh >/dev/null 2>&1; then
   echo "ERROR: $BUNDLE_DIR/deploy-vars-server-N.sh missing." >&2
   echo "       Run bootstrap-5-fullnode-deploy.sh first:"
-  echo "         bash $COC_REPO_ROOT/scripts/bootstrap-5-fullnode-deploy.sh \\"
-  echo "           --chain-id $COC_UPSTREAM_CHAIN_ID \\"
-  for v in "${COC_UPSTREAM_VALIDATORS[@]}"; do
+  echo "         bash $PALI_REPO_ROOT/scripts/bootstrap-5-fullnode-deploy.sh \\"
+  echo "           --chain-id $PALI_UPSTREAM_CHAIN_ID \\"
+  for v in "${PALI_UPSTREAM_VALIDATORS[@]}"; do
     echo "           --upstream-validator $v \\"
   done
   echo "           --gcloud-host-1 <anchor-1 IP> --gcloud-host-2 <anchor-2 IP> \\"
@@ -37,11 +37,11 @@ deploy_one() {
   local node="$1"
   local idx name zone
   case "$node" in
-    anchor-1) idx=1; name="$COC_ANCHOR_1_NAME"; zone="$COC_ANCHOR_1_ZONE" ;;
-    anchor-2) idx=2; name="$COC_ANCHOR_2_NAME"; zone="$COC_ANCHOR_2_ZONE" ;;
-    burst-1)  idx=3; name="$COC_BURST_1_NAME";  zone="$COC_BURST_1_ZONE"  ;;
-    burst-2)  idx=4; name="$COC_BURST_2_NAME";  zone="$COC_BURST_2_ZONE"  ;;
-    burst-3)  idx=5; name="$COC_BURST_3_NAME";  zone="$COC_BURST_3_ZONE"  ;;
+    anchor-1) idx=1; name="$PALI_ANCHOR_1_NAME"; zone="$PALI_ANCHOR_1_ZONE" ;;
+    anchor-2) idx=2; name="$PALI_ANCHOR_2_NAME"; zone="$PALI_ANCHOR_2_ZONE" ;;
+    burst-1)  idx=3; name="$PALI_BURST_1_NAME";  zone="$PALI_BURST_1_ZONE"  ;;
+    burst-2)  idx=4; name="$PALI_BURST_2_NAME";  zone="$PALI_BURST_2_ZONE"  ;;
+    burst-3)  idx=5; name="$PALI_BURST_3_NAME";  zone="$PALI_BURST_3_ZONE"  ;;
     *) echo "unknown node: $node" >&2; return 1 ;;
   esac
 
@@ -57,7 +57,7 @@ deploy_one() {
   # Wait for VM to be SSH-ready (initial boot can take ~30s).
   echo "  Waiting for SSH on $name..."
   for i in $(seq 1 12); do
-    if gcloud compute ssh "$name" --zone="$zone" --project="$COC_GCP_PROJECT" \
+    if gcloud compute ssh "$name" --zone="$zone" --project="$PALI_GCP_PROJECT" \
          --command="echo ready" --quiet 2>/dev/null | grep -q ready; then
       break
     fi
@@ -68,15 +68,15 @@ deploy_one() {
   gcloud compute scp \
     "$vars_file" "$DEPLOY_SCRIPT" \
     "$name:/tmp/" \
-    --zone="$zone" --project="$COC_GCP_PROJECT" --quiet
+    --zone="$zone" --project="$PALI_GCP_PROJECT" --quiet
 
   echo "  Executing deploy-fullnode.sh on $name (this takes ~3-5 min on first run)"
-  gcloud compute ssh "$name" --zone="$zone" --project="$COC_GCP_PROJECT" --quiet \
+  gcloud compute ssh "$name" --zone="$zone" --project="$PALI_GCP_PROJECT" --quiet \
     --command="sudo bash -c 'set -e; cd /tmp; chmod +x deploy-fullnode.sh; source deploy-vars-server-$idx.sh; bash deploy-fullnode.sh'"
 
   echo "==> $node deployed. RPC test from operator workstation:"
   local ip
-  ip=$(gcloud compute instances describe "$name" --zone="$zone" --project="$COC_GCP_PROJECT" \
+  ip=$(gcloud compute instances describe "$name" --zone="$zone" --project="$PALI_GCP_PROJECT" \
     --format="value(networkInterfaces[0].accessConfigs[0].natIP)")
   echo "  curl -sS http://$ip:28780 -H 'Content-Type: application/json' \\"
   echo "    -d '{\"jsonrpc\":\"2.0\",\"method\":\"eth_blockNumber\",\"params\":[],\"id\":1}' | jq"

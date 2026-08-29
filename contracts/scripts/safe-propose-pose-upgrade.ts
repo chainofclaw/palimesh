@@ -6,14 +6,14 @@
  * points the live proxy at the new implementation.
  *
  * USAGE
- *   COC_RPC_URL=https://<88780-rpc> \
+ *   PALI_RPC_URL=https://<88780-rpc> \
  *   SAFE_TX_SERVICE_URL=https://<safe-tx-service-for-88780> \
  *   PROPOSER_PRIVATE_KEY=0x<proposer-eoa> \
  *   POSE_MULTISIG_ADDRESS=0x<safe-address> \
  *   npx ts-node scripts/safe-propose-pose-upgrade.ts
  *
  * Required env
- *   - COC_RPC_URL         JSON-RPC for 88780.
+ *   - PALI_RPC_URL         JSON-RPC for 88780.
  *   - SAFE_TX_SERVICE_URL Safe Tx Service base URL. If your network is not
  *                         in Safe Global's hosted index, run your own
  *                         instance (https://github.com/safe-global/safe-tx-service).
@@ -77,7 +77,7 @@ function requireEnv(name: string): string {
 }
 
 async function main(): Promise<void> {
-  const rpcUrl = requireEnv("COC_RPC_URL")
+  const rpcUrl = requireEnv("PALI_RPC_URL")
   const safeTxServiceUrl = requireEnv("SAFE_TX_SERVICE_URL")
   const safeAddress = ethers.getAddress(requireEnv("POSE_MULTISIG_ADDRESS"))
   const proposerKey = requireEnv("PROPOSER_PRIVATE_KEY")

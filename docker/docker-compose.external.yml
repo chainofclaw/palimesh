@@ -12,17 +12,17 @@
 #   docker compose -f docker/docker-compose.external.yml down
 #
 # Stop-core drill (after this stack is healthy):
-#   sudo systemctl stop coc-node@1 coc-node@2 coc-node@3
+#   sudo systemctl stop palimesh-node@1 palimesh-node@2 palimesh-node@3
 #   # observe ext-1..4 keep producing blocks
-#   sudo systemctl start coc-node@1 coc-node@2 coc-node@3
+#   sudo systemctl start palimesh-node@1 palimesh-node@2 palimesh-node@3
 #
-# Validators in this file are docker peers on the `coc-ext-net` bridge.
+# Validators in this file are docker peers on the `palimesh-ext-net` bridge.
 # They reach the native cores via host.docker.internal: -> 29780/82/84 (P2P)
 # and 29781/83/85 (Wire). Native cores reach these containers through the
 # host port mappings on 127.0.0.1.
 
 x-ext-base: &ext-base
-  image: ${COC_NODE_IMAGE:-coc-node}:${IMAGE_TAG:-phase-2-native-m2}
+  image: ${PALI_NODE_IMAGE:-palimesh-node}:${IMAGE_TAG:-phase-2-native-m2}
   build:
     context: ..
     dockerfile: docker/Dockerfile.node
@@ -31,12 +31,12 @@ x-ext-base: &ext-base
   extra_hosts:
     - "host.docker.internal:host-gateway"
   networks:
-    - coc-ext-net
+    - palimesh-ext-net
 
 services:
   ext-1:
     <<: *ext-base
-    container_name: coc-ext-1
+    container_name: palimesh-ext-1
     ports:
       - "38790:18780"   # RPC
       - "38791:18781"   # WS
@@ -47,15 +47,15 @@ services:
       - ext1-data:/data/coc
       - ./testnet-configs/ext-1.json:/data/coc/node-config.json:ro
     environment:
-      - COC_DATA_DIR=/data/coc
-      - COC_NODE_CONFIG=/data/coc/node-config.json
-      - COC_NODE_KEY=${COC_EXT1_KEY:?set COC_EXT1_KEY in the deployment environment}
-      - COC_DEV_RELAXED_QUORUM=1
-      - COC_BFT_AUTO_RECOVERY=1
+      - PALI_DATA_DIR=/data/coc
+      - PALI_NODE_CONFIG=/data/coc/node-config.json
+      - PALI_NODE_KEY=${PALI_EXT1_KEY:?set PALI_EXT1_KEY in the deployment environment}
+      - PALI_DEV_RELAXED_QUORUM=1
+      - PALI_BFT_AUTO_RECOVERY=1
 
   ext-2:
     <<: *ext-base
-    container_name: coc-ext-2
+    container_name: palimesh-ext-2
     ports:
       - "38792:18780"
       - "38793:18781"
@@ -66,15 +66,15 @@ services:
       - ext2-data:/data/coc
       - ./testnet-configs/ext-2.json:/data/coc/node-config.json:ro
     environment:
-      - COC_DATA_DIR=/data/coc
-      - COC_NODE_CONFIG=/data/coc/node-config.json
-      - COC_NODE_KEY=${COC_EXT2_KEY:?set COC_EXT2_KEY in the deployment environment}
-      - COC_DEV_RELAXED_QUORUM=1
-      - COC_BFT_AUTO_RECOVERY=1
+      - PALI_DATA_DIR=/data/coc
+      - PALI_NODE_CONFIG=/data/coc/node-config.json
+      - PALI_NODE_KEY=${PALI_EXT2_KEY:?set PALI_EXT2_KEY in the deployment environment}
+      - PALI_DEV_RELAXED_QUORUM=1
+      - PALI_BFT_AUTO_RECOVERY=1
 
   ext-3:
     <<: *ext-base
-    container_name: coc-ext-3
+    container_name: palimesh-ext-3
     ports:
       - "38794:18780"
       - "38795:18781"
@@ -85,15 +85,15 @@ services:
       - ext3-data:/data/coc
       - ./testnet-configs/ext-3.json:/data/coc/node-config.json:ro
     environment:
-      - COC_DATA_DIR=/data/coc
-      - COC_NODE_CONFIG=/data/coc/node-config.json
-      - COC_NODE_KEY=${COC_EXT3_KEY:?set COC_EXT3_KEY in the deployment environment}
-      - COC_DEV_RELAXED_QUORUM=1
-      - COC_BFT_AUTO_RECOVERY=1
+      - PALI_DATA_DIR=/data/coc
+      - PALI_NODE_CONFIG=/data/coc/node-config.json
+      - PALI_NODE_KEY=${PALI_EXT3_KEY:?set PALI_EXT3_KEY in the deployment environment}
+      - PALI_DEV_RELAXED_QUORUM=1
+      - PALI_BFT_AUTO_RECOVERY=1
 
   ext-4:
     <<: *ext-base
-    container_name: coc-ext-4
+    container_name: palimesh-ext-4
     ports:
       - "38796:18780"
       - "38797:18781"
@@ -104,23 +104,23 @@ services:
       - ext4-data:/data/coc
       - ./testnet-configs/ext-4.json:/data/coc/node-config.json:ro
     environment:
-      - COC_DATA_DIR=/data/coc
-      - COC_NODE_CONFIG=/data/coc/node-config.json
-      - COC_NODE_KEY=${COC_EXT4_KEY:?set COC_EXT4_KEY in the deployment environment}
-      - COC_DEV_RELAXED_QUORUM=1
-      - COC_BFT_AUTO_RECOVERY=1
+      - PALI_DATA_DIR=/data/coc
+      - PALI_NODE_CONFIG=/data/coc/node-config.json
+      - PALI_NODE_KEY=${PALI_EXT4_KEY:?set PALI_EXT4_KEY in the deployment environment}
+      - PALI_DEV_RELAXED_QUORUM=1
+      - PALI_BFT_AUTO_RECOVERY=1
 
 networks:
-  coc-ext-net:
-    name: coc-ext-net
+  palimesh-ext-net:
+    name: palimesh-ext-net
     driver: bridge
 
 volumes:
   ext1-data:
-    name: coc-ext1-data
+    name: palimesh-ext1-data
   ext2-data:
-    name: coc-ext2-data
+    name: palimesh-ext2-data
   ext3-data:
-    name: coc-ext3-data
+    name: palimesh-ext3-data
   ext4-data:
-    name: coc-ext4-data
+    name: palimesh-ext4-data

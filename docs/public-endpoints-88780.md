@@ -12,7 +12,7 @@
 
 | Parameter | Value |
 |-----------|-------|
-| **Name** | ChainOfClaw Canary Testnet |
+| **Name** | Palimesh Canary Testnet |
 | **chainId (decimal)** | 88780 |
 | **chainId (hex)** | `0x15acc` |
 | **Status** | Canary — open to external operators, prod-candidate stability soak |
@@ -22,7 +22,7 @@
 | **Block gas limit** | ~30,000,000 |
 | **Validator count** | On-chain dynamic via `ValidatorRegistry.getActiveValidators()` — **5 active** as of 2026-06-10 (currently single-operator; external operators welcome — see below). Max 21 (`MAX_VALIDATORS`) |
 | **Quorum** | ⌈2/3 × N⌉ (currently 4 of 5) |
-| **Native token symbol** | COC |
+| **Native token symbol** | Palimesh |
 | **Native token decimals** | 18 |
 
 ## Public RPC + WebSocket + Faucet + Explorer
@@ -32,11 +32,11 @@
 
 | Endpoint | URL |
 |----------|-----|
-| **JSON-RPC** | `https://rpc.chainofclaw.io` |
-| **WebSocket** | `wss://rpc.chainofclaw.io/ws` |
-| **Faucet** | `https://faucet.chainofclaw.io` (10 COC per address per 24h) |
-| **Block Explorer** | `https://explorer.chainofclaw.io` |
-| **Status page** | `https://chainofclaw.io/network` |
+| **JSON-RPC** | `https://rpc.palimesh.io` |
+| **WebSocket** | `wss://rpc.palimesh.io/ws` |
+| **Faucet** | `https://faucet.palimesh.io` (10 PALI per address per 24h) |
+| **Block Explorer** | `https://explorer.palimesh.io` |
+| **Status page** | `https://palimesh.io/network` |
 
 ### Rate limits (per-IP, per-sender)
 
@@ -65,7 +65,7 @@ than polling.
 | Contract | Proxy address | Purpose |
 |----------|---------------|---------|
 | **MultiSigWallet** | `0x3c055D83a9aA12Bba4a2ed53F8970DF4081eBC7E` | Upgrade authority (immutable, not a proxy) |
-| **COCToken** (TBD) | — | Native gas token; current allocation lives in genesis allocation, not a separate token contract |
+| **PalimeshToken** (TBD) | — | Native gas token; current allocation lives in genesis allocation, not a separate token contract |
 | **PoSeManagerV2** | `0x256eb949C50d5F2af8699191b1Bc043203263549` | PoSe v2 settlement: challenges, receipts, witness quorum, slashing |
 | **PoSeManager** (v1) | `0x91e1D4aBcb68476368E8Ec02d61456a08Ae43BD8` | Legacy PoSe v1, sunset window controlled by `v1SunsetEpoch` |
 | **ValidatorRegistry** | `0x4441299c118373fDC96bE1983d42C79e19CDb4F0` | Stake-based BFT validator registry (permissionless `stake()`, 32 ETH min, 21 max active) |
@@ -87,23 +87,23 @@ than polling.
 Custom-network entry:
 
 ```
-Network name:       ChainOfClaw Canary
-RPC URL:            https://rpc.chainofclaw.io
+Network name:       Palimesh Canary
+RPC URL:            https://rpc.palimesh.io
 chainId:            88780  (0x15acc)
-Currency symbol:    COC
-Block explorer URL: https://explorer.chainofclaw.io
+Currency symbol:    Palimesh
+Block explorer URL: https://explorer.palimesh.io
 ```
 
 ### ethers.js / viem
 
 ```ts
 import { JsonRpcProvider } from "ethers"
-const provider = new JsonRpcProvider("https://rpc.chainofclaw.io")
+const provider = new JsonRpcProvider("https://rpc.palimesh.io")
 // chainId is auto-detected on first call.
 
 // WebSocket subscriptions:
 import { WebSocketProvider } from "ethers"
-const ws = new WebSocketProvider("wss://rpc.chainofclaw.io/ws")
+const ws = new WebSocketProvider("wss://rpc.palimesh.io/ws")
 ws.on("block", (n) => console.log("new block:", n))
 ```
 
@@ -114,24 +114,24 @@ import { defineChain } from "viem"
 
 export const coc88780 = defineChain({
   id: 88780,
-  name: "ChainOfClaw Canary",
-  nativeCurrency: { name: "COC", symbol: "COC", decimals: 18 },
-  rpcUrls: { default: { http: ["https://rpc.chainofclaw.io"] } },
-  blockExplorers: { default: { name: "COC Explorer", url: "https://explorer.chainofclaw.io" } },
+  name: "Palimesh Canary",
+  nativeCurrency: { name: "Palimesh", symbol: "Palimesh", decimals: 18 },
+  rpcUrls: { default: { http: ["https://rpc.palimesh.io"] } },
+  blockExplorers: { default: { name: "Palimesh Explorer", url: "https://explorer.palimesh.io" } },
 })
 
 const client = createPublicClient({ chain: coc88780, transport: http() })
 ```
 
-### Getting test COC
+### Getting test Palimesh
 
-The faucet drips **10 COC per address per 24h** (sufficient for typical
+The faucet drips **10 PALI per address per 24h** (sufficient for typical
 dev exploration; not sufficient to stake as a validator — see
 [external-validator-onboarding.md](./external-validator-onboarding.md)
-for the 32-COC stake bootstrap path).
+for the 32-Palimesh stake bootstrap path).
 
 ```bash
-curl -X POST https://faucet.chainofclaw.io/faucet/request \
+curl -X POST https://faucet.palimesh.io/faucet/request \
   -H 'content-type: application/json' \
   -d '{"address":"0xYourAddressHere"}'
 ```
@@ -141,7 +141,7 @@ curl -X POST https://faucet.chainofclaw.io/faucet/request \
 The canary network welcomes external operators. Brief overview:
 
 1. Stand up a node (see [operations-manual.en.md](./operations-manual.en.md))
-2. Stake 32 COC via `ValidatorRegistry.stake(nodeId, pubkeyNode)` from
+2. Stake 32 PALI via `ValidatorRegistry.stake(nodeId, pubkeyNode)` from
    your validator's signing-key EOA
 3. Your node is BFT-included within one poll cycle (~60s) of the on-chain
    stake event — **no manual coordination required** with existing
@@ -164,7 +164,7 @@ Full step-by-step guide:
 | Recover from chain halt / multisig key loss / mass node loss | [`disaster-recovery-88780.md`](./disaster-recovery-88780.md) |
 | Pre-launch checklist (operator perspective) | [`canary-launch-checklist-88780.md`](./canary-launch-checklist-88780.md) |
 | Report a vulnerability | [`SECURITY.md`](../SECURITY.md) |
-| Whitepaper | [`COC_whitepaper.en.md`](./COC_whitepaper.en.md) ([中文](./COC_whitepaper.zh.md)) |
+| Whitepaper | [`palimesh_whitepaper.en.md`](./palimesh_whitepaper.en.md) ([中文](./palimesh_whitepaper.zh.md)) |
 | Architecture deep-dive | [`architecture-whitepaper.en.md`](./architecture-whitepaper.en.md) ([中文](./architecture-whitepaper.zh.md)) |
 
 ## Decommissioned: Prowl testnet (chainId 18780)
@@ -177,9 +177,9 @@ reference but should not be used for current development.
 ## Reporting issues with these endpoints
 
 - **RPC / WSS / Faucet / Explorer down or degraded**: see network status
-  at <https://chainofclaw.io/network>. If status is green and your
+  at <https://palimesh.io/network>. If status is green and your
   client is still failing, file a public issue at
-  <https://github.com/chainofclaw/COC/issues/new>
+  <https://github.com/palimesh/palimesh/issues/new>
 - **Suspected security issue with an endpoint**: see [SECURITY.md](../SECURITY.md)
 - **Rate-limited unexpectedly**: confirm your client respects 240 req/min/IP
   and consider running a local archive node for high-throughput access

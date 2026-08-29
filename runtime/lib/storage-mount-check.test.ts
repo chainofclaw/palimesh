@@ -15,7 +15,7 @@
  *   5. Gate enforce=true + RW mount → throws with specific error message
  *      that references the incident date
  *   6. Gate enforce=false + RW mount → warns but does NOT throw
- *      (the COC_REQUIRE_RO_STORAGE=0 escape hatch for the validator
+ *      (the PALI_REQUIRE_RO_STORAGE=0 escape hatch for the validator
  *      process itself)
  *   7. Gate + RO mount → logs "confirmed read-only", returns ok
  *
@@ -32,7 +32,7 @@ import { probeMountIsReadOnly, enforceReadOnlyStorage } from "./storage-mount-ch
 let tmpRoot: string
 
 beforeEach(() => {
-  tmpRoot = mkdtempSync(join(tmpdir(), "coc-mount-test-"))
+  tmpRoot = mkdtempSync(join(tmpdir(), "palimesh-mount-test-"))
 })
 
 afterEach(() => {
@@ -180,7 +180,7 @@ describe("enforceReadOnlyStorage", () => {
       "error message must explain which deployment role is at risk",
     )
     assert.ok(
-      error[0].includes("COC_REQUIRE_RO_STORAGE"),
+      error[0].includes("PALI_REQUIRE_RO_STORAGE"),
       "error message must point to the escape hatch env var",
     )
   })
@@ -230,10 +230,10 @@ describe("regression pin: 2026-04-25 incident pattern", () => {
     assert.equal(existsSync(ldbDir), true, "validator's data must not be modified by the failed probe")
   })
 
-  it("validator process can opt out via COC_REQUIRE_RO_STORAGE=0 (it owns its volume)", async () => {
+  it("validator process can opt out via PALI_REQUIRE_RO_STORAGE=0 (it owns its volume)", async () => {
     // The same physical volume, but this is the validator process itself.
     // It legitimately needs RW. Setting enforce=false (mapped from the
-    // env var in coc-node.ts) lets it through with a warning.
+    // env var in palimesh-node.ts) lets it through with a warning.
     const validatorDir = join(tmpRoot, "data", "coc")
     mkdirSync(validatorDir, { recursive: true })
     const { logger, warn } = captureLog()

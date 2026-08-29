@@ -21,7 +21,7 @@ import { compareStates } from "./state-diff.ts"
 async function withTrie<T>(
   fn: (trie: PersistentStateTrie, dbPath: string) => Promise<T>,
 ): Promise<{ result: T; dbPath: string; leveldbDir: string }> {
-  const dbPath = mkdtempSync(join(tmpdir(), "coc-state-diff-test-"))
+  const dbPath = mkdtempSync(join(tmpdir(), "palimesh-state-diff-test-"))
   const db = new LevelDatabase(dbPath)
   // LevelDatabase resolves `dataDir/leveldb-default` — that's the path
   // the diff tool's `openLevelDb` needs to receive verbatim.

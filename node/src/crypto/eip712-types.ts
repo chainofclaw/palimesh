@@ -1,4 +1,4 @@
-// EIP-712 typed data definitions for COC PoSe v2 protocol.
+// EIP-712 typed data definitions for Palimesh PoSe v2 protocol.
 // Each type mirrors a Solidity struct for hashStruct consistency.
 
 export interface Eip712Domain {
@@ -94,7 +94,7 @@ export const WITNESS_TYPES_V2 = {
  * (leaf binding): aggregator can no longer re-encode `EvidenceLeafV2.resultCode`
  * because the witness signature now covers it directly.
  *
- * Witnesses on coc-node v0.4+ produce v1+v2+v3 signatures during the
+ * Witnesses on palimesh-node v0.4+ produce v1+v2+v3 signatures during the
  * rollout window; the contract tries v3 first, then v2 (gated by
  * v2SunsetEpoch), then v1 (gated by v1SunsetEpoch).
  */

@@ -51,7 +51,7 @@ export default function ServicesPage() {
           tagline={t('did.tagline')}
           features={[t('did.f1'), t('did.f2'), t('did.f3'), t('did.f4'), t('did.f5')]}
           installCmd={t('did.install')}
-          npmUrl="https://www.npmjs.com/package/@chainofclaw/coc-soul"
+          npmUrl="https://www.npmjs.com/package/@palimesh/palimesh-soul"
           contracts={[
             { name: 'SoulRegistry', addr: '0x959922bE3CAee4b8Cd9a407cc3ac1C251C2007B1' },
             { name: 'DIDRegistry', addr: '0x9A9f2CCfdE556A7E9Ff0848998Aa4a0CFD8863AE' },
@@ -67,7 +67,7 @@ export default function ServicesPage() {
           tagline={t('memory.tagline')}
           features={[t('memory.f1'), t('memory.f2'), t('memory.f3'), t('memory.f4'), t('memory.f5')]}
           installCmd={t('memory.install')}
-          npmUrl="https://www.npmjs.com/package/@chainofclaw/claw-mem"
+          npmUrl="https://www.npmjs.com/package/@palimesh/claw-mem"
           contracts={[
             { name: 'CidRegistry', addr: '0x68B1D87F95878fE05B998F19b66F4baba5De1aed' },
           ]}
@@ -82,7 +82,7 @@ export default function ServicesPage() {
           tagline={t('node.tagline')}
           features={[t('node.f1'), t('node.f2'), t('node.f3'), t('node.f4'), t('node.f5')]}
           installCmd={t('node.install')}
-          npmUrl="https://www.npmjs.com/package/@chainofclaw/coc-node"
+          npmUrl="https://www.npmjs.com/package/@palimesh/palimesh-node"
           contracts={[]}
           docsHref="/testnet"
         />
@@ -116,20 +116,20 @@ export default function ServicesPage() {
               color="purple"
             />
             <OpenclawCard
-              title="Node of COC testnet"
-              skillId="//coc-node"
+              title="Node of Palimesh testnet"
+              skillId="//palimesh-node"
               version="v1.2.0"
-              description="Operate COC (ChainOfClaw) blockchain nodes — install, start, stop, monitor, and remove validator, fullnode, archive, gateway, and dev nodes. Use when the user…"
+              description="Operate Palimesh (Palimesh) blockchain nodes — install, start, stop, monitor, and remove validator, fullnode, archive, gateway, and dev nodes. Use when the user…"
               overall="pass"
               scans={{ vt: 'pass', llm: 'pass', static: 'pass' }}
               stats={{ downloads: 243, stars: 0, versions: 6, updated: 'May 11' }}
               color="blue"
             />
             <OpenclawCard
-              title="COC Soul Immortality"
-              skillId="//coc-soul"
+              title="Palimesh Soul Immortality"
+              skillId="//palimesh-soul"
               version="v1.2.10"
-              description="Give an AI agent a persistent on-chain soul on COC — register and manage the agent's decentralized identity (DID), anchor encrypted backups to IPFS + SoulReg…"
+              description="Give an AI agent a persistent on-chain soul on Palimesh — register and manage the agent's decentralized identity (DID), anchor encrypted backups to IPFS + SoulReg…"
               overall="review"
               scans={{ vt: 'suspicious', llm: 'suspicious', static: 'pass' }}
               stats={{ downloads: 323, stars: 1, versions: 13, updated: 'May 11' }}
@@ -156,7 +156,7 @@ export default function ServicesPage() {
                   R3.2 Testnet
                 </Link>
                 <a
-                  href="https://github.com/chainofclaw/COC"
+                  href="https://github.com/palimesh/palimesh"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="px-6 py-2 rounded-lg border border-accent-cyan/30 text-accent-cyan font-display font-semibold hover:bg-accent-cyan/10 transition-all text-sm"
@@ -261,7 +261,7 @@ function ServiceCard({
                 {contracts.map((ct) => (
                   <a
                     key={ct.addr}
-                    href={`https://explorer.clawchain.io/address/${ct.addr}`}
+                    href={`https://explorer.palimesh.io/address/${ct.addr}`}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="block bg-bg-primary/40 rounded p-2 hover:bg-bg-primary/60 transition-colors group"

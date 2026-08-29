@@ -6,10 +6,10 @@ NODES="${1:-3}"
 # PR-1B preparatory: chainId is now optional second arg / env var
 # (default 18780 keeps existing scripts working). Phase 2 chaos drill
 # scripts pass 88780 here for fresh-chain dry runs.
-CHAIN_ID="${2:-${COC_DEVNET_CHAIN_ID:-18780}}"
+CHAIN_ID="${2:-${PALI_DEVNET_CHAIN_ID:-18780}}"
 if [[ "$NODES" != "3" && "$NODES" != "5" && "$NODES" != "7" ]]; then
   echo "usage: $0 <3|5|7> [chainId]"
-  echo "       env: COC_DEVNET_CHAIN_ID=<id>"
+  echo "       env: PALI_DEVNET_CHAIN_ID=<id>"
   exit 1
 fi
 
@@ -162,18 +162,18 @@ JSON
   METRICS_PORT=$((BASE_METRICS + IDX))
   # Per-node env override: let callers target a specific node with an extra
   # env var (e.g. the adversarial-stateroot-divergence.sh script sets
-  # COC_UNSAFE_ADVERSARIAL_SPEC_ROOT on a single node to validate the BFT
-  # pair-quorum defense). Format: COC_NODE_${i}_ENV="FOO=bar BAZ=qux" — one
+  # PALI_UNSAFE_ADVERSARIAL_SPEC_ROOT on a single node to validate the BFT
+  # pair-quorum defense). Format: PALI_NODE_${i}_ENV="FOO=bar BAZ=qux" — one
   # space-separated list of KEY=VAL pairs, or empty.
-  PER_NODE_ENV_VAR="COC_NODE_${i}_ENV"
+  PER_NODE_ENV_VAR="PALI_NODE_${i}_ENV"
   PER_NODE_ENV="${!PER_NODE_ENV_VAR:-}"
   if [[ -n "$PER_NODE_ENV" ]]; then
     echo "  per-node env for node-${i}: ${PER_NODE_ENV}"
   fi
   env \
-    COC_METRICS_PORT="${METRICS_PORT}" \
-    COC_NODE_KEY="${NODE_KEY}" \
-    COC_NODE_CONFIG="${DATA_DIR}/node-config.json" \
+    PALI_METRICS_PORT="${METRICS_PORT}" \
+    PALI_NODE_KEY="${NODE_KEY}" \
+    PALI_NODE_CONFIG="${DATA_DIR}/node-config.json" \
     ${PER_NODE_ENV} \
     node --experimental-strip-types "${ROOT}/node/src/index.ts" >"${LOG_FILE}" 2>&1 &
   echo $! > "${PID_FILE}"
@@ -216,11 +216,11 @@ while true; do
 done
 
 # Deploy SoulRegistry contract to the first node.
-# Skippable via COC_SKIP_SOUL_DEPLOY=1 — set by adversarial-stateroot-
+# Skippable via PALI_SKIP_SOUL_DEPLOY=1 — set by adversarial-stateroot-
 # divergence.sh's Scenario B where the cluster is deliberately stalled
 # and the deploy's tx would hang forever waiting for finalization.
-if [[ "${COC_SKIP_SOUL_DEPLOY:-}" == "1" ]]; then
-  echo "COC_SKIP_SOUL_DEPLOY=1 — skipping SoulRegistry deploy"
+if [[ "${PALI_SKIP_SOUL_DEPLOY:-}" == "1" ]]; then
+  echo "PALI_SKIP_SOUL_DEPLOY=1 — skipping SoulRegistry deploy"
   echo "devnet started at ${RUN_DIR}"
   exit 0
 fi
@@ -230,7 +230,7 @@ SOUL_PK="0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80"
 SOUL_ARTIFACT="${ROOT}/contracts/artifacts/contracts-src/governance/SoulRegistry.sol/SoulRegistry.json"
 if [[ -f "$SOUL_ARTIFACT" ]]; then
   echo "deploying SoulRegistry to devnet via ${SOUL_RPC}..."
-  COC_RPC_URL="${SOUL_RPC}" DEPLOYER_PRIVATE_KEY="${SOUL_PK}" \
+  PALI_RPC_URL="${SOUL_RPC}" DEPLOYER_PRIVATE_KEY="${SOUL_PK}" \
     node --experimental-strip-types --input-type=module <<DEPLOY_EOF 2>&1 || echo "WARN: SoulRegistry deploy failed (non-fatal)"
 import { deploySoulRegistry } from "${ROOT}/contracts/deploy/deploy-soul-registry.ts";
 import { readFileSync } from "node:fs";

@@ -1,4 +1,4 @@
-# COC Core Algorithms (English)
+# Palimesh Core Algorithms (English)
 
 ## 1) Proposer Rotation
 **Goal**: deterministic leader selection per block height.
@@ -9,8 +9,8 @@ Algorithm:
 - Only the proposer for `h` can build and broadcast block `h`.
 
 Code:
-- `COC/node/src/chain-engine.ts` (`expectedProposer` — round-robin)
-- `COC/node/src/chain-engine-persistent.ts` (`expectedProposer` — stake-weighted with fallback)
+- `Palimesh/node/src/chain-engine.ts` (`expectedProposer` — round-robin)
+- `Palimesh/node/src/chain-engine-persistent.ts` (`expectedProposer` — stake-weighted with fallback)
 
 ## 2) Block Hashing
 **Goal**: deterministic block identity.
@@ -21,7 +21,7 @@ Algorithm:
 - `baseFee` and `cumulativeWeight` default to `0` when absent.
 
 Code:
-- `COC/node/src/hash.ts`
+- `Palimesh/node/src/hash.ts`
 
 ## 3) Mempool Selection
 **Goal**: choose txs for a block deterministically.
@@ -32,7 +32,7 @@ Algorithm:
 - `gasPriceHistogram()`: buckets by legacy `gasPrice` for display/analytics.
 
 Code:
-- `COC/node/src/mempool.ts`
+- `Palimesh/node/src/mempool.ts`
 
 ## 4) Chain Finality Depth
 **Goal**: mark blocks finalized after depth `D`.
@@ -42,7 +42,7 @@ Algorithm:
 - `finalized` is derived from local depth rules; inbound remote `finalized` metadata is not trusted.
 
 Code:
-- `COC/node/src/chain-engine.ts` (`updateFinalityFlags`)
+- `Palimesh/node/src/chain-engine.ts` (`updateFinalityFlags`)
 
 ## 5) P2P Snapshot Sync
 **Goal**: converge to the best chain via fork-choice rule.
@@ -56,7 +56,7 @@ Algorithm:
 - Peer requests enforce resource guards: 10s request timeout, 2 MiB max request body, and 4 MiB max response body. State snapshot requests enforce 30s timeout and 16 MiB response limit.
 
 Code:
-- `COC/node/src/p2p.ts`, `COC/node/src/consensus.ts`
+- `Palimesh/node/src/p2p.ts`, `Palimesh/node/src/consensus.ts`
 
 ## 6) PoSe Challenge Generation
 **Goal**: issue verifiable challenges per epoch.
@@ -67,7 +67,7 @@ Algorithm:
 - Sign challenge hash.
 
 Code:
-- `COC/services/challenger/*`
+- `Palimesh/services/challenger/*`
 
 ## 7) Receipt Verification
 **Goal**: validate challenge responses.
@@ -79,7 +79,7 @@ Algorithm:
 - Apply per‑type checks (U/S/R).
 
 Code:
-- `COC/services/verifier/receipt-verifier.ts`
+- `Palimesh/services/verifier/receipt-verifier.ts`
 
 ## 8) Batch Aggregation
 **Goal**: aggregate receipts into a batch for on‑chain submission.
@@ -91,7 +91,7 @@ Algorithm:
 - Compute `summaryHash` from epoch + root + sample commitment.
 
 Code:
-- `COC/services/aggregator/batch-aggregator.ts`
+- `Palimesh/services/aggregator/batch-aggregator.ts`
 
 ## 9) Reward Scoring
 **Goal**: allocate epoch rewards by service metrics.
@@ -102,7 +102,7 @@ Algorithm:
 - Enforce soft cap and redistribute overflow.
 
 Code:
-- `COC/services/verifier/scoring.ts`
+- `Palimesh/services/verifier/scoring.ts`
 
 ## 10) Storage Proofs (IPFS-Compatible)
 **Goal**: prove file availability with a Merkle path over stored chunks.
@@ -115,9 +115,9 @@ Algorithm:
 - Verifier recomputes the root from `(leafHash, merklePath, chunkIndex)` and compares.
 
 Code:
-- `COC/node/src/ipfs-unixfs.ts`
-- `COC/node/src/ipfs-merkle.ts`
-- `COC/runtime/coc-node.ts`
+- `Palimesh/node/src/ipfs-unixfs.ts`
+- `Palimesh/node/src/ipfs-merkle.ts`
+- `Palimesh/runtime/palimesh-node.ts`
 
 ## 11) Stake-Weighted Proposer Selection
 **Goal**: deterministic proposer selection weighted by validator stake.
@@ -132,7 +132,7 @@ Algorithm:
 - Falls back to round-robin if governance is disabled or no active validators.
 
 Code:
-- `COC/node/src/chain-engine-persistent.ts` (`stakeWeightedProposer`)
+- `Palimesh/node/src/chain-engine-persistent.ts` (`stakeWeightedProposer`)
 
 ## 12) EIP-1559 Dynamic Base Fee
 **Goal**: adjust base fee per block based on gas utilization.
@@ -146,7 +146,7 @@ Algorithm:
 - `newBaseFee = parentBaseFee * (1 + changeRatio * 0.125)`.
 
 Code:
-- `COC/node/src/base-fee.ts`
+- `Palimesh/node/src/base-fee.ts`
 
 ## 13) Consensus Recovery State Machine
 **Goal**: graceful degradation and recovery when block production or sync fails.
@@ -163,7 +163,7 @@ Algorithm:
 - Forced recovery: if stuck in `degraded` for 5 minutes (`MAX_DEGRADED_MS`), cooldown is cleared and recovery is forced.
 
 Code:
-- `COC/node/src/consensus.ts`
+- `Palimesh/node/src/consensus.ts`
 
 ## 14) BFT-lite Consensus Round
 **Goal**: three-phase commit with stake-weighted quorum for block finalization.
@@ -179,8 +179,8 @@ Algorithm:
 - Timeout handling: rounds fail after configurable prepare + commit timeout.
 
 Code:
-- `COC/node/src/bft.ts` (round state machine, quorum calculation)
-- `COC/node/src/bft-coordinator.ts` (lifecycle management)
+- `Palimesh/node/src/bft.ts` (round state machine, quorum calculation)
+- `Palimesh/node/src/bft-coordinator.ts` (lifecycle management)
 
 ## 15) Tip-level Fork Choice Comparator (Current Implementation)
 **Goal**: deterministic chain selection across competing forks.
@@ -195,7 +195,7 @@ Algorithm:
 - During sync, remote `bftFinalized` flags are never trusted — remote candidates are hardcoded to `bftFinalized: false` as a security-conservative measure.
 
 Code:
-- `COC/node/src/fork-choice.ts`
+- `Palimesh/node/src/fork-choice.ts`
 
 ## 16) Kademlia DHT Routing
 **Goal**: decentralized peer discovery via XOR distance routing.
@@ -209,7 +209,7 @@ Algorithm:
 - Sybil protection: max 2 peers per IP per bucket (`MAX_PEERS_PER_IP_PER_BUCKET`), with host canonicalization (lowercase/trim + IPv4-mapped IPv6 normalization) before per-IP counting.
 
 Code:
-- `COC/node/src/dht.ts`
+- `Palimesh/node/src/dht.ts`
 
 ## 17) Binary Wire Protocol
 **Goal**: efficient binary framing for P2P communication.
@@ -221,7 +221,7 @@ Algorithm:
 - Message types: Handshake, Block, Transaction, BFT, Ping/Pong, FindNode/FindNodeResponse (DHT).
 
 Code:
-- `COC/node/src/wire-protocol.ts`
+- `Palimesh/node/src/wire-protocol.ts`
 
 ## 18) DHT Network Iterative Lookup
 **Goal**: discover peers via iterative querying across the DHT network.
@@ -235,7 +235,7 @@ Algorithm:
 - Return final K closest peers from routing table.
 
 Code:
-- `COC/node/src/dht-network.ts` (`iterativeLookup`)
+- `Palimesh/node/src/dht-network.ts` (`iterativeLookup`)
 
 ## 19) Wire Server/Client TCP Handshake
 **Goal**: establish authenticated TCP connections between nodes.
@@ -253,8 +253,8 @@ Algorithm:
 - Replay-protection boundary: nonce deduplication uses BoundedSet(10,000), node-local in-memory window semantics (cleared on restart, not globally shared across nodes).
 
 Code:
-- `COC/node/src/wire-server.ts`
-- `COC/node/src/wire-client.ts`
+- `Palimesh/node/src/wire-server.ts`
+- `Palimesh/node/src/wire-client.ts`
 
 ## 20) Snap Sync State Transfer
 **Goal**: fast-sync node state from a peer's EVM snapshot.
@@ -273,9 +273,9 @@ Algorithm:
 - Security assumption: block-hash payload currently does not include `stateRoot`, so SnapSync still depends on snapshot-provider trust; production deployments should add trusted state-root anchoring and/or multi-peer cross-checks.
 
 Code:
-- `COC/node/src/state-snapshot.ts` (`exportStateSnapshot`, `importStateSnapshot`)
-- `COC/node/src/consensus.ts` (`SnapSyncProvider` interface)
-- `COC/node/src/p2p.ts` (`/p2p/state-snapshot` endpoint)
+- `Palimesh/node/src/state-snapshot.ts` (`exportStateSnapshot`, `importStateSnapshot`)
+- `Palimesh/node/src/consensus.ts` (`SnapSyncProvider` interface)
+- `Palimesh/node/src/p2p.ts` (`/p2p/state-snapshot` endpoint)
 
 ## 21) BFT Equivocation Detection
 **Goal**: detect double-voting by validators for slashing evidence.
@@ -288,8 +288,8 @@ Algorithm:
 - Pruning occurs after recording the vote (not before) to avoid race conditions.
 
 Code:
-- `COC/node/src/bft.ts` (`EquivocationDetector`)
-- `COC/node/src/bft-coordinator.ts` (integration)
+- `Palimesh/node/src/bft.ts` (`EquivocationDetector`)
+- `Palimesh/node/src/bft-coordinator.ts` (integration)
 
 ## 22) Dual Transport Block/Tx Propagation
 **Goal**: maximize block and transaction delivery via parallel transport paths.
@@ -306,9 +306,9 @@ Algorithm:
 - BFT messages also broadcast via dual transport (HTTP gossip + wire protocol TCP).
 
 Code:
-- `COC/node/src/consensus.ts` (`broadcastBlock` with wireBroadcast callback)
-- `COC/node/src/index.ts` (`wireBroadcastFn`, `wireTxRelayFn`, `wireBftBroadcastFn`)
-- `COC/node/src/wire-server.ts` (dedup, relay callbacks, excludeNodeId)
+- `Palimesh/node/src/consensus.ts` (`broadcastBlock` with wireBroadcast callback)
+- `Palimesh/node/src/index.ts` (`wireBroadcastFn`, `wireTxRelayFn`, `wireBftBroadcastFn`)
+- `Palimesh/node/src/wire-server.ts` (dedup, relay callbacks, excludeNodeId)
 
 ## 23) Consensus Metrics Collection
 **Goal**: track block production and sync performance for observability.
@@ -321,7 +321,7 @@ Algorithm:
 - `startedAtMs` set in `start()` for uptime calculation.
 
 Code:
-- `COC/node/src/consensus.ts` (`ConsensusMetrics` interface, `getMetrics()`)
+- `Palimesh/node/src/consensus.ts` (`ConsensusMetrics` interface, `getMetrics()`)
 
 ## 24) Wire Protocol Dedup
 **Goal**: prevent duplicate Block/Tx processing at the wire protocol layer.
@@ -334,7 +334,7 @@ Algorithm:
 - Stats exposed via `getStats()`: `seenTxSize`, `seenBlocksSize`.
 
 Code:
-- `COC/node/src/wire-server.ts` (`seenTx`, `seenBlocks`, `handleFrame`)
+- `Palimesh/node/src/wire-server.ts` (`seenTx`, `seenBlocks`, `handleFrame`)
 
 ## 25) Cross-Protocol Relay
 **Goal**: bridge Wire protocol and HTTP gossip for full network coverage.
@@ -346,8 +346,8 @@ Algorithm:
 - No circular relay: wire and HTTP share the same BoundedSet dedup instances (injected via `sharedSeenTx`/`sharedSeenBlocks`).
 
 Code:
-- `COC/node/src/wire-server.ts` (`onTxRelay`, `onBlockRelay` config callbacks)
-- `COC/node/src/index.ts` (wiring relay callbacks to P2P `receiveTx`/`receiveBlock`)
+- `Palimesh/node/src/wire-server.ts` (`onTxRelay`, `onBlockRelay` config callbacks)
+- `Palimesh/node/src/index.ts` (wiring relay callbacks to P2P `receiveTx`/`receiveBlock`)
 
 ## 26) DHT Wire Client Priority Lookup
 **Goal**: efficient wire client discovery for DHT FIND_NODE queries.
@@ -360,8 +360,8 @@ Algorithm:
 - Per-peer wire port resolved from `dhtBootstrapPeers` config instead of using local `wirePort`.
 
 Code:
-- `COC/node/src/dht-network.ts` (`findNode` with 3-tier priority)
-- `COC/node/src/index.ts` (`wireClientByPeerId` construction, `peerWirePortMap`)
+- `Palimesh/node/src/dht-network.ts` (`findNode` with 3-tier priority)
+- `Palimesh/node/src/index.ts` (`wireClientByPeerId` construction, `peerWirePortMap`)
 
 ## 27) DHT Peer Verification
 **Goal**: prevent DHT routing table poisoning by verifying peers before insertion.
@@ -378,7 +378,7 @@ Algorithm:
 - Stale peer filtering on load: peers with `lastSeenMs` older than 24 hours are excluded.
 
 Code:
-- `COC/node/src/dht-network.ts` (`verifyPeer`, `iterativeLookup`)
+- `Palimesh/node/src/dht-network.ts` (`verifyPeer`, `iterativeLookup`)
 
 ## 28) Exponential Peer Ban
 **Goal**: progressively penalize misbehaving peers with escalating ban durations.
@@ -391,13 +391,13 @@ Algorithm:
 - After ban expires: peer can be re-evaluated, but next offense doubles ban duration.
 
 Code:
-- `COC/node/src/peer-scoring.ts` (`exponentialBanMs`, `recordInvalidData`, `applyDecay`)
+- `Palimesh/node/src/peer-scoring.ts` (`exponentialBanMs`, `recordInvalidData`, `applyDecay`)
 
 ## 29) Node Identity Handshake
 **Goal**: cryptographically verify node identity during wire protocol TCP handshake.
 
 Algorithm:
-- Each node has a persistent private key (`nodePrivateKey` from `COC_NODE_KEY` env / `dataDir/node-key`).
+- Each node has a persistent private key (`nodePrivateKey` from `PALI_NODE_KEY` env / `dataDir/node-key`).
 - On wire handshake, sender signs `wire:handshake:<chainId>:<nodeId>:<nonce>` using `NodeSigner.sign()`.
 - Receiver verifies signature via `SignatureVerifier.recoverAddress()`.
 - Recovered address must match the claimed `nodeId` — mismatch → disconnect + `recordInvalidData()`.
@@ -405,10 +405,10 @@ Algorithm:
 - Signature verification is enforced when `verifier` is configured (production deployments should always configure it); unsigned handshake requests are rejected and disconnected.
 
 Code:
-- `COC/node/src/wire-server.ts` (handshake verification)
-- `COC/node/src/wire-client.ts` (handshake signing)
-- `COC/node/src/config.ts` (`resolveNodeKey`)
-- `COC/node/src/crypto/signer.ts` (`NodeSigner`, `SignatureVerifier`)
+- `Palimesh/node/src/wire-server.ts` (handshake verification)
+- `Palimesh/node/src/wire-client.ts` (handshake signing)
+- `Palimesh/node/src/config.ts` (`resolveNodeKey`)
+- `Palimesh/node/src/crypto/signer.ts` (`NodeSigner`, `SignatureVerifier`)
 
 ## 30) BFT Message Signing
 **Goal**: prevent BFT vote forgery by requiring cryptographic signatures on all consensus messages.
@@ -422,8 +422,8 @@ Algorithm:
 - Only messages from known active validators are accepted.
 
 Code:
-- `COC/node/src/bft.ts` (`BftMessage.signature` required)
-- `COC/node/src/bft-coordinator.ts` (`signMessage`, `bftCanonicalMessage`, verification in `handlePrepare`/`handleCommit`)
+- `Palimesh/node/src/bft.ts` (`BftMessage.signature` required)
+- `Palimesh/node/src/bft-coordinator.ts` (`signMessage`, `bftCanonicalMessage`, verification in `handlePrepare`/`handleCommit`)
 
 ## 31) P2P HTTP Auth Envelope
 **Goal**: authenticate HTTP gossip write traffic and support phased rollout without instant network split.
@@ -444,5 +444,5 @@ Algorithm:
   - `authAcceptedRequests`, `authMissingRequests`, `authInvalidRequests`, `authRejectedRequests`, `rateLimitedRequests`.
 
 Code:
-- `COC/node/src/p2p.ts` (`buildSignedP2PPayload`, `verifySignedP2PPayload`, rollout mode handling)
-- `COC/node/src/config.ts` (`p2pInboundAuthMode`, `p2pAuthMaxClockSkewMs`)
+- `Palimesh/node/src/p2p.ts` (`buildSignedP2PPayload`, `verifySignedP2PPayload`, rollout mode handling)
+- `Palimesh/node/src/config.ts` (`p2pInboundAuthMode`, `p2pAuthMaxClockSkewMs`)

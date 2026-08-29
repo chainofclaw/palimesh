@@ -143,7 +143,7 @@ test("evidence store drainFiltered preserves unmatched evidence for another pipe
 })
 
 test("resolveEvidencePaths keeps legacy reads for BFT compatibility", () => {
-  const paths = resolveEvidencePaths("/tmp/coc-evidence")
+  const paths = resolveEvidencePaths("/tmp/palimesh-evidence")
   assert.equal(paths.readPaths.length, 3)
   assert.ok(paths.readPaths[1].endsWith("evidence-agent.jsonl"))
   assert.ok(paths.readPaths[2].endsWith("evidence-bft.jsonl"))

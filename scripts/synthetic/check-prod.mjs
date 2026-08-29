@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// COC production synthetic E2E check loop.
+// Palimesh production synthetic E2E check loop.
 //
 // Each check returns { pass, msg, latency_ms }. The script prints a
 // line per check (+ a summary), exits non-zero if any critical check
@@ -11,16 +11,16 @@
 //   node check-prod.mjs --json /tmp/r.json
 //
 // Env knobs:
-//   COC_RPC_URL              default https://clawchain.io/api/testnet/rpc
-//   COC_WS_URL               default wss://clawchain.io/api/testnet/ws
-//   COC_CHAIN_ID             default 88780
-//   COC_FAUCET_URL           default https://faucet.clawchain.io
-//   COC_FAUCET_ADDRESS       default 0x47f9940cCf9777C0407F094A1B0d8c50b0DD01BF
-//   COC_FAUCET_MIN_BALANCE   default 100 (COC)
-//   COC_WEBSITE_URL          default https://clawchain.io
-//   COC_EXPLORER_URL         default https://explorer.clawchain.io
-//   COC_IPFS_URL             default https://ipfs.clawchain.io
-//   COC_BLOCK_FRESHNESS_SEC  default 60
+//   PALI_RPC_URL              default https://palimesh.io/api/testnet/rpc
+//   PALI_WS_URL               default wss://palimesh.io/api/testnet/ws
+//   PALI_CHAIN_ID             default 88780
+//   PALI_FAUCET_URL           default https://faucet.palimesh.io
+//   PALI_FAUCET_ADDRESS       default 0x47f9940cCf9777C0407F094A1B0d8c50b0DD01BF
+//   PALI_FAUCET_MIN_BALANCE   default 100 (Palimesh)
+//   PALI_WEBSITE_URL          default https://palimesh.io
+//   PALI_EXPLORER_URL         default https://explorer.palimesh.io
+//   PALI_IPFS_URL             default https://ipfs.palimesh.io
+//   PALI_BLOCK_FRESHNESS_SEC  default 60
 //   CHECK_INTERVAL_SEC       default 60
 
 import { setTimeout as sleep } from 'node:timers/promises'
@@ -29,21 +29,21 @@ import { connect } from 'node:net'
 import { URL } from 'node:url'
 
 const cfg = {
-  rpcUrl: process.env.COC_RPC_URL || 'https://clawchain.io/api/testnet/rpc',
-  wsUrl: process.env.COC_WS_URL || 'wss://clawchain.io/api/testnet/ws',
-  chainId: Number(process.env.COC_CHAIN_ID || '88780'),
-  faucetUrl: process.env.COC_FAUCET_URL || 'https://faucet.clawchain.io',
-  faucetAddr: process.env.COC_FAUCET_ADDRESS || '0x47f9940cCf9777C0407F094A1B0d8c50b0DD01BF',
-  faucetMinBalance: Number(process.env.COC_FAUCET_MIN_BALANCE || '100'),
-  websiteUrl: process.env.COC_WEBSITE_URL || 'https://clawchain.io',
-  explorerUrl: process.env.COC_EXPLORER_URL || 'https://explorer.clawchain.io',
-  ipfsUrl: process.env.COC_IPFS_URL || 'https://ipfs.clawchain.io',
-  blockFreshnessSec: Number(process.env.COC_BLOCK_FRESHNESS_SEC || '60'),
+  rpcUrl: process.env.PALI_RPC_URL || 'https://palimesh.io/api/testnet/rpc',
+  wsUrl: process.env.PALI_WS_URL || 'wss://palimesh.io/api/testnet/ws',
+  chainId: Number(process.env.PALI_CHAIN_ID || '88780'),
+  faucetUrl: process.env.PALI_FAUCET_URL || 'https://faucet.palimesh.io',
+  faucetAddr: process.env.PALI_FAUCET_ADDRESS || '0x47f9940cCf9777C0407F094A1B0d8c50b0DD01BF',
+  faucetMinBalance: Number(process.env.PALI_FAUCET_MIN_BALANCE || '100'),
+  websiteUrl: process.env.PALI_WEBSITE_URL || 'https://palimesh.io',
+  explorerUrl: process.env.PALI_EXPLORER_URL || 'https://explorer.palimesh.io',
+  ipfsUrl: process.env.PALI_IPFS_URL || 'https://ipfs.palimesh.io',
+  blockFreshnessSec: Number(process.env.PALI_BLOCK_FRESHNESS_SEC || '60'),
   intervalSec: Number(process.env.CHECK_INTERVAL_SEC || '60'),
   timeoutMs: Number(process.env.CHECK_TIMEOUT_MS || '15000'),
   // Per-validator RPC endpoints for cross-validator consistency checks.
   // Format "name=host:port,name=host:port,...". Reachable from prod-2.
-  validatorRpcs: (process.env.COC_VALIDATOR_RPCS ||
+  validatorRpcs: (process.env.PALI_VALIDATOR_RPCS ||
     'v1=209.74.64.88:38780,v2=159.198.44.136:28780,v3=199.192.16.79:28780,v4=159.198.36.3:28780,v5=159.198.36.25:28780'
   ).split(',').map(s => {
     const [name, hp] = s.split('='); const [host, port] = hp.split(':')
@@ -51,13 +51,13 @@ const cfg = {
   }),
   // Block time monitoring: sample N latest blocks, compute p95 inter-block
   // delta. Alert if p95 > limit (= 2× nominal 3s).
-  blockTimeSampleN: Number(process.env.COC_BLOCK_TIME_SAMPLE_N || '50'),
-  blockTimeP95LimitSec: Number(process.env.COC_BLOCK_TIME_P95_LIMIT_SEC || '6'),
+  blockTimeSampleN: Number(process.env.PALI_BLOCK_TIME_SAMPLE_N || '50'),
+  blockTimeP95LimitSec: Number(process.env.PALI_BLOCK_TIME_P95_LIMIT_SEC || '6'),
   // Reorg detection: remember last seen (number, hash) and verify unchanged.
-  reorgStateFile: process.env.COC_REORG_STATE || '/var/lib/coc-synthetic/reorg-state.json',
+  reorgStateFile: process.env.PALI_REORG_STATE || '/var/lib/palimesh-synthetic/reorg-state.json',
   // Look back this many blocks from tip (well past finality depth = 3) so we
   // don't false-positive on natural unstabilized-head shuffling.
-  reorgLookback: Number(process.env.COC_REORG_LOOKBACK || '20'),
+  reorgLookback: Number(process.env.PALI_REORG_LOOKBACK || '20'),
 }
 
 // ---------- helpers ----------
@@ -214,7 +214,7 @@ const checks = [
       const res = await fetchWithTimeout(cfg.websiteUrl + '/zh')
       if (!res.ok) throw new Error(`website /zh HTTP ${res.status}`)
       const body = await res.text()
-      if (!/COC|ChainOfClaw|公链/.test(body)) throw new Error('website body missing COC branding')
+      if (!/Palimesh|Palimesh|公链/.test(body)) throw new Error('website body missing Palimesh branding')
       return `200 ${body.length}B`
     },
   },
@@ -225,7 +225,7 @@ const checks = [
       const res = await fetchWithTimeout(cfg.websiteUrl + '/zh/services')
       if (!res.ok) throw new Error(`/zh/services HTTP ${res.status}`)
       const body = await res.text()
-      const needles = ['OpenClaw Marketplace', '//claw-mem', '//coc-node', '//coc-soul']
+      const needles = ['OpenClaw Marketplace', '//claw-mem', '//palimesh-node', '//palimesh-soul']
       const miss = needles.filter((n) => !body.includes(n))
       if (miss.length) throw new Error(`/zh/services missing: ${miss.join(', ')}`)
       return `ok (${needles.length}/${needles.length} cards)`
@@ -276,9 +276,9 @@ const checks = [
       const r = await rpc('eth_getBalance', [cfg.faucetAddr, 'latest'])
       const coc = weiToCOC(hexToBigInt(r))
       if (coc < cfg.faucetMinBalance) {
-        throw new Error(`faucet balance ${coc.toFixed(2)} COC < min ${cfg.faucetMinBalance} (refund needed)`)
+        throw new Error(`faucet balance ${coc.toFixed(2)} Palimesh < min ${cfg.faucetMinBalance} (refund needed)`)
       }
-      return `${coc.toFixed(2)} COC`
+      return `${coc.toFixed(2)} Palimesh`
     },
   },
   {

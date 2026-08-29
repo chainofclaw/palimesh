@@ -124,7 +124,7 @@ class FakePoseV2Contract {
 }
 
 test("PoseV2DisputeExecutor recovers opening challenge after restart and completes reveal/settle", async () => {
-  const dir = mkdtempSync(join(tmpdir(), "coc-dispute-executor-"))
+  const dir = mkdtempSync(join(tmpdir(), "palimesh-dispute-executor-"))
   const storePath = join(dir, "pending-challenges.json")
   const logger = createLogger()
   const contract = new FakePoseV2Contract()
@@ -182,7 +182,7 @@ test("PoseV2DisputeExecutor recovers opening challenge after restart and complet
 })
 
 test("PoseV2DisputeExecutor retries transient reveal failures", async () => {
-  const dir = mkdtempSync(join(tmpdir(), "coc-dispute-executor-retry-"))
+  const dir = mkdtempSync(join(tmpdir(), "palimesh-dispute-executor-retry-"))
   const store = new PendingChallengeStore(join(dir, "pending-challenges.json"))
   const logger = createLogger()
   const contract = new FakePoseV2Contract()

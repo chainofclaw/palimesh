@@ -7,15 +7,15 @@
  * auth gate): this suite is the attack-surface view — an unauthenticated
  * client must not be able to read host files or smuggle a non-CID path.
  *
- * Targets the IPFS HTTP API via COC_STRESS_IPFS (default 127.0.0.1:28800).
+ * Targets the IPFS HTTP API via PALI_STRESS_IPFS (default 127.0.0.1:28800).
  * Skips gracefully when unreachable, so it is CI-safe.
  *
- * Run: COC_STRESS_IPFS=http://host:port node --experimental-strip-types --test tests/security/ipfs-hardening.test.ts
+ * Run: PALI_STRESS_IPFS=http://host:port node --experimental-strip-types --test tests/security/ipfs-hardening.test.ts
  */
 import { describe, it } from "node:test"
 import assert from "node:assert/strict"
 
-const IPFS = process.env.COC_STRESS_IPFS ?? "http://127.0.0.1:28800"
+const IPFS = process.env.PALI_STRESS_IPFS ?? "http://127.0.0.1:28800"
 
 async function reachable(): Promise<boolean> {
   try {

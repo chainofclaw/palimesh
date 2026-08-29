@@ -24,7 +24,7 @@ import { IpfsBlockstore } from "./ipfs-blockstore.ts"
 import type { CidString } from "./ipfs-types.ts"
 import { DhtNetwork } from "./dht-network.ts"
 import { WireConnectionManager } from "./wire-connection-manager.ts"
-import { buildCocIpfsWiring } from "./coc-ipfs-wiring.ts"
+import { buildCocIpfsWiring } from "./palimesh-ipfs-wiring.ts"
 
 /** Content-addressed CID ("0x…" keccak256 convention) for `bytes` — the
  *  blockstore's remote-fetch path verifies pulled blocks against this. */
@@ -66,7 +66,7 @@ function makeConnMgr(
   return mgr
 }
 
-describe("coc-ipfs-wiring", () => {
+describe("palimesh-ipfs-wiring", () => {
   let tmpDir: string
   let blockstore: IpfsBlockstore
 
@@ -481,7 +481,7 @@ describe("coc-ipfs-wiring", () => {
   })
 
   // --- Phase C3.1: awaitReplicationResult surfaces per-CID push outcomes to
-  // the HTTP add handler so uploaders get an X-COC-Replicas-Warning header
+  // the HTTP add handler so uploaders get an X-Palimesh-Replicas-Warning header
   // when fewer than minReplicas peers accepted the push.
   it("awaitReplicationResult returns the PushToKResult after a local PUT", async () => {
     const dht = makeDht("0x1111")

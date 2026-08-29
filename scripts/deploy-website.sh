@@ -1,20 +1,20 @@
 #!/usr/bin/env bash
-# Deploy coc-website to production. Preserves server .env.local and SQLite data.
-# Usage: COC_WEBSITE_SSH_KEY=~/.ssh/openclaw_server_key ./scripts/deploy-website.sh
+# Deploy palimesh-website to production. Preserves server .env.local and SQLite data.
+# Usage: PALI_WEBSITE_SSH_KEY=~/.ssh/openclaw_server_key ./scripts/deploy-website.sh
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 WEB="$ROOT/website"
-HOST="${COC_WEBSITE_HOST:-root@159.198.44.136}"
-REMOTE="${COC_WEBSITE_REMOTE_DIR:-/root/clawd/COC/website}"
-KEY="${COC_WEBSITE_SSH_KEY:-$HOME/.ssh/openclaw_server_key}"
+HOST="${PALI_WEBSITE_HOST:-root@159.198.44.136}"
+REMOTE="${PALI_WEBSITE_REMOTE_DIR:-/root/clawd/Palimesh/website}"
+KEY="${PALI_WEBSITE_SSH_KEY:-$HOME/.ssh/openclaw_server_key}"
 
 if [[ ! -d "$WEB" ]]; then
   echo "website dir not found: $WEB" >&2
   exit 1
 fi
 if [[ ! -f "$KEY" ]]; then
-  echo "SSH key not found: $KEY (set COC_WEBSITE_SSH_KEY)" >&2
+  echo "SSH key not found: $KEY (set PALI_WEBSITE_SSH_KEY)" >&2
   exit 1
 fi
 
@@ -30,13 +30,13 @@ RSYNC=(rsync -avz --delete
 echo "==> rsync $WEB -> $HOST:$REMOTE"
 "${RSYNC[@]}" "$WEB/" "$HOST:$REMOTE/"
 
-echo "==> remote: npm ci && npm run build && pm2 restart coc-website"
+echo "==> remote: npm ci && npm run build && pm2 restart palimesh-website"
 "${SSH[@]}" "$HOST" bash -s <<'REMOTE'
 set -euo pipefail
-cd /root/clawd/COC/website
+cd /root/clawd/Palimesh/website
 npm ci
 npm run build
-pm2 restart coc-website
+pm2 restart palimesh-website
 pm2 list | head -15
 REMOTE
 

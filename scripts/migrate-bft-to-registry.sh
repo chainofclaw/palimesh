@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# migrate-bft-to-registry.sh — R1.3 SOP for switching the COC chain's BFT
+# migrate-bft-to-registry.sh — R1.3 SOP for switching the Palimesh chain's BFT
 # validator source from a hardcoded list (legacy) to ValidatorRegistry-driven
 # (Sprint 4 of Phase F+G).
 #
@@ -9,7 +9,7 @@
 #   getActiveValidators() and ValidatorRegistryReader replays
 #   ValidatorRegistered/Activated/Deactivated events to keep BFT in sync
 #   with on-chain state. Migrating means re-rolling each node with the
-#   COC_VALIDATOR_REGISTRY_ADDRESS env var injected (R1.2) and restarting
+#   PALI_VALIDATOR_REGISTRY_ADDRESS env var injected (R1.2) and restarting
 #   the systemd service.
 #
 # Why this is risky:
@@ -47,8 +47,8 @@
 #                on each restarted node.
 #
 # Rollback (manual): re-render env without --validator-registry-address,
-# redeploy. Or SSH into each node and remove the COC_VALIDATOR_REGISTRY_*
-# lines from /etc/coc/node-1.env, then `systemctl restart coc-node@1`.
+# redeploy. Or SSH into each node and remove the PALI_VALIDATOR_REGISTRY_*
+# lines from /etc/palimesh/node-1.env, then `systemctl restart palimesh-node@1`.
 
 set -o pipefail
 # Note: -u disabled because we accumulate counters across the GCP-coinbase
@@ -76,10 +76,10 @@ VALIDATOR_REGISTRY_FROM_BLOCK=$(jq -r '.contracts.ValidatorRegistry.block' "$REG
 CHAIN_ID=$(jq -r '.chainId' "$REGISTRY_FILE")
 
 # Hardcoded upstream validator addresses come from config.env's
-# COC_UPSTREAM_VALIDATORS (each "ADDR:HOST:P2P:WIRE")
+# PALI_UPSTREAM_VALIDATORS (each "ADDR:HOST:P2P:WIRE")
 declare -a UPSTREAM_ADDRS=()
 declare -a UPSTREAM_RPCS=()
-for entry in "${COC_UPSTREAM_VALIDATORS[@]}"; do
+for entry in "${PALI_UPSTREAM_VALIDATORS[@]}"; do
   IFS=':' read -r addr host p2p wire <<< "$entry"
   UPSTREAM_ADDRS+=("${addr,,}")
   UPSTREAM_RPCS+=("http://$host:28780")
@@ -145,9 +145,9 @@ fi
 echo
 echo "==> Pre-check 3: GCP node coinbases vs active set"
 declare -A COINBASES
-for vm_var in COC_ANCHOR_1 COC_ANCHOR_2 COC_BURST_1 COC_BURST_2 COC_BURST_3; do
+for vm_var in PALI_ANCHOR_1 PALI_ANCHOR_2 PALI_BURST_1 PALI_BURST_2 PALI_BURST_3; do
   name_var="${vm_var}_NAME"; zone_var="${vm_var}_ZONE"
-  ip=$(gcloud compute instances describe "${!name_var}" --zone="${!zone_var}" --project="$COC_GCP_PROJECT" --format="value(networkInterfaces[0].accessConfigs[0].natIP)" 2>/dev/null || echo "")
+  ip=$(gcloud compute instances describe "${!name_var}" --zone="${!zone_var}" --project="$PALI_GCP_PROJECT" --format="value(networkInterfaces[0].accessConfigs[0].natIP)" 2>/dev/null || echo "")
   if [[ -z "$ip" ]]; then
     echo "    ⚠️  ${!name_var} not reachable (assumed offline)"
     continue
@@ -282,14 +282,14 @@ Each step: stop service → edit env → restart → wait 90s → health check
 
 Health check after each step:
   - eth_blockNumber on the restarted node ≥ height-at-step-start - 5
-  - sudo journalctl -u coc-node@1 -n 50 must contain
+  - sudo journalctl -u palimesh-node@1 -n 50 must contain
     "BFT validator set updated from ValidatorRegistry" within 60s
   - Cluster aggregate produce rate stays ≥ 3 blocks / 30 s
 
 If any step's health check fails:
   - Abort: do NOT proceed to the next step
-  - Rollback: SSH into the failing node, remove COC_VALIDATOR_REGISTRY_*
-    from /etc/coc/node-1.env, restart coc-node@1
+  - Rollback: SSH into the failing node, remove PALI_VALIDATOR_REGISTRY_*
+    from /etc/palimesh/node-1.env, restart palimesh-node@1
   - Prior already-migrated nodes can be left as-is (they keep working
     because ValidatorRegistry active ⊇ hardcoded; they read the same
     set as the unmigrated ones do)
@@ -314,7 +314,7 @@ read -r -p "Proceed with apply? (yes/no): " confirm
 
 echo "TODO: apply mode is intentionally not implemented in this iteration."
 echo "Use the rollout plan above as a manual SOP. Each step is a single"
-echo "30-stop-burst.sh + edit /etc/coc/node-1.env + 31-start-burst.sh"
+echo "30-stop-burst.sh + edit /etc/palimesh/node-1.env + 31-start-burst.sh"
 echo "(or stop/start-anchor.sh for anchors). Wait for health check"
 echo "before proceeding. This guard exists to prevent accidental"
 echo "automation of an irreversible cluster-wide change."

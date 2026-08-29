@@ -6,7 +6,7 @@ let db: Database.Database | null = null
 export function getDb(): Database.Database {
   if (db) return db
 
-  const dbPath = process.env.COC_DB_PATH || path.join(process.cwd(), 'data', 'coc-forum.db')
+  const dbPath = process.env.PALI_DB_PATH || path.join(process.cwd(), 'data', 'palimesh-forum.db')
 
   // Ensure directory exists
   const dir = path.dirname(dbPath)

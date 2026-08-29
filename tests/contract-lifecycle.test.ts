@@ -1,7 +1,7 @@
 /**
  * P11: Contract lifecycle test — ERC20 deploy → mint → transfer → balanceOf.
  *
- * Tests the full contract interaction lifecycle using COC's EVM and chain engine.
+ * Tests the full contract interaction lifecycle using Palimesh's EVM and chain engine.
  */
 import { afterEach, beforeEach, describe, it } from "node:test"
 import assert from "node:assert/strict"

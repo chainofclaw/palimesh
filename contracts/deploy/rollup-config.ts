@@ -1,5 +1,5 @@
 /**
- * Rollup deployment configuration for COC Optimistic Rollup.
+ * Rollup deployment configuration for Palimesh Optimistic Rollup.
  *
  * Defines per-network parameters for RollupStateManager and DelayedInbox contracts.
  */
@@ -53,11 +53,11 @@ export const ROLLUP_SEPOLIA: RollupDeployConfig = {
   gasStrategy: "eip1559",
 }
 
-// ── Local Devnet (Hardhat / COC node) ───────────────────────────────────
+// ── Local Devnet (Hardhat / Palimesh node) ───────────────────────────────────
 
 export const ROLLUP_LOCAL: RollupDeployConfig = {
   chainId: 18780,
-  rpcUrl: process.env.COC_RPC_URL ?? "http://127.0.0.1:18780",
+  rpcUrl: process.env.PALI_RPC_URL ?? "http://127.0.0.1:18780",
   challengeWindowSeconds: 60,                    // 1 minute (instant testing)
   proposerBondWei: "100000000000000000",         // 0.1 ETH
   challengerBondWei: "50000000000000000",        // 0.05 ETH

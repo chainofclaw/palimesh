@@ -187,6 +187,6 @@ describeContract(
 )
 
 describeContract(
-  "COCToken",
+  "PalimeshToken",
   async (d) => [[d.address], [ethers.parseEther("250000000")], d.address],
 )

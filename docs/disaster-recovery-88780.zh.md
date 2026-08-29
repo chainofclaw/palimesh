@@ -2,7 +2,7 @@
 
 > 6 个危机场景:每个含症状 / 诊断 / 恢复 / 回滚 / ops-handoff。每个场景引用 chaos
 > 内存文件
-> [`coc-88780-2026-05-26-chaos-engineering-T1-T8.md`](https://github.com/chainofclaw/COC/blob/main/docs/coc-88780-2026-05-26-chaos-engineering-T1-T8.md)
+> [`coc-88780-2026-05-26-chaos-engineering-T1-T8.md`](https://github.com/palimesh/palimesh/blob/main/docs/coc-88780-2026-05-26-chaos-engineering-T1-T8.md)
 > (在 `~/.claude/projects/.../memory/` 里)中先前 chaos 演练观察到的已验证恢复模式。
 
 [English](./disaster-recovery-88780.md)
@@ -39,14 +39,14 @@ operator 侧响应;场景 1, 5 是链状态问题;6 是密钥轮换;8 是开发�
 ### 症状
 
 - 全部可达 RPC 块高 > 60s 不再前进
-- `coc_getBftStatus` 多次轮询显示相同 round + phase
+- `pali_getBftStatus` 多次轮询显示相同 round + phase
 - 多数 validator 日志反复显示 `Phase H15: proposer slot timeout, falling back`
 
 ### 诊断(只读)
 
 ```bash
 # 步骤 1 — 跨集群确认高度卡住
-for RPC in "https://rpc.chainofclaw.io" \
+for RPC in "https://rpc.palimesh.io" \
            "http://209.74.64.88:38780" \
            "http://159.198.36.3:28780" \
            "http://199.192.16.79:28780"; do
@@ -60,7 +60,7 @@ done
 # 步骤 2 — 看每个 validator 认为的 round / phase
 for RPC in <每个 validator>; do
   curl -s $RPC -H 'content-type: application/json' \
-    -d '{"jsonrpc":"2.0","id":1,"method":"coc_getBftStatus"}' | jq .result
+    -d '{"jsonrpc":"2.0","id":1,"method":"pali_getBftStatus"}' | jq .result
 done
 
 # 步骤 3 — 找出哪个 validator 没在参与
@@ -79,7 +79,7 @@ done
 ### 恢复
 
 **BFT-timeout stall(最常见)**:
-- 通过 `coc_getBftStatus.validators` vs 活跃投票集合识别缺失的 validator
+- 通过 `pali_getBftStatus.validators` vs 活跃投票集合识别缺失的 validator
 - 让缺失的 validator 回到在线(见场景 5 程序)
 - 最后一个缺失节点重新加入后 1 round(~3s)内,链恢复
 
@@ -256,7 +256,7 @@ deployer EOA `0xB4E943F5F34b763fC78598a9e528995B4CDe786a` *最初*部署了合�
 
 - 全 6 validator RPC 不响应
 - 块产生停止
-- `https://rpc.chainofclaw.io` 返 503
+- `https://rpc.palimesh.io` 返 503
 
 ### 诊断
 
@@ -290,15 +290,15 @@ Chaos test T8(2026-05-26)验证了正是此恢复:**全 6 节点同步并行重�
 ```bash
 # 1. SSH 到每个 validator 主机 + obs-1
 # 2. 用已验证的脚本运行并行重启:
-bash /tmp/coc-chaos-T8.sh   # 若 chaos sprint 仍在
+bash /tmp/palimesh-chaos-T8.sh   # 若 chaos sprint 仍在
 # 或者内联重现:
 SSH_KEY=$HOME/.ssh/openclaw_server_key
-( ssh -i $SSH_KEY root@209.74.64.88   "systemctl restart coc-node@88" ) &
-( ssh -i $SSH_KEY root@159.198.44.136 "systemctl restart coc-node@1"  ) &
-( ssh -i $SSH_KEY root@199.192.16.79  "systemctl restart coc-node@88" ) &
-( ssh -i $SSH_KEY root@159.198.36.3   "systemctl restart coc-node@1"  ) &
-( ssh -i $SSH_KEY root@159.198.36.25  "systemctl restart coc-node@1"  ) &
-( ssh             bob@34.139.57.20      "sudo systemctl restart coc-node@1" ) &
+( ssh -i $SSH_KEY root@209.74.64.88   "systemctl restart palimesh-node@88" ) &
+( ssh -i $SSH_KEY root@159.198.44.136 "systemctl restart palimesh-node@1"  ) &
+( ssh -i $SSH_KEY root@199.192.16.79  "systemctl restart palimesh-node@88" ) &
+( ssh -i $SSH_KEY root@159.198.36.3   "systemctl restart palimesh-node@1"  ) &
+( ssh -i $SSH_KEY root@159.198.36.25  "systemctl restart palimesh-node@1"  ) &
+( ssh             bob@34.139.57.20      "sudo systemctl restart palimesh-node@1" ) &
 wait
 
 # 3. 等 30s,探块产生
@@ -328,7 +328,7 @@ done
 疑似原因: <协调软件 bug | 网络故障 | DDoS | 未知>
 恢复路径: <并行重启 | genesis bootstrap | 工程升级>
 预计恢复时间: <30 min for 并行重启>
-公开沟通: <YES — chainofclaw.io/network 状态页更新>
+公开沟通: <YES — palimesh.io/network 状态页更新>
 负责: <ops lead>
 ```
 
@@ -349,7 +349,7 @@ done
 ### 恢复
 
 **即时(数分钟内)**:
-1. **停止泄漏的 validator 节点**(`systemctl stop coc-node@N`) —
+1. **停止泄漏的 validator 节点**(`systemctl stop palimesh-node@N`) —
    防止攻击者拿到密钥副本时强制双签
 2. **自愿 unstake**:从仍受控的密钥(在干净环境,非泄漏主机)调用
    `ValidatorRegistry.requestUnstake(nodeId)`。立即把你从活跃 BFT 集合移除,
@@ -359,7 +359,7 @@ done
    [`external-validator-onboarding.zh.md`](./external-validator-onboarding.zh.md) Step 0
 4. **等 14 天**(`UNSTAKE_LOCKUP`)。不能缩短
 5. **提取旧 stake**(`withdrawStake`) — 返回 stake 减去 lockup 窗口内任何 slash
-6. **用新密钥重新 stake**:从新密钥的 32 COC,在 registry 上注册新 nodeId
+6. **用新密钥重新 stake**:从新密钥的 32 PALI,在 registry 上注册新 nodeId
 
 ### 回滚路径
 
@@ -396,7 +396,7 @@ done
 你有错,但你需要知道怎么错:
 1. 从 `EquivocationProven` 事件识别两条冲突的签名消息(`hashA`, `hashB`):
    ```bash
-   curl -s https://rpc.chainofclaw.io \
+   curl -s https://rpc.palimesh.io \
      -H 'content-type: application/json' \
      -d "{\"jsonrpc\":\"2.0\",\"id\":1,\"method\":\"eth_getLogs\",\"params\":[{
        \"address\":\"0xa5dcE830e917176c1091fd6112F41E47692C510e\",
@@ -429,7 +429,7 @@ Equivocation 在链上。无回滚。slash 已触发。恢复仅向前(上面步
 
 ```
 [EQUIVOCATION SLASH] nodeId <ID>
-Slash 金额: <amount> COC(剩余 stake 的 10%)
+Slash 金额: <amount> Palimesh(剩余 stake 的 10%)
 冲突签名: hashA=<...> hashB=<...> at height=<N>
 根因: <多节点同密钥 | 软件 bug | 未知>
 重 stake 计划: <等 14d、新密钥、re-stake>

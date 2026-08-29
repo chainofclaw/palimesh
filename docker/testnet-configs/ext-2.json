@@ -72,15 +72,15 @@
     },
     {
       "id": "0x9965507d1a55bcc2695c58ba16fb37d819b0a4dc",
-      "url": "http://coc-ext-1:19780"
+      "url": "http://palimesh-ext-1:19780"
     },
     {
       "id": "0x23618e81e3f5cdf7f54c3d65f7fbc0abf5b21e8f",
-      "url": "http://coc-ext-3:19780"
+      "url": "http://palimesh-ext-3:19780"
     },
     {
       "id": "0xa0ee7a142d267c1f36714e4a8f75612f20a79720",
-      "url": "http://coc-ext-4:19780"
+      "url": "http://palimesh-ext-4:19780"
     }
   ],
   "enableBft": true,
@@ -111,17 +111,17 @@
     },
     {
       "id": "0x9965507d1a55bcc2695c58ba16fb37d819b0a4dc",
-      "address": "coc-ext-1",
+      "address": "palimesh-ext-1",
       "port": 19781
     },
     {
       "id": "0x23618e81e3f5cdf7f54c3d65f7fbc0abf5b21e8f",
-      "address": "coc-ext-3",
+      "address": "palimesh-ext-3",
       "port": 19781
     },
     {
       "id": "0xa0ee7a142d267c1f36714e4a8f75612f20a79720",
-      "address": "coc-ext-4",
+      "address": "palimesh-ext-4",
       "port": 19781
     }
   ],

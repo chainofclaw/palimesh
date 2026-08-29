@@ -1,37 +1,37 @@
-// PM2 config for COC production synthetic + active health loops.
+// PM2 config for Palimesh production synthetic + active health loops.
 //
 // Two processes:
-//   coc-synthetic   — passive HTTP/RPC invariants, 60s interval (fast MTTD)
-//   coc-health-loop — active txs + auto-remediation, 30 min interval
+//   palimesh-synthetic   — passive HTTP/RPC invariants, 60s interval (fast MTTD)
+//   palimesh-health-loop — active txs + auto-remediation, 30 min interval
 //
 // Deploy:  pm2 startOrReload scripts/synthetic/ecosystem.config.cjs && pm2 save
-// Logs:    pm2 logs coc-synthetic   /   pm2 logs coc-health-loop
+// Logs:    pm2 logs palimesh-synthetic   /   pm2 logs palimesh-health-loop
 module.exports = {
   apps: [
     {
-      name: 'coc-synthetic',
+      name: 'palimesh-synthetic',
       script: 'check-prod.mjs',
       cwd: __dirname,
-      args: '--watch --json /var/log/coc-synthetic/last.json',
+      args: '--watch --json /var/log/palimesh-synthetic/last.json',
       autorestart: true,
       max_restarts: 50,
       max_memory_restart: '256M',
       env: {
-        COC_CHAIN_ID: '88780',
-        COC_RPC_URL: 'https://clawchain.io/api/testnet/rpc',
-        COC_WS_URL: 'wss://clawchain.io/api/testnet/ws',
-        COC_FAUCET_URL: 'https://faucet.clawchain.io',
-        COC_FAUCET_ADDRESS: '0x47f9940cCf9777C0407F094A1B0d8c50b0DD01BF',
-        COC_FAUCET_MIN_BALANCE: '100',
-        COC_WEBSITE_URL: 'https://clawchain.io',
-        COC_EXPLORER_URL: 'https://explorer.clawchain.io',
-        COC_IPFS_URL: 'https://ipfs.clawchain.io',
-        COC_BLOCK_FRESHNESS_SEC: '60',
+        PALI_CHAIN_ID: '88780',
+        PALI_RPC_URL: 'https://palimesh.io/api/testnet/rpc',
+        PALI_WS_URL: 'wss://palimesh.io/api/testnet/ws',
+        PALI_FAUCET_URL: 'https://faucet.palimesh.io',
+        PALI_FAUCET_ADDRESS: '0x47f9940cCf9777C0407F094A1B0d8c50b0DD01BF',
+        PALI_FAUCET_MIN_BALANCE: '100',
+        PALI_WEBSITE_URL: 'https://palimesh.io',
+        PALI_EXPLORER_URL: 'https://explorer.palimesh.io',
+        PALI_IPFS_URL: 'https://ipfs.palimesh.io',
+        PALI_BLOCK_FRESHNESS_SEC: '60',
         CHECK_INTERVAL_SEC: '60',
       },
     },
     {
-      name: 'coc-health-loop',
+      name: 'palimesh-health-loop',
       script: 'health-loop.mjs',
       cwd: __dirname,
       autorestart: true,
@@ -49,14 +49,14 @@ module.exports = {
         FAUCET_MIN_COC: '1000',
         FAUCET_REFUND_COC: '50000',
         BLOCK_FRESHNESS_LIMIT_SEC: '300',
-        SSH_KEY: '/root/.ssh/coc-automation',
-        REMEDIATE_STATE: '/var/lib/coc-synthetic/state.json',
+        SSH_KEY: '/root/.ssh/palimesh-automation',
+        REMEDIATE_STATE: '/var/lib/palimesh-synthetic/state.json',
         // Loop cadence
         HEALTH_LOOP_INTERVAL_SEC: '1800', // 30 min
         HEALTH_STRESS_EVERY: '4',  // run stress probe every 4 ticks (~2 hours)
         STRESS_N: '32',
         STRESS_MODE: 'mixed',
-        HEALTH_REPORT_DIR: '/var/log/coc-synthetic',
+        HEALTH_REPORT_DIR: '/var/log/palimesh-synthetic',
       },
     },
   ],

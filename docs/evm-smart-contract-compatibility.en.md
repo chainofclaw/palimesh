@@ -1,14 +1,14 @@
-# COC EVM and Smart Contract Compatibility
+# Palimesh EVM and Smart Contract Compatibility
 
-This document describes the current state of COC's EVM execution stack, smart contract compatibility boundaries, runtime limitations, and contract deployment and usage methods. The content is based on the actual repository implementation, not whitepaper-level goals.
+This document describes the current state of Palimesh's EVM execution stack, smart contract compatibility boundaries, runtime limitations, and contract deployment and usage methods. The content is based on the actual repository implementation, not whitepaper-level goals.
 
-Design principle: COC separates on-chain execution, off-chain PoSe services, and runtime automation. The EVM handles transaction execution and state persistence, PoSe contracts handle settlement, and runtime programs handle challenge, reward, slash, and other off-chain orchestration.
+Design principle: Palimesh separates on-chain execution, off-chain PoSe services, and runtime automation. The EVM handles transaction execution and state persistence, PoSe contracts handle settlement, and runtime programs handle challenge, reward, slash, and other off-chain orchestration.
 
 Module scope: This document covers the contract compatibility capabilities exposed by `node/src/evm.ts`, `node/src/rpc.ts`, `node/src/storage/persistent-state-manager.ts`, `contracts/contracts-src/*`, `contracts/deploy/*`, `runtime/*`, and `explorer/src/lib/solc-verify.ts`.
 
 ## 1. Current Assessment
 
-As of the current codebase, COC can be considered an "EVM-compatible prototype chain supporting standard Solidity contract deployment and invocation", but it is not equivalent to a "complete Ethereum node implementation".
+As of the current codebase, Palimesh can be considered an "EVM-compatible prototype chain supporting standard Solidity contract deployment and invocation", but it is not equivalent to a "complete Ethereum node implementation".
 
 Key takeaways:
 
@@ -25,7 +25,7 @@ Key takeaways:
 
 ### 2.1 Execution Stack
 
-COC's EVM execution core is in [`node/src/evm.ts`](/home/bob/projects/ClawdBot/COC/node/src/evm.ts).
+Palimesh's EVM execution core is in [`node/src/evm.ts`](/home/bob/projects/ClawdBot/Palimesh/node/src/evm.ts).
 
 - Execution engine: `@ethereumjs/vm`
 - Common configuration: `createCustomCommon(...)`
@@ -33,11 +33,11 @@ COC's EVM execution core is in [`node/src/evm.ts`](/home/bob/projects/ClawdBot/C
 - Transaction execution: `runTx(...)`
 - Read-only contract calls: `vm.evm.runCall(...)`
 
-This means COC does not implement its own bytecode interpreter, but reuses a mature EVM library with chain storage, RPC, log indexing, and PoSe runtime connected around it.
+This means Palimesh does not implement its own bytecode interpreter, but reuses a mature EVM library with chain storage, RPC, log indexing, and PoSe runtime connected around it.
 
 ### 2.2 State Persistence
 
-COC is no longer a "pure in-memory EVM".
+Palimesh is no longer a "pure in-memory EVM".
 
 The current state persistence path is:
 
@@ -48,13 +48,13 @@ The current state persistence path is:
 
 Related implementation:
 
-- [`node/src/storage/state-trie.ts`](/home/bob/projects/ClawdBot/COC/node/src/storage/state-trie.ts)
-- [`node/src/storage/persistent-state-manager.ts`](/home/bob/projects/ClawdBot/COC/node/src/storage/persistent-state-manager.ts)
-- [`node/src/index.ts`](/home/bob/projects/ClawdBot/COC/node/src/index.ts)
+- [`node/src/storage/state-trie.ts`](/home/bob/projects/ClawdBot/Palimesh/node/src/storage/state-trie.ts)
+- [`node/src/storage/persistent-state-manager.ts`](/home/bob/projects/ClawdBot/Palimesh/node/src/storage/persistent-state-manager.ts)
+- [`node/src/index.ts`](/home/bob/projects/ClawdBot/Palimesh/node/src/index.ts)
 
 ### 2.3 Block Execution and State Isolation
 
-When applying remote blocks, COC now uses native EVM `checkpoint/commit/revert` for speculative execution isolation, rather than doing "fake forks" only at the trie level.
+When applying remote blocks, Palimesh now uses native EVM `checkpoint/commit/revert` for speculative execution isolation, rather than doing "fake forks" only at the trie level.
 
 The execution flow is roughly:
 
@@ -69,12 +69,12 @@ This ensures invalid remote blocks do not pollute the parent state.
 
 Related implementation:
 
-- [`node/src/chain-engine.ts`](/home/bob/projects/ClawdBot/COC/node/src/chain-engine.ts)
-- [`node/src/evm.ts`](/home/bob/projects/ClawdBot/COC/node/src/evm.ts)
+- [`node/src/chain-engine.ts`](/home/bob/projects/ClawdBot/Palimesh/node/src/chain-engine.ts)
+- [`node/src/evm.ts`](/home/bob/projects/ClawdBot/Palimesh/node/src/evm.ts)
 
 ### 2.4 Block Header and Receipt Views
 
-COC currently exposes real computed values for RPC:
+Palimesh currently exposes real computed values for RPC:
 
 - `transactionsRoot`
 - `receiptsRoot`
@@ -85,15 +85,15 @@ These are not fixed placeholder values, but are computed at runtime from blocks 
 
 Related implementation:
 
-- [`node/src/block-header.ts`](/home/bob/projects/ClawdBot/COC/node/src/block-header.ts)
-- [`node/src/rpc.ts`](/home/bob/projects/ClawdBot/COC/node/src/rpc.ts)
-- [`node/src/chain-events.ts`](/home/bob/projects/ClawdBot/COC/node/src/chain-events.ts)
+- [`node/src/block-header.ts`](/home/bob/projects/ClawdBot/Palimesh/node/src/block-header.ts)
+- [`node/src/rpc.ts`](/home/bob/projects/ClawdBot/Palimesh/node/src/rpc.ts)
+- [`node/src/chain-events.ts`](/home/bob/projects/ClawdBot/Palimesh/node/src/chain-events.ts)
 
 ## 3. Current Smart Contract Compatibility
 
 ### 3.1 Capabilities Considered Compatible
 
-COC's current compatibility with "standard Solidity contracts" is demonstrated in the following scenarios:
+Palimesh's current compatibility with "standard Solidity contracts" is demonstrated in the following scenarios:
 
 | Capability | Status | Notes |
 |---|---|---|
@@ -123,11 +123,11 @@ From test coverage, the following contract families have been compiled, deployed
 
 Related directories:
 
-- [`contracts/contracts-src/settlement`](/home/bob/projects/ClawdBot/COC/contracts/contracts-src/settlement)
-- [`contracts/contracts-src/governance`](/home/bob/projects/ClawdBot/COC/contracts/contracts-src/governance)
-- [`contracts/contracts-src/test-contracts`](/home/bob/projects/ClawdBot/COC/contracts/contracts-src/test-contracts)
-- [`contracts/contracts-src/test`](/home/bob/projects/ClawdBot/COC/contracts/contracts-src/test) (Eip712Harness)
-- [`contracts/test`](/home/bob/projects/ClawdBot/COC/contracts/test)
+- [`contracts/contracts-src/settlement`](/home/bob/projects/ClawdBot/Palimesh/contracts/contracts-src/settlement)
+- [`contracts/contracts-src/governance`](/home/bob/projects/ClawdBot/Palimesh/contracts/contracts-src/governance)
+- [`contracts/contracts-src/test-contracts`](/home/bob/projects/ClawdBot/Palimesh/contracts/contracts-src/test-contracts)
+- [`contracts/contracts-src/test`](/home/bob/projects/ClawdBot/Palimesh/contracts/contracts-src/test) (Eip712Harness)
+- [`contracts/test`](/home/bob/projects/ClawdBot/Palimesh/contracts/test)
 
 ### 3.2 Verified EVM Semantics
 
@@ -144,9 +144,9 @@ Current implementation and tests confirm:
 
 Related implementation and tests:
 
-- [`node/src/base-fee.ts`](/home/bob/projects/ClawdBot/COC/node/src/base-fee.ts)
-- [`node/src/precompiles.test.ts`](/home/bob/projects/ClawdBot/COC/node/src/precompiles.test.ts)
-- [`node/src/hardfork.test.ts`](/home/bob/projects/ClawdBot/COC/node/src/hardfork.test.ts)
+- [`node/src/base-fee.ts`](/home/bob/projects/ClawdBot/Palimesh/node/src/base-fee.ts)
+- [`node/src/precompiles.test.ts`](/home/bob/projects/ClawdBot/Palimesh/node/src/precompiles.test.ts)
+- [`node/src/hardfork.test.ts`](/home/bob/projects/ClawdBot/Palimesh/node/src/hardfork.test.ts)
 
 ### 3.3 Compatibility Is Not "Full Ethereum Node Equivalence"
 
@@ -154,8 +154,8 @@ This must be stated clearly.
 
 The repository's own implementation status document marks the execution layer as `Partial`, and the feature matrix explicitly notes `RPC: full EVM parity — Missing`:
 
-- [`docs/implementation-status.md`](/home/bob/projects/ClawdBot/COC/docs/implementation-status.md)
-- [`docs/feature-matrix.md`](/home/bob/projects/ClawdBot/COC/docs/feature-matrix.md)
+- [`docs/implementation-status.md`](/home/bob/projects/ClawdBot/Palimesh/docs/implementation-status.md)
+- [`docs/feature-matrix.md`](/home/bob/projects/ClawdBot/Palimesh/docs/feature-matrix.md)
 
 A more accurate characterization:
 
@@ -178,7 +178,7 @@ A more accurate characterization:
 - Accounts and transactions
   - `eth_getBalance`, `eth_getTransactionCount`, `eth_accounts`
   - `eth_getTransactionByHash`, `eth_getTransactionReceipt`
-  - `eth_sendRawTransaction`, `eth_sendTransaction` (only available when `COC_DEV_ACCOUNTS=1`)
+  - `eth_sendRawTransaction`, `eth_sendTransaction` (only available when `PALI_DEV_ACCOUNTS=1`)
 - Contracts
   - `eth_call`, `eth_estimateGas`, `eth_getCode`, `eth_getStorageAt`, `eth_getProof`
   - `eth_createAccessList` (collects access list data from real execution)
@@ -189,10 +189,10 @@ A more accurate characterization:
   - `eth_gasPrice`, `eth_feeHistory`, `eth_maxPriorityFeePerGas`
 - Signing
   - `eth_sign`, `eth_signTypedData_v4`
-- Uncle (stubs, COC has no uncle concept)
+- Uncle (stubs, Palimesh has no uncle concept)
   - `eth_getUncleCountByBlockHash`, `eth_getUncleCountByBlockNumber`
   - `eth_getUncleByBlockHashAndIndex`, `eth_getUncleByBlockNumberAndIndex`
-- Mining (stubs, COC does not do PoW)
+- Mining (stubs, Palimesh does not do PoW)
   - `eth_mining`, `eth_hashrate`, `eth_coinbase`
   - `eth_getWork`, `eth_submitWork`, `eth_submitHashrate`
 - Compilation (partial)
@@ -202,14 +202,14 @@ A more accurate characterization:
 
 **web3_ — Client Information**
 
-- `web3_clientVersion` (returns `"COC/0.2"`)
+- `web3_clientVersion` (returns `"Palimesh/0.2"`)
 - `web3_sha3`
 
 **net_ — Network Information**
 
 - `net_version`, `net_listening`, `net_peerCount`
 
-**debug_ / trace_ — Debugging (requires `COC_DEBUG_RPC=1`)**
+**debug_ / trace_ — Debugging (requires `PALI_DEBUG_RPC=1`)**
 
 - `debug_traceTransaction`, `debug_traceBlockByNumber`, `debug_traceCall`
 - `trace_transaction`, `trace_call`, `trace_replayTransaction`, `trace_replayBlockTransactions`
@@ -223,30 +223,30 @@ A more accurate characterization:
 
 - `admin_nodeInfo`, `admin_addPeer`, `admin_removePeer`, `admin_peers`
 
-**coc_ — COC Custom Methods**
+**pali_ — Palimesh Custom Methods**
 
 - Chain information
-  - `coc_nodeInfo`, `coc_chainStats`, `coc_getNetworkStats`
+  - `pali_nodeInfo`, `pali_chainStats`, `pali_getNetworkStats`
 - Validators and governance
-  - `coc_validators`, `coc_getValidators`
-  - `coc_submitProposal`, `coc_voteProposal`
-  - `coc_getGovernanceStats`, `coc_getProposals`
-  - `coc_getDaoProposal`, `coc_getDaoProposals`, `coc_getDaoStats`
-  - `coc_getTreasuryBalance`, `coc_getFaction`
+  - `pali_validators`, `pali_getValidators`
+  - `pali_submitProposal`, `pali_voteProposal`
+  - `pali_getGovernanceStats`, `pali_getProposals`
+  - `pali_getDaoProposal`, `pali_getDaoProposals`, `pali_getDaoStats`
+  - `pali_getTreasuryBalance`, `pali_getFaction`
 - BFT consensus
-  - `coc_getBftStatus`, `coc_getEquivocations`
+  - `pali_getBftStatus`, `pali_getEquivocations`
 - Contract indexing
-  - `coc_getContracts`, `coc_getContractInfo`
+  - `pali_getContracts`, `pali_getContractInfo`
 - Transaction indexing
-  - `coc_getTransactionsByAddress`
+  - `pali_getTransactionsByAddress`
 - PoSe rewards
-  - `coc_getRewardManifest`, `coc_getRewardClaim`
+  - `pali_getRewardManifest`, `pali_getRewardClaim`
 - Storage
-  - `coc_prunerStats`
+  - `pali_prunerStats`
 
 Implementation file:
 
-- [`node/src/rpc.ts`](/home/bob/projects/ClawdBot/COC/node/src/rpc.ts)
+- [`node/src/rpc.ts`](/home/bob/projects/ClawdBot/Palimesh/node/src/rpc.ts)
 
 ### 4.2 WebSocket Compatibility
 
@@ -260,12 +260,12 @@ However, it is not a complete mirror of HTTP RPC. Some methods are explicitly bl
 
 - Filter management methods
 - `admin_*`
-- `coc_submitProposal`
-- `coc_voteProposal`
+- `pali_submitProposal`
+- `pali_voteProposal`
 
 Related implementation:
 
-- [`node/src/websocket-rpc.ts`](/home/bob/projects/ClawdBot/COC/node/src/websocket-rpc.ts)
+- [`node/src/websocket-rpc.ts`](/home/bob/projects/ClawdBot/Palimesh/node/src/websocket-rpc.ts)
 
 ### 4.3 Explorer Contract Verification
 
@@ -280,8 +280,8 @@ How it works:
 
 Related implementation:
 
-- [`explorer/src/app/api/verify/route.ts`](/home/bob/projects/ClawdBot/COC/explorer/src/app/api/verify/route.ts)
-- [`explorer/src/lib/solc-verify.ts`](/home/bob/projects/ClawdBot/COC/explorer/src/lib/solc-verify.ts)
+- [`explorer/src/app/api/verify/route.ts`](/home/bob/projects/ClawdBot/Palimesh/explorer/src/app/api/verify/route.ts)
+- [`explorer/src/lib/solc-verify.ts`](/home/bob/projects/ClawdBot/Palimesh/explorer/src/lib/solc-verify.ts)
 
 ## 5. Current Runtime Limitations
 
@@ -292,7 +292,7 @@ This is the most important section of this document.
 - The default hardfork is `Shanghai`
 - A single configured `hardfork` can switch the whole node to another `@ethereumjs/common` hardfork
 - A static `hardforkSchedule` can switch execution semantics by block height
-- COC still does not derive a full upgrade schedule automatically from chain metadata like mainstream Ethereum clients
+- Palimesh still does not derive a full upgrade schedule automatically from chain metadata like mainstream Ethereum clients
 - If your toolchain or bytecode strictly depends on other fork-era differences, you must still verify independently
 
 Impact:
@@ -314,7 +314,7 @@ The following methods are currently missing, simplified, or stubbed:
 | `debug_trace*` / `trace_*` | Partial | Supports `debug_traceCall`, `trace_call`, `trace_callMany`, `trace_replayTransaction`, `trace_replayBlockTransactions`, `trace_rawTransaction`, `trace_block`, `trace_filter`, and `trace_get`, producing replay-backed traces from real execution; `trace_transaction`, `trace_block`, `trace_filter`, and `trace_get` now consistently return localized OpenEthereum-style traces; `debug_traceCall`, `debug_traceTransaction`, and `debug_traceBlockByNumber` now also support the built-in `callTracer` and `prestateTracer`, with `callTracer.onlyTopCall`, `callTracer.withLog`, and best-effort ABI `revertReason` decoding for `Error(string)` / `Panic(uint256)`; unknown custom errors fall back to `CustomError(0x<selector>)`; plus `prestateTracer.diffMode`, `disableCode`, and `disableStorage`; `trace_filter` now supports `fromBlock/toBlock`, `fromAddress/toAddress`, and `after/count`, `trace_get` can resolve a single localized trace by `traceAddress`, and `trace_callMany` applies each simulated call on top of the previous call's resulting state; `vmTrace` now exports best-effort `code` and a depth-collapsed `sub` tree, while `stateDiff` combines access-list targets with storage observed in `structLogs`, and now covers created-contract `code/storage` changes as well, but it still falls short of full OpenEthereum semantics |
 | `eth_compile*` / `eth_getCompilers` | Partial | `eth_getCompilers` and `eth_compileSolidity` are now supported; `eth_compileSolidity` compiles source via lazily loaded `solc`, while `eth_compileLLL` / `eth_compileSerpent` still return unsupported |
 | `eth_mining` / `eth_hashrate` / `eth_coinbase` | Stubs | Returns fixed values (`false` / `"0x0"` / zero address) |
-| `eth_getWork` / `eth_submitWork` / `eth_submitHashrate` | Stubs | COC does not do PoW mining |
+| `eth_getWork` / `eth_submitWork` / `eth_submitHashrate` | Stubs | Palimesh does not do PoW mining |
 | Uncle-related methods | Stubs | Returns `0x0` or `null` |
 
 ### 5.3 Transaction and RPC Rate Limiting
@@ -328,26 +328,26 @@ Current runtime limits include:
 - RPC request body size limit: `1 MiB`
 - Filter limit: `1000`
 - `eth_getLogs` / filter log scan range limit: `10,000` blocks
-- Debug RPC disabled by default, must explicitly set `COC_DEBUG_RPC=1`
+- Debug RPC disabled by default, must explicitly set `PALI_DEBUG_RPC=1`
 
 Related implementation:
 
-- [`node/src/base-fee.ts`](/home/bob/projects/ClawdBot/COC/node/src/base-fee.ts)
-- [`node/src/rpc.ts`](/home/bob/projects/ClawdBot/COC/node/src/rpc.ts)
+- [`node/src/base-fee.ts`](/home/bob/projects/ClawdBot/Palimesh/node/src/base-fee.ts)
+- [`node/src/rpc.ts`](/home/bob/projects/ClawdBot/Palimesh/node/src/rpc.ts)
 
 ### 5.4 `eth_sendTransaction` Is Not a Production Deployment Interface
 
-`eth_sendTransaction` only has dev accounts available when `COC_DEV_ACCOUNTS=1` is explicitly enabled.
+`eth_sendTransaction` only has dev accounts available when `PALI_DEV_ACCOUNTS=1` is explicitly enabled.
 
 This means:
 
 - Local development and debugging can use `eth_sendTransaction`
 - Production contract deployment and transactions should use an external signer via `eth_sendRawTransaction`
-- Standard external wallet workflows with Hardhat / ethers / Foundry are more appropriate for COC's actual usage
+- Standard external wallet workflows with Hardhat / ethers / Foundry are more appropriate for Palimesh's actual usage
 
 ### 5.5 Historical Queries and `nodeMode` Boundaries
 
-COC supports node operating modes:
+Palimesh supports node operating modes:
 
 - `archive`
 - `full`
@@ -374,13 +374,13 @@ Operational implications:
 
 Related implementation:
 
-- [`node/src/config.ts`](/home/bob/projects/ClawdBot/COC/node/src/config.ts)
-- [`node/src/index.ts`](/home/bob/projects/ClawdBot/COC/node/src/index.ts)
-- [`node/src/storage/pruner.ts`](/home/bob/projects/ClawdBot/COC/node/src/storage/pruner.ts)
+- [`node/src/config.ts`](/home/bob/projects/ClawdBot/Palimesh/node/src/config.ts)
+- [`node/src/index.ts`](/home/bob/projects/ClawdBot/Palimesh/node/src/index.ts)
+- [`node/src/storage/pruner.ts`](/home/bob/projects/ClawdBot/Palimesh/node/src/storage/pruner.ts)
 
 ### 5.6 Configuration Boundaries in Current Repository
 
-The repository now converges the default COC `chainId` to `18780` across the core node, `config.example.json`, and `contracts/hardhat.config.cjs`.
+The repository now converges the default Palimesh `chainId` to `18780` across the core node, `config.example.json`, and `contracts/hardhat.config.cjs`.
 
 This still does not mean deployments can skip verification. If you connect to an external devnet, historical testnet, or custom-configured network, you must use the value returned by the target node.
 
@@ -402,7 +402,7 @@ For standard Solidity contracts, the recommended approach is:
 
 1. Compile contracts locally
 2. Sign with an external private key
-3. Submit raw transactions via COC RPC
+3. Submit raw transactions via Palimesh RPC
 
 Hardhat network configuration example:
 
@@ -414,8 +414,8 @@ module.exports = {
   solidity: "0.8.24",
   networks: {
     coc: {
-      url: process.env.COC_RPC_URL || "http://127.0.0.1:18780",
-      chainId: Number(process.env.COC_CHAIN_ID || "18780"),
+      url: process.env.PALI_RPC_URL || "http://127.0.0.1:18780",
+      chainId: Number(process.env.PALI_CHAIN_ID || "18780"),
       accounts: process.env.DEPLOYER_PRIVATE_KEY
         ? [process.env.DEPLOYER_PRIVATE_KEY]
         : [],
@@ -446,8 +446,8 @@ main().catch((err) => {
 Run:
 
 ```bash
-export COC_RPC_URL="http://127.0.0.1:18780"
-export COC_CHAIN_ID="18780"
+export PALI_RPC_URL="http://127.0.0.1:18780"
+export PALI_CHAIN_ID="18780"
 export DEPLOYER_PRIVATE_KEY="0xyour_private_key"
 
 npx hardhat run scripts/deploy-my-contract.js --network coc
@@ -457,7 +457,7 @@ npx hardhat run scripts/deploy-my-contract.js --network coc
 
 Governance contracts have an existing deployment script:
 
-- [`contracts/scripts/deploy-governance.js`](/home/bob/projects/ClawdBot/COC/contracts/scripts/deploy-governance.js)
+- [`contracts/scripts/deploy-governance.js`](/home/bob/projects/ClawdBot/Palimesh/contracts/scripts/deploy-governance.js)
 
 Usage:
 
@@ -485,8 +485,8 @@ This will deploy and wire up:
 
 The current formal deployment entrypoints for PoSeManagerV2 are:
 
-- [`contracts/deploy/cli-deploy-pose.ts`](/home/bob/projects/ClawdBot/COC/contracts/deploy/cli-deploy-pose.ts)
-- [`contracts/deploy/deploy-pose.ts`](/home/bob/projects/ClawdBot/COC/contracts/deploy/deploy-pose.ts)
+- [`contracts/deploy/cli-deploy-pose.ts`](/home/bob/projects/ClawdBot/Palimesh/contracts/deploy/cli-deploy-pose.ts)
+- [`contracts/deploy/deploy-pose.ts`](/home/bob/projects/ClawdBot/Palimesh/contracts/deploy/deploy-pose.ts)
 
 The library module provides:
 
@@ -572,7 +572,7 @@ Initialization sets:
 - `challengeBondMin`
 - `verifyingContract`
 
-If deploying to the COC chain itself, `verifyingContract` is typically the contract's own address.
+If deploying to the Palimesh chain itself, `verifyingContract` is typically the contract's own address.
 
 Typical flow from tests:
 
@@ -588,12 +588,12 @@ Typical flow from tests:
 
 Related references:
 
-- [`contracts/contracts-src/settlement/PoSeManagerV2.sol`](/home/bob/projects/ClawdBot/COC/contracts/contracts-src/settlement/PoSeManagerV2.sol)
-- [`contracts/test/pose-v2-e2e.test.cjs`](/home/bob/projects/ClawdBot/COC/contracts/test/pose-v2-e2e.test.cjs)
+- [`contracts/contracts-src/settlement/PoSeManagerV2.sol`](/home/bob/projects/ClawdBot/Palimesh/contracts/contracts-src/settlement/PoSeManagerV2.sol)
+- [`contracts/test/pose-v2-e2e.test.cjs`](/home/bob/projects/ClawdBot/Palimesh/contracts/test/pose-v2-e2e.test.cjs)
 
 ### 6.5 Current Deployment Toolchain Boundaries
 
-The repository's [`contracts/package.json`](/home/bob/projects/ClawdBot/COC/contracts/package.json) now converges PoSe deployment onto:
+The repository's [`contracts/package.json`](/home/bob/projects/ClawdBot/Palimesh/contracts/package.json) now converges PoSe deployment onto:
 
 - `npm run deploy:pose`
 - `npm run deploy:pose:coc`
@@ -662,40 +662,40 @@ curl -s -X POST http://127.0.0.1:18780 \
 
 If the node has persistent block indexing enabled, you can use:
 
-- `coc_getContracts`
-- `coc_getContractInfo`
+- `pali_getContracts`
+- `pali_getContractInfo`
 
 Example:
 
 ```bash
 curl -s -X POST http://127.0.0.1:18780 \
   -H "Content-Type: application/json" \
-  -d '{"jsonrpc":"2.0","id":1,"method":"coc_getContracts","params":[{"limit":20,"offset":0}]}'
+  -d '{"jsonrpc":"2.0","id":1,"method":"pali_getContracts","params":[{"limit":20,"offset":0}]}'
 ```
 
 ### 7.6 Using the Wallet CLI to Fund Deployment Accounts
 
-The wallet CLI is at [`wallet/coc-wallet.ts`](/home/bob/projects/ClawdBot/COC/wallet/coc-wallet.ts).
+The wallet CLI is at [`wallet/palimesh-wallet.ts`](/home/bob/projects/ClawdBot/Palimesh/wallet/palimesh-wallet.ts).
 
 Common commands:
 
 ```bash
-node --experimental-strip-types wallet/coc-wallet.ts create --password my-pass
+node --experimental-strip-types wallet/palimesh-wallet.ts create --password my-pass
 ```
 
 ```bash
-node --experimental-strip-types wallet/coc-wallet.ts balance 0xYourAddress --rpc http://127.0.0.1:18780
+node --experimental-strip-types wallet/palimesh-wallet.ts balance 0xYourAddress --rpc http://127.0.0.1:18780
 ```
 
 ```bash
-node --experimental-strip-types wallet/coc-wallet.ts send 0xFrom 0xTo 1.0 --rpc http://127.0.0.1:18780 --password my-pass
+node --experimental-strip-types wallet/palimesh-wallet.ts send 0xFrom 0xTo 1.0 --rpc http://127.0.0.1:18780 --password my-pass
 ```
 
 ## 8. Use Cases and Non-Use Cases
 
 ### 8.1 Suitable For
 
-- Deploying standard Solidity business contracts on COC
+- Deploying standard Solidity business contracts on Palimesh
 - Using `ethers` / `viem` / Hardhat / Foundry for common contract workflows; the repository now includes `ethers`, `viem`, RPC semantic, and contract lifecycle regressions
 - Providing the on-chain execution layer for PoSe / governance / Explorer
 - Local devnet / testnet / prototype validation
@@ -718,21 +718,21 @@ If your goal is "stable deployment and operation of application contracts", the 
 1. Use an `archive` node as the deployment and query endpoint.
 2. Verify the actual chain ID with `eth_chainId` before deployment — do not trust sample files.
 3. Use external private key signing via `eth_sendRawTransaction`.
-4. When you need debug traces, explicitly enable `COC_DEBUG_RPC=1`, and accept that traces are simplified.
+4. When you need debug traces, explicitly enable `PALI_DEBUG_RPC=1`, and accept that traces are simplified.
 5. When you need historical logs or Explorer capabilities, do not use `light` nodes.
 6. When deploying PoSeManagerV2, treat "deploy" and "initialize" as two separate steps.
 
 ## 10. Source Code Entry Points
 
-- EVM execution: [`node/src/evm.ts`](/home/bob/projects/ClawdBot/COC/node/src/evm.ts)
-- RPC: [`node/src/rpc.ts`](/home/bob/projects/ClawdBot/COC/node/src/rpc.ts)
-- WebSocket RPC: [`node/src/websocket-rpc.ts`](/home/bob/projects/ClawdBot/COC/node/src/websocket-rpc.ts)
-- Persistent state: [`node/src/storage/persistent-state-manager.ts`](/home/bob/projects/ClawdBot/COC/node/src/storage/persistent-state-manager.ts)
-- State trie: [`node/src/storage/state-trie.ts`](/home/bob/projects/ClawdBot/COC/node/src/storage/state-trie.ts)
-- Block header views: [`node/src/block-header.ts`](/home/bob/projects/ClawdBot/COC/node/src/block-header.ts)
-- PoSe v1/v2 contracts: [`contracts/contracts-src/settlement`](/home/bob/projects/ClawdBot/COC/contracts/contracts-src/settlement)
-- Governance contracts: [`contracts/contracts-src/governance`](/home/bob/projects/ClawdBot/COC/contracts/contracts-src/governance)
-- PoSe deployment helper: [`contracts/deploy/deploy-pose.ts`](/home/bob/projects/ClawdBot/COC/contracts/deploy/deploy-pose.ts)
-- Governance deployment script: [`contracts/scripts/deploy-governance.js`](/home/bob/projects/ClawdBot/COC/contracts/scripts/deploy-governance.js)
-- Runtime configuration: [`config.example.json`](/home/bob/projects/ClawdBot/COC/config.example.json)
-- Explorer contract verification: [`explorer/src/lib/solc-verify.ts`](/home/bob/projects/ClawdBot/COC/explorer/src/lib/solc-verify.ts)
+- EVM execution: [`node/src/evm.ts`](/home/bob/projects/ClawdBot/Palimesh/node/src/evm.ts)
+- RPC: [`node/src/rpc.ts`](/home/bob/projects/ClawdBot/Palimesh/node/src/rpc.ts)
+- WebSocket RPC: [`node/src/websocket-rpc.ts`](/home/bob/projects/ClawdBot/Palimesh/node/src/websocket-rpc.ts)
+- Persistent state: [`node/src/storage/persistent-state-manager.ts`](/home/bob/projects/ClawdBot/Palimesh/node/src/storage/persistent-state-manager.ts)
+- State trie: [`node/src/storage/state-trie.ts`](/home/bob/projects/ClawdBot/Palimesh/node/src/storage/state-trie.ts)
+- Block header views: [`node/src/block-header.ts`](/home/bob/projects/ClawdBot/Palimesh/node/src/block-header.ts)
+- PoSe v1/v2 contracts: [`contracts/contracts-src/settlement`](/home/bob/projects/ClawdBot/Palimesh/contracts/contracts-src/settlement)
+- Governance contracts: [`contracts/contracts-src/governance`](/home/bob/projects/ClawdBot/Palimesh/contracts/contracts-src/governance)
+- PoSe deployment helper: [`contracts/deploy/deploy-pose.ts`](/home/bob/projects/ClawdBot/Palimesh/contracts/deploy/deploy-pose.ts)
+- Governance deployment script: [`contracts/scripts/deploy-governance.js`](/home/bob/projects/ClawdBot/Palimesh/contracts/scripts/deploy-governance.js)
+- Runtime configuration: [`config.example.json`](/home/bob/projects/ClawdBot/Palimesh/config.example.json)
+- Explorer contract verification: [`explorer/src/lib/solc-verify.ts`](/home/bob/projects/ClawdBot/Palimesh/explorer/src/lib/solc-verify.ts)

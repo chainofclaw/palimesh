@@ -116,7 +116,7 @@ describe("IpfsBlockstore", () => {
   })
 
   // --- Phase C1.3: fetchRemote fallback path.
-  // See plans/coc-evm-abstract-turtle.md §C1.3. Locks in that get()
+  // See plans/palimesh-evm-abstract-turtle.md §C1.3. Locks in that get()
   // gracefully delegates to the hook on ENOENT and caches the result.
 
   it("get falls back to fetchRemote when CID is missing locally, caches result", async () => {

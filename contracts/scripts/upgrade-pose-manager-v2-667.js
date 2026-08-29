@@ -2,7 +2,7 @@
  * Upgrade preparation for PoSeManagerV2 #667 fix.
  *
  * USAGE
- *   COC_RPC_URL=https://<88780-rpc> \
+ *   PALI_RPC_URL=https://<88780-rpc> \
  *   npx hardhat run scripts/upgrade-pose-manager-v2-667.js --network coc
  *
  * What this script does
@@ -54,7 +54,7 @@ async function main() {
   if (Number(network.chainId) !== 88780) {
     throw new Error(
       `network mismatch: connected to chainId=${network.chainId}, expected 88780. ` +
-      `Set COC_RPC_URL / COC_CHAIN_ID for the 88780 testnet before running.`
+      `Set PALI_RPC_URL / PALI_CHAIN_ID for the 88780 testnet before running.`
     )
   }
 

@@ -50,13 +50,13 @@ export default function SecurityPage() {
             </p>
             <div className="flex flex-col sm:flex-row gap-4">
               <a
-                href="mailto:security@clawchain.io"
+                href="mailto:security@palimesh.io"
                 className="px-6 py-3 rounded-lg bg-gradient-cyber text-white font-display font-semibold hover:shadow-glow-md transition-all text-center"
               >
-                security@clawchain.io
+                security@palimesh.io
               </a>
               <a
-                href="https://github.com/chainofclaw/COC/security/advisories/new"
+                href="https://github.com/palimesh/palimesh/security/advisories/new"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="px-6 py-3 rounded-lg border border-accent-cyan/30 text-accent-cyan font-display font-semibold hover:bg-accent-cyan/10 transition-all text-center"
@@ -146,7 +146,7 @@ export default function SecurityPage() {
             </p>
             <div className="flex flex-wrap gap-3">
               <a
-                href="https://github.com/chainofclaw/COC/blob/main/SECURITY.md"
+                href="https://github.com/palimesh/palimesh/blob/main/SECURITY.md"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="px-5 py-2 rounded-lg border border-accent-cyan/30 text-accent-cyan font-display text-sm hover:bg-accent-cyan/10 transition-all"

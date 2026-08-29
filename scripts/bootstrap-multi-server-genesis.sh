@@ -3,10 +3,10 @@
 # keys for a fresh multi-server testnet. Run ONCE on the operator workstation.
 #
 # Each server can have its own port shift (useful when a host already runs
-# another COC instance). Default port bundle: 28780/RPC, 28781/WS, 29780/P2P,
+# another Palimesh instance). Default port bundle: 28780/RPC, 28781/WS, 29780/P2P,
 # 29781/Wire, 28786/IPFS, 9101/metrics. Shift adds the same delta to all.
 #
-# Outputs in /tmp/coc-multi-server/:
+# Outputs in /tmp/palimesh-multi-server/:
 #   keys.txt              — 3 private keys + addresses (chmod 600)
 #   genesis.json          — chain genesis (identical for all 3 servers)
 #   deploy-vars-server-N.sh — one per server, sourceable
@@ -56,13 +56,13 @@ read -r RPC_1 WS_1 P2P_1 WIRE_1 IPFS_1 METRICS_1 <<< "$(ports_for $SHIFT_1)"
 read -r RPC_2 WS_2 P2P_2 WIRE_2 IPFS_2 METRICS_2 <<< "$(ports_for $SHIFT_2)"
 read -r RPC_3 WS_3 P2P_3 WIRE_3 IPFS_3 METRICS_3 <<< "$(ports_for $SHIFT_3)"
 
-OUT_DIR=/tmp/coc-multi-server
+OUT_DIR=/tmp/palimesh-multi-server
 mkdir -p "$OUT_DIR"
 chmod 700 "$OUT_DIR"
 
 if [[ "$REUSE_ANVIL" == "1" ]]; then
   cat > "$OUT_DIR/keys.txt" <<'EOF'
-# COC multi-server testnet validator keys (anvil idx 0,1,2)
+# Palimesh multi-server testnet validator keys (anvil idx 0,1,2)
 # WARNING: insecure for any production use
 key_1_addr=0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266
 key_1_priv=0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80
@@ -73,7 +73,7 @@ key_3_priv=0x5de4111afa1a4b94908f83103eb1f1706367c2e68ca870fc3fb9a804cdab365a
 EOF
 else
   # Generate 3 fresh secp256k1 keys via openssl + node ethers
-  echo "# COC multi-server testnet validator keys (freshly generated $(date -Iseconds))" > "$OUT_DIR/keys.txt"
+  echo "# Palimesh multi-server testnet validator keys (freshly generated $(date -Iseconds))" > "$OUT_DIR/keys.txt"
   for i in 1 2 3; do
     KEY=$(openssl rand -hex 32)
     ADDR=$(node -e "

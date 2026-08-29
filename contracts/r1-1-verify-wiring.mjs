@@ -7,8 +7,8 @@ import { Contract, JsonRpcProvider } from "ethers"
 import { readFile } from "node:fs/promises"
 
 const RPC = "http://209.74.64.88:28780"
-const REGISTRIES_PATH = "/passinger/projects/ClawdBot/COC/contracts/deployed-registries-newchain.json"
-const ART_BASE = "/passinger/projects/ClawdBot/COC/contracts/artifacts/contracts-src/governance"
+const REGISTRIES_PATH = "/passinger/projects/ClawdBot/Palimesh/contracts/deployed-registries-newchain.json"
+const ART_BASE = "/passinger/projects/ClawdBot/Palimesh/contracts/artifacts/contracts-src/governance"
 
 const reg = JSON.parse(await readFile(REGISTRIES_PATH, "utf-8"))
 const provider = new JsonRpcProvider(RPC)

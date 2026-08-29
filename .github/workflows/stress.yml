@@ -45,7 +45,7 @@ jobs:
             tests/stress/evm-coverage.test.ts \
             tests/stress/rpc-validation.test.ts
         env:
-          COC_STRESS_RPC: http://127.0.0.1:28780
+          PALI_STRESS_RPC: http://127.0.0.1:28780
           NODE_ENV: test
       - name: Stop devnet
         if: always()
@@ -71,7 +71,7 @@ jobs:
           node --experimental-strip-types --test --test-force-exit \
             tests/stress/chaos-devnet.test.ts
         env:
-          COC_CHAOS_DEVNET: "1"
+          PALI_CHAOS_DEVNET: "1"
           NODE_ENV: test
       - name: Stop devnet
         if: always()

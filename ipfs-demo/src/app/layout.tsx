@@ -2,8 +2,8 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "COC IPFS File Manager",
-  description: "Decentralized file management powered by COC blockchain IPFS",
+  title: "Palimesh IPFS File Manager",
+  description: "Decentralized file management powered by Palimesh blockchain IPFS",
 };
 
 export default function RootLayout({

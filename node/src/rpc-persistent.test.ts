@@ -63,7 +63,7 @@ async function setupTestEnv(): Promise<{
   wallet: Wallet
   tmpDir: string
 }> {
-  const tmpDir = mkdtempSync(join(tmpdir(), "coc-rpc-persistent-"))
+  const tmpDir = mkdtempSync(join(tmpdir(), "palimesh-rpc-persistent-"))
   const evm = await EvmChain.create(CHAIN_ID)
   const wallet = Wallet.createRandom()
 
@@ -131,7 +131,7 @@ async function setupTestEnv(): Promise<{
 }
 
 test("RPC+Persistent: eth_blockNumber starts at 0", async () => {
-  const tmpDir = mkdtempSync(join(tmpdir(), "coc-rpc-p-"))
+  const tmpDir = mkdtempSync(join(tmpdir(), "palimesh-rpc-p-"))
   const evm = await EvmChain.create(CHAIN_ID)
   const engine = new PersistentChainEngine(
     {
@@ -155,7 +155,7 @@ test("RPC+Persistent: eth_blockNumber starts at 0", async () => {
 })
 
 test("RPC+Persistent: propose block and query", async () => {
-  const tmpDir = mkdtempSync(join(tmpdir(), "coc-rpc-p-"))
+  const tmpDir = mkdtempSync(join(tmpdir(), "palimesh-rpc-p-"))
 
   try {
     const evm = await EvmChain.create(CHAIN_ID)
@@ -220,7 +220,7 @@ test("RPC+Persistent: propose block and query", async () => {
 })
 
 test("RPC+Persistent: log indexing end-to-end", async () => {
-  const tmpDir = mkdtempSync(join(tmpdir(), "coc-rpc-p-"))
+  const tmpDir = mkdtempSync(join(tmpdir(), "palimesh-rpc-p-"))
 
   try {
     const evm = await EvmChain.create(CHAIN_ID)
@@ -269,7 +269,7 @@ test("RPC+Persistent: log indexing end-to-end", async () => {
 })
 
 test("RPC+Persistent: receipts survive restart", async () => {
-  const tmpDir = mkdtempSync(join(tmpdir(), "coc-rpc-p-"))
+  const tmpDir = mkdtempSync(join(tmpdir(), "palimesh-rpc-p-"))
   const wallet = Wallet.createRandom()
   const prefund = [
     { address: wallet.address, balanceWei: parseEther("100").toString() },
@@ -352,7 +352,7 @@ test("RPC+Persistent: receipts survive restart", async () => {
 })
 
 test("RPC+Persistent: multiple blocks with receipts", async () => {
-  const tmpDir = mkdtempSync(join(tmpdir(), "coc-rpc-p-"))
+  const tmpDir = mkdtempSync(join(tmpdir(), "palimesh-rpc-p-"))
 
   try {
     const evm = await EvmChain.create(CHAIN_ID)
@@ -414,7 +414,7 @@ test("RPC+Persistent: multiple blocks with receipts", async () => {
 })
 
 test("RPC+Persistent: historical state queries and transaction schema parity", async () => {
-  const tmpDir = mkdtempSync(join(tmpdir(), "coc-rpc-history-"))
+  const tmpDir = mkdtempSync(join(tmpdir(), "palimesh-rpc-history-"))
   const wallet = Wallet.createRandom()
   const transferTarget = Wallet.createRandom().address
   const deployerGasPrice = 1_000_000_000n
@@ -478,7 +478,7 @@ test("RPC+Persistent: historical state queries and transaction schema parity", a
     assert.ok(block2?.stateRoot)
 
     const deployTxHash = Transaction.from(deployTx).hash as Hex
-    // #466: COC normalizes all address fields to lowercase for parity with
+    // #466: Palimesh normalizes all address fields to lowercase for parity with
     // geth/erigon. getCreateAddress returns EIP-55 mixed-case, so lowercase
     // here to match the wire format.
     const contractAddress = getCreateAddress({ from: wallet.address, nonce: 1 }).toLowerCase()

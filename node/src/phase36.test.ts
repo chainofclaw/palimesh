@@ -19,7 +19,7 @@ import { P2PNode } from "./p2p.ts"
 
 describe("LevelDatabase.repair", () => {
   it("repair static method resolves for valid db path", async () => {
-    const tmpDir = mkdtempSync(join(tmpdir(), "coc-repair-"))
+    const tmpDir = mkdtempSync(join(tmpdir(), "palimesh-repair-"))
     const db = new LevelDatabase(tmpDir, "repair-test")
     await db.open()
     await db.put("key", new TextEncoder().encode("value"))
@@ -38,7 +38,7 @@ describe("LevelDatabase.repair", () => {
   })
 
   it("open succeeds on normal database", async () => {
-    const tmpDir = mkdtempSync(join(tmpdir(), "coc-open-"))
+    const tmpDir = mkdtempSync(join(tmpdir(), "palimesh-open-"))
     const db = new LevelDatabase(tmpDir, "normal")
     await db.open()
     await db.put("hello", new TextEncoder().encode("world"))
@@ -71,7 +71,7 @@ function createRpcTestServer(opts?: {
     await evm.prefund([{ address: "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266", balanceWei: "10000000000000000000000" }])
     const chain = new ChainEngine(
       {
-        dataDir: "/tmp/coc-rpc-auth-" + Date.now(),
+        dataDir: "/tmp/palimesh-rpc-auth-" + Date.now(),
         nodeId: "test-node",
         validators: ["test-node"],
         finalityDepth: 3,
@@ -164,7 +164,7 @@ describe("RPC auth middleware", () => {
     port = 28780 + Math.floor(Math.random() * 1000)
     const evm = await EvmChain.create(18780)
     const chain = new ChainEngine(
-      { dataDir: "/tmp/coc-auth-test-" + Date.now(), nodeId: "n1", validators: ["n1"], finalityDepth: 3, maxTxPerBlock: 50, minGasPriceWei: 1n },
+      { dataDir: "/tmp/palimesh-auth-test-" + Date.now(), nodeId: "n1", validators: ["n1"], finalityDepth: 3, maxTxPerBlock: 50, minGasPriceWei: 1n },
       evm,
     )
     await chain.init()
@@ -223,7 +223,7 @@ describe("admin RPC namespace", () => {
     port = 28780 + Math.floor(Math.random() * 1000)
     const evm = await EvmChain.create(18780)
     const chain = new ChainEngine(
-      { dataDir: "/tmp/coc-admin-test-" + Date.now(), nodeId: "admin-node", validators: ["admin-node"], finalityDepth: 3, maxTxPerBlock: 50, minGasPriceWei: 1n },
+      { dataDir: "/tmp/palimesh-admin-test-" + Date.now(), nodeId: "admin-node", validators: ["admin-node"], finalityDepth: 3, maxTxPerBlock: 50, minGasPriceWei: 1n },
       evm,
     )
     await chain.init()
@@ -248,7 +248,7 @@ describe("admin RPC namespace", () => {
               id: payload.id,
               result: {
                 nodeId: "admin-node",
-                clientVersion: "COC/0.2",
+                clientVersion: "Palimesh/0.2",
                 chainId: 18780,
                 blockHeight: "0x0",
                 peerCount: 0,
@@ -284,7 +284,7 @@ describe("admin RPC namespace", () => {
     const result = (info.body as { result?: Record<string, unknown> }).result
     assert.ok(result)
     assert.equal(result.nodeId, "admin-node")
-    assert.equal(result.clientVersion, "COC/0.2")
+    assert.equal(result.clientVersion, "Palimesh/0.2")
 
     // admin_addPeer with valid URL
     const addPeer = await rpcRequest(port, "admin_addPeer", ["http://127.0.0.1:19780", "peer-1"])

@@ -2,7 +2,7 @@ import { readFile, writeFile, mkdir } from "node:fs/promises";
 import { join } from "node:path";
 import { homedir } from "node:os";
 
-export interface CocRuntimeConfig {
+export interface PaliRuntimeConfig {
   dataDir: string;
   nodeBind?: string;
   nodePort?: number;
@@ -67,7 +67,7 @@ export interface CocRuntimeConfig {
   epochNonceStrict?: boolean;
   pendingChallengesPath?: string;
   /**
-   * Phase C2.1 feature flag. When true, runtime/coc-node.ts's
+   * Phase C2.1 feature flag. When true, runtime/palimesh-node.ts's
    * `/pose/receipt` Storage handler derives Merkle proofs from the live
    * IPFS blockstore (reading real bytes via the C1.3 fetch-or-serve
    * path) instead of the pre-baked `file-meta.json`. Leave false until
@@ -90,17 +90,17 @@ export interface CocRuntimeConfig {
 }
 
 export function resolveDataDir(): string {
-  const raw = process.env.COC_DATA_DIR || `${homedir()}/.clawdbot/coc`;
+  const raw = process.env.PALI_DATA_DIR || `${homedir()}/.clawdbot/coc`;
   if (raw.startsWith("~/")) {
     return join(homedir(), raw.slice(2));
   }
   return raw;
 }
 
-export async function loadConfig(): Promise<CocRuntimeConfig> {
+export async function loadConfig(): Promise<PaliRuntimeConfig> {
   const dataDir = resolveDataDir();
   await mkdir(dataDir, { recursive: true });
-  const configPath = process.env.COC_CONFIG || join(dataDir, "config.json");
+  const configPath = process.env.PALI_CONFIG || join(dataDir, "config.json");
   try {
     const raw = await readFile(configPath, "utf-8");
     return { dataDir, ...JSON.parse(raw) };
@@ -109,8 +109,8 @@ export async function loadConfig(): Promise<CocRuntimeConfig> {
   }
 }
 
-export async function writeConfig(config: CocRuntimeConfig): Promise<void> {
-  const configPath = process.env.COC_CONFIG || join(resolveDataDir(), "config.json");
+export async function writeConfig(config: PaliRuntimeConfig): Promise<void> {
+  const configPath = process.env.PALI_CONFIG || join(resolveDataDir(), "config.json");
   await mkdir(resolveDataDir(), { recursive: true });
   await writeFile(configPath, JSON.stringify(config, null, 2));
 }

@@ -2,7 +2,7 @@ import { Contract, JsonRpcProvider, Wallet, keccak256 } from "ethers"
 import { readFile } from "node:fs/promises"
 const RPC = "http://199.192.16.79:28782"
 const REG = "0x162700d1613DfEC978032A909DE02643bC55df1A"
-const ART = "/passinger/projects/ClawdBot/COC/contracts/artifacts/contracts-src/governance/ValidatorRegistry.sol/ValidatorRegistry.json"
+const ART = "/passinger/projects/ClawdBot/Palimesh/contracts/artifacts/contracts-src/governance/ValidatorRegistry.sol/ValidatorRegistry.json"
 const { abi } = JSON.parse(await readFile(ART, "utf-8"))
 const provider = new JsonRpcProvider(RPC)
 const w = new Wallet("0x5de4111afa1a4b94908f83103eb1f1706367c2e68ca870fc3fb9a804cdab365a", provider)

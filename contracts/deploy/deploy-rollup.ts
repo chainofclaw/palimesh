@@ -1,5 +1,5 @@
 /**
- * Deploy script for COC Optimistic Rollup contracts.
+ * Deploy script for Palimesh Optimistic Rollup contracts.
  *
  * Deploys RollupStateManager and DelayedInbox to the target network.
  *

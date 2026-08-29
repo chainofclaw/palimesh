@@ -625,7 +625,7 @@ describe("closeServerSafely cleanup contract", () => {
     const { tmpdir } = await import("node:os")
     const { join } = await import("node:path")
 
-    const tmpDir = await mkdtemp(join(tmpdir(), "coc-tafter-test-"))
+    const tmpDir = await mkdtemp(join(tmpdir(), "palimesh-tafter-test-"))
     t.after(() => rm(tmpDir, { recursive: true, force: true }))
 
     const probeFile = join(tmpDir, "probe.test.mjs")

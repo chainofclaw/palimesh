@@ -58,11 +58,11 @@ echo "  byte-identical, $RECV_SIZE bytes"
 
 echo "==> [4/4] Resilience: stop server-A's RPC reachability (manual step)"
 echo "  This step is INFORMATIONAL — to fully validate, ssh to server-A and run:"
-echo "    systemctl stop coc-node@1"
+echo "    systemctl stop palimesh-node@1"
 echo "  Then from this script box, re-run the GET via server-C — it must still work"
 echo "  since server-B should hold a replica via push-to-K=3."
 echo ""
-echo "  After confirming, restart server-A: systemctl start coc-node@1"
+echo "  After confirming, restart server-A: systemctl start palimesh-node@1"
 
 rm -f "$PAYLOAD" "$RECV"
 

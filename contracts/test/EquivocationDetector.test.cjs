@@ -2,7 +2,7 @@
  * EquivocationDetector Test Suite
  *
  * Sprint I3 — Phase I deliverable per
- * /home/baominghao/.claude/plans/coc-evm-abstract-turtle.md.
+ * /home/baominghao/.claude/plans/palimesh-evm-abstract-turtle.md.
  *
  * Covers:
  *   - submitEvidence happy path: legit two-signature evidence triggers slash

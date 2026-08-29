@@ -99,7 +99,7 @@ function computeRevealDigest(challengeId, targetNodeId, faultType, evidenceLeafH
     ethers.solidityPacked(
       ["string", "bytes32", "bytes32", "uint8", "bytes32", "bytes32", "bytes32"],
       [
-        "coc-fault:",
+        "palimesh-fault:",
         challengeId,
         targetNodeId,
         faultType,
@@ -158,7 +158,7 @@ async function registerNode(manager, funder, opts = {}) {
   const metadataHash = ethers.keccak256(ethers.toUtf8Bytes("meta"))
 
   const messageHash = ethers.keccak256(
-    ethers.solidityPacked(["string", "bytes32", "address"], ["coc-register:", nodeId, operator.address])
+    ethers.solidityPacked(["string", "bytes32", "address"], ["palimesh-register:", nodeId, operator.address])
   )
   const ownershipSig = await operator.signMessage(ethers.getBytes(messageHash))
 

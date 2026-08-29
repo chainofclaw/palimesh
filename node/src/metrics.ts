@@ -1,4 +1,4 @@
-// Prometheus-compatible metrics collector for COC node
+// Prometheus-compatible metrics collector for Palimesh node
 // Outputs metrics in Prometheus text exposition format
 
 export interface MetricsSource {
@@ -87,44 +87,44 @@ export class MetricsCollector {
     if (!this.source) return
 
     const height = await Promise.resolve(this.source.getBlockHeight())
-    this.setGauge("coc_block_height", "Current block height", Number(height))
+    this.setGauge("pali_block_height", "Current block height", Number(height))
 
-    this.setGauge("coc_tx_pool_pending", "Pending transactions in mempool", this.source.getTxPoolPending())
-    this.setGauge("coc_tx_pool_queued", "Queued transactions in mempool", this.source.getTxPoolQueued())
-    this.setGauge("coc_peers_connected", "Number of connected P2P peers", this.source.getPeersConnected())
+    this.setGauge("pali_tx_pool_pending", "Pending transactions in mempool", this.source.getTxPoolPending())
+    this.setGauge("pali_tx_pool_queued", "Queued transactions in mempool", this.source.getTxPoolQueued())
+    this.setGauge("pali_peers_connected", "Number of connected P2P peers", this.source.getPeersConnected())
 
     if (this.source.getWireConnections) {
-      this.setGauge("coc_wire_connections", "Number of wire protocol connections", this.source.getWireConnections())
+      this.setGauge("pali_wire_connections", "Number of wire protocol connections", this.source.getWireConnections())
     }
 
     if (this.source.getBftRoundHeight) {
-      this.setGauge("coc_bft_round_height", "Current BFT round height", Number(this.source.getBftRoundHeight()))
+      this.setGauge("pali_bft_round_height", "Current BFT round height", Number(this.source.getBftRoundHeight()))
     }
 
     if (this.source.getConsensusState) {
       const stateMap = { healthy: 0, degraded: 1, recovering: 2 }
       const state = this.source.getConsensusState()
-      this.setGauge("coc_consensus_state", "Consensus state (0=healthy, 1=degraded, 2=recovering)", stateMap[state] ?? -1)
+      this.setGauge("pali_consensus_state", "Consensus state (0=healthy, 1=degraded, 2=recovering)", stateMap[state] ?? -1)
     }
 
     if (this.source.getDhtPeers) {
-      this.setGauge("coc_dht_peers_total", "Number of DHT routing table peers", this.source.getDhtPeers())
+      this.setGauge("pali_dht_peers_total", "Number of DHT routing table peers", this.source.getDhtPeers())
     }
 
     if (this.source.getP2PAuthRejected) {
-      this.setGauge("coc_p2p_auth_rejected_total", "Total P2P auth rejected requests", this.source.getP2PAuthRejected())
+      this.setGauge("pali_p2p_auth_rejected_total", "Total P2P auth rejected requests", this.source.getP2PAuthRejected())
     }
 
     if (this.source.getEquivocationsTotal) {
       const value = this.source.getEquivocationsTotal()
-      this.counters.set("coc_bft_equivocations_total", {
+      this.counters.set("pali_bft_equivocations_total", {
         value,
         help: "Cumulative count of detected BFT equivocations",
       })
     }
 
     if (this.source.getForkChoiceMaxDepth) {
-      this.setGauge("coc_fork_choice_max_depth_blocks", "Maximum observed reorg depth in blocks", this.source.getForkChoiceMaxDepth())
+      this.setGauge("pali_fork_choice_max_depth_blocks", "Maximum observed reorg depth in blocks", this.source.getForkChoiceMaxDepth())
     }
 
     // Block time histogram
@@ -134,7 +134,7 @@ export class MetricsCollector {
       if (last > 0 && prev > 0) {
         const intervalSec = (last - prev) / 1000
         this.observeHistogram(
-          "coc_block_time_seconds",
+          "pali_block_time_seconds",
           "Block production interval in seconds",
           intervalSec,
           [1, 2, 3, 5, 10, 30, 60],
@@ -144,9 +144,9 @@ export class MetricsCollector {
 
     // Process metrics
     const mem = process.memoryUsage()
-    this.setGauge("coc_process_memory_bytes", "Process RSS memory in bytes", mem.rss)
-    this.setGauge("coc_process_heap_bytes", "Process heap used in bytes", mem.heapUsed)
-    this.setGauge("coc_uptime_seconds", "Process uptime in seconds", (Date.now() - this.startTime) / 1000)
+    this.setGauge("pali_process_memory_bytes", "Process RSS memory in bytes", mem.rss)
+    this.setGauge("pali_process_heap_bytes", "Process heap used in bytes", mem.heapUsed)
+    this.setGauge("pali_uptime_seconds", "Process uptime in seconds", (Date.now() - this.startTime) / 1000)
   }
 
   serialize(): string {

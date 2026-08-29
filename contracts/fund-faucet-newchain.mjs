@@ -1,5 +1,5 @@
 import { JsonRpcProvider, Wallet, Transaction } from "ethers"
-const provider = new JsonRpcProvider("https://clawchain.io/api/testnet/rpc")
+const provider = new JsonRpcProvider("https://palimesh.io/api/testnet/rpc")
 const w = new Wallet("0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80", provider)  // anvil-0
 const nonce = await provider.getTransactionCount(w.address, "latest")
 console.log("anvil-0 nonce=", nonce)

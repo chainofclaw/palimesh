@@ -102,7 +102,7 @@ test("BlockIndex: put and get transaction", async () => {
 })
 
 test("BlockIndex: persistence across restarts", async () => {
-  const tmpDir = mkdtempSync(join(tmpdir(), "coc-block-test-"))
+  const tmpDir = mkdtempSync(join(tmpdir(), "palimesh-block-test-"))
 
   try {
     // First session
@@ -370,7 +370,7 @@ test("BlockIndex: address index - putTransaction indexes from/to", async () => {
 test("BlockIndex: #624 contract-creation tx is indexed under the new contract address", async () => {
   // Pre-fix the address index only included receipt.from and receipt.to.
   // Contract-creation txs have `to: null` and put the new contract's address
-  // in `receipt.contractAddress`, so querying coc_getTransactionsByAddress
+  // in `receipt.contractAddress`, so querying pali_getTransactionsByAddress
   // for that contract returned an empty list — even though the deploy tx
   // is part of the address's history (etherscan / explorer convention).
   const db = new MemoryDatabase()

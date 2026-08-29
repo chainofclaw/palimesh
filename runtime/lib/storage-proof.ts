@@ -2,7 +2,7 @@
  * Storage proof construction for PoSe Storage challenges.
  *
  * Two modes, gated on the `useBlockstore` flag that
- * runtime/coc-node.ts wires from `config.poseStorageFromBlockstore`:
+ * runtime/palimesh-node.ts wires from `config.poseStorageFromBlockstore`:
  *
  * 1. Blockstore mode (Phase C2.1): read the UnixFS DAG under `cid` live
  *    via `resolveChunks`, hash every chunk with `hashLeaf`, derive the
@@ -16,7 +16,7 @@
  *    Phase C and stays the default until operators flip the FF after
  *    their cluster has soaked on the new peer-fetch path.
  *
- * Lifted out of `runtime/coc-node.ts` so we can unit-test the logic
+ * Lifted out of `runtime/palimesh-node.ts` so we can unit-test the logic
  * without starting the HTTP server.
  */
 

@@ -33,7 +33,7 @@ export interface AgentReputation {
   rewardsClaimed: string
 }
 
-export interface CocAgentMetadata {
+export interface PaliAgentMetadata {
   soulRegistryAddress?: string
   registeredAt?: string
   version?: number
@@ -57,7 +57,7 @@ export interface DIDDocument {
   capabilityDelegation?: (string | VerificationMethodEntry)[]
   keyAgreement?: (string | VerificationMethodEntry)[]
   service?: ServiceEndpoint[]
-  cocAgent?: CocAgentMetadata
+  paliAgent?: PaliAgentMetadata
 }
 
 export interface DIDResolutionMetadata {
@@ -87,7 +87,7 @@ export interface ParsedDID {
   identifier: Hex32
 }
 
-export const COC_DID_CONTEXT = "https://coc.network/ns/did/v1"
+export const PALI_DID_CONTEXT = "https://coc.network/ns/did/v1"
 export const W3C_DID_CONTEXT = "https://www.w3.org/ns/did/v1"
 export const DEFAULT_CHAIN_ID = 20241224
 

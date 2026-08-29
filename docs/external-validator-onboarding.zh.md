@@ -9,7 +9,7 @@
 ## 适用对象
 
 非创始团队的运营方,希望运行 88780 validator。88780 上添加 validator 是 **permissionless** 的:
-任何在 `ValidatorRegistry` 合约上质押 32 COC 都会在一个 poll 周期(~60s)内
+任何在 `ValidatorRegistry` 合约上质押 32 PALI 都会在一个 poll 周期(~60s)内
 被加入活跃 BFT 集合——**无需与现有 operator 手动协调**。
 
 如果你是核心团队 operator 运行内部 validator,见
@@ -23,7 +23,7 @@
 | **节点硬件** | 4 核 / 16 GB 内存 / 250 GB SSD 起步(8/32/500 推荐用于 canary 余量)。公网 IP + 稳定 DNS 或静态 IP |
 | **网络** | TCP 28780 (RPC) + 29780 (wire P2P) 对 peer 可达;18781 (WebSocket 可选)。出站到其他 validator 的同样端口 |
 | **OS** | Linux(测试 Ubuntu 22.04+);systemd;链引擎用 Node.js 22+ |
-| **32 COC 质押** | 硬性要求(`MIN_STAKE` 在 `ValidatorRegistry`)。加几个额外 COC 作 gas。通过 faucet(每 24h 10 COC)或 canary 期 OTC 购买/借入;主网 TGE 引入市场 |
+| **32 PALI 质押** | 硬性要求(`MIN_STAKE` 在 `ValidatorRegistry`)。加几个额外 Palimesh 作 gas。通过 faucet(每 24h 10 PALI)或 canary 期 OTC 购买/借入;主网 TGE 引入市场 |
 | **Validator 签名密钥** | 全新 secp256k1 密钥对。**不要复用**钱包密钥——slash 烧此密钥的 stake,不应与 MetaMask 同密钥 |
 
 ## Step 0 — 生成 validator 签名密钥
@@ -55,15 +55,15 @@ stake 永久锁定(暂无社交恢复)。
 
 ## Step 1 — 预供签名密钥 EOA
 
-签名密钥 EOA 需 ≥ 32 COC 用于 stake 交易 + gas buffer。Faucet 上限每地址 24h 10 COC,所以:
+签名密钥 EOA 需 ≥ 32 PALI 用于 stake 交易 + gas buffer。Faucet 上限每地址 24h 10 PALI,所以:
 
 ```bash
 # 方法 1:从已有钱包预供(成人首选)
-# 从已资助钱包转 32.1 COC 到 Step 0 的地址。
+# 从已资助钱包转 32.1 PALI 到 Step 0 的地址。
 
 # 方法 2:连打 4 次 faucet,跨 4 天(仅适合测试)
 for i in 1 2 3 4; do
-  curl -X POST https://faucet.chainofclaw.io/faucet/request \
+  curl -X POST https://faucet.palimesh.io/faucet/request \
     -H 'content-type: application/json' \
     -d "{\"address\":\"$(jq -r .address ~/.coc/keys/validator.json)\"}"
   echo "  ...等 24h,重复"
@@ -74,11 +74,11 @@ done
 
 ```bash
 ADDR=$(jq -r .address ~/.coc/keys/validator.json)
-curl -s https://rpc.chainofclaw.io \
+curl -s https://rpc.palimesh.io \
   -H 'content-type: application/json' \
   -d "{\"jsonrpc\":\"2.0\",\"id\":1,\"method\":\"eth_getBalance\",\"params\":[\"$ADDR\",\"latest\"]}" \
   | jq -r .result \
-  | xargs -I{} node -e "console.log(parseInt('{}',16)/1e18, 'COC')"
+  | xargs -I{} node -e "console.log(parseInt('{}',16)/1e18, 'Palimesh')"
 # 预期 ≥ 32.1
 ```
 
@@ -88,11 +88,11 @@ curl -s https://rpc.chainofclaw.io \
 
 ```bash
 # 克隆 + 装
-git clone https://github.com/chainofclaw/COC.git ~/coc && cd ~/coc
+git clone https://github.com/palimesh/palimesh.git ~/coc && cd ~/coc
 npm install
 
 # 最小配置
-cat > /etc/coc/node-1.json <<EOF
+cat > /etc/palimesh/node-1.json <<EOF
 {
   "chainId": 88780,
   "nodeId": "$(jq -r .nodeId ~/.coc/keys/validator.json)",
@@ -119,17 +119,17 @@ cat > /etc/coc/node-1.json <<EOF
 EOF
 
 # env — 指向 ValidatorRegistry 让 reader 接到你的 stake
-cat > /etc/coc/node-1.env <<EOF
-COC_NODE_KEY=$(jq -r .privateKey ~/.coc/keys/validator.json)
-COC_VALIDATOR_REGISTRY_ADDRESS=0x4441299c118373fDC96bE1983d42C79e19CDb4F0
-COC_NODE_CONFIG=/etc/coc/node-1.json
-COC_DATA_DIR=/var/lib/coc/node-1
+cat > /etc/palimesh/node-1.env <<EOF
+PALI_NODE_KEY=$(jq -r .privateKey ~/.coc/keys/validator.json)
+PALI_VALIDATOR_REGISTRY_ADDRESS=0x4441299c118373fDC96bE1983d42C79e19CDb4F0
+PALI_NODE_CONFIG=/etc/palimesh/node-1.json
+PALI_DATA_DIR=/var/lib/coc/node-1
 EOF
-chmod 600 /etc/coc/node-1.env
+chmod 600 /etc/palimesh/node-1.env
 
 # systemd + start
-systemctl enable --now coc-node@1
-journalctl -u coc-node@1 -f
+systemctl enable --now palimesh-node@1
+journalctl -u palimesh-node@1 -f
 ```
 
 等 snap-sync 完成:
@@ -151,7 +151,7 @@ node -e '
   const fs = require("fs");
   const k = JSON.parse(fs.readFileSync(process.env.HOME + "/.coc/keys/validator.json"));
 
-  const RPC = "https://rpc.chainofclaw.io";
+  const RPC = "https://rpc.palimesh.io";
   const REGISTRY = "0x4441299c118373fDC96bE1983d42C79e19CDb4F0";
   const ABI = ["function stake(bytes32 nodeId, bytes pubkeyNode) external payable"];
 
@@ -179,7 +179,7 @@ mined block:  <N>  status: 1
 ```
 
 如果 tx revert 出错:
-- `InsufficientBond` — signer EOA 余额 < 32 COC,补到 32 COC 重试
+- `InsufficientBond` — signer EOA 余额 < 32 PALI,补到 32 PALI 重试
 - `InvalidNodeId` — `nodeId` 不匹配 `keccak256(pubkey[1:])`;Step 0 重新生成
 - `AlreadyRegistered` — 此 `nodeId` 已注册(你之前 stake 过,或别人用了同 nodeId — 用随机密钥几乎不可能)
 - `ValidatorSetFull` — 21 槽位满。等现有 validator `requestUnstake()` 或被 slash 出
@@ -191,7 +191,7 @@ mined block:  <N>  status: 1
 
 ```bash
 # 你节点的预期日志:
-journalctl -u coc-node@1 -n 100 --no-pager | grep -E "reader initialized|validator set updated"
+journalctl -u palimesh-node@1 -n 100 --no-pager | grep -E "reader initialized|validator set updated"
 # 应该显示:
 #   [INFO][validator-registry-reader] reader initialized
 #     activeCount: 7  (你 stake 前是 6)
@@ -203,22 +203,22 @@ journalctl -u coc-node@1 -n 100 --no-pager | grep -E "reader initialized|validat
 
 ```bash
 # Public RPC 透传到集群
-curl -s https://rpc.chainofclaw.io \
+curl -s https://rpc.palimesh.io \
   -H 'content-type: application/json' \
-  -d '{"jsonrpc":"2.0","id":1,"method":"coc_getBftStatus"}' | jq .
+  -d '{"jsonrpc":"2.0","id":1,"method":"pali_getBftStatus"}' | jq .
 # 看 result.validators — 应包含你的地址
 ```
 
 几个 BFT round 内(几分钟),你的节点应开始签 prepare/commit 消息,
-`coc_getBftStatus` 显示 `prepareVotes` / `commitVotes` 递增。
+`pali_getBftStatus` 显示 `prepareVotes` / `commitVotes` 递增。
 
 ## Step 5 — 运行
 
 Validator 日常:
 
 - **监控**:打你节点 `/metrics`(9100 端口)获 Prometheus。关键指标:
-  `coc_block_height`(必须跟上 peer,持续 gap > 5 块 = 问题)、`coc_bft_round_phase`、
-  `coc_validator_active`
+  `pali_block_height`(必须跟上 peer,持续 gap > 5 块 = 问题)、`pali_bft_round_phase`、
+  `pali_validator_active`
 - **奖励**:PoSe v2 emission 在每个 finalized epoch 后落到你的 nodeId(88780 当前
   休眠 — emission 开启是单独的治理事件)。通过 `PoSeManagerV2.pendingWithdrawals(yourAddr)` 追
 - **不要双签**:`EquivocationDetector` 监控同高度不同 blockHash 的两条签名 prepare/commit。
@@ -238,7 +238,7 @@ node -e '
   const k = JSON.parse(fs.readFileSync(process.env.HOME + "/.coc/keys/validator.json"));
   const ABI = ["function requestUnstake(bytes32 nodeId) external"];
   (async () => {
-    const w = new Wallet(k.privateKey, new JsonRpcProvider("https://rpc.chainofclaw.io"));
+    const w = new Wallet(k.privateKey, new JsonRpcProvider("https://rpc.palimesh.io"));
     const c = new Contract("0x4441299c118373fDC96bE1983d42C79e19CDb4F0", ABI, w);
     const tx = await c.requestUnstake(k.nodeId);
     console.log("unstake-request tx:", tx.hash);
@@ -268,13 +268,13 @@ node -e '
 
 | 症状 | 可能原因 | 修复 |
 |------|---------|------|
-| `stake()` revert `InsufficientBond` | Signer EOA < 32 COC | 充 32.1 COC 重试 |
-| 节点同步但 `coc_getBftStatus` 显示你未投票 | Reader 未接到 stake 事件 | 看节点日志 `reader initialized` 行;确认 `COC_VALIDATOR_REGISTRY_ADDRESS` env 已设;再等一个 poll 周期 |
+| `stake()` revert `InsufficientBond` | Signer EOA < 32 PALI | 充 32.1 PALI 重试 |
+| 节点同步但 `pali_getBftStatus` 显示你未投票 | Reader 未接到 stake 事件 | 看节点日志 `reader initialized` 行;确认 `PALI_VALIDATOR_REGISTRY_ADDRESS` env 已设;再等一个 poll 周期 |
 | 其他 validator Wire-peer 连接拒绝 | 29780 端口防火墙(v1 是 39780) | 开放对应 `wirePort` 的入站 TCP |
 | 节点持续落后 5+ 块 | 硬件/网络太弱 | 见 chaos 内存 `coc-88780-2026-05-26-chaos-engineering-T1-T8.md` § T1 — 最低:4 核,到其他 validator 的网络往返要可观 |
 | 意外被 slash | Equivocation — 最大概率是两节点签同高度 | 停止 ALL 使用此签名密钥的实例。提公开 issue 附 EquivocationDetector 事件日志 + 你的运维故事 |
 
-不在表中的问题,在 <https://github.com/chainofclaw/COC/discussions> 发帖,附 validator 地址(**不是**私钥)和 `journalctl -u coc-node@1 -n 500`。
+不在表中的问题,在 <https://github.com/palimesh/palimesh/discussions> 发帖,附 validator 地址(**不是**私钥)和 `journalctl -u palimesh-node@1 -n 500`。
 
 ## 另见
 

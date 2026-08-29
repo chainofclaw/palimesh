@@ -293,13 +293,13 @@ function validateAddParams(query: Record<string, string | string[] | undefined>)
 
 /**
  * #344: gate state-destroying IPFS admin operations (repo/gc, block/rm)
- * behind either loopback origin OR a configured X-COC-IPFS-Admin-Token
+ * behind either loopback origin OR a configured X-Palimesh-IPFS-Admin-Token
  * header. Pre-fix every anonymous internet caller could destroy data.
  *
  * Mirrors the RPC admin gate (#336): defaults to loopback-only so
  * unconfigured production deployments are secure-by-default; operators
- * who need remote access set COC_IPFS_ADMIN_TOKEN and pass it via
- * X-COC-IPFS-Admin-Token header.
+ * who need remote access set PALI_IPFS_ADMIN_TOKEN and pass it via
+ * X-Palimesh-IPFS-Admin-Token header.
  */
 export function isIpfsAdminAuthorized(
   req: http.IncomingMessage,
@@ -313,7 +313,7 @@ export function isIpfsAdminAuthorized(
   // 2) Configured admin token via header. Constant-time comparison so the
   //    token length isn't a timing oracle.
   if (cfg.adminAuthToken) {
-    const headerRaw = req.headers["x-coc-ipfs-admin-token"]
+    const headerRaw = req.headers["x-palimesh-ipfs-admin-token"]
     const provided = typeof headerRaw === "string" ? headerRaw : ""
     return safeStringEq(provided, cfg.adminAuthToken)
   }
@@ -349,10 +349,10 @@ export function enforceAddAuth(
     return {
       ok: false,
       status: 403,
-      headers: { "www-authenticate": "X-COC-IPFS-Admin-Token" },
+      headers: { "www-authenticate": "X-Palimesh-IPFS-Admin-Token" },
       body: {
         error: "forbidden",
-        message: "/api/v0/add requires loopback or X-COC-IPFS-Admin-Token; set anonymousAdd to opt in",
+        message: "/api/v0/add requires loopback or X-Palimesh-IPFS-Admin-Token; set anonymousAdd to opt in",
       },
     }
   }
@@ -372,7 +372,7 @@ export function enforceAddAuth(
     return {
       ok: false,
       status: 413,
-      headers: { "x-coc-quota-scope": result.reason ?? "unknown" },
+      headers: { "x-palimesh-quota-scope": result.reason ?? "unknown" },
       body: {
         error: "quota_exceeded",
         scope: result.reason,
@@ -387,7 +387,7 @@ export function enforceAddAuth(
 /**
  * #8: returns true when a request must read in local-only mode (no
  * fetchRemote on miss). Anonymous (non-loopback non-token) callers get
- * `true`; admin tier (loopback / X-COC-IPFS-Admin-Token) gets `false`.
+ * `true`; admin tier (loopback / X-Palimesh-IPFS-Admin-Token) gets `false`.
  *
  * Without this guard, PR #711's directory-DAG walker could be
  * weaponized: a request for `/ipfs/<unknown-cid>/...` triggers one
@@ -426,7 +426,7 @@ export interface IpfsServerConfig {
   storageDir: string
   nodeId?: string
   /**
-   * #344: optional Bearer-token (via X-COC-IPFS-Admin-Token header) that
+   * #344: optional Bearer-token (via X-Palimesh-IPFS-Admin-Token header) that
    * authorizes destructive ops (repo/gc, block/rm) from non-loopback
    * origins. When unset, those ops are loopback-only (secure default).
    */
@@ -443,7 +443,7 @@ export interface IpfsServerConfig {
    */
   minReplicas?: number
   /**
-   * Optional awaiter supplied by coc-ipfs-wiring.ts's
+   * Optional awaiter supplied by palimesh-ipfs-wiring.ts's
    * `awaitReplicationResult`. Keeps the HTTP server decoupled from the
    * DHT / wire manager — when undefined, the replication warning path
    * is a no-op and uploads behave exactly like pre-C3.1.
@@ -490,7 +490,7 @@ export interface IpfsServerConfig {
    * config is intentionally non-default to force a conscious decision
    * given the disk-fill risk (obs-1 disk-full crash loop, 2026-05-24).
    *
-   * Admin-authorized uploads (loopback OR X-COC-IPFS-Admin-Token) are
+   * Admin-authorized uploads (loopback OR X-Palimesh-IPFS-Admin-Token) are
    * never quota-gated; only the anonymous tier hits the budget.
    */
   anonymousAdd?: {
@@ -546,7 +546,7 @@ export class IpfsHttpServer {
    * is ready (to keep the IPFS API responsive during boot), so the
    * awaiter is injected once `buildCocIpfsWiring` returns. Absent this
    * call, `handleAdd` skips the replica-status check and no
-   * `X-COC-Replicas-Warning` header is emitted — the safe default for
+   * `X-Palimesh-Replicas-Warning` header is emitted — the safe default for
    * single-node deployments or during the boot window.
    */
   setAwaitReplicationResult(
@@ -840,7 +840,7 @@ export class IpfsHttpServer {
         const peers = rawPeers.map((p) => ({
           Peer: p.id,
           Addr: p.advertisedUrl ?? p.url,
-          // COC doesn't yet track per-peer direction/latency/muxer/streams —
+          // Palimesh doesn't yet track per-peer direction/latency/muxer/streams —
           // fill with kubo defaults so the wire shape is complete.
           Direction: 0,
           Latency: "",
@@ -924,7 +924,7 @@ export class IpfsHttpServer {
         // block/rm (#344), same auth gate.
         if (!isIpfsAdminAuthorized(req, clientIp, this.cfg)) {
           res.writeHead(403, { "content-type": "application/json" })
-          res.end(JSON.stringify({ error: "forbidden", message: "pin/rm requires loopback or X-COC-IPFS-Admin-Token" }))
+          res.end(JSON.stringify({ error: "forbidden", message: "pin/rm requires loopback or X-Palimesh-IPFS-Admin-Token" }))
           return
         }
         // #372: batch shape — same as pin/add.
@@ -940,7 +940,7 @@ export class IpfsHttpServer {
         // still works without exposing the surface publicly.
         if (!isIpfsAdminAuthorized(req, clientIp, this.cfg)) {
           res.writeHead(403, { "content-type": "application/json" })
-          res.end(JSON.stringify({ error: "forbidden", message: "block/rm requires loopback or X-COC-IPFS-Admin-Token" }))
+          res.end(JSON.stringify({ error: "forbidden", message: "block/rm requires loopback or X-Palimesh-IPFS-Admin-Token" }))
           return
         }
         // #372: batch shape — kubo streams one {Hash, Error} per CID.
@@ -954,7 +954,7 @@ export class IpfsHttpServer {
         // + every in-flight unpinned block gets swept.
         if (!isIpfsAdminAuthorized(req, clientIp, this.cfg)) {
           res.writeHead(403, { "content-type": "application/json" })
-          res.end(JSON.stringify({ error: "forbidden", message: "repo/gc requires loopback or X-COC-IPFS-Admin-Token" }))
+          res.end(JSON.stringify({ error: "forbidden", message: "repo/gc requires loopback or X-Palimesh-IPFS-Admin-Token" }))
           return
         }
         await this.handleRepoGc(res)
@@ -1195,11 +1195,11 @@ export class IpfsHttpServer {
       }
       const erasureHeaders: Record<string, string> = {
         "content-type": "application/json",
-        "X-COC-Erasure-Scheme": `rs(${params.n}+${params.m})`,
-        "X-COC-Erasure-Original-Cid": meta.cid,
+        "X-Palimesh-Erasure-Scheme": `rs(${params.n}+${params.m})`,
+        "X-Palimesh-Erasure-Original-Cid": meta.cid,
       }
       if (stripeReplicaHeader) {
-        erasureHeaders["X-COC-Erasure-Stripe-Spread"] = stripeReplicaHeader
+        erasureHeaders["X-Palimesh-Erasure-Stripe-Spread"] = stripeReplicaHeader
       }
       res.writeHead(200, erasureHeaders)
       res.end(`${JSON.stringify(result)}\n`)
@@ -1221,7 +1221,7 @@ export class IpfsHttpServer {
     const headers: Record<string, string> = { "content-type": "application/json" }
     const minReplicas = this.cfg.minReplicas ?? 2
     if (replicaStatus && replicaStatus.worstReplicaCount < minReplicas) {
-      headers["X-COC-Replicas-Warning"] = `got ${replicaStatus.worstReplicaCount}/${minReplicas} (cid=${replicaStatus.worstCid})`
+      headers["X-Palimesh-Replicas-Warning"] = `got ${replicaStatus.worstReplicaCount}/${minReplicas} (cid=${replicaStatus.worstCid})`
       log.warn("under-replicated PUT", {
         rootCid: meta.cid,
         worstCid: replicaStatus.worstCid,
@@ -1291,7 +1291,7 @@ export class IpfsHttpServer {
       throw err
     }
 
-    // Recursively pin every node the importer emitted. COC's blockstore
+    // Recursively pin every node the importer emitted. Palimesh's blockstore
     // GC is flat (it does not walk a pinned root's children), so each
     // directory + file-root CID must be pinned explicitly to survive
     // `repo/gc`.
@@ -1357,11 +1357,11 @@ export class IpfsHttpServer {
     }
 
     // kubo NDJSON: one JSON object per line, children first, root last.
-    // X-COC-PoSe-Coverage surfaces the merkle-meta result to operators
+    // X-Palimesh-PoSe-Coverage surfaces the merkle-meta result to operators
     // so under-coverage (e.g. importer/path mismatch) is visible.
     res.writeHead(200, {
       "content-type": "application/json",
-      "x-coc-pose-coverage": `files=${poseCovered},skipped=${poseSkipped}`,
+      "x-palimesh-pose-coverage": `files=${poseCovered},skipped=${poseSkipped}`,
     })
     for (const node of imported.all) {
       const line: IpfsAddResult = {
@@ -1419,7 +1419,7 @@ export class IpfsHttpServer {
     res.end(JSON.stringify({
       Version: "0.1.0-coc",
       Commit: "",
-      Repo: "coc-ipfs",
+      Repo: "palimesh-ipfs",
       System: process.platform,
       Golang: "n/a",
     }))
@@ -1428,9 +1428,9 @@ export class IpfsHttpServer {
   private async handleId(res: http.ServerResponse): Promise<void> {
     res.writeHead(200, { "content-type": "application/json" })
     res.end(JSON.stringify({
-      ID: this.cfg.nodeId ?? "coc-node",
+      ID: this.cfg.nodeId ?? "palimesh-node",
       Addresses: [`/ip4/${this.cfg.bind}/tcp/${this.cfg.port}`],
-      AgentVersion: "coc-ipfs/0.1.0",
+      AgentVersion: "palimesh-ipfs/0.1.0",
       ProtocolVersion: "ipfs/0.1.0",
     }))
   }
@@ -2224,7 +2224,7 @@ export class IpfsHttpServer {
   }
 
   private async handlePinLs(res: http.ServerResponse, cids: string[], type?: string): Promise<void> {
-    // #308: validate `type` against the kubo-defined set. COC's pin model
+    // #308: validate `type` against the kubo-defined set. Palimesh's pin model
     // only stores recursive pins (no direct/indirect distinction), so
     // type=direct and type=indirect correctly return empty — but invalid
     // types must surface as 400, not silently degrade to "all".
@@ -2268,7 +2268,7 @@ export class IpfsHttpServer {
     }
 
     // No cid filter: return the recursive pin set unless caller asked for
-    // a type COC doesn't store (direct / indirect) → empty Keys map.
+    // a type Palimesh doesn't store (direct / indirect) → empty Keys map.
     const showRecursive = resolvedType === "all" || resolvedType === "recursive"
     res.writeHead(200, { "content-type": "application/json" })
     res.end(JSON.stringify({ Keys: showRecursive

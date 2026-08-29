@@ -1,7 +1,7 @@
 const { expect } = require("chai")
 const { ethers, upgrades } = require("hardhat")
 
-describe("COCToken", function () {
+describe("PalimeshToken", function () {
   let token
   let owner
   let minter
@@ -9,7 +9,7 @@ describe("COCToken", function () {
   beforeEach(async function () {
     ;[owner, minter] = await ethers.getSigners()
 
-    const Factory = await ethers.getContractFactory("COCToken")
+    const Factory = await ethers.getContractFactory("PalimeshToken")
     token = await upgrades.deployProxy(
       Factory,
       [[owner.address], [ethers.parseEther("250000000")], owner.address],

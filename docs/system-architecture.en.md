@@ -1,7 +1,7 @@
-# COC System Architecture (English)
+# Palimesh System Architecture (English)
 
 ## Overview
-COC is an EVM-compatible blockchain prototype that combines a lightweight execution layer with a PoSe (Proof-of-Service) settlement workflow. The system is split into on-chain contracts, off-chain services, and node runtime components.
+Palimesh is an EVM-compatible blockchain prototype that combines a lightweight execution layer with a PoSe (Proof-of-Service) settlement workflow. The system is split into on-chain contracts, off-chain services, and node runtime components.
 
 ## Layered Architecture
 1. **Execution Layer (EVM)**
@@ -37,9 +37,9 @@ COC is an EVM-compatible blockchain prototype that combines a lightweight execut
    - On-chain PoSeManager contract for registration, batch submission, dispute, and slashing.
 
 6. **NodeOps Runtime**
-   - `coc-node`: PoSe challenge/receipt HTTP endpoints.
-   - `coc-agent`: challenge issuance, batch submission, rewards calculation.
-   - `coc-relayer`: epoch finalization and optional dispute/slash automation.
+   - `palimesh-node`: PoSe challenge/receipt HTTP endpoints.
+   - `palimesh-agent`: challenge issuance, batch submission, rewards calculation.
+   - `palimesh-relayer`: epoch finalization and optional dispute/slash automation.
 
 7. **Node Operations Layer**
    - YAML-based policy engine for evaluating node behavior rules.
@@ -84,15 +84,15 @@ COC is an EVM-compatible blockchain prototype that combines a lightweight execut
    - PoSeManager ecrecover v-value validation.
 
 ## Core Components
-- **Node Runtime**: `COC/node/src/*`
-- **DID Module**: `COC/node/src/did/*`
-- **PoSe Contracts**: `COC/contracts/settlement/*`
-- **Governance Contracts**: `COC/contracts/governance/*` (SoulRegistry, DIDRegistry)
-- **PoSe Services**: `COC/services/*`
-- **Runtime Services**: `COC/runtime/*`
-- **Node Operations**: `COC/nodeops/*`
-- **Wallet CLI**: `COC/wallet/bin/coc-wallet.js`
-- **Blockchain Explorer**: `COC/explorer/src/*`
+- **Node Runtime**: `Palimesh/node/src/*`
+- **DID Module**: `Palimesh/node/src/did/*`
+- **PoSe Contracts**: `Palimesh/contracts/settlement/*`
+- **Governance Contracts**: `Palimesh/contracts/governance/*` (SoulRegistry, DIDRegistry)
+- **PoSe Services**: `Palimesh/services/*`
+- **Runtime Services**: `Palimesh/runtime/*`
+- **Node Operations**: `Palimesh/nodeops/*`
+- **Wallet CLI**: `Palimesh/wallet/bin/palimesh-wallet.js`
+- **Blockchain Explorer**: `Palimesh/explorer/src/*`
 
 ## Data Flow (High-Level)
 1. Wallet sends signed transaction to JSON-RPC.
@@ -108,8 +108,8 @@ COC is an EVM-compatible blockchain prototype that combines a lightweight execut
 - P2P uses HTTP gossip as primary transport + peer persistence + DNS seed discovery. Wire server/client provide opt-in TCP transport (`enableWireProtocol`) with FIND_NODE request/response for DHT queries. Wire protocol includes Block/Tx dedup via BoundedSet (seenTx 50K, seenBlocks 10K) and cross-protocol relay (Wire→HTTP via onTxRelay/onBlockRelay callbacks). HTTP gossip write paths support signed auth envelope verification (`_auth`) with configurable rollout mode (`off`/`monitor`/`enforce`), timestamp skew bounds, and nonce replay guard. DHT network layer provides opt-in iterative peer discovery (`enableDht`) with periodic node announcement; FIND_NODE uses wireClientByPeerId map (O(1) lookup) with scan and local routing table fallback. Dual HTTP+TCP propagation for blocks and transactions with sender exclusion (excludeNodeId). Per-peer wire port from dhtBootstrapPeers config. Wire connection manager handles outbound peer lifecycle. State snapshot endpoint available for fast sync.
 - EVM state persists across restarts via PersistentStateManager + LevelDB. Snap sync provider integrated into ConsensusEngine (opt-in via `enableSnapSync`).
 - IPFS supports core HTTP APIs, gateway, MFS, Pubsub, and tar archive for `get`.
-- RPC exposes `coc_getNetworkStats` for P2P/wire/DHT/BFT stats and `coc_getBftStatus` for BFT round inspection with equivocation count.
-- Security hardening (Phase 33): node identity authentication in wire handshake (NodeSigner/SignatureVerifier), BFT mandatory message signatures, DHT peer verification (TCP probe before routing table insertion), per-IP wire connection limits (max 5), IPFS upload size limit (10MB), MFS path traversal prevention, block timestamp validation, exponential peer ban (max 24h), WebSocket idle timeout (1h), dev accounts gated behind `COC_DEV_ACCOUNTS=1`, default bind `127.0.0.1`, shared rate limiter (RPC 200/min, IPFS 100/min, PoSe 60/min), HTTP gossip signed auth envelope with phased rollout mode (`off`/`monitor`/`enforce`) and replay protection, governance self-vote removed, PoSeManager ecrecover v-value check, state snapshot stateRoot verification.
+- RPC exposes `pali_getNetworkStats` for P2P/wire/DHT/BFT stats and `pali_getBftStatus` for BFT round inspection with equivocation count.
+- Security hardening (Phase 33): node identity authentication in wire handshake (NodeSigner/SignatureVerifier), BFT mandatory message signatures, DHT peer verification (TCP probe before routing table insertion), per-IP wire connection limits (max 5), IPFS upload size limit (10MB), MFS path traversal prevention, block timestamp validation, exponential peer ban (max 24h), WebSocket idle timeout (1h), dev accounts gated behind `PALI_DEV_ACCOUNTS=1`, default bind `127.0.0.1`, shared rate limiter (RPC 200/min, IPFS 100/min, PoSe 60/min), HTTP gossip signed auth envelope with phased rollout mode (`off`/`monitor`/`enforce`) and replay protection, governance self-vote removed, PoSeManager ecrecover v-value check, state snapshot stateRoot verification.
 - All advanced features (BFT, Wire, DHT, SnapSync) enabled by default in multi-node devnet via `start-devnet.sh`. Single-node devnet auto-disables BFT (requires >= 3 validators). DHT iterative lookup uses wire protocol FIND_NODE when available, falls back to local routing table.
 - AI Silicon Immortality carrier layer provides on-chain CID recovery via CidRegistry contract. Carrier daemon monitors agent liveness and performs cross-node resurrection using three-layer CID resolution (local → MFS → on-chain). Binary database snapshots capture OpenClaw memory indices for full cognitive state restore. OpenClaw lifecycle hooks (`onAgentSpawn`/`onAgentHalt`/`onAgentResurrect`) drive the resurrection workflow.
 
@@ -119,7 +119,7 @@ The following milestones moved the system from "code shipped" to "verified end-t
 
 ### R1 — On-chain dynamic validator set (chainId 18780)
 - **R1.1**: 10 governance contracts deployed (SoulRegistry, CidRegistry, ValidatorRegistry, PoSeManagerV2, DIDRegistry, FactionRegistry, GovernanceDAO, Treasury, InsuranceFund, EquivocationDetector). Addresses pinned in `contracts/deployed-registries-newchain.json`.
-- **R1.2**: Fullnode bootstrap (`scripts/bootstrap-5-fullnode-deploy.sh`) injects `COC_VALIDATOR_REGISTRY_ADDRESS` into systemd EnvironmentFile so nodes seed the BFT validator set from on-chain `ValidatorRegistry.getActiveValidators()` instead of a hardcoded list. Empty env value falls back to hardcoded mode for rollback safety.
+- **R1.2**: Fullnode bootstrap (`scripts/bootstrap-5-fullnode-deploy.sh`) injects `PALI_VALIDATOR_REGISTRY_ADDRESS` into systemd EnvironmentFile so nodes seed the BFT validator set from on-chain `ValidatorRegistry.getActiveValidators()` instead of a hardcoded list. Empty env value falls back to hardcoded mode for rollback safety.
 - **R1.3**: BFT migration SOP at `scripts/migrate-bft-to-registry.sh` — precheck, rolling restart, post-verify, rollback toggle.
 - **R1.4**: H15 staggered-fallback proposer override has dedicated coverage via `tests/multinode-integration/scenarios/04-h15-fallback.test.ts` on a 5-validator chainId 88888 fork-off (no collision with the 3-validator J3 fixture).
 
@@ -129,6 +129,6 @@ The following milestones moved the system from "code shipped" to "verified end-t
 - **R2.3**: Two new nodeops policy YAMLs (`nodeops/policies/{validator-churn,pose-fault}-policy.yaml`) for automated churn governance (auto `requestUnstake` proposal on prolonged offline) and slash candidate detection.
 
 ### R3 — Slash automation + prod-candidate prep
-- **R3.1**: `runtime/lib/equivocation-detector-client.ts` (Phase I3c) integrated in `runtime/coc-relayer.ts` — polls BFT equivocation events, primes address→nodeId cache from `ValidatorRegistered` events, submits `EquivocationDetector.submitEvidence`. End-to-end verified by `tests/multinode-integration/scenarios/12-pose-slash-automation.test.ts` against the H15 fork-off (4/4 PASS: prime cache, slash bites stake 32→28.8 ETH and flips `active=false`, cooldown gate holds).
+- **R3.1**: `runtime/lib/equivocation-detector-client.ts` (Phase I3c) integrated in `runtime/palimesh-relayer.ts` — polls BFT equivocation events, primes address→nodeId cache from `ValidatorRegistered` events, submits `EquivocationDetector.submitEvidence`. End-to-end verified by `tests/multinode-integration/scenarios/12-pose-slash-automation.test.ts` against the H15 fork-off (4/4 PASS: prime cache, slash bites stake 32→28.8 ETH and flips `active=false`, cooldown gate holds).
 - **R3.2**: Prod-candidate testnet chainId 88780 SOP at `docs/r3-2-prod-candidate-testnet-88780.md`.
-- **R3.3**: Operator runbook at `docs/operator-runbook.{en,zh}.md` covers register/exit/slash response/governance participation/monitoring. Explorer `/validators` page sources from `coc_getValidators` RPC which reads `ValidatorRegistry.getActiveValidators()` via the in-process governance state — `node/src/rpc.ts:1329`.
+- **R3.3**: Operator runbook at `docs/operator-runbook.{en,zh}.md` covers register/exit/slash response/governance participation/monitoring. Explorer `/validators` page sources from `pali_getValidators` RPC which reads `ValidatorRegistry.getActiveValidators()` via the in-process governance state — `node/src/rpc.ts:1329`.

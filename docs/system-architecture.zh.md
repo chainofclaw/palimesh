@@ -1,7 +1,7 @@
-# COC 系统架构（中文）
+# Palimesh 系统架构（中文）
 
 ## 概述
-COC 是一个 EVM 兼容的区块链原型，结合轻量执行层与 PoSe（Proof-of-Service）结算流程。系统由链上合约、链下服务和节点运行时组成。
+Palimesh 是一个 EVM 兼容的区块链原型，结合轻量执行层与 PoSe（Proof-of-Service）结算流程。系统由链上合约、链下服务和节点运行时组成。
 
 ## 分层架构
 1. **执行层（EVM）**
@@ -37,9 +37,9 @@ COC 是一个 EVM 兼容的区块链原型，结合轻量执行层与 PoSe（Pro
    - 链上 PoSeManager 合约用于注册、批次提交、争议与惩罚。
 
 6. **NodeOps 运行时**
-   - `coc-node`: 提供 PoSe challenge/receipt HTTP 端点。
-   - `coc-agent`: 生成挑战、聚合批次、计算奖励。
-   - `coc-relayer`: Epoch 结算与可选争议/惩罚自动化。
+   - `palimesh-node`: 提供 PoSe challenge/receipt HTTP 端点。
+   - `palimesh-agent`: 生成挑战、聚合批次、计算奖励。
+   - `palimesh-relayer`: Epoch 结算与可选争议/惩罚自动化。
 
 7. **节点运维层**
    - 基于 YAML 的策略引擎（policy-engine）。
@@ -84,15 +84,15 @@ COC 是一个 EVM 兼容的区块链原型，结合轻量执行层与 PoSe（Pro
    - PoSeManager ecrecover v 值校验。
 
 ## 核心组件
-- **节点运行时**：`COC/node/src/*`
-- **DID 模块**：`COC/node/src/did/*`
-- **PoSe 合约**：`COC/contracts/settlement/*`
-- **治理合约**：`COC/contracts/governance/*`（SoulRegistry、DIDRegistry）
-- **PoSe 服务**：`COC/services/*`
-- **运行时服务**：`COC/runtime/*`
-- **节点运维**：`COC/nodeops/*`
-- **钱包 CLI**：`COC/wallet/bin/coc-wallet.js`
-- **区块链浏览器**：`COC/explorer/src/*`
+- **节点运行时**：`Palimesh/node/src/*`
+- **DID 模块**：`Palimesh/node/src/did/*`
+- **PoSe 合约**：`Palimesh/contracts/settlement/*`
+- **治理合约**：`Palimesh/contracts/governance/*`（SoulRegistry、DIDRegistry）
+- **PoSe 服务**：`Palimesh/services/*`
+- **运行时服务**：`Palimesh/runtime/*`
+- **节点运维**：`Palimesh/nodeops/*`
+- **钱包 CLI**：`Palimesh/wallet/bin/palimesh-wallet.js`
+- **区块链浏览器**：`Palimesh/explorer/src/*`
 
 ## 数据流（高层）
 1. 钱包向 JSON-RPC 发送签名交易。
@@ -108,8 +108,8 @@ COC 是一个 EVM 兼容的区块链原型，结合轻量执行层与 PoSe（Pro
 - P2P 以 HTTP gossip 为主要传输 + 节点持久化 + DNS 种子发现。Wire 服务端/客户端提供可选 TCP 传输（`enableWireProtocol`），支持 FIND_NODE 请求/响应用于 DHT 查询。Wire 协议含 Block/Tx 去重（BoundedSet: seenTx 50K, seenBlocks 10K）及跨协议中继（Wire→HTTP 通过 onTxRelay/onBlockRelay 回调）。HTTP gossip 写路径支持签名认证信封（`_auth`）校验，具备可配置灰度模式（`off`/`monitor`/`enforce`）、时间偏移限制与 nonce 防重放。DHT 网络层提供可选迭代节点发现（`enableDht`），含定期节点公告；FIND_NODE 使用 wireClientByPeerId 映射（O(1) 查找），回退到 wireClients 扫描和本地路由表。区块和交易通过双通道（HTTP+TCP）并行传播，支持发送方排除（excludeNodeId）。每个 peer 使用独立 wire port（来自 dhtBootstrapPeers 配置）。Wire 连接管理器处理出站节点生命周期。状态快照端点可用于快速同步。
 - EVM 状态通过 PersistentStateManager + LevelDB 跨重启持久化。快照同步提供者已集成到 ConsensusEngine（通过 `enableSnapSync` 可选启用）。
 - IPFS 支持核心 HTTP API、网关、MFS、Pubsub 和 tar 归档 `get`。
-- RPC 提供 `coc_getNetworkStats`（P2P/Wire/DHT/BFT 统计）和 `coc_getBftStatus`（BFT 轮次状态含等价检测计数）。
-- 安全加固（Phase 33）：Wire 握手节点身份认证（NodeSigner/SignatureVerifier）、BFT 强制消息签名、DHT 节点验证（加入路由表前 TCP 探测）、每 IP Wire 连接限制（最多 5）、IPFS 上传大小限制（10MB）、MFS 路径遍历防护、区块时间戳验证、节点指数 ban（最长 24h）、WebSocket 空闲超时（1h）、开发账户需 `COC_DEV_ACCOUNTS=1`、默认绑定 `127.0.0.1`、共享速率限制器（RPC 200/min, IPFS 100/min, PoSe 60/min）、HTTP gossip 签名认证信封（`off`/`monitor`/`enforce` 灰度模式 + 防重放）、治理自投票移除、PoSeManager ecrecover v 值校验、状态快照 stateRoot 校验。
+- RPC 提供 `pali_getNetworkStats`（P2P/Wire/DHT/BFT 统计）和 `pali_getBftStatus`（BFT 轮次状态含等价检测计数）。
+- 安全加固（Phase 33）：Wire 握手节点身份认证（NodeSigner/SignatureVerifier）、BFT 强制消息签名、DHT 节点验证（加入路由表前 TCP 探测）、每 IP Wire 连接限制（最多 5）、IPFS 上传大小限制（10MB）、MFS 路径遍历防护、区块时间戳验证、节点指数 ban（最长 24h）、WebSocket 空闲超时（1h）、开发账户需 `PALI_DEV_ACCOUNTS=1`、默认绑定 `127.0.0.1`、共享速率限制器（RPC 200/min, IPFS 100/min, PoSe 60/min）、HTTP gossip 签名认证信封（`off`/`monitor`/`enforce` 灰度模式 + 防重放）、治理自投票移除、PoSeManager ecrecover v 值校验、状态快照 stateRoot 校验。
 - 所有高级功能（BFT、Wire、DHT、SnapSync）在多节点 devnet 中通过 `start-devnet.sh` 默认启用。单节点 devnet 自动禁用 BFT（需要 >= 3 验证者）。DHT 迭代查找使用 Wire 协议 FIND_NODE（可用时），回退到本地路由表。
 - 硅基永生载体层通过 CidRegistry 合约提供链上 CID 恢复。载体守护进程监控 agent 存活性，使用三层 CID 解析（本地 → MFS → 链上）执行跨节点复活。二进制数据库快照捕获 OpenClaw 记忆索引，实现完整认知状态恢复。OpenClaw 生命周期钩子（`onAgentSpawn`/`onAgentHalt`/`onAgentResurrect`）驱动复活工作流。
 
@@ -119,7 +119,7 @@ COC 是一个 EVM 兼容的区块链原型，结合轻量执行层与 PoSe（Pro
 
 ### R1 — 链上动态验证者集合（chainId 18780）
 - **R1.1**：10 个治理合约已部署（SoulRegistry、CidRegistry、ValidatorRegistry、PoSeManagerV2、DIDRegistry、FactionRegistry、GovernanceDAO、Treasury、InsuranceFund、EquivocationDetector）。地址固化在 `contracts/deployed-registries-newchain.json`。
-- **R1.2**：Fullnode bootstrap（`scripts/bootstrap-5-fullnode-deploy.sh`）把 `COC_VALIDATOR_REGISTRY_ADDRESS` 注入 systemd EnvironmentFile，节点从链上 `ValidatorRegistry.getActiveValidators()` 引导 BFT validator set 而非 hardcoded 列表。env 留空回退到 hardcoded 模式以保安全回滚。
+- **R1.2**：Fullnode bootstrap（`scripts/bootstrap-5-fullnode-deploy.sh`）把 `PALI_VALIDATOR_REGISTRY_ADDRESS` 注入 systemd EnvironmentFile，节点从链上 `ValidatorRegistry.getActiveValidators()` 引导 BFT validator set 而非 hardcoded 列表。env 留空回退到 hardcoded 模式以保安全回滚。
 - **R1.3**：BFT 迁移 SOP 在 `scripts/migrate-bft-to-registry.sh` — 预检、滚动重启、后验、回滚开关。
 - **R1.4**：H15 staggered-fallback proposer override 通过 `tests/multinode-integration/scenarios/04-h15-fallback.test.ts` 在独立的 5 节点 chainId 88888 fork-off 上覆盖。
 
@@ -129,6 +129,6 @@ COC 是一个 EVM 兼容的区块链原型，结合轻量执行层与 PoSe（Pro
 - **R2.3**：两个新 nodeops policy YAML（`nodeops/policies/{validator-churn,pose-fault}-policy.yaml`）实现自动化 churn 治理（持续离线时自动 `requestUnstake` 提案）和 slash 候选检测。
 
 ### R3 — Slash 自动化 + 准生产准备
-- **R3.1**：`runtime/lib/equivocation-detector-client.ts` (Phase I3c) 集成在 `runtime/coc-relayer.ts` — 轮询 BFT equivocation 事件，从 `ValidatorRegistered` 事件预热 address→nodeId 缓存，提交 `EquivocationDetector.submitEvidence`。端到端通过 `tests/multinode-integration/scenarios/12-pose-slash-automation.test.ts` 在 H15 fork-off 验证（4/4 PASS：缓存预热、slash 实测 stake 32→28.8 ETH 并 `active=false`、冷却闸守住）。
+- **R3.1**：`runtime/lib/equivocation-detector-client.ts` (Phase I3c) 集成在 `runtime/palimesh-relayer.ts` — 轮询 BFT equivocation 事件，从 `ValidatorRegistered` 事件预热 address→nodeId 缓存，提交 `EquivocationDetector.submitEvidence`。端到端通过 `tests/multinode-integration/scenarios/12-pose-slash-automation.test.ts` 在 H15 fork-off 验证（4/4 PASS：缓存预热、slash 实测 stake 32→28.8 ETH 并 `active=false`、冷却闸守住）。
 - **R3.2**：准生产 testnet chainId 88780 SOP 在 `docs/r3-2-prod-candidate-testnet-88780.md`。
-- **R3.3**：Operator runbook 在 `docs/operator-runbook.{en,zh}.md` 覆盖注册/退出/slash 响应/治理参与/监控。Explorer `/validators` 页面来源于 `coc_getValidators` RPC，该 RPC 通过进程内治理状态读取 `ValidatorRegistry.getActiveValidators()` — `node/src/rpc.ts:1329`。
+- **R3.3**：Operator runbook 在 `docs/operator-runbook.{en,zh}.md` 覆盖注册/退出/slash 响应/治理参与/监控。Explorer `/validators` 页面来源于 `pali_getValidators` RPC，该 RPC 通过进程内治理状态读取 `ValidatorRegistry.getActiveValidators()` — `node/src/rpc.ts:1329`。

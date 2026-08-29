@@ -2,7 +2,7 @@
 
 ## Overview
 
-The coc-backup extension's file-level backup ensures that all of an Agent's data files can be recovered after a host failure. But an AI Agent is more than files — it has ongoing work, accumulated decision-making experience, and semantic understanding of its projects. After a traditional file-only restore, the Agent gets its raw files back but doesn't know:
+The palimesh-backup extension's file-level backup ensures that all of an Agent's data files can be recovered after a host failure. But an AI Agent is more than files — it has ongoing work, accumulated decision-making experience, and semantic understanding of its projects. After a traditional file-only restore, the Agent gets its raw files back but doesn't know:
 
 - What it was working on and how far it got
 - What key decisions it made and why
@@ -41,11 +41,11 @@ The **semantic memory layer** bridges to [claude-mem](https://github.com/thedotm
 └────────────────────────┬────────────────────────────────────┘
                          │ Read-only (node:sqlite)
 ┌────────────────────────┴────────────────────────────────────┐
-│                    coc-backup semantic memory layer          │
+│                    palimesh-backup semantic memory layer          │
 │                                                             │
 │  Before backup:                                             │
 │  ┌─────────────────────┐    ┌──────────────────────┐       │
-│  │ semantic-snapshot.ts │───→│ .coc-backup/          │      │
+│  │ semantic-snapshot.ts │───→│ .palimesh-backup/          │      │
 │  │ Read claude-mem DB   │    │ semantic-snapshot.json│      │
 │  │ Token-budgeted pack  │    └──────────┬───────────┘       │
 │  └─────────────────────┘               │                    │
@@ -72,7 +72,7 @@ The **semantic memory layer** bridges to [claude-mem](https://github.com/thedotm
 
 ### Key Design Decisions
 
-1. **Bridge, not embed**: coc-backup only reads claude-mem's SQLite database; it does not embed the SDK agent pipeline. Live observation capture remains claude-mem's responsibility.
+1. **Bridge, not embed**: palimesh-backup only reads claude-mem's SQLite database; it does not embed the SDK agent pipeline. Live observation capture remains claude-mem's responsibility.
 2. **Self-contained recovery context**: `RECOVERY_CONTEXT.md` and `semantic-snapshot.json` are readable without the claude-mem worker, ensuring resurrection works even on carrier nodes without claude-mem.
 3. **Budget at backup time**: Token budgeting happens at backup time (not recovery time); recovery only formats.
 4. **Backward compatible**: `semanticDigest` is an optional manifest field; old manifests are unaffected.
@@ -224,7 +224,7 @@ autoRestore / restoreFromCid
 
 ### Degradation Without Semantic Snapshot
 
-If `.coc-backup/semantic-snapshot.json` doesn't exist (old backup or backup taken when claude-mem was not running), a minimal `RECOVERY_CONTEXT.md` is still generated containing only the Recovery Integrity section.
+If `.palimesh-backup/semantic-snapshot.json` doesn't exist (old backup or backup taken when claude-mem was not running), a minimal `RECOVERY_CONTEXT.md` is still generated containing only the Recovery Integrity section.
 
 ---
 
@@ -310,7 +310,7 @@ Prioritizing the restored database ensures the Agent searches its own memories, 
 
 ## Configuration
 
-Add the `semanticSnapshot` section to the coc-backup extension config:
+Add the `semanticSnapshot` section to the palimesh-backup extension config:
 
 ```json
 {
@@ -343,9 +343,9 @@ Semantic memory files in the backup classification:
 
 | File Path | Category | Encrypted |
 |-----------|----------|-----------|
-| `.coc-backup/semantic-snapshot.json` | memory | No |
+| `.palimesh-backup/semantic-snapshot.json` | memory | No |
 | `RECOVERY_CONTEXT.md` | memory | No |
-| `.coc-backup/context-snapshot.json` | workspace | No |
+| `.palimesh-backup/context-snapshot.json` | workspace | No |
 
 ---
 
@@ -381,7 +381,7 @@ Semantic memory files in the backup classification:
        ├── applyManifestChain() → download, decrypt, write files
        └── verifyRestoredFiles() → disk integrity verification
 3. ★ injectRecoveryContext(targetDir, recovery, agentId)
-   ├── Read .coc-backup/semantic-snapshot.json
+   ├── Read .palimesh-backup/semantic-snapshot.json
    ├── Format as Markdown
    └── Write RECOVERY_CONTEXT.md
 4. writeRestoreMarker()
@@ -402,7 +402,7 @@ Semantic memory files in the backup classification:
 
 ## Agent Tools
 
-The coc-backup extension now registers **13** Agent tools:
+The palimesh-backup extension now registers **13** Agent tools:
 
 | Tool | Category | Description |
 |------|----------|-------------|
@@ -432,4 +432,4 @@ The semantic memory layer adds 16 new tests (all passing):
 | `test/context-injector.test.ts` | 5 | Full context generation, empty snapshot degradation, anchor status formatting, pipe character escaping |
 | `test/memory-search.test.ts` | 5 | FTS5 search, type filtering, limit, empty database, LIKE fallback |
 
-Total coc-backup extension tests: **63** (47 existing + 16 new), zero regressions.
+Total palimesh-backup extension tests: **63** (47 existing + 16 new), zero regressions.

@@ -2,14 +2,14 @@
 
 ## 概述
 
-COC 链的**AI 硅基永生（Silicon Immortality）**功能为 AI Agent 提供了区块链锚定的身份注册、状态备份与社交恢复机制。核心思想是：Agent 的身份文件（IDENTITY.md、SOUL.md）、记忆、对话历史等状态数据通过 IPFS 存储并加密，其完整性哈希（Merkle Root）通过 EIP-712 签名交易锚定到链上的 `SoulRegistry` 合约，确保 Agent 的"灵魂"可验证、可恢复、不可篡改。
+Palimesh 链的**AI 硅基永生（Silicon Immortality）**功能为 AI Agent 提供了区块链锚定的身份注册、状态备份与社交恢复机制。核心思想是：Agent 的身份文件（IDENTITY.md、SOUL.md）、记忆、对话历史等状态数据通过 IPFS 存储并加密，其完整性哈希（Merkle Root）通过 EIP-712 签名交易锚定到链上的 `SoulRegistry` 合约，确保 Agent 的"灵魂"可验证、可恢复、不可篡改。
 
 系统由两个核心组件构成：
 
 | 组件 | 位置 | 职责 |
 |------|------|------|
 | **SoulRegistry 合约** | `contracts/contracts-src/governance/SoulRegistry.sol` | 链上身份注册、备份锚定、社交恢复 |
-| **coc-backup 扩展** | `extensions/coc-backup/` | 链下备份执行：文件扫描、加密、IPFS 上传、链上锚定、恢复 |
+| **palimesh-backup 扩展** | `extensions/palimesh-backup/` | 链下备份执行：文件扫描、加密、IPFS 上传、链上锚定、恢复 |
 
 ---
 
@@ -17,7 +17,7 @@ COC 链的**AI 硅基永生（Silicon Immortality）**功能为 AI Agent 提供�
 
 ```
 +---------------------+     +------------------+     +-------------------+
-|   OpenClaw Agent    |     |   COC IPFS Node  |     |  COC 区块链        |
+|   OpenClaw Agent    |     |   Palimesh IPFS Node  |     |  Palimesh 区块链        |
 |                     |     |                  |     |                   |
 | dataDir/            |     | /api/v0/add      |     | SoulRegistry.sol  |
 |  IDENTITY.md        | --> | /ipfs/{cid}      | --> |  registerSoul()   |
@@ -26,7 +26,7 @@ COC 链的**AI 硅基永生（Silicon Immortality）**功能为 AI Agent 提供�
 |  sessions/*.jsonl   |                              |  社交恢复          |
 +---------------------+                              +-------------------+
         |                                                     ^
-        |              coc-backup 扩展                         |
+        |              palimesh-backup 扩展                         |
         +-- 扫描 --> 差异检测 --> 加密 --> IPFS上传 --> EIP-712签名 --+
 ```
 
@@ -410,18 +410,18 @@ Owner                    合约                      载体
 
 | 命令 | 说明 | 状态 |
 |------|------|------|
-| `coc-backup init [--agent-id] [--identity-cid] [--key-hash] [--max-offline]` | 初始化注册、首次全量备份、写入本地恢复元数据 | ✅ 已实现 |
-| `coc-backup doctor [--json]` | 输出统一 `DoctorReport` 与推荐动作 | ✅ 已实现 |
-| `coc-backup configure-resurrection --key-hash <hash> [--max-offline <sec>]` | 配置复活密钥和失联超时（默认 86400 秒 = 24 小时） | ✅ 已实现 |
-| `coc-backup heartbeat` | 手动发送心跳 | ✅ 已实现 |
-| `coc-backup resurrect --carrier-id <id> --resurrection-key <key> [--agent-id <id>]` | 主人密钥发起复活（`--agent-id` 用于为他人代理复活） | ✅ 已实现 |
-| `coc-backup resurrection start ...` | 显式的 owner-key 复活发起命令 | ✅ 已实现 |
-| `coc-backup resurrection status [--request-id] [--json]` | 查看请求详情与 readiness | ✅ 已实现 |
-| `coc-backup resurrection confirm [--request-id]` | 载体确认承载 | ✅ 已实现 |
-| `coc-backup resurrection complete [--request-id]` | 完成复活请求 | ✅ 已实现 |
-| `coc-backup resurrection cancel [--request-id]` | 取消复活请求 | ✅ 已实现 |
-| `coc-backup carrier register --carrier-id <id> --endpoint <url> [--cpu] [--memory] [--storage]` | 注册为载体提供者 | ✅ 已实现 |
-| `coc-backup carrier list` | 列出已知载体（需索引器） | 未实现 |
+| `palimesh-backup init [--agent-id] [--identity-cid] [--key-hash] [--max-offline]` | 初始化注册、首次全量备份、写入本地恢复元数据 | ✅ 已实现 |
+| `palimesh-backup doctor [--json]` | 输出统一 `DoctorReport` 与推荐动作 | ✅ 已实现 |
+| `palimesh-backup configure-resurrection --key-hash <hash> [--max-offline <sec>]` | 配置复活密钥和失联超时（默认 86400 秒 = 24 小时） | ✅ 已实现 |
+| `palimesh-backup heartbeat` | 手动发送心跳 | ✅ 已实现 |
+| `palimesh-backup resurrect --carrier-id <id> --resurrection-key <key> [--agent-id <id>]` | 主人密钥发起复活（`--agent-id` 用于为他人代理复活） | ✅ 已实现 |
+| `palimesh-backup resurrection start ...` | 显式的 owner-key 复活发起命令 | ✅ 已实现 |
+| `palimesh-backup resurrection status [--request-id] [--json]` | 查看请求详情与 readiness | ✅ 已实现 |
+| `palimesh-backup resurrection confirm [--request-id]` | 载体确认承载 | ✅ 已实现 |
+| `palimesh-backup resurrection complete [--request-id]` | 完成复活请求 | ✅ 已实现 |
+| `palimesh-backup resurrection cancel [--request-id]` | 取消复活请求 | ✅ 已实现 |
+| `palimesh-backup carrier register --carrier-id <id> --endpoint <url> [--cpu] [--memory] [--storage]` | 注册为载体提供者 | ✅ 已实现 |
+| `palimesh-backup carrier list` | 列出已知载体（需索引器） | 未实现 |
 
 ##### TypeScript 类型（types.ts）
 
@@ -576,14 +576,14 @@ interface ResurrectionReadiness {
 
 ---
 
-## coc-backup 扩展
+## palimesh-backup 扩展
 
-**位置：** `extensions/coc-backup/`（OpenClaw 插件）
+**位置：** `extensions/palimesh-backup/`（OpenClaw 插件）
 
 ### 模块架构
 
 ```
-extensions/coc-backup/
+extensions/palimesh-backup/
   index.ts                      # 插件入口，注册 CLI/Tool/Hook
   openclaw.plugin.json          # 插件清单
   tsconfig.json                 # 扩展独立类型检查入口
@@ -620,7 +620,7 @@ extensions/coc-backup/
 | 配置项 | 类型 | 默认值 | 说明 |
 |--------|------|--------|------|
 | `enabled` | boolean | `true` | 总开关 |
-| `rpcUrl` | string | `http://127.0.0.1:18780` | COC RPC 地址 |
+| `rpcUrl` | string | `http://127.0.0.1:18780` | Palimesh RPC 地址 |
 | `ipfsUrl` | string | `http://127.0.0.1:18790` | IPFS API 地址 |
 | `contractAddress` | string | 必填 | SoulRegistry 合约地址 |
 | `privateKey` | string | 必填 | 以太坊私钥 |
@@ -661,9 +661,9 @@ extensions/coc-backup/
 
 ### CLI 命令
 
-所有命令在 `coc-backup` 子命令组下：
+所有命令在 `palimesh-backup` 子命令组下：
 
-#### `coc-backup init`
+#### `palimesh-backup init`
 
 自托管首启流程入口，按固定顺序执行：
 
@@ -675,101 +675,101 @@ extensions/coc-backup/
 6. 可选配置复活参数
 
 ```bash
-coc-backup init [--agent-id <bytes32>] [--identity-cid <bytes32>] [--key-hash <bytes32>] [--max-offline <seconds>]
+palimesh-backup init [--agent-id <bytes32>] [--identity-cid <bytes32>] [--key-hash <bytes32>] [--max-offline <seconds>]
 ```
 
-#### `coc-backup register`
+#### `palimesh-backup register`
 注册 Agent 的链上灵魂身份。
 ```bash
-coc-backup register [--agent-id <bytes32>] [--identity-cid <cid>]
+palimesh-backup register [--agent-id <bytes32>] [--identity-cid <cid>]
 ```
 - `--agent-id`：省略时自动生成 `keccak256(owner wallet address)`
 - `--identity-cid`：省略时读取 `dataDir/IDENTITY.md` 上传
 
-#### `coc-backup backup`
+#### `palimesh-backup backup`
 执行一次备份。
 ```bash
-coc-backup backup [--full]
+palimesh-backup backup [--full]
 ```
 - `--full`：强制全量备份（否则根据变更自动选择增量/全量）
 - 返回结果区分三种语义：`completed`、`skipped`、`registration_required`
 - 心跳状态单独返回：`sent`、`not_configured`、`failed`、`not_attempted`
 
-#### `coc-backup restore`
+#### `palimesh-backup restore`
 恢复入口固定支持三种来源之一，不再承诺“从链上自动反推最新 CID”。
 ```bash
-coc-backup restore --manifest-cid <cid> [--target-dir <dir>] [--password <pwd>]
-coc-backup restore --package <path> [--target-dir <dir>] [--password <pwd>]
-coc-backup restore --latest-local [--target-dir <dir>] [--password <pwd>]
+palimesh-backup restore --manifest-cid <cid> [--target-dir <dir>] [--password <pwd>]
+palimesh-backup restore --package <path> [--target-dir <dir>] [--password <pwd>]
+palimesh-backup restore --latest-local [--target-dir <dir>] [--password <pwd>]
 ```
 - `--manifest-cid`：显式指定目标 manifest
 - `--package`：使用本地恢复包 JSON
-- `--latest-local`：直接读取 `dataDir/.coc-backup/latest-recovery.json`
+- `--latest-local`：直接读取 `dataDir/.palimesh-backup/latest-recovery.json`
 - 若恢复目标包含加密文件，且既没有 `--password` 也没有可用 `privateKey`，恢复前直接失败，不进入下载阶段
 - 返回结果除恢复计数外，还包含 `requestedManifestCid`、`resolvedAgentId`、`anchorCheckAttempted`、`anchorCheckPassed`、`anchorCheckReason`
 
-#### `coc-backup status`
+#### `palimesh-backup status`
 查询当前生命周期摘要。
 ```bash
-coc-backup status [--json]
+palimesh-backup status [--json]
 ```
 
-#### `coc-backup doctor`
+#### `palimesh-backup doctor`
 执行统一巡检并给出下一步动作建议。
 ```bash
-coc-backup doctor [--json]
+palimesh-backup doctor [--json]
 ```
 
-#### `coc-backup history`
+#### `palimesh-backup history`
 查询链上备份历史。
 ```bash
-coc-backup history [--limit <n>] [--json]
+palimesh-backup history [--limit <n>] [--json]
 ```
 
-#### `coc-backup configure-resurrection`
+#### `palimesh-backup configure-resurrection`
 配置复活密钥哈希和离线阈值。
 ```bash
-coc-backup configure-resurrection --key-hash <bytes32> [--max-offline <seconds>]
+palimesh-backup configure-resurrection --key-hash <bytes32> [--max-offline <seconds>]
 ```
 
-#### `coc-backup heartbeat`
+#### `palimesh-backup heartbeat`
 手动发送一次心跳。
 ```bash
-coc-backup heartbeat
+palimesh-backup heartbeat
 ```
 
-#### `coc-backup resurrect`
-兼容别名，等价于 `coc-backup resurrection start`。
+#### `palimesh-backup resurrect`
+兼容别名，等价于 `palimesh-backup resurrection start`。
 ```bash
-coc-backup resurrect --carrier-id <bytes32> --resurrection-key <hex> [--agent-id <bytes32>]
+palimesh-backup resurrect --carrier-id <bytes32> --resurrection-key <hex> [--agent-id <bytes32>]
 ```
 
-#### `coc-backup resurrection ...`
+#### `palimesh-backup resurrection ...`
 自托管 owner-key 复活闭环命令组。
 ```bash
-coc-backup resurrection start --carrier-id <bytes32> --resurrection-key <hex> [--agent-id <bytes32>]
-coc-backup resurrection status [--request-id <bytes32>] [--json]
-coc-backup resurrection confirm [--request-id <bytes32>]
-coc-backup resurrection complete [--request-id <bytes32>]
-coc-backup resurrection cancel [--request-id <bytes32>]
+palimesh-backup resurrection start --carrier-id <bytes32> --resurrection-key <hex> [--agent-id <bytes32>]
+palimesh-backup resurrection status [--request-id <bytes32>] [--json]
+palimesh-backup resurrection confirm [--request-id <bytes32>]
+palimesh-backup resurrection complete [--request-id <bytes32>]
+palimesh-backup resurrection cancel [--request-id <bytes32>]
 ```
 - `start` 返回 `txHash + requestId`
 - 若未显式传 `--request-id`，其余子命令会回退到本地 `state.json` 中记录的待处理请求
 
-#### `coc-backup carrier ...`
+#### `palimesh-backup carrier ...`
 载体管理命令：
 ```bash
-coc-backup carrier register --carrier-id <bytes32> --endpoint <url> [--cpu <millicores>] [--memory <mb>] [--storage <mb>]
-coc-backup carrier submit-request --request-id <id> --agent-id <id>   # 向本地 daemon 提交复活请求
-coc-backup carrier list          # 占位：需要链上索引器支持
+palimesh-backup carrier register --carrier-id <bytes32> --endpoint <url> [--cpu <millicores>] [--memory <mb>] [--storage <mb>]
+palimesh-backup carrier submit-request --request-id <id> --agent-id <id>   # 向本地 daemon 提交复活请求
+palimesh-backup carrier list          # 占位：需要链上索引器支持
 ```
 
-#### `coc-backup guardian ...`
+#### `palimesh-backup guardian ...`
 守护者侧操作命令（需要守护者 EOA 密钥）：
 ```bash
-coc-backup guardian initiate --agent-id <id> --carrier-id <id>   # 守护者发起复活
-coc-backup guardian approve --request-id <id>                     # 守护者批准复活
-coc-backup guardian status --request-id <id>                      # 查询复活就绪状态
+palimesh-backup guardian initiate --agent-id <id> --carrier-id <id>   # 守护者发起复活
+palimesh-backup guardian approve --request-id <id>                     # 守护者批准复活
+palimesh-backup guardian status --request-id <id>                      # 查询复活就绪状态
 ```
 
 ### Agent 工具
@@ -840,7 +840,7 @@ coc-backup guardian status --request-id <id>                      # 查询复活
 | `plugins/*/openclaw.plugin.json` | config | 否 |
 | `agents/*/sessions/sessions.json` | chat | 否 |
 | `credentials/*` | config | 是 |
-| `.coc-backup/context-snapshot.json` | workspace | 否 |
+| `.palimesh-backup/context-snapshot.json` | workspace | 否 |
 
 ### Merkle 树实现
 
@@ -857,7 +857,7 @@ coc-backup guardian status --request-id <id>                      # 查询复活
 - **增量备份（backupType=1）：** 仅上传变更文件，未变更文件通过 `carryOverEntries()` 从上一个 manifest 复制 CID 引用
 - **强制全量触发条件：** `forceFullBackup=true`、首次备份、增量链长度达到 `maxIncrementalChain`（默认 10）
 - **Manifest 完整性：** 每个增量 manifest 的 `files` 字段包含**所有**文件（含 carry-over），使任何单一 manifest 都是完整状态快照
-- **本地持久化：** 调度器把 `lastManifestCid`、`incrementalCount`、`lastBackupAt`、`lastFullBackupAt` 写入 `dataDir/.coc-backup/state.json`，进程重启后优先恢复增量上下文，不再一律退化为全量备份
+- **本地持久化：** 调度器把 `lastManifestCid`、`incrementalCount`、`lastBackupAt`、`lastFullBackupAt` 写入 `dataDir/.palimesh-backup/state.json`，进程重启后优先恢复增量上下文，不再一律退化为全量备份
 
 ### 本地元数据文件
 
@@ -865,8 +865,8 @@ coc-backup guardian status --request-id <id>                      # 查询复活
 
 | 文件 | 路径 | 用途 |
 |------|------|------|
-| `state.json` | `dataDir/.coc-backup/state.json` | 调度器状态、最近 manifest、待处理复活请求 |
-| `latest-recovery.json` | `dataDir/.coc-backup/latest-recovery.json` | 最新恢复包，供 `restore --latest-local` 使用 |
+| `state.json` | `dataDir/.palimesh-backup/state.json` | 调度器状态、最近 manifest、待处理复活请求 |
+| `latest-recovery.json` | `dataDir/.palimesh-backup/latest-recovery.json` | 最新恢复包，供 `restore --latest-local` 使用 |
 
 `latest-recovery.json` 固定包含：
 
@@ -915,7 +915,7 @@ coc-backup guardian status --request-id <id>                      # 查询复活
 
 | 层级 | 来源 | 速度 | 可用性 |
 |------|------|------|--------|
-| 本地索引 | `.coc-backup/cid-index.json` | <1ms | 重启后保持 |
+| 本地索引 | `.palimesh-backup/cid-index.json` | <1ms | 重启后保持 |
 | MFS | `/soul-backups/{agentId}/cid-map.json` | 50-200ms | 去中心化（任意 IPFS 节点） |
 | 链上 | `CidRegistry.resolveCid(bytes32)` | 200-500ms | 永久（区块链） |
 
@@ -1006,40 +1006,40 @@ idle → monitoring → resurrection_initiated → carrier_confirmed
 ### EIP-712 类型
 - `node/src/crypto/soul-registry-types.ts` — TypeScript 签名类型定义（5 个类型）
 
-### coc-backup 扩展
-- `extensions/coc-backup/index.ts` — 插件入口（约 260 行）
-- `extensions/coc-backup/openclaw.plugin.json` — 插件清单
-- `extensions/coc-backup/package.json` — 依赖定义
-- `extensions/coc-backup/tsconfig.json` — 扩展独立类型检查配置
-- `extensions/coc-backup/test/` — vitest 单测与最小集成测试
-- `extensions/coc-backup/src/types.ts` — 核心类型（约 240 行）
-- `extensions/coc-backup/src/config-schema.ts` — 配置 Schema（25 行）
-- `extensions/coc-backup/src/crypto.ts` — 加密模块（81 行）
-- `extensions/coc-backup/src/ipfs-client.ts` — IPFS 客户端（116 行）
-- `extensions/coc-backup/src/plugin-api.ts` — 本地插件 API 类型
-- `extensions/coc-backup/src/utils.ts` — 公共工具函数
-- `extensions/coc-backup/src/local-state.ts` — 本地状态与恢复包持久化
-- `extensions/coc-backup/src/lifecycle.ts` — lifecycle/doctor/init 编排
-- `extensions/coc-backup/src/soul-client.ts` — 合约客户端（约 430 行）
-- `extensions/coc-backup/src/cli/commands.ts` — CLI 命令（约 565 行）
-- `extensions/coc-backup/src/backup/anchor.ts` — 锚定逻辑（67 行）
-- `extensions/coc-backup/src/backup/change-detector.ts` — 变更检测（130 行）
-- `extensions/coc-backup/src/backup/manifest-builder.ts` — Manifest 构建（97 行）
-- `extensions/coc-backup/src/backup/scheduler.ts` — 调度器（约 300 行）
-- `extensions/coc-backup/src/backup/uploader.ts` — 上传器（73 行）
-- `extensions/coc-backup/src/recovery/chain-resolver.ts` — 链解析（123 行）
-- `extensions/coc-backup/src/recovery/downloader.ts` — 下载器（115 行）
-- `extensions/coc-backup/src/recovery/integrity-checker.ts` — 完整性校验（86 行）
-- `extensions/coc-backup/src/recovery/state-restorer.ts` — 恢复编排（约 182 行）
-- `extensions/coc-backup/src/backup/binary-handler.ts` — 二进制数据库快照（约 170 行）
-- `extensions/coc-backup/src/backup/context-snapshot.ts` — 会话上下文捕获（约 100 行）
-- `extensions/coc-backup/src/recovery/cid-resolver.ts` — 三层 CID 解析器（约 180 行）
-- `extensions/coc-backup/src/recovery/orchestrator.ts` — 自动恢复编排（约 130 行）
-- `extensions/coc-backup/src/recovery/agent-restarter.ts` — Agent 重启通知（约 60 行）
-- `extensions/coc-backup/src/carrier/protocol.ts` — 载体协议类型（约 60 行）
-- `extensions/coc-backup/src/carrier/offline-monitor.ts` — 离线代理监控（约 120 行）
-- `extensions/coc-backup/src/carrier/agent-spawner.ts` — Agent 进程启动器（约 110 行）
-- `extensions/coc-backup/src/carrier/resurrection-flow.ts` — 复活状态机（约 170 行）
-- `extensions/coc-backup/src/carrier/carrier-daemon.ts` — 载体守护进程（约 180 行）
+### palimesh-backup 扩展
+- `extensions/palimesh-backup/index.ts` — 插件入口（约 260 行）
+- `extensions/palimesh-backup/openclaw.plugin.json` — 插件清单
+- `extensions/palimesh-backup/package.json` — 依赖定义
+- `extensions/palimesh-backup/tsconfig.json` — 扩展独立类型检查配置
+- `extensions/palimesh-backup/test/` — vitest 单测与最小集成测试
+- `extensions/palimesh-backup/src/types.ts` — 核心类型（约 240 行）
+- `extensions/palimesh-backup/src/config-schema.ts` — 配置 Schema（25 行）
+- `extensions/palimesh-backup/src/crypto.ts` — 加密模块（81 行）
+- `extensions/palimesh-backup/src/ipfs-client.ts` — IPFS 客户端（116 行）
+- `extensions/palimesh-backup/src/plugin-api.ts` — 本地插件 API 类型
+- `extensions/palimesh-backup/src/utils.ts` — 公共工具函数
+- `extensions/palimesh-backup/src/local-state.ts` — 本地状态与恢复包持久化
+- `extensions/palimesh-backup/src/lifecycle.ts` — lifecycle/doctor/init 编排
+- `extensions/palimesh-backup/src/soul-client.ts` — 合约客户端（约 430 行）
+- `extensions/palimesh-backup/src/cli/commands.ts` — CLI 命令（约 565 行）
+- `extensions/palimesh-backup/src/backup/anchor.ts` — 锚定逻辑（67 行）
+- `extensions/palimesh-backup/src/backup/change-detector.ts` — 变更检测（130 行）
+- `extensions/palimesh-backup/src/backup/manifest-builder.ts` — Manifest 构建（97 行）
+- `extensions/palimesh-backup/src/backup/scheduler.ts` — 调度器（约 300 行）
+- `extensions/palimesh-backup/src/backup/uploader.ts` — 上传器（73 行）
+- `extensions/palimesh-backup/src/recovery/chain-resolver.ts` — 链解析（123 行）
+- `extensions/palimesh-backup/src/recovery/downloader.ts` — 下载器（115 行）
+- `extensions/palimesh-backup/src/recovery/integrity-checker.ts` — 完整性校验（86 行）
+- `extensions/palimesh-backup/src/recovery/state-restorer.ts` — 恢复编排（约 182 行）
+- `extensions/palimesh-backup/src/backup/binary-handler.ts` — 二进制数据库快照（约 170 行）
+- `extensions/palimesh-backup/src/backup/context-snapshot.ts` — 会话上下文捕获（约 100 行）
+- `extensions/palimesh-backup/src/recovery/cid-resolver.ts` — 三层 CID 解析器（约 180 行）
+- `extensions/palimesh-backup/src/recovery/orchestrator.ts` — 自动恢复编排（约 130 行）
+- `extensions/palimesh-backup/src/recovery/agent-restarter.ts` — Agent 重启通知（约 60 行）
+- `extensions/palimesh-backup/src/carrier/protocol.ts` — 载体协议类型（约 60 行）
+- `extensions/palimesh-backup/src/carrier/offline-monitor.ts` — 离线代理监控（约 120 行）
+- `extensions/palimesh-backup/src/carrier/agent-spawner.ts` — Agent 进程启动器（约 110 行）
+- `extensions/palimesh-backup/src/carrier/resurrection-flow.ts` — 复活状态机（约 170 行）
+- `extensions/palimesh-backup/src/carrier/carrier-daemon.ts` — 载体守护进程（约 180 行）
 
-**总计：** 当前仓库中，核心合约 + `coc-backup` 相关代码已超过 6,500 行；扩展侧已补充独立类型检查、vitest 测试入口、CID 注册表、二进制快照、上下文捕获与载体守护进程。
+**总计：** 当前仓库中，核心合约 + `palimesh-backup` 相关代码已超过 6,500 行；扩展侧已补充独立类型检查、vitest 测试入口、CID 注册表、二进制快照、上下文捕获与载体守护进程。

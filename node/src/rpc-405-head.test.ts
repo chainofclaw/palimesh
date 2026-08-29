@@ -29,10 +29,10 @@ import { startRpcServer } from "./rpc.ts"
 import { P2PNode } from "./p2p.ts"
 
 test("#376: HEAD request to RPC returns 405 with Content-Length: 0 (no hang)", async (t) => {
-  process.env.COC_RPC_RATE_LIMIT_DISABLED = "1"
+  process.env.PALI_RPC_RATE_LIMIT_DISABLED = "1"
 
   const chainId = 18780
-  const dataDir = `/tmp/coc-rpc-376-${Date.now()}-${Math.floor(Math.random() * 1e6)}`
+  const dataDir = `/tmp/palimesh-rpc-376-${Date.now()}-${Math.floor(Math.random() * 1e6)}`
   const evm = await EvmChain.create(chainId)
   const chain = new ChainEngine(
     {

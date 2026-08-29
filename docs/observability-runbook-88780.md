@@ -30,7 +30,7 @@ plan A.1.3):
 | Validator uptime (rolling 30 d) | ≥ 99.5 % | derived from `NodeDown` + Grafana 30-d panel |
 | Mempool acceptance p99 | < 200 ms | indirect — `HighMempoolBacklog` flags backpressure |
 | BFT equivocations (rolling 30 d) | 0 | `EquivocationDetected` (fires immediately, severity critical) |
-| Active validator count | ≥ 4 | derived from `LowPeerCount` + `coc_validators_active` panel |
+| Active validator count | ≥ 4 | derived from `LowPeerCount` + `pali_validators_active` panel |
 
 ## Dashboards
 
@@ -40,10 +40,10 @@ dashboards complement each other:
 
 | Dashboard | Use when |
 |---|---|
-| `coc-overview.json` | Top-level health: block height, consensus state, peer count, mempool depth. **Start here.** |
-| `coc-consensus.json` | BFT round detail: prepare/commit votes, equivocations, validator participation. |
-| `coc-network.json` | Topology: HTTP peers, wire connections, DHT nodes, P2P auth rejections. |
-| `coc-resources.json` | Process resources: RSS memory, CPU, file descriptors, disk. |
+| `palimesh-overview.json` | Top-level health: block height, consensus state, peer count, mempool depth. **Start here.** |
+| `palimesh-consensus.json` | BFT round detail: prepare/commit votes, equivocations, validator participation. |
+| `palimesh-network.json` | Topology: HTTP peers, wire connections, DHT nodes, P2P auth rejections. |
+| `palimesh-resources.json` | Process resources: RSS memory, CPU, file descriptors, disk. |
 
 ---
 
@@ -52,21 +52,21 @@ dashboards complement each other:
 Alerts grouped by `prometheus-rules.yml` group. Severity in the heading
 matches the alert label.
 
-## Availability group (`coc_availability`)
+## Availability group (`pali_availability`)
 
 ### `NodeDown` — critical
 
-**Expr**: `up{job="coc-node"} == 0` for 2 m
+**Expr**: `up{job="palimesh-node"} == 0` for 2 m
 
 **Symptom**: Prometheus has been unable to scrape this node's `/metrics`
 endpoint for two minutes. Could be process crash, network partition,
 firewall change, or the Prometheus scrape config drift.
 
-**Dashboards**: `coc-overview` → "Node up" panel; `coc-resources` →
+**Dashboards**: `palimesh-overview` → "Node up" panel; `palimesh-resources` →
 process panels (will be empty for the down node).
 
 **Diagnosis**:
-1. `ssh` to the host and `systemctl status coc-node@<unit>` (validator
+1. `ssh` to the host and `systemctl status palimesh-node@<unit>` (validator
    units use `@88` or `@1` depending on host — see
    [`public-endpoints-88780.md`](./public-endpoints-88780.md) for the
    per-host table).
@@ -74,11 +74,11 @@ process panels (will be empty for the down node).
    `iptables -L`, the host's firewall, or any reverse-proxy. The
    metrics endpoint binds to `127.0.0.1:9100` by default — Prometheus
    must reach it directly or via SSH tunnel.
-3. `journalctl -u coc-node@<unit> -n 200` for recent crashes.
+3. `journalctl -u palimesh-node@<unit> -n 200` for recent crashes.
 
 **First response**:
 - If `systemctl status` shows the unit is `failed` or stopped:
-  `systemctl restart coc-node@<unit>` and watch the logs for ~60 s.
+  `systemctl restart palimesh-node@<unit>` and watch the logs for ~60 s.
 - If the host is unreachable entirely, escalate (the host itself is
   down) — but **do not auto-replace** the validator key unless the
   outage exceeds 1 h (otherwise it self-heals when the host is back
@@ -96,23 +96,23 @@ restarts ≥ 60 s apart.
 
 ### `BlockProductionStalled` — critical
 
-**Expr**: `increase(coc_block_height[5m]) == 0` for 3 m
+**Expr**: `increase(pali_block_height[5m]) == 0` for 3 m
 
 **Symptom**: All scraped nodes report no new blocks for the last 5
 minutes. Either the chain has lost quorum or every node is wedged
 locally.
 
-**Dashboards**: `coc-overview` → "Block Height" panel (look for the
-plateau); `coc-consensus` → "BFT Phase" panel (stuck on `propose` or
+**Dashboards**: `palimesh-overview` → "Block Height" panel (look for the
+plateau); `palimesh-consensus` → "BFT Phase" panel (stuck on `propose` or
 `prepare` is the giveaway).
 
 **Diagnosis**:
-1. Cross-check `coc_block_height` across all scraped nodes. If only one
+1. Cross-check `pali_block_height` across all scraped nodes. If only one
    is stuck and others are advancing, it's a single-node sync issue —
    demote the alert to the affected node.
 2. If all are stuck at the same height, query
-   `coc_validators_active` — if < 4, BFT cannot reach quorum.
-3. Curl `/coc_getBftStatus` on a validator: phase + round timer.
+   `pali_validators_active` — if < 4, BFT cannot reach quorum.
+3. Curl `/pali_getBftStatus` on a validator: phase + round timer.
    `phase=propose` + round age > 60 s = dead proposer slot.
 
 **First response**:
@@ -123,7 +123,7 @@ plateau); `coc-consensus` → "BFT Phase" panel (stuck on `propose` or
 - **All nodes stuck, < 4 active**: BFT below quorum. Restore at least
   one validator (per `NodeDown` flow). Do not attempt a hard fork.
 - **One node stuck while others advance**: that node is locally
-  wedged. Restart it with `systemctl restart coc-node@<unit>` and let
+  wedged. Restart it with `systemctl restart palimesh-node@<unit>` and let
   snap-sync catch up.
 
 **Escalation**: if quorum cannot be restored within 30 m, follow
@@ -133,17 +133,17 @@ plateau); `coc-consensus` → "BFT Phase" panel (stuck on `propose` or
 
 ### `ConsensusStateDegraded` — warning
 
-**Expr**: `coc_consensus_state != 0` for 5 m
+**Expr**: `pali_consensus_state != 0` for 5 m
 
 **Symptom**: A node has been reporting a non-healthy consensus state
 (1 = degraded, 2 = recovering) for 5+ minutes. Often a side effect of a
 partial network partition or transient peer churn.
 
-**Dashboards**: `coc-consensus` → "Consensus State Per Node" timeline.
+**Dashboards**: `palimesh-consensus` → "Consensus State Per Node" timeline.
 
 **Diagnosis**:
 1. Compare across nodes — single-node degraded vs network-wide.
-2. Check `coc_peers_connected` on the affected node. State `1` with low
+2. Check `pali_peers_connected` on the affected node. State `1` with low
    peer count = isolation.
 
 **First response**:
@@ -159,25 +159,25 @@ incident (RPC gateway, public faucet — see
 
 ---
 
-## Security group (`coc_security`)
+## Security group (`pali_security`)
 
 ### `HighAuthRejections` — warning
 
-**Expr**: `rate(coc_p2p_auth_rejected_total[5m]) > 10` for 3 m
+**Expr**: `rate(pali_p2p_auth_rejected_total[5m]) > 10` for 3 m
 
 **Symptom**: > 10 P2P auth rejections per second on a single node for
 3+ minutes. Possible Sybil flood, brute-force scan, or a misconfigured
 peer attempting reconnection storm.
 
-**Dashboards**: `coc-network` → "P2P Auth Rejections" panel.
+**Dashboards**: `palimesh-network` → "P2P Auth Rejections" panel.
 
 **Diagnosis**:
-1. Look at `coc_p2p_auth_rejected_reason_total{reason=…}` to break down
+1. Look at `pali_p2p_auth_rejected_reason_total{reason=…}` to break down
    reason: `bad_signature`, `unknown_signer`, `expired_nonce`,
    `roster_mismatch`. The last two during a deploy window mean a stale
    peer cache — benign.
 2. Identify the source IPs via the node's gossip log
-   (`journalctl -u coc-node@<unit> | grep auth.*rejected`).
+   (`journalctl -u palimesh-node@<unit> | grep auth.*rejected`).
 
 **First response**:
 - Most common cause: bootstrap peer dropped out of the validator
@@ -194,13 +194,13 @@ security-on-call.
 
 ### `DiscoveryIdentityFailures` — warning
 
-**Expr**: `increase(coc_discovery_identity_failures_total[10m]) > 50` for 5 m
+**Expr**: `increase(pali_discovery_identity_failures_total[10m]) > 50` for 5 m
 
 **Symptom**: 50+ peer-discovery identity verification failures in 10 m.
 Same root-cause family as `HighAuthRejections` but at the DNS-seed /
 DHT bootstrap layer.
 
-**Dashboards**: `coc-network` → "Discovery Identity Failures" panel.
+**Dashboards**: `palimesh-network` → "Discovery Identity Failures" panel.
 
 **Diagnosis**: same as `HighAuthRejections`. Verify the seed list is
 current (DNS TXT records) and the affected peers are still in the
@@ -213,13 +213,13 @@ update the DNS TXT records. Otherwise treat as `HighAuthRejections`.
 
 ### `DhtVerifyFailures` — warning
 
-**Expr**: `increase(coc_dht_verify_failures_total[10m]) > 20` for 5 m
+**Expr**: `increase(pali_dht_verify_failures_total[10m]) > 20` for 5 m
 
 **Symptom**: DHT iterative lookup is failing to verify peer signatures
 on FIND_NODE responses. Often a wire-protocol incompatibility after
 upgrade.
 
-**Dashboards**: `coc-network` → "DHT Stats" panel.
+**Dashboards**: `palimesh-network` → "DHT Stats" panel.
 
 **Diagnosis**: confirm all nodes are on the same release HEAD (per
 [`public-endpoints-88780.md`](./public-endpoints-88780.md) operations
@@ -234,26 +234,26 @@ simultaneously (per chaos T2/T8 ops SOP — staggered restart).
 
 ### `EquivocationDetected` — critical
 
-**Expr**: `increase(coc_bft_equivocations_total[5m]) > 0` for 0 m
+**Expr**: `increase(pali_bft_equivocations_total[5m]) > 0` for 0 m
 
 **Symptom**: A validator has been observed signing two conflicting
 messages for the same BFT height. Chain slashing should fire
 automatically via `EquivocationDetector` at
 `0xa5dcE830e917176c1091fd6112F41E47692C510e` (gen-5 proxy).
 
-**Dashboards**: `coc-consensus` → "Equivocations Total" stat.
+**Dashboards**: `palimesh-consensus` → "Equivocations Total" stat.
 
 **Diagnosis** (operator side — DO NOT debug the slashed validator
 key, treat it as compromised):
-1. Identify the offender via `coc_getEquivocations` RPC on any healthy
+1. Identify the offender via `pali_getEquivocations` RPC on any healthy
    node.
 2. Confirm the on-chain `EquivocationProven` event fired (Explorer
    `/address/0xa5dcE830…` events tab).
-3. Check `coc_validators_active` post-slash — if it dropped below 4
+3. Check `pali_validators_active` post-slash — if it dropped below 4
    (BFT quorum), follow `BlockProductionStalled` SOP in parallel.
 
 **First response**: if the equivocating validator is one of yours:
-- **Stop the node immediately** (`systemctl stop coc-node@<unit>`).
+- **Stop the node immediately** (`systemctl stop palimesh-node@<unit>`).
 - Follow [`operator-runbook.md` § 3 Slash response](./operator-runbook.md#3-slash-response).
 - Do NOT re-stake the slashed key; generate a fresh keypair.
 - File a post-mortem within 24 h.
@@ -265,49 +265,49 @@ on-call lead. This is the canary 30-day-clean-record gate (Gate 3 in
 
 ---
 
-## Performance group (`coc_performance`)
+## Performance group (`pali_performance`)
 
 ### `SlowBlockProduction` — warning
 
-**Expr**: `coc_block_time_seconds_bucket{le="6"} / coc_block_time_seconds_count < 0.95` for 10 m
+**Expr**: `pali_block_time_seconds_bucket{le="6"} / pali_block_time_seconds_count < 0.95` for 10 m
 
 **Symptom**: More than 5 % of blocks are taking > 6 s. Canary target is
 p99 < 10 s — this is the early-warning signal.
 
-**Dashboards**: `coc-overview` → "Block Time Histogram"; `coc-resources`
+**Dashboards**: `palimesh-overview` → "Block Time Histogram"; `palimesh-resources`
 → CPU / disk-IO panels.
 
 **Diagnosis**:
-1. Check `coc_resources` dashboard for CPU saturation or disk-IO
+1. Check `pali_resources` dashboard for CPU saturation or disk-IO
    pressure on validators.
-2. Check `coc-overview` mempool depth — large pending pool (> 200) can
+2. Check `palimesh-overview` mempool depth — large pending pool (> 200) can
    throttle block formation.
-3. Check `coc_validators_active` — if a validator is slow to respond,
+3. Check `pali_validators_active` — if a validator is slow to respond,
    dead-proposer slots inflate p99.
 
 **First response**:
 - CPU/disk saturation: scale the host or move to faster storage.
 - Mempool backlog → `HighMempoolBacklog` SOP.
 - Persistent dead-proposer slots: identify the slow validator (lowest
-  `coc_blocks_produced_total` rate) and restart it.
+  `pali_blocks_produced_total` rate) and restart it.
 
 ---
 
 ### `HighMempoolBacklog` — warning
 
-**Expr**: `coc_tx_pool_pending > 500` for 5 m
+**Expr**: `pali_tx_pool_pending > 500` for 5 m
 
 **Symptom**: A validator is holding > 500 pending transactions for 5+
 minutes. Mempool per-sender quota is 64 (per `coc-88780-2026-05-26-chaos-engineering-T1-T8.md`
 T6/T6b), so 500+ pending means active inbound demand.
 
-**Dashboards**: `coc-overview` → "Mempool Depth"; `coc-consensus` →
+**Dashboards**: `palimesh-overview` → "Mempool Depth"; `palimesh-consensus` →
 "Tx Per Block".
 
 **Diagnosis**:
 1. Compare across nodes — if all are at > 500 it's organic load; if
    only one, that node is slow to relay (possible peer issue).
-2. Check inbound RPC rate `coc_rpc_requests_total` — limit is 240
+2. Check inbound RPC rate `pali_rpc_requests_total` — limit is 240
    req/min/IP. If a single IP is dominating, possible misbehaving
    client.
 
@@ -321,14 +321,14 @@ T6/T6b), so 500+ pending means active inbound demand.
 
 ### `HighMemoryUsage` — warning
 
-**Expr**: `coc_process_memory_bytes > 2e9` for 10 m
+**Expr**: `pali_process_memory_bytes > 2e9` for 10 m
 
 **Symptom**: A node's process RSS exceeded 2 GB for 10+ minutes. Either
 slow leak (rare) or expected after long uptime + heavy snap-sync.
 
-**Dashboards**: `coc-resources` → "Process Memory" panel.
+**Dashboards**: `palimesh-resources` → "Process Memory" panel.
 
-**Diagnosis**: check uptime via `coc_node_uptime_seconds`. RSS > 2 GB
+**Diagnosis**: check uptime via `pali_node_uptime_seconds`. RSS > 2 GB
 after 30+ days of uptime is normal; after 24 h is a leak indicator.
 
 **First response**: rolling restart per
@@ -338,27 +338,27 @@ T2 SOP). For genuine leaks, capture a heap snapshot
 
 ---
 
-## Network group (`coc_network`)
+## Network group (`pali_network`)
 
 ### `LowPeerCount` — warning
 
-**Expr**: `coc_peers_connected < 2` for 5 m
+**Expr**: `pali_peers_connected < 2` for 5 m
 
 **Symptom**: A node has < 2 HTTP gossip peers. With 6 active validators
 + 0 observers, healthy is 5 connections per node.
 
-**Dashboards**: `coc-network` → "Peers Connected".
+**Dashboards**: `palimesh-network` → "Peers Connected".
 
 **Diagnosis**:
 1. `cat /var/lib/coc/node-<unit>/peers.json` — verify peer list is
    intact.
-2. Check `coc_p2p_auth_rejected_total` — if rejection rate is high,
+2. Check `pali_p2p_auth_rejected_total` — if rejection rate is high,
    peers are present but rejected (see `HighAuthRejections`).
 
 **First response**: reset peer cache + restart:
 ```bash
 mv /var/lib/coc/node-<unit>/peers.json /tmp/peers.bak
-systemctl restart coc-node@<unit>
+systemctl restart palimesh-node@<unit>
 ```
 Node will rediscover via DNS seeds + DHT. If still < 2 after 5 m,
 check outbound firewall.
@@ -367,19 +367,19 @@ check outbound firewall.
 
 ### `NoWireConnections` — warning
 
-**Expr**: `coc_wire_connections == 0 and coc_peers_connected > 0` for 5 m
+**Expr**: `pali_wire_connections == 0 and pali_peers_connected > 0` for 5 m
 
 **Symptom**: Wire (TCP) protocol has zero connections but HTTP gossip
 peers are available. Wire is the high-throughput transport for
 BFT messages — without it BFT runs on HTTP fallback and is slower.
 
-**Dashboards**: `coc-network` → "Wire Connections".
+**Dashboards**: `palimesh-network` → "Wire Connections".
 
 **Diagnosis**:
-1. Check `COC_ENABLE_WIRE_PROTOCOL=true` in the node's env.
+1. Check `PALI_ENABLE_WIRE_PROTOCOL=true` in the node's env.
 2. Confirm wire port (29790 / 29780 depending on host) is reachable
    from peers (`nc -zv <peer-ip> 29790`).
-3. Inspect `journalctl -u coc-node@<unit> -e | grep wire` for
+3. Inspect `journalctl -u palimesh-node@<unit> -e | grep wire` for
    handshake failures.
 
 **First response**: if config is right and ports are open, restart the
@@ -408,7 +408,7 @@ issue — likely a wire-protocol regression.
   PR; tracked alongside Gate 10 polish.
 - Per chaos memory (T1–T8 results), the validator-restart SOP is
   enforced via observer judgement, not by an automated alert. A
-  `ValidatorQuorumAtRisk` alert (`coc_validators_active < 5`) would
+  `ValidatorQuorumAtRisk` alert (`pali_validators_active < 5`) would
   preempt this — also tracked as a follow-up.
 
 # See also

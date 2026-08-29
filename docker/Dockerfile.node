@@ -1,4 +1,4 @@
-# COC Blockchain Node
+# Palimesh Blockchain Node
 # Multi-stage build for minimal production image
 
 FROM node:22-slim AS deps
@@ -31,8 +31,8 @@ COPY services ./services
 COPY runtime/lib ./runtime/lib
 COPY package.json ./
 
-ENV COC_DATA_DIR=/data/coc
-ENV COC_NODE_CONFIG=/data/coc/node-config.json
+ENV PALI_DATA_DIR=/data/coc
+ENV PALI_NODE_CONFIG=/data/coc/node-config.json
 
 RUN mkdir -p /data/coc && chown -R coc:coc /data/coc
 VOLUME /data/coc

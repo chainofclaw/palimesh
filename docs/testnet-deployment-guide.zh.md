@@ -1,11 +1,11 @@
-# COC 测试网部署文档
+# Palimesh 测试网部署文档
 
 ## 1. 测试网概览
 
 | 项目 | 值 |
 |------|-----|
 | Chain ID | 18780 (0x495c) |
-| 服务器 | 199.192.16.79 (server1.clawchain.io) |
+| 服务器 | 199.192.16.79 (server1.palimesh.io) |
 | 节点数 | 3 (BFT 验证者) |
 | 共识 | BFT-lite (2/3 权重签名) |
 | 出块时间 | ~3 秒 / 块 (~40 块/分钟) |
@@ -52,12 +52,12 @@ curl -X POST -H 'Content-Type: application/json' \
 
 # 查询链统计
 curl -X POST -H 'Content-Type: application/json' \
-  -d '{"jsonrpc":"2.0","method":"coc_chainStats","id":1}' \
+  -d '{"jsonrpc":"2.0","method":"pali_chainStats","id":1}' \
   http://199.192.16.79:28780/
 
 # 查询 BFT 状态
 curl -X POST -H 'Content-Type: application/json' \
-  -d '{"jsonrpc":"2.0","method":"coc_getBftStatus","id":1}' \
+  -d '{"jsonrpc":"2.0","method":"pali_getBftStatus","id":1}' \
   http://199.192.16.79:28780/
 ```
 
@@ -83,22 +83,22 @@ curl -X POST -H 'Content-Type: application/json' \
 
 ```
 docker-compose.testnet.yml
-├── coc-node-1   (验证者 #0)
-├── coc-node-2   (验证者 #1)
-├── coc-node-3   (验证者 #2)
-├── coc-explorer  (区块链浏览器, :3000)
-├── coc-faucet    (水龙头, :3003, 可选)
-├── coc-agent     (PoSe Agent, 可选, profile=pose)
-└── coc-relayer   (PoSe Relayer, 可选, profile=pose)
+├── palimesh-node-1   (验证者 #0)
+├── palimesh-node-2   (验证者 #1)
+├── palimesh-node-3   (验证者 #2)
+├── palimesh-explorer  (区块链浏览器, :3000)
+├── palimesh-faucet    (水龙头, :3003, 可选)
+├── palimesh-agent     (PoSe Agent, 可选, profile=pose)
+└── palimesh-relayer   (PoSe Relayer, 可选, profile=pose)
 ```
 
 ### 网络拓扑
 
 ```
-coc-p2p (internal bridge)
+palimesh-p2p (internal bridge)
   └── node-1 ↔ node-2 ↔ node-3
 
-coc-rpc (external bridge)
+palimesh-rpc (external bridge)
   ├── node-1, node-2, node-3 (RPC 对外)
   ├── explorer → node-1
   ├── faucet → node-1
@@ -108,7 +108,7 @@ coc-rpc (external bridge)
 ### 启动/停止
 
 ```bash
-cd COC
+cd Palimesh
 
 # 启动测试网 (3 节点 + explorer)
 docker compose -f docker/docker-compose.testnet.yml up -d
@@ -117,9 +117,9 @@ docker compose -f docker/docker-compose.testnet.yml up -d
 docker compose -f docker/docker-compose.testnet.yml down
 
 # 查看日志
-docker logs coc-node-1 --tail 50
-docker logs coc-node-2 --tail 50
-docker logs coc-node-3 --tail 50
+docker logs palimesh-node-1 --tail 50
+docker logs palimesh-node-2 --tail 50
+docker logs palimesh-node-3 --tail 50
 
 # 清除数据重建 (危险: 链数据会丢失)
 docker compose -f docker/docker-compose.testnet.yml down
@@ -145,21 +145,21 @@ docker compose -f docker/docker-compose.testnet.yml up -d
 | `eth_syncing` | 同步状态 |
 | `net_peerCount` | 已连接对等节点数 |
 
-### COC 扩展方法
+### Palimesh 扩展方法
 
 | 方法 | 说明 |
 |------|------|
-| `coc_chainStats` | 链统计 (区块数、TPS、验证者数) |
-| `coc_getBftStatus` | BFT 共识轮次状态 |
-| `coc_getEquivocations` | BFT 违规证据 |
+| `pali_chainStats` | 链统计 (区块数、TPS、验证者数) |
+| `pali_getBftStatus` | BFT 共识轮次状态 |
+| `pali_getEquivocations` | BFT 违规证据 |
 
 ---
 
-## 6. OpenClaw 插件 — coc-nodeops
+## 6. OpenClaw 插件 — palimesh-nodeops
 
 ### 安装
 
-coc-nodeops 作为 OpenClaw 扩展插件运行，提供 CLI 命令和 AI Agent 工具。
+palimesh-nodeops 作为 OpenClaw 扩展插件运行，提供 CLI 命令和 AI Agent 工具。
 
 **安装方式 1: 本地路径安装**
 
@@ -170,18 +170,18 @@ coc-nodeops 作为 OpenClaw 扩展插件运行，提供 CLI 命令和 AI Agent �
   "plugins": {
     "enabled": true,
     "entries": {
-      "coc-nodeops": {
+      "palimesh-nodeops": {
         "enabled": true,
         "config": {
-          "runtimeDir": "/path/to/COC/runtime"
+          "runtimeDir": "/path/to/Palimesh/runtime"
         }
       }
     },
     "installs": {
-      "coc-nodeops": {
+      "palimesh-nodeops": {
         "source": "path",
-        "sourcePath": "/path/to/COC/extensions/coc-nodeops",
-        "installPath": "~/.openclaw/extensions/coc-nodeops"
+        "sourcePath": "/path/to/Palimesh/extensions/palimesh-nodeops",
+        "installPath": "~/.openclaw/extensions/palimesh-nodeops"
       }
     }
   }
@@ -192,17 +192,17 @@ coc-nodeops 作为 OpenClaw 扩展插件运行，提供 CLI 命令和 AI Agent �
 
 ```bash
 rsync -av --exclude='node_modules' \
-  /path/to/COC/extensions/coc-nodeops/ \
-  ~/.openclaw/extensions/coc-nodeops/
+  /path/to/Palimesh/extensions/palimesh-nodeops/ \
+  ~/.openclaw/extensions/palimesh-nodeops/
 
-cd ~/.openclaw/extensions/coc-nodeops && npm install
+cd ~/.openclaw/extensions/palimesh-nodeops && npm install
 ```
 
 **安装方式 2: 手动拷贝**
 
 ```bash
-cp -r COC/extensions/coc-nodeops ~/.openclaw/extensions/
-cd ~/.openclaw/extensions/coc-nodeops && npm install
+cp -r Palimesh/extensions/palimesh-nodeops ~/.openclaw/extensions/
+cd ~/.openclaw/extensions/palimesh-nodeops && npm install
 ```
 
 ### 验证安装
@@ -210,58 +210,58 @@ cd ~/.openclaw/extensions/coc-nodeops && npm install
 ```bash
 # 在 OpenClaw 项目目录中
 pnpm openclaw plugins list 2>&1 | grep coc
-# 应显示: COC node ops extension loading...
-#         COC extension loaded (10 agent tools registered)
+# 应显示: Palimesh node ops extension loading...
+#         Palimesh extension loaded (10 agent tools registered)
 ```
 
 ### 10 个 Agent 工具
 
 | 工具 | 用途 | 关键参数 |
 |------|------|----------|
-| `coc-node-init` | 初始化新节点 | `type` (dev/validator/fullnode/archive/gateway), `network` (local/testnet/custom) |
-| `coc-node-list` | 列出所有节点 | 无 |
-| `coc-node-start` | 启动节点 | `name` (可选, 不填则启动全部) |
-| `coc-node-stop` | 停止节点 | `name` (可选) |
-| `coc-node-restart` | 重启节点 | `name` (可选) |
-| `coc-node-status` | 查询状态 | `name` (可选) — 返回 blockHeight/peerCount/bftActive |
-| `coc-node-remove` | 删除节点 | `name`, `keepData` (boolean) |
-| `coc-node-config` | 查看/修改配置 | `name`, `patch` (object, 可选) |
-| `coc-node-logs` | 查看日志 | `name`, `service` (node/agent/relayer), `lines` |
-| `coc-rpc-query` | RPC 链上查询 | `method`, `params`, `name` (可选) |
+| `palimesh-node-init` | 初始化新节点 | `type` (dev/validator/fullnode/archive/gateway), `network` (local/testnet/custom) |
+| `palimesh-node-list` | 列出所有节点 | 无 |
+| `palimesh-node-start` | 启动节点 | `name` (可选, 不填则启动全部) |
+| `palimesh-node-stop` | 停止节点 | `name` (可选) |
+| `palimesh-node-restart` | 重启节点 | `name` (可选) |
+| `palimesh-node-status` | 查询状态 | `name` (可选) — 返回 blockHeight/peerCount/bftActive |
+| `palimesh-node-remove` | 删除节点 | `name`, `keepData` (boolean) |
+| `palimesh-node-config` | 查看/修改配置 | `name`, `patch` (object, 可选) |
+| `palimesh-node-logs` | 查看日志 | `name`, `service` (node/agent/relayer), `lines` |
+| `palimesh-rpc-query` | RPC 链上查询 | `method`, `params`, `name` (可选) |
 
 ### RPC 查询白名单
 
-`coc-rpc-query` 工具仅允许以下只读方法:
+`palimesh-rpc-query` 工具仅允许以下只读方法:
 
 ```
 eth_blockNumber, eth_getBlockByNumber, eth_getBlockByHash,
-net_peerCount, coc_chainStats, coc_getBftStatus,
+net_peerCount, pali_chainStats, pali_getBftStatus,
 eth_getBalance, eth_syncing, eth_getTransactionByHash,
 eth_getTransactionReceipt
 ```
 
 ### Skill 使用
 
-当 OpenClaw AI Agent 需要管理 COC 节点时，会自动激活 `coc-nodeops` skill。
+当 OpenClaw AI Agent 需要管理 Palimesh 节点时，会自动激活 `palimesh-nodeops` skill。
 
 典型对话示例:
 
 ```
-用户: 帮我部署一个 COC 测试节点
-Agent: [调用 coc-node-init, type=dev, network=local]
-       [调用 coc-node-start]
-       [调用 coc-node-status]
+用户: 帮我部署一个 Palimesh 测试节点
+Agent: [调用 palimesh-node-init, type=dev, network=local]
+       [调用 palimesh-node-start]
+       [调用 palimesh-node-status]
        节点已启动，区块高度 5，RPC 端口 18780
 
 用户: 查看链的运行状态
-Agent: [调用 coc-rpc-query, method=coc_chainStats]
+Agent: [调用 palimesh-rpc-query, method=pali_chainStats]
        当前区块高度 120，每分钟 40 块，1 个验证者
 
 用户: 连接到远程测试网
-Agent: [调用 coc-node-init, type=fullnode, network=custom]
-       [调用 coc-node-config, patch={peers, validators, ...}]
-       [调用 coc-node-start]
-       [调用 coc-node-status]
+Agent: [调用 palimesh-node-init, type=fullnode, network=custom]
+       [调用 palimesh-node-config, patch={peers, validators, ...}]
+       [调用 palimesh-node-start]
+       [调用 palimesh-node-status]
        已同步到测试网高度 7092，连接 3 个节点
 ```
 
@@ -272,8 +272,8 @@ Agent: [调用 coc-node-init, type=fullnode, network=custom]
 ### 方式 A: Docker 单节点 (最简单)
 
 ```bash
-git clone https://github.com/NGPlateform/COC.git
-cd COC
+git clone https://github.com/NGPlateform/Palimesh.git
+cd Palimesh
 
 # 构建并启动单节点 + 浏览器
 docker compose -f docker/docker-compose.yml up -d
@@ -291,8 +291,8 @@ curl -X POST -H 'Content-Type: application/json' \
 **前提**: Node.js 22+
 
 ```bash
-git clone https://github.com/NGPlateform/COC.git
-cd COC && npm install
+git clone https://github.com/NGPlateform/Palimesh.git
+cd Palimesh && npm install
 
 # 直接运行 (自动生成密钥和创世区块)
 node --experimental-strip-types node/src/index.ts
@@ -302,7 +302,7 @@ node --experimental-strip-types node/src/index.ts
 
 ### 方式 C: 通过 OpenClaw 部署 (推荐)
 
-确保 coc-nodeops 插件已安装 (见第 6 节)。
+确保 palimesh-nodeops 插件已安装 (见第 6 节)。
 
 ```bash
 # 初始化本地开发节点
@@ -380,18 +380,18 @@ openclaw coc status testnet-obs
 
 ```bash
 curl -X POST -H 'Content-Type: application/json' \
-  -d '{"jsonrpc":"2.0","method":"coc_chainStats","id":1}' \
+  -d '{"jsonrpc":"2.0","method":"pali_chainStats","id":1}' \
   http://127.0.0.1:18790/
 ```
 
 ### 方式 E: Docker 加入测试网
 
 ```bash
-cd COC
+cd Palimesh
 
 # 创建观察者配置
-mkdir -p /tmp/coc-observer
-cat > /tmp/coc-observer/node-config.json << 'EOF'
+mkdir -p /tmp/palimesh-observer
+cat > /tmp/palimesh-observer/node-config.json << 'EOF'
 {
   "chainId": 18780,
   "validators": [
@@ -425,12 +425,12 @@ cat > /tmp/coc-observer/node-config.json << 'EOF'
 EOF
 
 # 运行 Docker 观察者
-docker run -d --name coc-observer \
+docker run -d --name palimesh-observer \
   -p 18790:18780 -p 18791:18781 \
-  -v /tmp/coc-observer:/data/coc \
-  -e COC_DATA_DIR=/data/coc \
-  -e COC_NODE_CONFIG=/data/coc/node-config.json \
-  ghcr.io/chainofclaw/coc-node:latest
+  -v /tmp/palimesh-observer:/data/coc \
+  -e PALI_DATA_DIR=/data/coc \
+  -e PALI_NODE_CONFIG=/data/coc/node-config.json \
+  ghcr.io/palimesh/palimesh-node:latest
 
 # 验证同步
 sleep 15
@@ -452,7 +452,7 @@ curl -X POST -H 'Content-Type: application/json' \
 | `hexToBytes: invalid hex characters` | nodeId 不是有效的 hex 地址 | 确保 nodeId 为从私钥派生的 Ethereum 地址 |
 | 节点卡在高度 1 不出块 | 创世区块 hash 不一致 | 确保所有节点使用相同的 validators 列表和 chainId |
 | SnapSync 反复失败 | peer 连接不稳定 | 检查防火墙, 确认 Wire 端口可达 |
-| `ENOENT: coc-node.ts` | 进程管理器脚本路径错误 | 升级 coc-nodeops 到 v0.2.0+ |
+| `ENOENT: palimesh-node.ts` | 进程管理器脚本路径错误 | 升级 palimesh-nodeops 到 v0.2.0+ |
 
 ### 诊断命令
 
@@ -468,7 +468,7 @@ curl -sf http://localhost:18780/ -X POST \
   -d '{"jsonrpc":"2.0","method":"net_peerCount","id":1}'
 
 # 查看容器日志
-docker logs coc-node-1 --tail 50 2>&1 | grep -E '"level":"(error|warn)"'
+docker logs palimesh-node-1 --tail 50 2>&1 | grep -E '"level":"(error|warn)"'
 
 # 通过 OpenClaw
 openclaw coc status

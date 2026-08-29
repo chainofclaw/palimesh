@@ -20,7 +20,7 @@ import { Contract, JsonRpcProvider, formatEther } from "ethers"
 import { readFileSync } from "node:fs"
 
 const RPC = process.env.RPC || "http://209.74.64.88:28780"
-const REGISTRIES = "/passinger/projects/ClawdBot/COC/contracts/deployed-registries-newchain.json"
+const REGISTRIES = "/passinger/projects/ClawdBot/Palimesh/contracts/deployed-registries-newchain.json"
 
 const FACTION_ABI = [
   "function owner() view returns (address)",

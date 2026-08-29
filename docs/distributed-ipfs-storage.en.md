@@ -1,8 +1,8 @@
-# COC Distributed IPFS Storage Architecture
+# Palimesh Distributed IPFS Storage Architecture
 
 ## Overview
 
-COC is a multi-node EVM-compatible blockchain that integrates an IPFS-compatible distributed storage layer. This document describes how files are distributed across multiple nodes, synchronized, and redundantly stored.
+Palimesh is a multi-node EVM-compatible blockchain that integrates an IPFS-compatible distributed storage layer. This document describes how files are distributed across multiple nodes, synchronized, and redundantly stored.
 
 **Key Features:**
 - ✅ Content-Addressed Block Storage
@@ -38,7 +38,7 @@ Application Layer (Client/Frontend)
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
-│                    COC Multi-Node Network                    │
+│                    Palimesh Multi-Node Network                    │
 ├─────────────────────────────────────────────────────────────┤
 │                                                              │
 │  ┌─────────────────┐  ┌─────────────────┐  ┌─────────────┐ │
@@ -307,7 +307,7 @@ If Node A fails:
 
 ### 4.1 Automatic Replication
 
-COC's block replication mechanism is **automatic and configuration-free**:
+Palimesh's block replication mechanism is **automatic and configuration-free**:
 
 ```typescript
 // When node starts
@@ -725,7 +725,7 @@ async function getBlockReplication(cid: string): Promise<{
 ### 12.2 Sync Progress
 
 ```
-coc_chainStats RPC:
+pali_chainStats RPC:
 
 {
   "chainId": 1984,
@@ -760,7 +760,7 @@ coc_chainStats RPC:
 
 **Key Conclusions:**
 
-1. ✅ COC automatically implements distributed block replication without configuration
+1. ✅ Palimesh automatically implements distributed block replication without configuration
 2. ✅ Redundancy grows with node count (3 nodes: 3x, 10+ nodes: 5-7x)
 3. ✅ Multi-protocol support (HTTP + TCP) ensures propagation reliability
 4. ✅ Failure recovery based on CID content addressing
@@ -771,7 +771,7 @@ coc_chainStats RPC:
 ## Appendix A: File Directory Structure
 
 ```
-/tmp/coc-single-node/storage/
+/tmp/palimesh-single-node/storage/
 ├── blocks/                      # Content-addressed block storage
 │   ├── bafybeih5c...vp3y        # Metadata block (51B)
 │   ├── bafybeig2...olqqe        # Data block (8024B)

@@ -9,8 +9,8 @@
 
 import { describe, it } from "node:test"
 import assert from "node:assert/strict"
-import { IpfsRepairLoop } from "./coc-ipfs-repair.ts"
-import type { PushToKResult } from "./coc-ipfs-wiring.ts"
+import { IpfsRepairLoop } from "./palimesh-ipfs-repair.ts"
+import type { PushToKResult } from "./palimesh-ipfs-wiring.ts"
 import type { CidString } from "./ipfs-types.ts"
 
 type ProviderMap = Map<string, string[]>

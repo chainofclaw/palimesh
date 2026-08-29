@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// COC active chain probe.
+// Palimesh active chain probe.
 //
 // Drives a small, deterministic load against the testnet to verify it is
 // not just "responding to RPC" but actually accepting txs, mining blocks,
@@ -18,7 +18,7 @@
 // can alert).
 //
 // Env knobs:
-//   PROBE_RPC               default https://clawchain.io/api/testnet/rpc
+//   PROBE_RPC               default https://palimesh.io/api/testnet/rpc
 //   PROBE_CHAIN_ID          default 88780
 //   PROBE_PK                required for public RPCs; localhost/devnet uses Hardhat #5
 //   PROBE_TX_TIMEOUT_MS     default 30000 (per-tx wait)
@@ -29,7 +29,7 @@ import { writeFileSync } from 'node:fs'
 import { HARDHAT_DEV_PRIVATE_KEYS, resolvePrivateKeyForRpc } from '../lib/key-safety.mjs'
 
 const cfg = {
-  rpc: process.env.PROBE_RPC || 'https://clawchain.io/api/testnet/rpc',
+  rpc: process.env.PROBE_RPC || 'https://palimesh.io/api/testnet/rpc',
   chainId: Number(process.env.PROBE_CHAIN_ID || '88780'),
   txTimeoutMs: Number(process.env.PROBE_TX_TIMEOUT_MS || '30000'),
   reportJson: process.env.PROBE_REPORT_JSON || null,
@@ -51,8 +51,8 @@ const COUNTER_BYTECODE = '0x6000600055600a6011600039600a6000f3600054600101600055
 // (5s default is too tight when first connection has to warm a TLS/hairpin path).
 const provider = new ethers.JsonRpcProvider(
   cfg.rpc,
-  { chainId: cfg.chainId, name: 'ChainOfClaw' },
-  { staticNetwork: ethers.Network.from({ chainId: cfg.chainId, name: 'ChainOfClaw' }) },
+  { chainId: cfg.chainId, name: 'Palimesh' },
+  { staticNetwork: ethers.Network.from({ chainId: cfg.chainId, name: 'Palimesh' }) },
 )
 const wallet = new ethers.Wallet(cfg.probePk, provider)
 
@@ -67,8 +67,8 @@ function withTimeout(p, ms, label) {
 async function probeBalance() {
   const wei = await provider.getBalance(wallet.address)
   const coc = Number(wei) / 1e18
-  if (coc < 1) throw new Error(`probe wallet ${wallet.address} balance ${coc.toFixed(4)} COC < 1 — fund needed`)
-  return `${wallet.address} ${coc.toFixed(2)} COC`
+  if (coc < 1) throw new Error(`probe wallet ${wallet.address} balance ${coc.toFixed(4)} Palimesh < 1 — fund needed`)
+  return `${wallet.address} ${coc.toFixed(2)} Palimesh`
 }
 
 async function probeValueTransfer() {

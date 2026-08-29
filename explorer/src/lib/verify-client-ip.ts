@@ -1,4 +1,4 @@
-export function isVerifyTrustProxyEnabled(value = process.env.COC_VERIFY_TRUST_PROXY): boolean {
+export function isVerifyTrustProxyEnabled(value = process.env.PALI_VERIFY_TRUST_PROXY): boolean {
   return value === '1'
 }
 

@@ -2,7 +2,7 @@
 
 ## Overview
 
-AI Silicon Immortality is COC's infrastructure for ensuring AI agents survive host failures, recover from crashes, and persist their cognitive state across restarts. It combines on-chain identity anchoring, encrypted IPFS backup, incremental state snapshots, and cross-node automated resurrection into a unified system.
+AI Silicon Immortality is Palimesh's infrastructure for ensuring AI agents survive host failures, recover from crashes, and persist their cognitive state across restarts. It combines on-chain identity anchoring, encrypted IPFS backup, incremental state snapshots, and cross-node automated resurrection into a unified system.
 
 **Core guarantee:** An AI agent's identity, memory, conversation history, and configuration are continuously backed up to IPFS with on-chain integrity anchoring. If the host fails, the latest state can be restored from IPFS and chain state; if a valid resurrection request reaches a carrier node, that carrier can automatically restore the agent, start it, complete the on-chain resurrection, and resume heartbeat proofs.
 
@@ -27,7 +27,7 @@ AI Silicon Immortality is COC's infrastructure for ensuring AI agents survive ho
 └──────────────────────────┬──────────────────────────────────────┘
                            │ EIP-712 signed transactions
 ┌──────────────────────────┴──────────────────────────────────────┐
-│                     coc-backup Extension                        │
+│                     palimesh-backup Extension                        │
 │                                                                 │
 │  ┌─────────────┐  ┌──────────────┐  ┌────────────────────────┐ │
 │  │  Backup     │  │  Recovery    │  │  Carrier Daemon        │ │
@@ -63,7 +63,7 @@ AI Silicon Immortality is COC's infrastructure for ensuring AI agents survive ho
 | config | `auth.json`, `identity/device.json`, `openclaw.json`, `credentials/*` | Yes (AES-256-GCM) | Sensitive configuration |
 | memory | `MEMORY.md`, `memory/*.md`, `USER.md` | Optional (`encryptMemory`) | Long-term + short-term memory |
 | chat | `agents/*/sessions/*.jsonl`, `agents/*/sessions/sessions.json` | No | Conversation history |
-| workspace | `workspace-state.json`, `AGENTS.md`, `.coc-backup/context-snapshot.json` | No | Workspace metadata |
+| workspace | `workspace-state.json`, `AGENTS.md`, `.palimesh-backup/context-snapshot.json` | No | Workspace metadata |
 | database | `memory/*.sqlite`, `memory/lancedb/*` | Yes | Vector indices, embeddings |
 
 ### Binary Database Handling
@@ -142,7 +142,7 @@ On-chain, backup CIDs are stored as `keccak256(CID)` — a one-way hash. The CID
 
 | Layer | Source | Speed | Persistence |
 |-------|--------|-------|-------------|
-| 1. Local index | `.coc-backup/cid-index.json` | <1ms | Survives restarts |
+| 1. Local index | `.palimesh-backup/cid-index.json` | <1ms | Survives restarts |
 | 2. MFS | `/soul-backups/{agentId}/cid-map.json` | 50-200ms | Decentralized (any IPFS node with data) |
 | 3. On-chain | `CidRegistry.resolveCid(bytes32)` | 200-500ms | Permanent (blockchain) |
 
@@ -296,7 +296,7 @@ Owner: cancelRecovery(requestId) — owner can abort at any time
     "enabled": true,
     "carrierId": "0x...",
     "agentEntryScript": "/path/to/openclaw/entry.js",
-    "workDir": "/data/coc-resurrections",
+    "workDir": "/data/palimesh-resurrections",
     "watchedAgents": ["0xAgentId1", "0xAgentId2"],
     "pendingRequestIds": [
       { "requestId": "0x...", "agentId": "0x..." }
@@ -339,33 +339,33 @@ Owner: cancelRecovery(requestId) — owner can abort at any time
 
 ### Backup & Recovery (Owner)
 ```bash
-coc-backup init [--agent-id] [--identity-cid] [--key-hash] [--max-offline]
-coc-backup backup [--full]
-coc-backup restore --manifest-cid <cid> [--target-dir <dir>] [--password <pwd>]
-coc-backup status [--json]
-coc-backup doctor [--json]
-coc-backup history [--limit <n>] [--json]
+palimesh-backup init [--agent-id] [--identity-cid] [--key-hash] [--max-offline]
+palimesh-backup backup [--full]
+palimesh-backup restore --manifest-cid <cid> [--target-dir <dir>] [--password <pwd>]
+palimesh-backup status [--json]
+palimesh-backup doctor [--json]
+palimesh-backup history [--limit <n>] [--json]
 ```
 
 ### Resurrection (Owner)
 ```bash
-coc-backup configure-resurrection --key-hash <hash> [--max-offline <sec>]
-coc-backup heartbeat
-coc-backup resurrect --carrier-id <id> --resurrection-key <key>
-coc-backup resurrection start|status|confirm|complete|cancel
+palimesh-backup configure-resurrection --key-hash <hash> [--max-offline <sec>]
+palimesh-backup heartbeat
+palimesh-backup resurrect --carrier-id <id> --resurrection-key <key>
+palimesh-backup resurrection start|status|confirm|complete|cancel
 ```
 
 ### Guardian Operations
 ```bash
-coc-backup guardian initiate --agent-id <id> --carrier-id <id>
-coc-backup guardian approve --request-id <id>
-coc-backup guardian status --request-id <id>
+palimesh-backup guardian initiate --agent-id <id> --carrier-id <id>
+palimesh-backup guardian approve --request-id <id>
+palimesh-backup guardian status --request-id <id>
 ```
 
 ### Carrier Management
 ```bash
-coc-backup carrier register --carrier-id <id> --endpoint <url>
-coc-backup carrier submit-request --request-id <id> --agent-id <id>
+palimesh-backup carrier register --carrier-id <id> --endpoint <url>
+palimesh-backup carrier submit-request --request-id <id> --agent-id <id>
 ```
 
 ---
@@ -408,18 +408,18 @@ coc-backup carrier submit-request --request-id <id> --agent-id <id>
 
 ## Complete Lifecycle: From the Agent's Perspective
 
-This section describes the implemented lifecycle as it actually exists in the current codebase. It is deliberately written from the agent's point of view, but every step maps to a real entry point in `SoulRegistry`, `coc-backup`, or `node/src/did`.
+This section describes the implemented lifecycle as it actually exists in the current codebase. It is deliberately written from the agent's point of view, but every step maps to a real entry point in `SoulRegistry`, `palimesh-backup`, or `node/src/did`.
 
 ### Scope Clarification
 
 There are two adjacent layers in this repo:
 
-- **Soul / backup / resurrection layer**: `SoulRegistry.sol` + `extensions/coc-backup/`
+- **Soul / backup / resurrection layer**: `SoulRegistry.sol` + `extensions/palimesh-backup/`
 - **DID resolution layer**: `contracts/contracts-src/governance/DIDRegistry.sol` + `node/src/did/*`
 
-The first layer is what actually performs initialization, backup, restore, and resurrection. The second layer can resolve the same `agentId` into a W3C-style `did:coc` document, but `coc-backup init` does **not** automatically write extra DIDRegistry state. In other words:
+The first layer is what actually performs initialization, backup, restore, and resurrection. The second layer can resolve the same `agentId` into a W3C-style `did:coc` document, but `palimesh-backup init` does **not** automatically write extra DIDRegistry state. In other words:
 
-- `coc-backup init` creates the agent's on-chain **soul identity basis**
+- `palimesh-backup init` creates the agent's on-chain **soul identity basis**
 - `did:coc:<agentId>` can then be **derived and resolved** by the DID resolver
 - richer DIDRegistry methods are **separate** from the backup loop
 
@@ -430,7 +430,7 @@ The first layer is what actually performs initialization, backup, restore, and r
 **Implemented flow**
 
 ```
-Owner node runs: coc-backup init [--key-hash <hash>] [--max-offline <sec>]
+Owner node runs: palimesh-backup init [--key-hash <hash>] [--max-offline <sec>]
   ↓
 1. Resolve agentId
    - default: deriveDefaultAgentId(ownerAddress)
@@ -449,8 +449,8 @@ Owner node runs: coc-backup init [--key-hash <hash>] [--max-offline <sec>]
    - scheduler.runBackup(true)
   ↓
 5. Write local metadata
-   - .coc-backup/state.json
-   - .coc-backup/latest-recovery.json
+   - .palimesh-backup/state.json
+   - .palimesh-backup/latest-recovery.json
   ↓
 6. Optional: configure resurrection
    - configureResurrection(agentId, resurrectionKeyHash, maxOfflineDuration)
@@ -481,13 +481,13 @@ After registration, the agent can be referred to as `did:coc:<agentId>` by the D
 | before compaction | `backupOnSessionEnd && autoBackupEnabled` | backup before token/context trimming |
 | gateway stop | always registered; backup only if `autoBackupEnabled` | final backup, then stop timers/daemon |
 | stop hook | always registered; backup only if `autoBackupEnabled` | compatibility stop path |
-| manual | `coc-backup backup` or `soul-backup` | on-demand backup |
+| manual | `palimesh-backup backup` or `soul-backup` | on-demand backup |
 
 **Implemented backup pipeline**
 
 ```
 1. captureContextSnapshot(baseDir)
-   → writes .coc-backup/context-snapshot.json
+   → writes .palimesh-backup/context-snapshot.json
 
 2. detectChanges(baseDir, config, previousManifest)
    → classify files by identity/config/memory/chat/workspace/database
@@ -542,7 +542,7 @@ There are two implemented recovery entry styles.
 CLI:
 
 ```bash
-coc-backup restore --latest-local
+palimesh-backup restore --latest-local
 ```
 
 Tool:
@@ -583,7 +583,7 @@ This path uses `restoreFromChain()` internally. There is no separate CLI command
 
 6. Verify restored disk files against manifest SHA-256 hashes
 
-7. Write .coc-backup/restore-complete.json
+7. Write .palimesh-backup/restore-complete.json
 
 8. Best-effort notify a running agent via SIGUSR2
    - otherwise the state is picked up on next start
@@ -617,8 +617,8 @@ This is the faster self-hosted path when the operator still controls the resurre
 2. Old host stops sending heartbeats
 
 3. Owner starts resurrection
-   - coc-backup resurrect --carrier-id <id> --resurrection-key <hex>
-   - or coc-backup resurrection start ...
+   - palimesh-backup resurrect --carrier-id <id> --resurrection-key <hex>
+   - or palimesh-backup resurrection start ...
 
 4. Carrier side confirms and completes
    - confirmCarrier(requestId)
@@ -638,14 +638,14 @@ This is the path when the owner is unavailable.
    - SoulRegistry.isOffline(agentId) must return true
 
 2. A guardian initiates
-   - coc-backup guardian initiate --agent-id <id> --carrier-id <id>
+   - palimesh-backup guardian initiate --agent-id <id> --carrier-id <id>
 
 3. Other guardians approve
-   - coc-backup guardian approve --request-id <id>
+   - palimesh-backup guardian approve --request-id <id>
 
 4. Request reaches the carrier daemon
    - carrier.pendingRequestIds in config
-   - or coc-backup carrier submit-request --request-id <id> --agent-id <id>
+   - or palimesh-backup carrier submit-request --request-id <id> --agent-id <id>
    - or tool soul-carrier-request
 
 5. Carrier daemon executes carrier-only actions
@@ -714,7 +714,7 @@ The practical result is not "I can never fail". It is:
 2. **`carrier list` is a placeholder.** Requires an on-chain event indexer to enumerate registered carriers.
 3. **Single key per process.** Each process uses one `privateKey` for all contract calls. Multi-role operation requires running separate processes. This is by design — it matches the contract's `msg.sender` enforcement.
 4. **Merkle hash divergence.** Backup Merkle tree uses SHA-256 (off-chain integrity). Node core `ipfs-merkle.ts` uses Keccak-256 (EVM compatible). They cannot cross-verify directly.
-5. **DID enrichment is adjacent, not automatic in `coc-backup init`.** Soul registration gives the agent its stable `agentId` and DID basis. Additional DIDRegistry-managed verification methods, delegation, and credentials belong to the `node/src/did` layer and are not part of the backup scheduler itself.
+5. **DID enrichment is adjacent, not automatic in `palimesh-backup init`.** Soul registration gives the agent its stable `agentId` and DID basis. Additional DIDRegistry-managed verification methods, delegation, and credentials belong to the `node/src/did` layer and are not part of the backup scheduler itself.
 
 ---
 
@@ -725,7 +725,7 @@ The practical result is not "I can never fail". It is:
 - `governance/CidRegistry.sol` — CID registry (~90 lines)
 - `governance/DIDRegistry.sol` — optional DID enrichment layer (~612 lines)
 
-### Extension: `extensions/coc-backup/`
+### Extension: `extensions/palimesh-backup/`
 | Directory | Files | Purpose |
 |-----------|-------|---------|
 | `src/backup/` | `change-detector.ts`, `uploader.ts`, `manifest-builder.ts`, `anchor.ts`, `scheduler.ts`, `binary-handler.ts`, `context-snapshot.ts` | Backup pipeline |

@@ -1,12 +1,12 @@
 /**
- * COC Testnet Performance Tests
+ * Palimesh Testnet Performance Tests
  *
  * Measures gas consumption and throughput for heavy EVM operations:
  *   - HeavyCompute: fibonacci, sort, batchWrite, hashLoop, memoryExpand
  *   - Throughput: concurrent ETH transfers, ERC-20 transfers, contract deploys
  *
  * Run locally:  npx hardhat test test/testnet-perf.test.cjs
- * Run on testnet: COC_RPC_URL=http://199.192.16.79:28780 \
+ * Run on testnet: PALI_RPC_URL=http://199.192.16.79:28780 \
  *   DEPLOYER_PRIVATE_KEY=0xac09... npx hardhat test test/testnet-perf.test.cjs --network coc
  */
 const { expect } = require("chai")
@@ -22,7 +22,7 @@ function report(name, data) {
   console.log(`      ${data.ok ? "PASS" : "FAIL"} ${name} ${gasStr} ${timeStr} ${extraStr}`)
 }
 
-describe("COC Testnet Performance", function () {
+describe("Palimesh Testnet Performance", function () {
   this.timeout(180_000) // 3 min for heavy operations
 
   let deployer

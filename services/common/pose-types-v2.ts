@@ -90,7 +90,7 @@ export interface WitnessAttestation {
   /**
    * Optional v3 typehash signature (#746). Adds `resultCode` on top of v2
    * so the witness signature cryptographically pins the Layer-7 verifier
-   * result the witness independently computed. Witnesses on coc-node
+   * result the witness independently computed. Witnesses on palimesh-node
    * v0.4+ produce all three versions during rollout; aggregator prefers
    * v3 when present.
    */

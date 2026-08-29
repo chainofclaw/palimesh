@@ -6,11 +6,11 @@
 
 ## Why this runbook
 
-The 88780 testnet's chain layer was upgraded in Stage A (2026-05-26, multisig tx 8/9). Contract-side fixes from PRs #745/#751/#752/#754 are live, but the **PoSe v2 pipeline does not yet run in production** — the 6 production nodes only execute `node/src/index.ts` (the BFT chain engine), not `runtime/coc-node.ts` (the PoSe witness HTTP server) and not `runtime/coc-agent.ts` (the challenger/aggregator). `getActiveNodeCount()` was 0 until this runbook's dry-run.
+The 88780 testnet's chain layer was upgraded in Stage A (2026-05-26, multisig tx 8/9). Contract-side fixes from PRs #745/#751/#752/#754 are live, but the **PoSe v2 pipeline does not yet run in production** — the 6 production nodes only execute `node/src/index.ts` (the BFT chain engine), not `runtime/palimesh-node.ts` (the PoSe witness HTTP server) and not `runtime/palimesh-agent.ts` (the challenger/aggregator). `getActiveNodeCount()` was 0 until this runbook's dry-run.
 
 Stage B0 brings the PoSe v2 pipeline online. It is a prerequisite for:
 
-- Stage B (node strict mode: `COC_POSE_WITNESS_REQUIRE_VERIFIED=true` etc.) — strict mode has no effect until a witness server is actually running.
+- Stage B (node strict mode: `PALI_POSE_WITNESS_REQUIRE_VERIFIED=true` etc.) — strict mode has no effect until a witness server is actually running.
 - Stage F (v1 typehash sunset via `setV1SunsetEpoch`) — sunset is meaningless without v2 traffic.
 - G3 / G11 launch gates.
 
@@ -18,8 +18,8 @@ Stage B0 brings the PoSe v2 pipeline online. It is a prerequisite for:
 
 ```
 ┌─────────────────────────┐    HTTP push    ┌──────────────────────────────┐
-│ coc-agent.service       │  POST /pose/    │ coc-pose-witness.service     │
-│ (challenger+aggregator) │ ──challenge───► │ (runtime/coc-node.ts, :18780)│
+│ palimesh-agent.service       │  POST /pose/    │ palimesh-pose-witness.service     │
+│ (challenger+aggregator) │ ──challenge───► │ (runtime/palimesh-node.ts, :18780)│
 │                         │  POST /pose/    │                              │
 │ - 60s tick              │ ──receipt─────► │ - signs receipts (RECEIPT)   │
 │ - auto-registers self   │  POST /pose/    │ - verifies pushed receipts   │
@@ -29,7 +29,7 @@ Stage B0 brings the PoSe v2 pipeline online. It is a prerequisite for:
          │ disk (pending-v2.jsonl) + chain (submitBatchV2WithMetadata events)
          ▼
 ┌─────────────────────────┐    eth_call/sendRawTransaction    
-│ coc-relayer.service     │ ─────────────────►  PoSeManagerV2 proxy 0x256eb949…
+│ palimesh-relayer.service     │ ─────────────────►  PoSeManagerV2 proxy 0x256eb949…
 │ (epoch finalizer)       │  finalizeEpochV2 / processEpochBatches
 │ - 60s tick              │  any EOA may finalize (idempotent on-chain)
 └─────────────────────────┘
@@ -52,9 +52,9 @@ Single-node is intentionally batch-flush-incapable: the on-chain quorum is `⌈2
 
 ## Key gotchas (record before they bite the next operator)
 
-### Gotcha 1: the repo's `docker/systemd/coc-agent.service` silently exits the agent under sandbox
+### Gotcha 1: the repo's `docker/systemd/palimesh-agent.service` silently exits the agent under sandbox
 
-`docker/systemd/coc-agent.service` ships with:
+`docker/systemd/palimesh-agent.service` ships with:
 
 ```ini
 NoNewPrivileges=true
@@ -70,13 +70,13 @@ Diagnosis: run the agent foreground with the exact same env, and it completes ti
 
 Fix in this runbook: use the **minimal-unit** template below (no sandbox directives). Long-term fix: bisect which directive (`ProtectSystem=strict` is the prime suspect — agent likely writes outside `ReadWritePaths`, possibly `~/.clawdbot/coc/`) and re-enable the rest. Tracked as a separate hardening task.
 
-### Gotcha 2: `COC_DATA_DIR` env from the unit clashes with custom dataDir
+### Gotcha 2: `PALI_DATA_DIR` env from the unit clashes with custom dataDir
 
-`docker/systemd/coc-agent.service` sets `Environment=COC_DATA_DIR=/var/lib/coc/runtime` and `Environment=COC_CONFIG=/etc/coc/runtime-agent.json`. The agent's `loadConfig` then `mkdir`s the dataDir, which fails (EACCES) if your operator created a different path (`/var/lib/coc/pose`). systemd's `EnvironmentFile=` overrides `Environment=`, so set `COC_DATA_DIR` and `COC_CONFIG` in `/etc/coc/coc-agent.env` to win. This runbook does so.
+`docker/systemd/palimesh-agent.service` sets `Environment=PALI_DATA_DIR=/var/lib/coc/runtime` and `Environment=PALI_CONFIG=/etc/palimesh/runtime-agent.json`. The agent's `loadConfig` then `mkdir`s the dataDir, which fails (EACCES) if your operator created a different path (`/var/lib/coc/pose`). systemd's `EnvironmentFile=` overrides `Environment=`, so set `PALI_DATA_DIR` and `PALI_CONFIG` in `/etc/palimesh/palimesh-agent.env` to win. This runbook does so.
 
-### Gotcha 3: there is no systemd unit for `runtime/coc-node.ts` in the repo
+### Gotcha 3: there is no systemd unit for `runtime/palimesh-node.ts` in the repo
 
-`docker/systemd/coc-node.service` and `coc-node@.service` both launch `node/src/index.ts` (the chain engine), not `runtime/coc-node.ts` (the witness server). Operators must hand-write a new unit (template below) named e.g. `coc-pose-witness.service`. Otherwise the agent has nothing to push challenges to.
+`docker/systemd/palimesh-node.service` and `palimesh-node@.service` both launch `node/src/index.ts` (the chain engine), not `runtime/palimesh-node.ts` (the witness server). Operators must hand-write a new unit (template below) named e.g. `palimesh-pose-witness.service`. Otherwise the agent has nothing to push challenges to.
 
 ### Gotcha 4: anchor-1/anchor-2/burst-1 keys in `~/.coc/keys/` carry 0 ETH
 
@@ -90,7 +90,7 @@ The dry-run pattern repeats for v1/v2/v3/v4/v5. Each per-node cost: **0.1 ETH bo
 
 1. **Operator key**. Pick one of:
    - Reuse an existing key (e.g. anchor-2 for v1, burst-1 for v2, fresh-generate for v3/v4/v5).
-   - **DO NOT reuse** the chain engine signing key (`COC_NODE_KEY` from `/etc/coc/node-N.env`). PoSe operator and BFT proposer must be different identities for incident triage.
+   - **DO NOT reuse** the chain engine signing key (`PALI_NODE_KEY` from `/etc/palimesh/node-N.env`). PoSe operator and BFT proposer must be different identities for incident triage.
 2. **Funding**. Fund the operator EOA with ≥0.5 ETH from the deployer (`0xB4E943F5…`):
    ```bash
    node -e "
@@ -106,20 +106,20 @@ The dry-run pattern repeats for v1/v2/v3/v4/v5. Each per-node cost: **0.1 ETH bo
 
 ### Files to install per node
 
-**`/etc/systemd/system/coc-pose-witness.service`** (new — repo does not ship this):
+**`/etc/systemd/system/palimesh-pose-witness.service`** (new — repo does not ship this):
 
 ```ini
 [Unit]
-Description=COC PoSe v2 witness HTTP server (88780)
-After=network.target coc-node@1.service
-Requires=coc-node@1.service
+Description=Palimesh PoSe v2 witness HTTP server (88780)
+After=network.target palimesh-node@1.service
+Requires=palimesh-node@1.service
 
 [Service]
 Type=simple
 User=coc
 WorkingDirectory=/opt/coc
-ExecStart=/usr/bin/node --experimental-strip-types runtime/coc-node.ts
-EnvironmentFile=/etc/coc/coc-pose-witness.env
+ExecStart=/usr/bin/node --experimental-strip-types runtime/palimesh-node.ts
+EnvironmentFile=/etc/palimesh/palimesh-pose-witness.env
 Restart=on-failure
 RestartSec=10
 StandardOutput=journal
@@ -129,20 +129,20 @@ StandardError=journal
 WantedBy=multi-user.target
 ```
 
-**`/etc/systemd/system/coc-agent.service`** (override the repo's sandboxed version):
+**`/etc/systemd/system/palimesh-agent.service`** (override the repo's sandboxed version):
 
 ```ini
 [Unit]
-Description=COC PoSe v2 runtime agent (88780)
-After=network.target coc-pose-witness.service
-Requires=coc-pose-witness.service
+Description=Palimesh PoSe v2 runtime agent (88780)
+After=network.target palimesh-pose-witness.service
+Requires=palimesh-pose-witness.service
 
 [Service]
 Type=simple
 User=coc
 WorkingDirectory=/opt/coc
-ExecStart=/usr/bin/node --experimental-strip-types runtime/coc-agent.ts
-EnvironmentFile=/etc/coc/coc-agent.env
+ExecStart=/usr/bin/node --experimental-strip-types runtime/palimesh-agent.ts
+EnvironmentFile=/etc/palimesh/palimesh-agent.env
 Restart=on-failure
 RestartSec=10
 StandardOutput=journal
@@ -152,35 +152,35 @@ StandardError=journal
 WantedBy=multi-user.target
 ```
 
-**`/etc/coc/coc-pose-witness.env`** (`chmod 600`, `chown coc:coc`):
+**`/etc/palimesh/palimesh-pose-witness.env`** (`chmod 600`, `chown coc:coc`):
 
 ```bash
-COC_NODE_BIND=127.0.0.1
-COC_NODE_PORT=18780
-COC_CONFIG=/etc/coc/runtime-pose.json
-COC_POSE_WITNESS_AUTH_TOKEN=<32-byte hex; same value across nodes if peers will share it>
-COC_POSE_WITNESS_REQUIRE_VERIFIED=false   # flip to true after all agents push v2 fields
-COC_POSE_REQUIRE_VERIFIED_CHALLENGE=false # flip to true after all challengers ship v2
-COC_RPC_URL=http://127.0.0.1:28780        # local chain engine RPC; v1 uses 38780
-COC_NODE_KEY=<operator private key hex>
+PALI_NODE_BIND=127.0.0.1
+PALI_NODE_PORT=18780
+PALI_CONFIG=/etc/palimesh/runtime-pose.json
+PALI_POSE_WITNESS_AUTH_TOKEN=<32-byte hex; same value across nodes if peers will share it>
+PALI_POSE_WITNESS_REQUIRE_VERIFIED=false   # flip to true after all agents push v2 fields
+PALI_POSE_REQUIRE_VERIFIED_CHALLENGE=false # flip to true after all challengers ship v2
+PALI_RPC_URL=http://127.0.0.1:28780        # local chain engine RPC; v1 uses 38780
+PALI_NODE_KEY=<operator private key hex>
 ```
 
-**`/etc/coc/coc-agent.env`** (`chmod 600`, `chown coc:coc`):
+**`/etc/palimesh/palimesh-agent.env`** (`chmod 600`, `chown coc:coc`):
 
 ```bash
-COC_DATA_DIR=/var/lib/coc/pose
-COC_CONFIG=/etc/coc/runtime-pose.json
-COC_OPERATOR_PK=<operator private key hex>
-COC_L1_RPC_URL=http://127.0.0.1:28780
-COC_NODE_URL=http://127.0.0.1:18780
-COC_AGENT_INTERVAL_MS=60000
-COC_AGENT_BATCH_SIZE=5
-COC_NONCE_REGISTRY_PATH=/var/lib/coc/pose/nonce-registry.json
-COC_PENDING_PATH=/var/lib/coc/pose/pending-v1.jsonl
-COC_PENDING_V2_PATH=/var/lib/coc/pose/pending-v2.jsonl
+PALI_DATA_DIR=/var/lib/coc/pose
+PALI_CONFIG=/etc/palimesh/runtime-pose.json
+PALI_OPERATOR_PK=<operator private key hex>
+PALI_L1_RPC_URL=http://127.0.0.1:28780
+PALI_NODE_URL=http://127.0.0.1:18780
+PALI_AGENT_INTERVAL_MS=60000
+PALI_AGENT_BATCH_SIZE=5
+PALI_NONCE_REGISTRY_PATH=/var/lib/coc/pose/nonce-registry.json
+PALI_PENDING_PATH=/var/lib/coc/pose/pending-v1.jsonl
+PALI_PENDING_V2_PATH=/var/lib/coc/pose/pending-v2.jsonl
 ```
 
-**`/etc/coc/runtime-pose.json`** (chmod 644, owned coc):
+**`/etc/palimesh/runtime-pose.json`** (chmod 644, owned coc):
 
 ```json
 {
@@ -216,33 +216,33 @@ Notes on `runtime-pose.json` fields:
 - `witnessNodes`: list of **other** nodes the agent will solicit witness signatures from. Empty for 1-node dry-run; full 5-of-6 cross-list for production. Witness indexes 0..31 are slots in the agent's bitmap — assign each peer a stable index.
 - `requiredWitnesses`: must be ≥ `⌈2/3 × m⌉` where m is the registered active node count. For 6 nodes ⌈2/3 × 6⌉ = 4.
 - `challengerSet` / `aggregatorSet`: if non-empty, role rotates by `epoch % len`. Empty = self-as-both (every agent challenges its own registered nodes and aggregates).
-- `nodeBind`: set to `0.0.0.0` if peers will reach this witness server over the public/private network; keep `127.0.0.1` if peers only see this host's witness via a reverse proxy. In either case, set `COC_POSE_WITNESS_TRUSTED_PROXIES` accordingly (see PR #753 / [audit doc §6.1 G3](../audit-upgrade-sprint-2026-05.zh.md#g3-cross-node-witness-collection)).
+- `nodeBind`: set to `0.0.0.0` if peers will reach this witness server over the public/private network; keep `127.0.0.1` if peers only see this host's witness via a reverse proxy. In either case, set `PALI_POSE_WITNESS_TRUSTED_PROXIES` accordingly (see PR #753 / [audit doc §6.1 G3](../audit-upgrade-sprint-2026-05.zh.md#g3-cross-node-witness-collection)).
 
 ### Per-node bring-up commands
 
 ```bash
 # 1. scp files to the host's /tmp/
-scp coc-pose-witness.service coc-agent.service coc-pose-witness.env coc-agent.env runtime-pose.json bob@<host>:/tmp/
+scp palimesh-pose-witness.service palimesh-agent.service palimesh-pose-witness.env palimesh-agent.env runtime-pose.json bob@<host>:/tmp/
 
 # 2. install + start (no chain tx yet — witness server is local-only)
 ssh bob@<host> 'sudo bash -s' <<'EOF'
-mv /tmp/coc-pose-witness.env /etc/coc/coc-pose-witness.env
-mv /tmp/coc-agent.env        /etc/coc/coc-agent.env
-mv /tmp/runtime-pose.json    /etc/coc/runtime-pose.json
-chown coc:coc /etc/coc/coc-pose-witness.env /etc/coc/coc-agent.env /etc/coc/runtime-pose.json
-chmod 600    /etc/coc/coc-pose-witness.env /etc/coc/coc-agent.env
-chmod 644    /etc/coc/runtime-pose.json
-mv /tmp/coc-pose-witness.service /etc/systemd/system/
-mv /tmp/coc-agent.service        /etc/systemd/system/
+mv /tmp/palimesh-pose-witness.env /etc/palimesh/palimesh-pose-witness.env
+mv /tmp/palimesh-agent.env        /etc/palimesh/palimesh-agent.env
+mv /tmp/runtime-pose.json    /etc/palimesh/runtime-pose.json
+chown coc:coc /etc/palimesh/palimesh-pose-witness.env /etc/palimesh/palimesh-agent.env /etc/palimesh/runtime-pose.json
+chmod 600    /etc/palimesh/palimesh-pose-witness.env /etc/palimesh/palimesh-agent.env
+chmod 644    /etc/palimesh/runtime-pose.json
+mv /tmp/palimesh-pose-witness.service /etc/systemd/system/
+mv /tmp/palimesh-agent.service        /etc/systemd/system/
 install -d -o coc -g coc /var/lib/coc/pose /var/lib/coc/pose/storage /var/log/coc
 systemctl daemon-reload
-systemctl start coc-pose-witness
+systemctl start palimesh-pose-witness
 sleep 3
 curl -fsS http://127.0.0.1:18780/health   # expect {"ok":true,"ts":…}
 EOF
 
-# 3. start coc-agent — THIS TRIGGERS registerNode + 0.1 ETH bond on first tick
-ssh bob@<host> 'sudo systemctl start coc-agent'
+# 3. start palimesh-agent — THIS TRIGGERS registerNode + 0.1 ETH bond on first tick
+ssh bob@<host> 'sudo systemctl start palimesh-agent'
 sleep 30
 # Verify on-chain
 node -e "
@@ -268,11 +268,11 @@ After all 6 nodes:
 
 ```bash
 ssh bob@<host> 'sudo bash -s' <<'EOF'
-systemctl stop coc-agent
-systemctl stop coc-pose-witness
-systemctl disable coc-agent coc-pose-witness
-rm -f /etc/systemd/system/coc-agent.service /etc/systemd/system/coc-pose-witness.service
-rm -f /etc/coc/coc-agent.env /etc/coc/coc-pose-witness.env /etc/coc/runtime-pose.json
+systemctl stop palimesh-agent
+systemctl stop palimesh-pose-witness
+systemctl disable palimesh-agent palimesh-pose-witness
+rm -f /etc/systemd/system/palimesh-agent.service /etc/systemd/system/palimesh-pose-witness.service
+rm -f /etc/palimesh/palimesh-agent.env /etc/palimesh/palimesh-pose-witness.env /etc/palimesh/runtime-pose.json
 systemctl daemon-reload
 EOF
 ```
@@ -281,28 +281,28 @@ EOF
 
 ## Coc-relayer (separate, single instance)
 
-After at least one batch is on-chain (multi-node), bring up exactly one `coc-relayer.service` somewhere (deployer host, or a fresh ops box):
+After at least one batch is on-chain (multi-node), bring up exactly one `palimesh-relayer.service` somewhere (deployer host, or a fresh ops box):
 
 ```bash
-# /etc/coc/coc-relayer.env
-COC_DATA_DIR=/var/lib/coc/pose
-COC_CONFIG=/etc/coc/runtime-pose.json
-COC_OPERATOR_PK=<dedicated relayer EOA; fund with ~0.2 ETH for gas>
-COC_L1_RPC_URL=http://127.0.0.1:28780
-COC_RELAYER_INTERVAL_MS=60000
+# /etc/palimesh/palimesh-relayer.env
+PALI_DATA_DIR=/var/lib/coc/pose
+PALI_CONFIG=/etc/palimesh/runtime-pose.json
+PALI_OPERATOR_PK=<dedicated relayer EOA; fund with ~0.2 ETH for gas>
+PALI_L1_RPC_URL=http://127.0.0.1:28780
+PALI_RELAYER_INTERVAL_MS=60000
 ```
 
-systemd unit: same minimal-format template, `ExecStart=/usr/bin/node --experimental-strip-types runtime/coc-relayer.ts`. Multiple relayer instances are safe (idempotent on-chain) but wasteful; one is enough.
+systemd unit: same minimal-format template, `ExecStart=/usr/bin/node --experimental-strip-types runtime/palimesh-relayer.ts`. Multiple relayer instances are safe (idempotent on-chain) but wasteful; one is enough.
 
 ## Status verification commands
 
 ```bash
 # witness server
 curl -fsS http://<host>:18780/health
-ssh bob@<host> 'sudo systemctl is-active coc-pose-witness'
+ssh bob@<host> 'sudo systemctl is-active palimesh-pose-witness'
 
 # agent (look for tick ok + no errors)
-ssh bob@<host> 'sudo journalctl -u coc-agent -n 20 --no-pager'
+ssh bob@<host> 'sudo journalctl -u palimesh-agent -n 20 --no-pager'
 
 # on-chain
 node -e "
@@ -325,17 +325,17 @@ const c = new Contract('0x256eb949C50d5F2af8699191b1Bc043203263549', [
 - `getActiveNodeCount() == 6`
 - All 6 agents log `tick ok` every 60s without errors
 - At least one `submitBatchV2WithMetadata` tx appears on-chain (proves witness quorum collection works end-to-end)
-- One `coc-relayer.service` running somewhere
+- One `palimesh-relayer.service` running somewhere
 
-Once done, Stage B (`COC_POSE_WITNESS_REQUIRE_VERIFIED=true` on every node) and Stage F (`setV1SunsetEpoch(<current+24>)` via multisig) become meaningful and can proceed.
+Once done, Stage B (`PALI_POSE_WITNESS_REQUIRE_VERIFIED=true` on every node) and Stage F (`setV1SunsetEpoch(<current+24>)` via multisig) become meaningful and can proceed.
 
 ## References
 
 - [`667-pose-manager-v2.md`](667-pose-manager-v2.md) — Stage A contract upgrade runbook
 - [`../audit-upgrade-sprint-2026-05.zh.md`](../audit-upgrade-sprint-2026-05.zh.md) §6.2 — sprint-level launch plan
 - Contract: `contracts/contracts-src/settlement/PoSeManagerV2.sol`
-- Runtime entries: `runtime/coc-node.ts`, `runtime/coc-agent.ts`, `runtime/coc-relayer.ts`
-- Existing (sandboxed, broken) units: `docker/systemd/coc-agent.service`, `docker/systemd/coc-relayer.service`
+- Runtime entries: `runtime/palimesh-node.ts`, `runtime/palimesh-agent.ts`, `runtime/palimesh-relayer.ts`
+- Existing (sandboxed, broken) units: `docker/systemd/palimesh-agent.service`, `docker/systemd/palimesh-relayer.service`
 
 ## Document metadata
 

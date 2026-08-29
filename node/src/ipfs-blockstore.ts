@@ -67,7 +67,7 @@ export interface OnPutOptions {
  * Evictions trim back to {@link EVICT_TARGET_FRACTION} of the cap to avoid
  * thrashing on each subsequent put. Pinned CIDs (`pins.json`) are immune.
  *
- * Light-mode peers (`COC_NODE_MODE=light`) supply `maxBytes` to keep the
+ * Light-mode peers (`PALI_NODE_MODE=light`) supply `maxBytes` to keep the
  * blockstore inside a tmpfs/quota envelope; archive nodes leave it
  * unbounded.
  */
@@ -116,7 +116,7 @@ export class IpfsBlockstore {
   /**
    * Inject routing hooks after construction. Useful when the DHT and wire
    * layer aren't ready yet at blockstore init time (the glue module
-   * `coc-ipfs-wiring.ts` wires them up once all three are running).
+   * `palimesh-ipfs-wiring.ts` wires them up once all three are running).
    * Passing a partial object only overrides the provided keys.
    */
   setHooks(hooks: IpfsBlockstoreHooks): void {
@@ -272,7 +272,7 @@ export class IpfsBlockstore {
    *     paths** (anonymous gateway / cat / ls / get) so an attacker
    *     cannot weaponize the node as a DHT-reflection / SSRF amplifier
    *     by asking for arbitrary unknown CIDs (#8). Admin-authorized
-   *     read paths (loopback / X-COC-IPFS-Admin-Token) leave it false
+   *     read paths (loopback / X-Palimesh-IPFS-Admin-Token) leave it false
    *     so operator tooling keeps the transparent fetch behaviour.
    */
   async get(cid: CidString, opts?: { localOnly?: boolean }): Promise<IpfsBlock> {
@@ -511,12 +511,12 @@ export class IpfsBlockstore {
 }
 
 /**
- * Verify that `bytes` is the content addressed by `cid`. COC uses two CID
+ * Verify that `bytes` is the content addressed by `cid`. Palimesh uses two CID
  * conventions (see ipfs-blockstore layout / `/api/v0/add`):
  *   1. Legacy "0x…" keccak256 hex — raw-block blockstore layout.
  *   2. IPFS CIDv1 (sha256 multihash) — UnixFS / raw codec.
  * A CID whose multihash is not sha256, or any parse failure, fails closed
- * (returns false) — COC never emits such CIDs, so legitimate content always
+ * (returns false) — Palimesh never emits such CIDs, so legitimate content always
  * verifies and anything else is rejected.
  */
 export async function cidMatchesBytes(cid: string, bytes: Uint8Array): Promise<boolean> {

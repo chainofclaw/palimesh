@@ -172,7 +172,7 @@ describe("BftCoordinator", () => {
   })
 
   // --- Phase B integration: computeLocalStateRoot wired through to prepare vote.
-  // See plans/coc-phase-b-stateroot-vote.md §B2.7. Covers the end-to-end BFT
+  // See plans/palimesh-phase-b-stateroot-vote.md §B2.7. Covers the end-to-end BFT
   // contract that (a) prepare votes carry the stateRoot from the hook, and
   // (b) validators whose hook returns a different value form a separate
   // quorum group — the (blockHash, stateRoot) pair fails to reach 2/3 when

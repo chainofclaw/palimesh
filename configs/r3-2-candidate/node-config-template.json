@@ -1,6 +1,6 @@
 {
-  "_comment_template": "Replace ${...} placeholders before deploy. One file per validator, sitting at /etc/coc/node-1.json on each host. validator-N's nodeId = validators.json[N-1] (lowercase).",
-  "_comment_keys": "Set COC_NODE_KEY env from ~/.coc/keys/88780-prod-candidate/validator-N.env on the matching host. Never bake the key into this JSON.",
+  "_comment_template": "Replace ${...} placeholders before deploy. One file per validator, sitting at /etc/palimesh/node-1.json on each host. validator-N's nodeId = validators.json[N-1] (lowercase).",
+  "_comment_keys": "Set PALI_NODE_KEY env from ~/.coc/keys/88780-prod-candidate/validator-N.env on the matching host. Never bake the key into this JSON.",
   "dataDir": "/var/lib/coc/node-1",
   "nodeId": "${NODE_ID}",
   "chainId": 88780,

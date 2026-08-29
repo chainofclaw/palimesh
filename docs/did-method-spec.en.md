@@ -2,18 +2,18 @@
 
 ## Overview
 
-The `did:coc` method provides W3C DID Core v1.0 compliant decentralized identifiers for AI agents on the COC blockchain. Built on top of the existing SoulRegistry identity infrastructure, it adds standardized identity resolution, key management, capability delegation, verifiable credentials, and selective disclosure.
+The `did:coc` method provides W3C DID Core v1.0 compliant decentralized identifiers for AI agents on the Palimesh blockchain. Built on top of the existing SoulRegistry identity infrastructure, it adds standardized identity resolution, key management, capability delegation, verifiable credentials, and selective disclosure.
 
 | Component | Purpose | Location |
 |-----------|---------|----------|
-| **DIDRegistry Contract** | Key rotation, delegation, credentials, ephemeral identities, lineage | `COC/contracts/governance/DIDRegistry.sol` |
-| **DID Resolver** | Resolves `did:coc` identifiers to DID Documents | `COC/node/src/did/did-resolver.ts` |
-| **DID Document Builder** | Constructs W3C-compliant documents from on-chain state | `COC/node/src/did/did-document-builder.ts` |
-| **DID Auth** | Challenge-response authentication for Wire/P2P | `COC/node/src/did/did-auth.ts` |
-| **Delegation Chain** | Scope-limited delegation verification | `COC/node/src/did/delegation-chain.ts` |
-| **Verifiable Credentials** | VC issuance, selective disclosure via Merkle proofs | `COC/node/src/did/verifiable-credentials.ts` |
-| **EIP-712 Types** | Typed data definitions for DIDRegistry | `COC/node/src/crypto/did-registry-types.ts` |
-| **Explorer Pages** | DID search and detail visualization | `COC/explorer/src/app/did/` |
+| **DIDRegistry Contract** | Key rotation, delegation, credentials, ephemeral identities, lineage | `Palimesh/contracts/governance/DIDRegistry.sol` |
+| **DID Resolver** | Resolves `did:coc` identifiers to DID Documents | `Palimesh/node/src/did/did-resolver.ts` |
+| **DID Document Builder** | Constructs W3C-compliant documents from on-chain state | `Palimesh/node/src/did/did-document-builder.ts` |
+| **DID Auth** | Challenge-response authentication for Wire/P2P | `Palimesh/node/src/did/did-auth.ts` |
+| **Delegation Chain** | Scope-limited delegation verification | `Palimesh/node/src/did/delegation-chain.ts` |
+| **Verifiable Credentials** | VC issuance, selective disclosure via Merkle proofs | `Palimesh/node/src/did/verifiable-credentials.ts` |
+| **EIP-712 Types** | Typed data definitions for DIDRegistry | `Palimesh/node/src/crypto/did-registry-types.ts` |
+| **Explorer Pages** | DID search and detail visualization | `Palimesh/explorer/src/app/did/` |
 
 ---
 
@@ -43,7 +43,7 @@ The `did:coc` method provides W3C DID Core v1.0 compliant decentralized identifi
                         ┌─────────────────────────────────┐
                         │     W3C DID Document (JSON)      │
                         │  verificationMethod, service,    │
-                        │  controller, cocAgent metadata   │
+                        │  controller, paliAgent metadata   │
                         └─────────────────────────────────┘
 ```
 
@@ -51,7 +51,7 @@ The `did:coc` method provides W3C DID Core v1.0 compliant decentralized identifi
 
 **Resolution Path:**
 
-1. Client calls `coc_resolveDid("did:coc:0xabc...")` via JSON-RPC
+1. Client calls `pali_resolveDid("did:coc:0xabc...")` via JSON-RPC
 2. Resolver parses the DID string to extract `chainId`, `identifierType`, and `identifier`
 3. Queries SoulRegistry for `SoulIdentity`, guardians, resurrection config
 4. Queries DIDRegistry for verification methods, capabilities, lineage, delegations
@@ -84,7 +84,7 @@ did:coc:<chainId>:node:<nodeId>        # PoSe node identity
 
 Where:
 - `<agentId>` / `<nodeId>` — `0x`-prefixed hex bytes32 from SoulRegistry / PoSeManagerV2
-- `<chainId>` — Decimal integer. When omitted, defaults to COC mainnet (`20241224`)
+- `<chainId>` — Decimal integer. When omitted, defaults to Palimesh mainnet (`20241224`)
 
 **Examples:**
 - `did:coc:0xabcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890`
@@ -98,7 +98,7 @@ Where:
 | Operation | Mechanism | On-Chain Effect |
 |-----------|-----------|-----------------|
 | **Create** | `SoulRegistry.registerSoul()` + `DIDRegistry.updateDIDDocument()` | SoulIdentity created + DID document CID anchored |
-| **Read** | `coc_resolveDid` RPC / DID Resolver | Assembles DID Document from on-chain state |
+| **Read** | `pali_resolveDid` RPC / DID Resolver | Assembles DID Document from on-chain state |
 | **Update** | `DIDRegistry.updateDIDDocument()` (EIP-712 signed) | Updates document CID |
 | **Deactivate** | `SoulRegistry.deactivateSoul()` | Marks `active=false`; resolver returns empty verification methods |
 
@@ -131,12 +131,12 @@ Where:
   "capabilityInvocation": ["#master"],
   "capabilityDelegation": ["#master"],
   "service": [
-    { "id": "#rpc", "type": "CocRpcEndpoint", "serviceEndpoint": "http://node:18780" },
-    { "id": "#wire", "type": "CocWireProtocol", "serviceEndpoint": "tcp://node:19781" },
+    { "id": "#rpc", "type": "PaliRpcEndpoint", "serviceEndpoint": "http://node:18780" },
+    { "id": "#wire", "type": "PaliWireProtocol", "serviceEndpoint": "tcp://node:19781" },
     { "id": "#ipfs", "type": "IpfsGateway", "serviceEndpoint": "http://node:5001" },
-    { "id": "#pose", "type": "CocPoSeEndpoint", "serviceEndpoint": "http://node:18780/pose" }
+    { "id": "#pose", "type": "PaliPoSeEndpoint", "serviceEndpoint": "http://node:18780/pose" }
   ],
-  "cocAgent": {
+  "paliAgent": {
     "registeredAt": "2026-03-15T10:00:00.000Z",
     "version": 1,
     "identityCid": "0x1111...",
@@ -157,14 +157,14 @@ Where:
 | `verificationMethod[#resurrection]` | `ResurrectionConfig.resurrectionKeyHash` |
 | `verificationMethod[#operational...]` | `DIDRegistry.getActiveVerificationMethods()` |
 | `service` | Configured endpoints (not stored on-chain) |
-| `cocAgent.capabilities` | `DIDRegistry.agentCapabilities()` bitmask decoded |
-| `cocAgent.lineage` | `DIDRegistry.agentLineage()` |
+| `paliAgent.capabilities` | `DIDRegistry.agentCapabilities()` bitmask decoded |
+| `paliAgent.lineage` | `DIDRegistry.agentLineage()` |
 
 ---
 
 ## DIDRegistry Smart Contract
 
-**File:** `COC/contracts/governance/DIDRegistry.sol`
+**File:** `Palimesh/contracts/governance/DIDRegistry.sol`
 
 **Relationship to SoulRegistry:** DIDRegistry is a separate contract that references SoulRegistry via an immutable `soulRegistry` address. It does NOT modify SoulRegistry. All state-changing operations require that the caller is the `soul.owner` of the referenced `agentId` in SoulRegistry.
 
@@ -566,13 +566,13 @@ New fields in `config.ts`:
 
 | Method | Parameters | Returns |
 |--------|-----------|---------|
-| `coc_resolveDid` | `did: string` | `DIDResolutionResult` |
-| `coc_getDIDDocument` | `agentId: string` | `DIDDocument \| null` |
-| `coc_getAgentCapabilities` | `agentId: string` | `{ capabilities: string[], bitmask: number }` |
-| `coc_getDelegations` | `agentId: string` | `DelegationRecord[]` (includes `_readError: true` on partial read failures) |
-| `coc_getAgentLineage` | `agentId: string` | `Lineage \| null` |
-| `coc_getCredentialAnchor` | `credentialId: string` | `{ valid: boolean, error?: string, anchor?: CredentialAnchor }` — checks on-chain anchor only (existence/revocation/expiry). Full VC verification (signatures, proofs, content) requires fetching the credential from IPFS and using `verifiable-credentials.ts`. |
-| `coc_getVerificationMethods` | `agentId: string` | `VerificationMethod[]` |
+| `pali_resolveDid` | `did: string` | `DIDResolutionResult` |
+| `pali_getDIDDocument` | `agentId: string` | `DIDDocument \| null` |
+| `pali_getAgentCapabilities` | `agentId: string` | `{ capabilities: string[], bitmask: number }` |
+| `pali_getDelegations` | `agentId: string` | `DelegationRecord[]` (includes `_readError: true` on partial read failures) |
+| `pali_getAgentLineage` | `agentId: string` | `Lineage \| null` |
+| `pali_getCredentialAnchor` | `credentialId: string` | `{ valid: boolean, error?: string, anchor?: CredentialAnchor }` — checks on-chain anchor only (existence/revocation/expiry). Full VC verification (signatures, proofs, content) requires fetching the credential from IPFS and using `verifiable-credentials.ts`. |
+| `pali_getVerificationMethods` | `agentId: string` | `VerificationMethod[]` |
 
 ---
 
@@ -595,7 +595,7 @@ New fields in `config.ts`:
 
 ### Node Layer Tests
 
-**File:** `COC/node/src/did/*.test.ts` (79 tests, 4 files)
+**File:** `Palimesh/node/src/did/*.test.ts` (79 tests, 4 files)
 
 | Test File | Tests | Coverage |
 |-----------|-------|---------|
@@ -607,7 +607,7 @@ New fields in `config.ts`:
 
 ### Contract Tests
 
-**File:** `COC/contracts/test/DIDRegistry.test.cjs` (24 tests)
+**File:** `Palimesh/contracts/test/DIDRegistry.test.cjs` (24 tests)
 
 Covers: DID document CRUD, verification method add/revoke/duplicate, delegation grant/revoke/revokeAll/rate-limiting/depth-limit, capability update, ephemeral identity create/deactivate/duplicate, lineage recording, credential anchor/revoke, access control (non-owner rejection), EIP-712 signature verification.
 

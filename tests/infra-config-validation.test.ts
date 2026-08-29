@@ -94,9 +94,9 @@ describe("Docker: Dockerfile validation", () => {
     }
   })
 
-  it("Dockerfile.node supports COC_DATA_DIR", async () => {
+  it("Dockerfile.node supports PALI_DATA_DIR", async () => {
     const content = await readFile(join(DOCKER_DIR, "Dockerfile.node"), "utf-8")
-    assert.ok(content.includes("COC_DATA_DIR"), "Should support COC_DATA_DIR env var")
+    assert.ok(content.includes("PALI_DATA_DIR"), "Should support PALI_DATA_DIR env var")
   })
 
   it("Dockerfile.explorer uses Next.js standalone output", async () => {
@@ -112,8 +112,8 @@ describe("Security: secret hygiene", () => {
 
     assert.doesNotMatch(
       deployment,
-      /COC_FAUCET_PRIVATE_KEY=0x[0-9a-fA-F]{64}/,
-      "deployment docs must not include a literal COC_FAUCET_PRIVATE_KEY",
+      /PALI_FAUCET_PRIVATE_KEY=0x[0-9a-fA-F]{64}/,
+      "deployment docs must not include a literal PALI_FAUCET_PRIVATE_KEY",
     )
     assert.doesNotMatch(
       deployment,
@@ -126,12 +126,12 @@ describe("Security: secret hygiene", () => {
     const compose = await readFile(join(DOCKER_DIR, "docker-compose.testnet.yml"), "utf-8")
 
     assert.ok(
-      compose.includes("COC_FAUCET_PRIVATE_KEY=${COC_FAUCET_KEY:?"),
-      "testnet faucet must require COC_FAUCET_KEY instead of falling back to a public key",
+      compose.includes("PALI_FAUCET_PRIVATE_KEY=${PALI_FAUCET_KEY:?"),
+      "testnet faucet must require PALI_FAUCET_KEY instead of falling back to a public key",
     )
     assert.doesNotMatch(
       compose,
-      /COC_FAUCET_PRIVATE_KEY=\$\{COC_FAUCET_KEY:-0x[0-9a-fA-F]{64}\}/,
+      /PALI_FAUCET_PRIVATE_KEY=\$\{PALI_FAUCET_KEY:-0x[0-9a-fA-F]{64}\}/,
       "testnet faucet must not include a literal default private key",
     )
     assert.ok(
@@ -156,17 +156,17 @@ describe("Security: secret hygiene", () => {
     }
   })
 
-  it("testnet prover services use canonical COC_NODE_KEY env var", async () => {
+  it("testnet prover services use canonical PALI_NODE_KEY env var", async () => {
     const compose = await readFile(join(DOCKER_DIR, "docker-compose.testnet.yml"), "utf-8")
 
     assert.doesNotMatch(
       compose,
-      /^\s*-\s*COC_NODE_PK=/m,
-      "prover services must not set legacy COC_NODE_PK",
+      /^\s*-\s*PALI_NODE_PK=/m,
+      "prover services must not set legacy PALI_NODE_PK",
     )
-    assert.match(compose, /COC_NODE_KEY=\$\{COC_NODE1_KEY:/)
-    assert.match(compose, /COC_NODE_KEY=\$\{COC_NODE2_KEY:/)
-    assert.match(compose, /COC_NODE_KEY=\$\{COC_NODE3_KEY:/)
+    assert.match(compose, /PALI_NODE_KEY=\$\{PALI_NODE1_KEY:/)
+    assert.match(compose, /PALI_NODE_KEY=\$\{PALI_NODE2_KEY:/)
+    assert.match(compose, /PALI_NODE_KEY=\$\{PALI_NODE3_KEY:/)
   })
 
   it("deployment compose files do not ship literal node or runtime private keys", async () => {
@@ -180,12 +180,12 @@ describe("Security: secret hygiene", () => {
       const content = await readFile(join(DOCKER_DIR, file), "utf-8")
       assert.doesNotMatch(
         content,
-        /^\s*-\s*COC_(?:NODE_KEY|OPERATOR_PK|SLASHER_PK)=0x[0-9a-fA-F]{64}$/m,
+        /^\s*-\s*PALI_(?:NODE_KEY|OPERATOR_PK|SLASHER_PK)=0x[0-9a-fA-F]{64}$/m,
         `${file} must not include literal deployment private keys`,
       )
       assert.doesNotMatch(
         content,
-        /COC_(?:NODE_KEY|OPERATOR_PK|SLASHER_PK)=\$\{[A-Z0-9_]+:-0x[0-9a-fA-F]{64}\}/,
+        /PALI_(?:NODE_KEY|OPERATOR_PK|SLASHER_PK)=\$\{[A-Z0-9_]+:-0x[0-9a-fA-F]{64}\}/,
         `${file} must not include literal private-key fallbacks`,
       )
       assert.doesNotMatch(
@@ -208,18 +208,18 @@ describe("Security: secret hygiene", () => {
       const content = await readFile(join(DOCKER_DIR, file), "utf-8")
       assert.doesNotMatch(
         content,
-        /^COC_NODE_KEY=0x[0-9a-fA-F]{64}$/m,
+        /^PALI_NODE_KEY=0x[0-9a-fA-F]{64}$/m,
         `${file} must not include a literal validator private key`,
       )
     }
 
     const node1 = await readFile(join(DOCKER_DIR, "systemd/native-env/node-1.env"), "utf-8")
-    assert.match(node1, /^COC_IPFS_BIND=127\.0\.0\.1$/m)
-    assert.doesNotMatch(node1, /^COC_IPFS_BIND=0\.0\.0\.0$/m)
+    assert.match(node1, /^PALI_IPFS_BIND=127\.0\.0\.1$/m)
+    assert.doesNotMatch(node1, /^PALI_IPFS_BIND=0\.0\.0\.0$/m)
 
     const multiServer = await readFile(join(DOCKER_DIR, "systemd/native-env/node-multiserver.env.template"), "utf-8")
-    assert.match(multiServer, /^COC_IPFS_BIND=127\.0\.0\.1$/m)
-    assert.doesNotMatch(multiServer, /^COC_IPFS_BIND=0\.0\.0\.0$/m)
+    assert.match(multiServer, /^PALI_IPFS_BIND=127\.0\.0\.1$/m)
+    assert.doesNotMatch(multiServer, /^PALI_IPFS_BIND=0\.0\.0\.0$/m)
   })
 
   it("monitoring compose requires Grafana password injection and local-only ports", async () => {
@@ -289,18 +289,18 @@ describe("Security: secret hygiene", () => {
     const generator = await readFile(join(ROOT, "scripts", "generate-genesis.sh"), "utf-8")
     assert.match(
       generator,
-      /COC_ENABLE_ADMIN_RPC \?\? 'false'/,
+      /PALI_ENABLE_ADMIN_RPC \?\? 'false'/,
       "generated configs must default admin RPC to disabled",
     )
     assert.doesNotMatch(
       generator,
-      /COC_ENABLE_ADMIN_RPC \?\? 'true'/,
+      /PALI_ENABLE_ADMIN_RPC \?\? 'true'/,
       "generated configs must not default admin RPC to enabled",
     )
   })
 
   it("public nginx edge blocks admin and debug method namespaces", async () => {
-    const nginx = await readFile(join(DOCKER_DIR, "nginx", "coc-rpc.conf"), "utf-8")
+    const nginx = await readFile(join(DOCKER_DIR, "nginx", "palimesh-rpc.conf"), "utf-8")
 
     assert.match(nginx, /\(debug_\|admin_\)/, "nginx must block debug_ and admin_ namespaces")
     assert.doesNotMatch(nginx, /request_body ~\* "debug_"/, "nginx must not block only debug_")
@@ -312,7 +312,7 @@ describe("Security: secret hygiene", () => {
 
     assert.doesNotMatch(
       example,
-      /^export COC_GCP_OPERATOR_IP_CIDR="0\.0\.0\.0\/0"/m,
+      /^export PALI_GCP_OPERATOR_IP_CIDR="0\.0\.0\.0\/0"/m,
       "gcloud example must not default management ports to the whole internet",
     )
     assert.ok(
@@ -320,7 +320,7 @@ describe("Security: secret hygiene", () => {
       "gcloud example should force an operator-specific CIDR",
     )
     assert.ok(
-      bootstrap.includes("COC_GCP_ALLOW_OPEN_OPERATOR_CIDR"),
+      bootstrap.includes("PALI_GCP_ALLOW_OPEN_OPERATOR_CIDR"),
       "bootstrap script should require an explicit escape hatch for 0.0.0.0/0",
     )
     assert.match(
@@ -345,7 +345,7 @@ describe("Security: secret hygiene", () => {
       "metrics server must not default to all interfaces",
     )
     assert.ok(
-      index.includes("COC_METRICS_BIND"),
+      index.includes("PALI_METRICS_BIND"),
       "node entrypoint should expose an explicit metrics bind override",
     )
   })
@@ -373,7 +373,7 @@ describe("Docker: Compose file validation", () => {
 
     assert.ok(content.includes("node:"), "Should define node service")
     assert.ok(content.includes("explorer:"), "Should define explorer service")
-    assert.ok(content.includes("coc-internal"), "Should have internal network")
+    assert.ok(content.includes("palimesh-internal"), "Should have internal network")
     assert.ok(content.includes("volumes:"), "Should have volume definitions")
   })
 
@@ -398,8 +398,8 @@ describe("Docker: Compose file validation", () => {
   it("testnet compose has separate networks for P2P and RPC", async () => {
     const content = await readFile(join(DOCKER_DIR, "docker-compose.testnet.yml"), "utf-8")
 
-    assert.ok(content.includes("coc-p2p"), "Should have P2P network")
-    assert.ok(content.includes("coc-rpc"), "Should have RPC network")
+    assert.ok(content.includes("palimesh-p2p"), "Should have P2P network")
+    assert.ok(content.includes("palimesh-rpc"), "Should have RPC network")
   })
 
   it("testnet compose maps unique host ports per node", async () => {

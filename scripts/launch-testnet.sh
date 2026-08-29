@@ -89,7 +89,7 @@ check_bft_status() {
     local port=${NODE_PORTS[$i]}
     local name=${NODE_NAMES[$i]}
     local result
-    result=$(rpc_call "$port" "coc_getBftStatus")
+    result=$(rpc_call "$port" "pali_getBftStatus")
     local enabled
     enabled=$(echo "$result" | grep -o '"enabled":[a-z]*' | head -1 | cut -d: -f2)
     echo "  $name: BFT enabled=$enabled"
@@ -102,7 +102,7 @@ check_peer_connections() {
     local port=${NODE_PORTS[$i]}
     local name=${NODE_NAMES[$i]}
     local result
-    result=$(rpc_call "$port" "coc_getNetworkStats")
+    result=$(rpc_call "$port" "pali_getNetworkStats")
     local peers
     peers=$(echo "$result" | grep -o '"peerCount":[0-9]*' | head -1 | cut -d: -f2)
     echo "  $name: peers=${peers:-0}"

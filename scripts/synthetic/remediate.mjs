@@ -2,7 +2,7 @@
 // Bounded auto-remediation for known prod failure modes.
 //
 // Strictly limited to two actions, each with a strict per-window rate limit
-// persisted to /var/lib/coc-synthetic/state.json. NEVER write a remediator
+// persisted to /var/lib/palimesh-synthetic/state.json. NEVER write a remediator
 // that mutates source code or rolls forward to a state harder to undo than
 // what the operator could do by hand. Anything beyond this scope (e.g.
 // rebuilding a node, wiping leveldb) must remain manual.
@@ -25,7 +25,7 @@ import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs'
 import { HARDHAT_DEV_PRIVATE_KEYS, resolvePrivateKeyForRpc } from '../lib/key-safety.mjs'
 
 const cfg = {
-  rpc: process.env.PROBE_RPC || 'https://clawchain.io/api/testnet/rpc',
+  rpc: process.env.PROBE_RPC || 'https://palimesh.io/api/testnet/rpc',
   chainId: Number(process.env.PROBE_CHAIN_ID || '88780'),
   faucetAddr: process.env.FAUCET_ADDR || '0x47f9940cCf9777C0407F094A1B0d8c50b0DD01BF',
   faucetMin: Number(process.env.FAUCET_MIN_COC || '1000'),
@@ -33,14 +33,14 @@ const cfg = {
   blockFreshnessLimitSec: Number(process.env.BLOCK_FRESHNESS_LIMIT_SEC || '300'),
   faucetMinIntervalMs: 23 * 3600 * 1000, // once per day
   restartMinIntervalMs: 55 * 60 * 1000,  // once per hour
-  stateFile: process.env.REMEDIATE_STATE || '/var/lib/coc-synthetic/state.json',
-  sshKey: process.env.SSH_KEY || '/root/.ssh/coc-automation',
+  stateFile: process.env.REMEDIATE_STATE || '/var/lib/palimesh-synthetic/state.json',
+  sshKey: process.env.SSH_KEY || '/root/.ssh/palimesh-automation',
   validators: [
-    { name: 'v1', host: '209.74.64.88',    unit: 'coc-node@88' },
-    { name: 'v2', host: '159.198.44.136',  unit: 'coc-node@1'  },
-    { name: 'v3', host: '199.192.16.79',   unit: 'coc-node@88' },
-    { name: 'v4', host: '159.198.36.3',    unit: 'coc-node@1'  },
-    { name: 'v5', host: '159.198.36.25',   unit: 'coc-node@1'  },
+    { name: 'v1', host: '209.74.64.88',    unit: 'palimesh-node@88' },
+    { name: 'v2', host: '159.198.44.136',  unit: 'palimesh-node@1'  },
+    { name: 'v3', host: '199.192.16.79',   unit: 'palimesh-node@88' },
+    { name: 'v4', host: '159.198.36.3',    unit: 'palimesh-node@1'  },
+    { name: 'v5', host: '159.198.36.25',   unit: 'palimesh-node@1'  },
   ],
 }
 cfg.deployerPk = resolvePrivateKeyForRpc({
@@ -69,8 +69,8 @@ function provider() {
   // hairpin-NAT / TLS cold-start (prod-2 reaching its own public URL).
   return new ethers.JsonRpcProvider(
     cfg.rpc,
-    { chainId: cfg.chainId, name: 'ChainOfClaw' },
-    { staticNetwork: ethers.Network.from({ chainId: cfg.chainId, name: 'ChainOfClaw' }) },
+    { chainId: cfg.chainId, name: 'Palimesh' },
+    { staticNetwork: ethers.Network.from({ chainId: cfg.chainId, name: 'Palimesh' }) },
   )
 }
 
@@ -81,7 +81,7 @@ export async function refundFaucet({ dryRun = false } = {}) {
   const wei = await p.getBalance(cfg.faucetAddr)
   const coc = Number(wei) / 1e18
   if (coc >= cfg.faucetMin) {
-    return { tried: false, ok: true, msg: `faucet bal ${coc.toFixed(2)} COC ≥ ${cfg.faucetMin}, no refund needed` }
+    return { tried: false, ok: true, msg: `faucet bal ${coc.toFixed(2)} Palimesh ≥ ${cfg.faucetMin}, no refund needed` }
   }
 
   const st = loadState()
@@ -92,7 +92,7 @@ export async function refundFaucet({ dryRun = false } = {}) {
     return { tried: false, ok: false, msg: `faucet bal ${coc.toFixed(2)} < ${cfg.faucetMin} BUT rate-limit (${mins} min until next refund allowed)` }
   }
 
-  if (dryRun) return { tried: false, ok: true, msg: `[dry-run] would refund ${cfg.faucetRefund} COC` }
+  if (dryRun) return { tried: false, ok: true, msg: `[dry-run] would refund ${cfg.faucetRefund} Palimesh` }
 
   const deployer = new ethers.Wallet(cfg.deployerPk, p)
   const dWei = await p.getBalance(deployer.address)
@@ -107,7 +107,7 @@ export async function refundFaucet({ dryRun = false } = {}) {
   st.lastFaucetRefundTx = tx.hash
   st.lastFaucetRefundCOC = cfg.faucetRefund
   saveState(st)
-  return { tried: true, ok: true, msg: `refunded ${cfg.faucetRefund} COC tx=${tx.hash.slice(0, 10)}.. block=${r.blockNumber}` }
+  return { tried: true, ok: true, msg: `refunded ${cfg.faucetRefund} Palimesh tx=${tx.hash.slice(0, 10)}.. block=${r.blockNumber}` }
 }
 
 // ---------- 2. restart-validators ----------

@@ -2,7 +2,7 @@
 
 ## 1. Scope
 
-This spec defines the Proof-of-Service protocol for COC in an EVM-rollup-compatible architecture.
+This spec defines the Proof-of-Service protocol for Palimesh in an EVM-rollup-compatible architecture.
 
 - L1 settlement: canonical PoSe state, slashing, epoch finalize.
 - L2 execution: business contracts and optional mirrors.

@@ -1,5 +1,5 @@
 {
-  "_comment": "R2.1 Phase A — coc-agent config for the H15 fork-off chain (88888). The poseManagerAddress field is filled in by run-pose.sh after deploy-pose-on-h15.mjs writes deployed-pose.json. agent-config.json.tmpl is the canonical template; this file is updated in-place by the helper.",
+  "_comment": "R2.1 Phase A — palimesh-agent config for the H15 fork-off chain (88888). The poseManagerAddress field is filled in by run-pose.sh after deploy-pose-on-h15.mjs writes deployed-pose.json. agent-config.json.tmpl is the canonical template; this file is updated in-place by the helper.",
   "dataDir": "/data/coc",
   "nodeUrl": "http://h15-node-1:18780",
   "l1RpcUrl": "http://h15-node-1:18780",

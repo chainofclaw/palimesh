@@ -5,7 +5,7 @@
 | Status | Shipped (2026-05-07) |
 | Design | [`docs/archive/phases/phase-q-erasure-coding.md`](../archive/phases/phase-q-erasure-coding.md) |
 | Validation | [`docs/archive/phases/phase-q-validation-2026-05-07.md`](../archive/phases/phase-q-validation-2026-05-07.md) |
-| Tracking | [chainofclaw/COC#68](https://github.com/chainofclaw/COC/issues/68) |
+| Tracking | [palimesh/palimesh#68](https://github.com/palimesh/palimesh/issues/68) |
 
 ## What it does
 
@@ -52,9 +52,9 @@ Response (note: `+` must be URL-encoded as `%2B` on some clients):
 
 ```
 HTTP/1.1 200 OK
-X-COC-Erasure-Scheme: rs(4+2)
-X-COC-Erasure-Original-Cid: bafybeif...   ← UnixFS root for back-compat retrieval
-X-COC-Erasure-Stripe-Spread: distinct=4,worstOverlap=3   ← peer placement metric
+X-Palimesh-Erasure-Scheme: rs(4+2)
+X-Palimesh-Erasure-Original-Cid: bafybeif...   ← UnixFS root for back-compat retrieval
+X-Palimesh-Erasure-Stripe-Spread: distinct=4,worstOverlap=3   ← peer placement metric
 
 {"Name":"bigfile.bin","Hash":"bafyreif...","Size":"<bytes>"}
 ```
@@ -66,11 +66,11 @@ for back-compat retrieval.
 
 ### Headers explained
 
-- `X-COC-Erasure-Scheme: rs(N+M)` — confirms the scheme that was applied.
-- `X-COC-Erasure-Original-Cid` — UnixFS root. `cat` on this CID still
+- `X-Palimesh-Erasure-Scheme: rs(N+M)` — confirms the scheme that was applied.
+- `X-Palimesh-Erasure-Original-Cid` — UnixFS root. `cat` on this CID still
   works (no erasure decode needed). Useful when peers are healthy and
   you want the cheaper read path.
-- `X-COC-Erasure-Stripe-Spread: distinct=K,worstOverlap=L` — diversity
+- `X-Palimesh-Erasure-Stripe-Spread: distinct=K,worstOverlap=L` — diversity
   metric. `K` is the number of distinct peers that received a shard;
   `L` is the largest count of shards landed on a single peer. Lower
   `L` is better. `L > 1` indicates the cluster has fewer reachable
@@ -136,7 +136,7 @@ slots from parity. Non-manifest CID input → HTTP 415 `not_a_manifest`.
 
 ### Repair-loop metrics (Phase Q.5 counters)
 
-`coc-ipfs-repair` exposes the new counters in the loop's `getMetrics()`
+`palimesh-ipfs-repair` exposes the new counters in the loop's `getMetrics()`
 return value (Prometheus exposure deferred to Q+1):
 
 | Metric | Meaning |
@@ -153,13 +153,13 @@ Tick cadence: 10 min. Per-tick manifest budget: 20 (configurable via
 ### Log lines worth watching
 
 ```
-[coc-ipfs-repair] erasure stripe repaired
+[palimesh-ipfs-repair] erasure stripe repaired
   {stripe:N, reconstructed:K, missingData:X, missingParity:Y}
 ```
 Successful reconstruction.
 
 ```
-[coc-ipfs-repair] erasure stripe unrecoverable
+[palimesh-ipfs-repair] erasure stripe unrecoverable
   {manifestStripe:N, present:K, n:Required, missingData:X, missingParity:Y}
 ```
 > M shards missing locally. The repair loop in Q.5 only uses local
@@ -193,15 +193,15 @@ The decoder couldn't find ≥ N shards even after asking peers via
    pin tracking didn't propagate, or disk corruption took out > M
    slots. Inspect via `erasure/status` per node — if every node reports
    `dataAvailable < n`, the data is irrecoverable.
-3. **Wire/DHT not connected**: `coc_dhtFindProviders <cid>` from the
+3. **Wire/DHT not connected**: `pali_dhtFindProviders <cid>` from the
    reading node should return ≥ 1 provider per missing shard. If it
    returns `[]`, peers can't be reached or the DHT routing table is
    empty. Restart the node to re-bootstrap.
 
 Recovery procedure for case 1:
 
-1. Make sure all validators are up: `systemctl is-active coc-node@N` on each.
-2. Confirm wire connections: peers should appear in `coc_getPeers` output.
+1. Make sure all validators are up: `systemctl is-active palimesh-node@N` on each.
+2. Confirm wire connections: peers should appear in `pali_getPeers` output.
 3. Retry the `cat` — `fetchRemote` will pull missing shards on demand
    and cache them locally.
 4. (Optional) Force the repair loop to converge faster by restarting
@@ -217,7 +217,7 @@ The `?erasure=` value didn't match `^\d+\+\d+$`. Examples that fail:
 
 The CID you queried is not a Phase-Q erasure manifest (e.g. a UnixFS
 root or a raw block). Use the manifest CID you got back from the PUT
-response (`Hash` field), not the `X-COC-Erasure-Original-Cid` header.
+response (`Hash` field), not the `X-Palimesh-Erasure-Original-Cid` header.
 
 ### Cross-node `cat` slow / hangs
 
@@ -225,7 +225,7 @@ Wire client to the peer holding shards may need to reconnect. Check:
 
 ```bash
 # Confirm DHT knows about the manifest's shards on peers
-curl -X POST -d '{"jsonrpc":"2.0","method":"coc_dhtFindProviders","params":["<shard_cid>"],"id":1}' \
+curl -X POST -d '{"jsonrpc":"2.0","method":"pali_dhtFindProviders","params":["<shard_cid>"],"id":1}' \
   http://<reader>:28780
 ```
 
@@ -266,7 +266,7 @@ Decode is symmetric: ≤ 12 ms for 100 MB across all tested schemes.
 
 ## Known limitations & follow-ups
 
-- **Repair loop is local-only**: `coc-ipfs-repair` uses `store.has` to
+- **Repair loop is local-only**: `palimesh-ipfs-repair` uses `store.has` to
   check shard availability. Missing shards are reconstructed only from
   *locally-held* shards. If a node has < N shards locally, the tick
   logs `unrecoverable` even when peers could supply the missing pieces.
@@ -293,13 +293,13 @@ PUT     POST /api/v0/add?erasure=N+M  (multipart)
 GET     POST /api/v0/cat?arg=<manifest_cid_or_unixfs>
 GET tar POST /api/v0/get?arg=<manifest_cid_or_unixfs>
 status  POST /api/v0/erasure/status?arg=<manifest_cid>
-DHT     POST /api/v0/.../coc_dhtFindProviders?cid=<...>  (RPC port)
+DHT     POST /api/v0/.../pali_dhtFindProviders?cid=<...>  (RPC port)
 ```
 
 ## Contacts
 
 For Phase Q questions or follow-up work, reference:
-- Tracking issue: [chainofclaw/COC#68](https://github.com/chainofclaw/COC/issues/68)
+- Tracking issue: [palimesh/palimesh#68](https://github.com/palimesh/palimesh/issues/68)
 - Design: `docs/archive/phases/phase-q-erasure-coding.md`
 - Q.7 validation: `docs/archive/phases/phase-q-validation-2026-05-07.md`
 - Benchmark replay: `scripts/phase-q-benchmark/`

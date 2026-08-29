@@ -1,4 +1,4 @@
-# COC Website 实施总结
+# Palimesh Website 实施总结
 
 ## 已完成的工作
 
@@ -33,7 +33,7 @@
 - ✅ 实时统计仪表盘 (复用NetworkStats组件)
 - ✅ 节点信息展示 (运行时、版本、端点)
 - ✅ 性能指标卡片 (平均出块时间、TPS、Gas使用)
-- ✅ 验证者列表 (coc_validators RPC)
+- ✅ 验证者列表 (pali_validators RPC)
 - ✅ 最近区块表格 (链接到explorer)
 - ✅ 快速链接面板
 
@@ -126,7 +126,7 @@ website/
 
 ### 1. 实时数据更新
 - `NetworkStats` 组件使用 `useEffect` + `setInterval` 每5秒更新
-- 复用 `ethers.js` 和 `rpcCall` 与COC节点通信
+- 复用 `ethers.js` 和 `rpcCall` 与Palimesh节点通信
 - 优雅的加载状态和错误处理
 
 ### 2. 响应式设计
@@ -183,7 +183,7 @@ NEXT_PUBLIC_WS_URL=ws://127.0.0.1:18781
 
 Website 需要以下服务运行:
 
-1. **COC Node** (端口 18780 RPC, 18781 WS)
+1. **Palimesh Node** (端口 18780 RPC, 18781 WS)
    ```bash
    cd node
    npm start
@@ -235,10 +235,10 @@ Website 需要以下服务运行:
 
 ## 总结
 
-COC Website 已完整实现以下目标:
+Palimesh Website 已完整实现以下目标:
 
 ✅ **项目介绍** - 基于whitepaper的详细说明  
-✅ **网络状态** - 实时监控COC网络  
+✅ **网络状态** - 实时监控Palimesh网络  
 ✅ **浏览器集成** - 外部链接到独立explorer  
 ✅ **响应式设计** - 支持移动端和桌面端  
 ✅ **生产就绪** - 构建成功,可部署

@@ -22,7 +22,7 @@ import { LevelDatabase } from "../../../node/src/storage/db.ts"
 import { BlockIndex } from "../../../node/src/storage/block-index.ts"
 import type { Hex } from "../../../node/src/blockchain-types.ts"
 
-const DATA_DIR = process.env.COC_DATA_DIR ?? "/data/coc"
+const DATA_DIR = process.env.PALI_DATA_DIR ?? "/data/coc"
 
 async function main(): Promise<void> {
   const args = process.argv.slice(2)

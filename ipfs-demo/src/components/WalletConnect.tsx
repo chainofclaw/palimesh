@@ -33,7 +33,7 @@ export function WalletConnect({ wallet }: Props) {
 
   const shortAddr = `${wallet.address!.slice(0, 6)}...${wallet.address!.slice(-4)}`;
   const balDisplay =
-    parseFloat(wallet.balance).toFixed(4).replace(/\.?0+$/, "") + " COC";
+    parseFloat(wallet.balance).toFixed(4).replace(/\.?0+$/, "") + " Palimesh";
 
   return (
     <div className="flex items-center gap-3">
@@ -42,7 +42,7 @@ export function WalletConnect({ wallet }: Props) {
           onClick={wallet.switchChain}
           className="rounded-lg bg-yellow-600 px-3 py-1.5 text-xs font-medium text-white hover:bg-yellow-500"
         >
-          Switch to COC
+          Switch to Palimesh
         </button>
       )}
       <div className="rounded-lg bg-gray-800 px-3 py-1.5 text-sm">

@@ -1,5 +1,5 @@
 /**
- * EVM runtime bytecode pool for COC stress / probe scripts.
+ * EVM runtime bytecode pool for Palimesh stress / probe scripts.
  *
  * Captures the hand-assembled runtimes exercised during the 2026-05-17
  * Ralph-loop stress session so they become reusable instead of being

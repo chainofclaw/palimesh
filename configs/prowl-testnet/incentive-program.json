@@ -61,7 +61,7 @@
     "manualReview": "Top rewards require manual verification"
   },
   "tracking": {
-    "method": "On-chain metrics via coc_chainStats + coc_getValidators RPC",
-    "dashboard": "explorer.prowl.chainofclaw.com/validators"
+    "method": "On-chain metrics via pali_chainStats + pali_getValidators RPC",
+    "dashboard": "explorer.prowl.palimesh.io/validators"
   }
 }

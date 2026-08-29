@@ -196,7 +196,7 @@ async function registerNode(manager: Contract, funder: { sendTransaction: (tx: {
   const serviceCommitment = keccak256(toUtf8Bytes("svc-hardhat"))
   const endpointCommitment = keccak256(toUtf8Bytes(`ep-hardhat-${Date.now()}-${Math.random()}`))
   const metadataHash = keccak256(toUtf8Bytes("meta-hardhat"))
-  const ownershipDigest = keccak256(solidityPacked(["string", "bytes32", "address"], ["coc-register:", nodeId, operator.address]))
+  const ownershipDigest = keccak256(solidityPacked(["string", "bytes32", "address"], ["palimesh-register:", nodeId, operator.address]))
   const ownershipSig = await operator.signMessage(Buffer.from(ownershipDigest.slice(2), "hex"))
 
   await (await manager.connect(operator).registerNode(
@@ -300,7 +300,7 @@ class CrashOnceOpenChallengeContract {
 test("relayer v2 recovery works against real Hardhat JSON-RPC + deployed PoSeManagerV2", async () => {
   const port = await getFreePort()
   const node = await startHardhatNode(port)
-  const tempDir = mkdtempSync(join(tmpdir(), "coc-hardhat-recovery-"))
+  const tempDir = mkdtempSync(join(tmpdir(), "palimesh-hardhat-recovery-"))
   const evidencePath = join(tempDir, "evidence-agent.jsonl")
   const pendingPath = join(tempDir, "pending-challenges-v2.json")
 

@@ -14,20 +14,20 @@ data.
 ## Architecture target
 
 ```
-Host: 199.192.16.79 (clawchain-server)
+Host: 199.192.16.79 (palimesh-server)
 ├── systemd (Phase N1) — native validators on host network
-│   ├── coc-node@1.service  → /var/lib/coc/node-1
+│   ├── palimesh-node@1.service  → /var/lib/coc/node-1
 │   │   RPC 28780 · WS 28781 · P2P 29780 · Wire 29781 · IPFS 28786 · /metrics 9101
-│   ├── coc-node@2.service  → /var/lib/coc/node-2
+│   ├── palimesh-node@2.service  → /var/lib/coc/node-2
 │   │   RPC 28782 · WS 28783 · P2P 29782 · Wire 29783 · /metrics 9102
-│   └── coc-node@3.service  → /var/lib/coc/node-3
+│   └── palimesh-node@3.service  → /var/lib/coc/node-3
 │       RPC 28784 · WS 28785 · P2P 29784 · Wire 29785 · /metrics 9103
 └── docker
-    ├── coc-sync-node       host RPC 18780 · WS 18781 · P2P 19880 · Wire 19881 · /metrics 9104
-    ├── coc-relayer / coc-agent  → host.docker.internal:28780 (validator-1 RPC)
-    ├── coc-faucet / coc-explorer
-    ├── coc-light-1 (D1)    tmpfs /data/coc/blocks=200m, NODE_MODE=light
-    └── coc-light-2 (D1, optional)
+    ├── palimesh-sync-node       host RPC 18780 · WS 18781 · P2P 19880 · Wire 19881 · /metrics 9104
+    ├── palimesh-relayer / palimesh-agent  → host.docker.internal:28780 (validator-1 RPC)
+    ├── palimesh-faucet / palimesh-explorer
+    ├── palimesh-light-1 (D1)    tmpfs /data/coc/blocks=200m, NODE_MODE=light
+    └── palimesh-light-2 (D1, optional)
 ```
 
 **External port preservation guarantee**: every external (host-side) port
@@ -45,7 +45,7 @@ entry (added at deploy time).
 ## Pre-flight checklist
 
 - [ ] 24h soak complete; `docs/soak-reports/<runId>.md` archived.
-- [ ] Phase J/M images deployed (`coc-node:phase-j-local-m1`).
+- [ ] Phase J/M images deployed (`palimesh-node:phase-j-local-m1`).
 - [ ] Server has `node` 22+ at `/usr/bin/node`. Verify:
       `node --version` from the `coc` user.
 - [ ] `coc:coc` system user/group exists; create if missing:
@@ -69,9 +69,9 @@ From a workstation with this checkout:
 
 ```bash
 # Systemd template + envs
-scp docker/systemd/coc-node@.service                root@host:/etc/systemd/system/
-scp docker/systemd/native-env/node-{1,2,3}.env      root@host:/etc/coc/
-scp docker/systemd/native-configs/node-{1,2,3}.json root@host:/etc/coc/
+scp docker/systemd/palimesh-node@.service                root@host:/etc/systemd/system/
+scp docker/systemd/native-env/node-{1,2,3}.env      root@host:/etc/palimesh/
+scp docker/systemd/native-configs/node-{1,2,3}.json root@host:/etc/palimesh/
 
 # Repo at /opt/coc (one-time)
 rsync -avz --delete --exclude .git --exclude node_modules ./ root@host:/opt/coc/
@@ -80,7 +80,7 @@ rsync -avz --delete --exclude .git --exclude node_modules ./ root@host:/opt/coc/
 On the server:
 
 ```bash
-sudo chown -R coc:coc /etc/coc /opt/coc /var/log/coc
+sudo chown -R coc:coc /etc/palimesh /opt/coc /var/log/coc
 sudo mkdir -p /var/lib/coc/{node-1,node-2,node-3}
 sudo chown -R coc:coc /var/lib/coc
 sudo systemctl daemon-reload
@@ -95,7 +95,7 @@ iterations.
 N=1   # then 2, then 3
 
 # 1) Stop the docker container with grace period
-docker stop coc-node-${N}
+docker stop palimesh-node-${N}
 
 # 2) Copy LevelDB + IPFS blockstore from docker volume to host fs
 sudo cp -a /var/lib/docker/volumes/docker_node${N}-data/_data/. /var/lib/coc/node-${N}/
@@ -105,8 +105,8 @@ sudo chown -R coc:coc /var/lib/coc/node-${N}/
 sudo -u coc ls /var/lib/coc/node-${N}/leveldb-chain/ | wc -l   # >0
 
 # 4) Start the native service
-sudo systemctl enable --now coc-node@${N}.service
-sudo systemctl status coc-node@${N}.service                    # active (running)
+sudo systemctl enable --now palimesh-node@${N}.service
+sudo systemctl status palimesh-node@${N}.service                    # active (running)
 
 # 5) Verify chain progression for ~30s on the canonical external port
 #    (28780 for N=1, 28782 for N=2, 28784 for N=3)
@@ -118,7 +118,7 @@ for i in 1 2 3; do
 done
 
 # 6) Verify Prometheus metrics endpoint (9101/9102/9103 unchanged)
-curl -s http://localhost:910${N}/metrics | grep -E '^coc_block_height '
+curl -s http://localhost:910${N}/metrics | grep -E '^pali_block_height '
 ```
 
 Stop here if step 5 doesn't show monotonic growth — see the rollback
@@ -134,8 +134,8 @@ service:
 extra_hosts:
   - "host.docker.internal:host-gateway"
 environment:
-  - COC_BOOTSTRAP_PEERS=http://host.docker.internal:29780,http://host.docker.internal:29782,http://host.docker.internal:29784
-  - COC_RELAYER_RPC_URL=http://host.docker.internal:28780
+  - PALI_BOOTSTRAP_PEERS=http://host.docker.internal:29780,http://host.docker.internal:29782,http://host.docker.internal:29784
+  - PALI_RELAYER_RPC_URL=http://host.docker.internal:28780
 ```
 
 The exact env var names depend on each service's config; the
@@ -153,7 +153,7 @@ docker compose -f docker/docker-compose.testnet.yml up -d --no-deps \
 ```bash
 docker compose -f docker/docker-compose.light.yml up -d light-1
 sleep 60
-docker exec coc-light-1 du -sh /data/coc/blocks   # ≤200M
+docker exec palimesh-light-1 du -sh /data/coc/blocks   # ≤200M
 ```
 
 ### 5. Final verification
@@ -168,11 +168,11 @@ done
 # All three validators emit M1 metrics
 for p in 9101 9102 9103; do
   curl -s http://localhost:$p/metrics | \
-    grep -E '^coc_(bft_equivocations_total|fork_choice_max_depth_blocks) ' || echo "MISSING $p"
+    grep -E '^pali_(bft_equivocations_total|fork_choice_max_depth_blocks) ' || echo "MISSING $p"
 done
 
 # Light peer respects 200MB cap
-docker exec coc-light-1 du -sh /data/coc /data/coc/blocks
+docker exec palimesh-light-1 du -sh /data/coc /data/coc/blocks
 ```
 
 ## Rollback
@@ -182,11 +182,11 @@ If a native validator fails to advance the chain or crashes-on-restart:
 ```bash
 N=1   # the broken one
 
-sudo systemctl stop coc-node@${N}.service
-sudo systemctl disable coc-node@${N}.service
+sudo systemctl stop palimesh-node@${N}.service
+sudo systemctl disable palimesh-node@${N}.service
 
 # Original docker volume is untouched. Restart the docker container.
-docker start coc-node-${N}
+docker start palimesh-node-${N}
 
 # Wait 30s, verify chain advances, escalate to maintainer.
 ```
@@ -200,7 +200,7 @@ docker container is healthy again.
 The first production run of this runbook surfaced three issues worth
 calling out before the next operator follows it:
 
-1. **`COC_IPFS_PORT` env is NOT honored by the loader**. The IPFS HTTP
+1. **`PALI_IPFS_PORT` env is NOT honored by the loader**. The IPFS HTTP
    port is read from `ipfsPort` in the JSON config, not from the env
    variable. The bundled `native-configs/node-{1,2,3}.json` now sets
    `ipfsPort` (and `ipfsBind`) explicitly. If you rebuild configs from
@@ -210,27 +210,27 @@ calling out before the next operator follows it:
    etc). The first native validator can bind canonical ports on the
    host, but the surviving docker peers cannot reach it without a
    compose-side `extra_hosts` patch for every service. Practical
-   advice: stop docker auxiliaries' tx flow (`docker stop coc-relayer
-   coc-agent`), migrate all three validators in a single cluster-wide
+   advice: stop docker auxiliaries' tx flow (`docker stop palimesh-relayer
+   palimesh-agent`), migrate all three validators in a single cluster-wide
    move, then patch + recreate the docker auxiliaries.
 3. **A synchronous restart is part of the migration**, not optional.
    Each per-validator restart during migration creates an opportunity
    for divergent-mempool round attempts that the EquivocationDetector
    logs and which then prevent quorum until evidence ages out. Do one
-   final `systemctl restart coc-node@1 coc-node@2 coc-node@3` after
-   tx flow is halted; resume tx flow only after `coc_block_height`
+   final `systemctl restart palimesh-node@1 palimesh-node@2 palimesh-node@3` after
+   tx flow is halted; resume tx flow only after `pali_block_height`
    advances on all three.
 
 ## Long-term ops
 
-- **Logs**: `journalctl -u coc-node@1.service -f` (also written to
+- **Logs**: `journalctl -u palimesh-node@1.service -f` (also written to
   `/var/log/coc/node-1.log` per unit config).
-- **Restart**: `sudo systemctl restart coc-node@1`.
+- **Restart**: `sudo systemctl restart palimesh-node@1`.
 - **Disk usage**: `du -sh /var/lib/coc/node-1` should plateau at the
   archive workload (~5-30GB depending on tx volume); add 50GB cap
   enforcement via filesystem quota if needed.
 - **Light peer storage cap**: observed via
-  `coc_ipfs_repo_size_bytes` (Phase S follow-up — until then, `du -sh`
+  `pali_ipfs_repo_size_bytes` (Phase S follow-up — until then, `du -sh`
   inside the container).
 - **Image rebuild**: light peers run the docker image; rebuild on every
   Phase J/M/P deploy. Native validators run `node` against

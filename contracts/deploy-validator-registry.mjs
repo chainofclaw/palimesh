@@ -21,7 +21,7 @@ const PEERS = [
   "http://199.192.16.79:28782",
   "http://199.192.16.79:28784",
 ]
-const TARGET_URL = process.env.COC_RPC_URL || "http://199.192.16.79:28782"
+const TARGET_URL = process.env.PALI_RPC_URL || "http://199.192.16.79:28782"
 const DEPLOYER_PK = process.env.DEPLOYER_PRIVATE_KEY
   || "0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80"
 const DEPLOYER_ADDR = new Wallet(DEPLOYER_PK).address
@@ -38,7 +38,7 @@ const ANVIL_KEYS = [
 // override for unusual layouts.
 import { fileURLToPath } from "node:url"
 const __dirname = dirname(fileURLToPath(import.meta.url))
-const ART = process.env.COC_VALIDATOR_REGISTRY_ARTIFACT
+const ART = process.env.PALI_VALIDATOR_REGISTRY_ARTIFACT
   || join(__dirname, "artifacts/contracts-src/governance/ValidatorRegistry.sol/ValidatorRegistry.json")
 
 // ── Helpers ────────────────────────────────────────────────────────────
@@ -177,7 +177,7 @@ async function main() {
 
   // ── Persist deploy summary ─────────────────────────────────────────
 
-  const outDir = process.env.COC_DEPLOY_OUT_DIR || join(__dirname, "artifacts-coc")
+  const outDir = process.env.PALI_DEPLOY_OUT_DIR || join(__dirname, "artifacts-coc")
   await mkdir(outDir, { recursive: true })
   const out = join(outDir, "validator-registry-deploy.json")
   const summary = {

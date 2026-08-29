@@ -1,4 +1,4 @@
-# EVM Rollup Interfaces for COC PoSe (v0.1 draft)
+# EVM Rollup Interfaces for Palimesh PoSe (v0.1 draft)
 
 ## 1. Architecture Boundary
 

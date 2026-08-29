@@ -216,7 +216,7 @@ describe("Cancun EVM compatibility", () => {
       const excess = calculateExcessBlobGas(parentExcess, parentBlobGasUsed)
       assert.equal(excess, 0n, `block ${i}: excess should be 0`)
       parentExcess = excess
-      parentBlobGasUsed = 0n // COC never uses blob gas
+      parentBlobGasUsed = 0n // Palimesh never uses blob gas
     }
   })
 
@@ -273,7 +273,7 @@ describe("Cancun EVM compatibility", () => {
   })
 
   it("empty Cancun blocks still apply parentBeaconBlockRoot state updates", async () => {
-    const tmpDir = await mkdtemp(join(tmpdir(), "coc-cancun-empty-"))
+    const tmpDir = await mkdtemp(join(tmpdir(), "palimesh-cancun-empty-"))
 
     try {
       const evm = await EvmChain.create(CHAIN_ID, undefined, { hardfork: Hardfork.Cancun })

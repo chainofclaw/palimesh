@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Restore COC node data from backup
+# Restore Palimesh node data from backup
 # Usage: bash scripts/restore-node.sh <backup.tar.gz> [target_dir]
 set -euo pipefail
 
@@ -9,7 +9,7 @@ if [[ $# -lt 1 ]]; then
 fi
 
 BACKUP_FILE="$1"
-TARGET_DIR="${2:-${COC_DATA_DIR:-$HOME/.clawdbot/coc}}"
+TARGET_DIR="${2:-${PALI_DATA_DIR:-$HOME/.clawdbot/coc}}"
 
 if [[ ! -f "$BACKUP_FILE" ]]; then
   echo "Error: backup file not found: $BACKUP_FILE"
@@ -26,7 +26,7 @@ echo "  Backup file is valid."
 
 # Check if node is running
 if pgrep -f "node.*index.ts" >/dev/null 2>&1; then
-  echo "Warning: COC node appears to be running."
+  echo "Warning: Palimesh node appears to be running."
   echo "Please stop the node before restoring."
   echo "  e.g.: kill \$(pgrep -f 'node.*index.ts')"
   exit 1

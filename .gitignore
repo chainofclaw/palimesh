@@ -68,11 +68,11 @@ docs/*.zh.md
 scripts/gcloud/config.env
 
 # Business plan documents (kept locally, not in public repo)
-docs/COC_business_plan*
+docs/palimesh_business_plan*
 docs/*business_plan*
 docs/*business-plan*
 
 # Pitch deck (kept locally, not in public repo)
-docs/COC_pitch_deck*
+docs/palimesh_pitch_deck*
 docs/*pitch_deck*
 docs/*pitch-deck*

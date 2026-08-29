@@ -22,7 +22,7 @@ let dbDir: string
 let db: LevelDatabase
 
 beforeEach(async () => {
-  dbDir = mkdtempSync(join(tmpdir(), "coc-snap-apply-"))
+  dbDir = mkdtempSync(join(tmpdir(), "palimesh-snap-apply-"))
   db = new LevelDatabase(dbDir)
   await db.open()
 })
@@ -44,7 +44,7 @@ async function collect(trie: PersistentStateTrie) {
 
 function makeSnapshot() {
   // Mix the realistic peer shapes: some accounts with KECCAK256_RLP_S empty
-  // root, some with COC sentinel, one contract with storage + code.
+  // root, some with Palimesh sentinel, one contract with storage + code.
   return {
     version: 1 as const,
     stateRoot: "0x" + "ab".repeat(32),  // bogus — we won't pass expectedStateRoot

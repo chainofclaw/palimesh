@@ -1,9 +1,9 @@
 {
-  "name": "coc-blockchain",
+  "name": "palimesh-blockchain",
   "version": "0.1.0",
   "private": true,
   "type": "module",
-  "description": "ChainOfClaw - EVM-compatible blockchain with PoSe settlement",
+  "description": "Palimesh - EVM-compatible blockchain with PoSe settlement",
   "workspaces": [
     "node",
     "contracts",
@@ -26,7 +26,7 @@
     "ipfs",
     "storage"
   ],
-  "author": "ChainOfClaw",
+  "author": "Palimesh",
   "license": "MIT",
   "overrides": {
     "multiformats": "^13.3.2"

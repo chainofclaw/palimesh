@@ -96,7 +96,7 @@ describe("J3.01 — stateRoot divergence auto-recovery", () => {
     // Inject the fault. inject-stateroot-corruption.sh stops the container,
     // overwrites the leveldb stateRoot field, and restarts.
     execSync(
-      `bash ${import.meta.dirname}/../scripts/inject-stateroot-corruption.sh coc-mn-node-1 ${corruptionHeight}`,
+      `bash ${import.meta.dirname}/../scripts/inject-stateroot-corruption.sh palimesh-mn-node-1 ${corruptionHeight}`,
       { stdio: "inherit" },
     )
 

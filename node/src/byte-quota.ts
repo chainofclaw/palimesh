@@ -59,10 +59,10 @@ export class ByteQuota {
   /**
    * Reserve `declaredBytes` against the key + global budget. Returns
    * `ok: false` with `reason` populated when either limit would be
-   * exceeded. Test runners can bypass via COC_IPFS_QUOTA_DISABLED=1.
+   * exceeded. Test runners can bypass via PALI_IPFS_QUOTA_DISABLED=1.
    */
   tryReserve(key: string, declaredBytes: number): QuotaCheckResult {
-    if (process.env.COC_IPFS_QUOTA_DISABLED === "1") {
+    if (process.env.PALI_IPFS_QUOTA_DISABLED === "1") {
       return { ok: true, reservation: { commit: () => {}, refund: () => {} } }
     }
     if (!Number.isFinite(declaredBytes) || declaredBytes < 0) {

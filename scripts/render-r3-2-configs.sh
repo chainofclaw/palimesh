@@ -78,4 +78,4 @@ echo
 echo "All 5 configs in ${OUT_DIR}. Sanity check with:"
 echo "  node -e 'JSON.parse(require(\"fs\").readFileSync(\"${OUT_DIR}/node-1.json\",\"utf8\"))'"
 echo
-echo "Copy to each host as /etc/coc/node-1.json + bring up coc-node service."
+echo "Copy to each host as /etc/palimesh/node-1.json + bring up palimesh-node service."

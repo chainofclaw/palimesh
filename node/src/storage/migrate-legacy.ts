@@ -129,7 +129,7 @@ const isMainModule =
 if (isMainModule) {
   const dataDir =
     process.argv[2] ||
-    process.env.COC_DATA_DIR ||
+    process.env.PALI_DATA_DIR ||
     join(homedir(), ".clawdbot", "coc")
 
   console.log(`Migrating legacy snapshot from: ${dataDir}`)

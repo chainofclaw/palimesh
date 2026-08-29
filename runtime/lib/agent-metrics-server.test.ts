@@ -39,7 +39,7 @@ function httpRequest(
 
 describe("agent-metrics-server", () => {
   it("serves /metrics, /health and 404", async () => {
-    let metricsBody = "coc_agent_pending_v1 1\n"
+    let metricsBody = "pali_agent_pending_v1 1\n"
     const handle = await startAgentMetricsServer({
       bind: "127.0.0.1",
       port: 0,
@@ -52,7 +52,7 @@ describe("agent-metrics-server", () => {
       assert.match(metricsResp.contentType, /text\/plain/)
       assert.equal(metricsResp.body, metricsBody)
 
-      metricsBody = "coc_agent_pending_v1 2\n"
+      metricsBody = "pali_agent_pending_v1 2\n"
       const metricsResp2 = await httpGet(handle.bind, handle.port, "/metrics")
       assert.equal(metricsResp2.statusCode, 200)
       assert.equal(metricsResp2.body, metricsBody)
@@ -79,7 +79,7 @@ describe("agent-metrics-server", () => {
     const handle = await startAgentMetricsServer({
       bind: "127.0.0.1",
       port: 0,
-      getPrometheus: () => "coc_agent_pending_v1 0\n",
+      getPrometheus: () => "pali_agent_pending_v1 0\n",
     })
     try {
       // HEAD /metrics → 200 (body suppressed by Node)

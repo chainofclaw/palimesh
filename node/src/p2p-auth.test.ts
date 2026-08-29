@@ -104,7 +104,7 @@ describe("P2P auth envelope", () => {
   })
 
   it("persists auth nonce across tracker restarts", () => {
-    const dir = mkdtempSync(join(tmpdir(), "coc-p2p-auth-"))
+    const dir = mkdtempSync(join(tmpdir(), "palimesh-p2p-auth-"))
     try {
       const file = join(dir, "nonce.log")
       const tracker1 = new PersistentAuthNonceTracker({
@@ -128,7 +128,7 @@ describe("P2P auth envelope", () => {
   })
 
   it("drops expired persisted nonces based on ttl", () => {
-    const dir = mkdtempSync(join(tmpdir(), "coc-p2p-auth-"))
+    const dir = mkdtempSync(join(tmpdir(), "palimesh-p2p-auth-"))
     try {
       const file = join(dir, "nonce.log")
       writeFileSync(file, "100\told-nonce\n80\tolder-nonce\n")

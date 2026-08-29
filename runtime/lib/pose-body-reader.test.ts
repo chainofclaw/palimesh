@@ -4,7 +4,7 @@ import http from "node:http";
 import { once } from "node:events";
 import { readBoundedBody, MAX_RUNTIME_POSE_BODY } from "./pose-body-reader.ts";
 
-// #292: end-to-end test of the bounded body reader. Pre-fix coc-node.ts's
+// #292: end-to-end test of the bounded body reader. Pre-fix palimesh-node.ts's
 // /pose/* POSTs accumulated the request body with no size cap — a
 // multi-GB body OOMed the process. This helper now enforces a 1 MB cap
 // (matching node/src/pose-http.ts MAX_POSE_BODY) so the runtime path is

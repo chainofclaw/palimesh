@@ -12,7 +12,7 @@ async function createTestEngine(): Promise<{ engine: ChainEngine; evm: EvmChain 
   await evm.prefund([{ address: "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266", balanceWei: "10000000000000000000000" }])
   const engine = new ChainEngine(
     {
-      dataDir: "/tmp/coc-test-" + Date.now(),
+      dataDir: "/tmp/palimesh-test-" + Date.now(),
       nodeId: NODE_ID,
       validators: [NODE_ID],
       finalityDepth: 3,
@@ -211,7 +211,7 @@ test("expectedProposer round-robins across validators", async () => {
   const evm = await EvmChain.create(18780)
   const engine = new ChainEngine(
     {
-      dataDir: "/tmp/coc-test-" + Date.now(),
+      dataDir: "/tmp/palimesh-test-" + Date.now(),
       nodeId: "v1",
       validators: ["v1", "v2", "v3"],
       finalityDepth: 3,

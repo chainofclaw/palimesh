@@ -8,7 +8,7 @@
  *   C4.2 — lying-node scoring: when a prover returns a Merkle-valid
  *     receipt but the audit-sampled peer re-fetch produces a different
  *     leafHash, the receipt collapses to resultCode=InvalidStorageAudit.
- *     Wiring the audit result into scoring lives in coc-agent.ts; the
+ *     Wiring the audit result into scoring lives in palimesh-agent.ts; the
  *     contract tested here is that `auditStorageReceipt` correctly
  *     classifies a fabricated proof as `audited: true, passed: false`.
  *
@@ -119,7 +119,7 @@ describe("Phase C4.2 — lying-node audit catches fabricated proofs", () => {
         assert.equal(result.reason, "leaf-hash-mismatch")
         // `actual` is the hash of what the honest peer holds; `expected`
         // is what the prover claimed. The runtime plumbs this mismatch
-        // into `resultCode = InvalidStorageAudit` via the coc-agent
+        // into `resultCode = InvalidStorageAudit` via the palimesh-agent
         // scoring pipe, which is the scoring-level punishment we rely on.
         assert.equal(
           result.expected.toLowerCase(),

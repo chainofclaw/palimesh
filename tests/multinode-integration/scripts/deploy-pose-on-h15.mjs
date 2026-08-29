@@ -1,6 +1,6 @@
 /**
  * R2.1 Phase A — deploy the PoSe v2 contract suite on the H15 fork-off
- * devnet (chainId 88888) so coc-agent + coc-relayer sidecars can drive a
+ * devnet (chainId 88888) so palimesh-agent + palimesh-relayer sidecars can drive a
  * full epoch lifecycle against an isolated chain.
  *
  * Reuses contracts/deploy-all-registries-newchain.mjs and init-pose-newchain.mjs
@@ -25,11 +25,11 @@ const DEPLOYER_KEY =
   process.env.DEPLOYER_KEY ||
   "0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80"
 const CHAIN_ID = 88888
-const OUT_PATH = "/passinger/projects/ClawdBot/COC/tests/multinode-integration/configs-h15/deployed-pose.json"
-const ARTIFACTS = "/passinger/projects/ClawdBot/COC/contracts/artifacts/contracts-src"
+const OUT_PATH = "/passinger/projects/ClawdBot/Palimesh/tests/multinode-integration/configs-h15/deployed-pose.json"
+const ARTIFACTS = "/passinger/projects/ClawdBot/Palimesh/contracts/artifacts/contracts-src"
 
 // Same set as R1.1 governance suite + PoSeManagerV2 + CidRegistry. The
-// CidRegistry must be present because runtime/coc-agent.ts initializes a
+// CidRegistry must be present because runtime/palimesh-agent.ts initializes a
 // CidRegistryReader against it during startup; without a valid registry
 // address the reader's refresh() can hang silently (no error in logs)
 // and the agent's setInterval(tick) never registers — the symptom is
@@ -221,7 +221,7 @@ console.log(`  setInsuranceFund → ${deployed.InsuranceFund.address}`)
 
 // ── Step 5: PoSeManagerV2.registerNode for each of 5 validators ────────────
 // Per contracts/test/pose-v2-e2e.test.cjs:133 + PoSeManagerV2.sol:761
-//   ownershipSig = personal_sign( keccak256("coc-register:" || nodeId || operator_addr) )
+//   ownershipSig = personal_sign( keccak256("palimesh-register:" || nodeId || operator_addr) )
 // where operator = node owner = msg.sender of registerNode().
 // Each validator wallet stakes itself (operator == nodeAddr), bond = MIN_BOND
 // (read from contract; defaults 0.02 ETH per recent deploys).
@@ -258,13 +258,13 @@ for (let i = 0; i < VALIDATOR_KEYS.length; i++) {
 
   // serviceFlags = 7 (challenger + aggregator + storage all enabled)
   const serviceFlags = 7
-  const serviceCommitment = ethers.keccak256(ethers.toUtf8Bytes(`coc-svc-h15-v${i + 1}`))
-  const endpointCommitment = ethers.keccak256(ethers.toUtf8Bytes(`coc-ep-h15-v${i + 1}`))
+  const serviceCommitment = ethers.keccak256(ethers.toUtf8Bytes(`palimesh-svc-h15-v${i + 1}`))
+  const endpointCommitment = ethers.keccak256(ethers.toUtf8Bytes(`palimesh-ep-h15-v${i + 1}`))
   const metadataHash = ethers.keccak256(ethers.toUtf8Bytes("h15-fork-meta"))
 
-  // ownershipSig: personal_sign of packed("coc-register:", poseNodeId, operatorAddr)
+  // ownershipSig: personal_sign of packed("palimesh-register:", poseNodeId, operatorAddr)
   const messageHash = ethers.keccak256(
-    ethers.solidityPacked(["string", "bytes32", "address"], ["coc-register:", poseNodeId, w.address])
+    ethers.solidityPacked(["string", "bytes32", "address"], ["palimesh-register:", poseNodeId, w.address])
   )
   const ownershipSig = await w.signMessage(ethers.getBytes(messageHash))
 
@@ -287,7 +287,7 @@ console.log(`==> PoSeManagerV2 active node count: ${activeNodeCount}/5`)
 
 // ── Step 6: enableEmission (PoSeManagerV2 needs token + genesisEpoch to fire) ──
 // emission is owner-only; token can be a dummy (we use deployer EOA address as
-// placeholder since chainId 88888 has no real COC token deployed). genesisEpoch
+// placeholder since chainId 88888 has no real PALI token deployed). genesisEpoch
 // = current block timestamp / 60 minutes (1-hour epochs per agent log evidence).
 const poseEmitAbi = [
   "function enableEmission(address token, uint64 _genesisEpoch) external",
@@ -299,8 +299,8 @@ if (!alreadyEnabled) {
   // genesisEpoch = current epoch (matches agent's epochId computation)
   const currentEpoch = Math.floor(Date.now() / 3_600_000)
   console.log(`\n==> enableEmission(token=deployer, genesisEpoch=${currentEpoch})`)
-  // Use deployer address as a dummy COC token address — fork chain has no
-  // ERC20 deployed; agent doesn't actually transfer COC, just reads epoch state.
+  // Use deployer address as a dummy PALI token address — fork chain has no
+  // ERC20 deployed; agent doesn't actually transfer Palimesh, just reads epoch state.
   const emTx = await poseE.enableEmission(wallet.address, currentEpoch, {
     gasPrice, type: 0, gasLimit: 100_000, nonce: nonce++,
   })

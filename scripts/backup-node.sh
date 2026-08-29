@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
-# Backup COC node data (LevelDB)
+# Backup Palimesh node data (LevelDB)
 # Usage: bash scripts/backup-node.sh [data_dir] [output_dir]
 set -euo pipefail
 
-DATA_DIR="${1:-${COC_DATA_DIR:-$HOME/.clawdbot/coc}}"
+DATA_DIR="${1:-${PALI_DATA_DIR:-$HOME/.clawdbot/coc}}"
 OUTPUT_DIR="${2:-./backups}"
-RPC_URL="${COC_RPC_URL:-http://127.0.0.1:18780}"
+RPC_URL="${PALI_RPC_URL:-http://127.0.0.1:18780}"
 
 mkdir -p "$OUTPUT_DIR"
 
@@ -24,7 +24,7 @@ if command -v curl &>/dev/null; then
 fi
 
 DATE=$(date -u +%Y%m%d-%H%M%S)
-BACKUP_NAME="coc-backup-${DATE}-h${HEIGHT}"
+BACKUP_NAME="palimesh-backup-${DATE}-h${HEIGHT}"
 BACKUP_PATH="${OUTPUT_DIR}/${BACKUP_NAME}.tar.gz"
 
 echo "Starting backup..."

@@ -1,4 +1,4 @@
-# COC 核心算法（中文）
+# Palimesh 核心算法（中文）
 
 ## 1) 出块者轮转
 **目标**：按区块高度确定出块者。
@@ -9,8 +9,8 @@
 - 仅该出块者可构造并广播区块 `h`。
 
 代码：
-- `COC/node/src/chain-engine.ts`（`expectedProposer` — 轮转制）
-- `COC/node/src/chain-engine-persistent.ts`（`expectedProposer` — 权益加权 + 降级回退）
+- `Palimesh/node/src/chain-engine.ts`（`expectedProposer` — 轮转制）
+- `Palimesh/node/src/chain-engine-persistent.ts`（`expectedProposer` — 权益加权 + 降级回退）
 
 ## 2) 区块哈希
 **目标**：确定性区块标识。
@@ -21,7 +21,7 @@
 - `baseFee` 和 `cumulativeWeight` 缺失时默认为 `0`。
 
 代码：
-- `COC/node/src/hash.ts`
+- `Palimesh/node/src/hash.ts`
 
 ## 3) Mempool 选择策略
 **目标**：确定性选取区块交易。
@@ -32,7 +32,7 @@
 - `gasPriceHistogram()`：按传统 `gasPrice` 分桶用于展示/分析。
 
 代码：
-- `COC/node/src/mempool.ts`
+- `Palimesh/node/src/mempool.ts`
 
 ## 4) 最终性深度
 **目标**：在深度 `D` 后标记区块 finalized。
@@ -41,7 +41,7 @@
 - 对 tip 高度 `H`，若 `H >= b.number + D`，则 `b.finalized = true`。
 
 代码：
-- `COC/node/src/chain-engine.ts`（`updateFinalityFlags`）
+- `Palimesh/node/src/chain-engine.ts`（`updateFinalityFlags`）
 
 ## 5) P2P 快照同步
 **目标**：通过 fork-choice 规则收敛至最优链。
@@ -55,7 +55,7 @@
 - 对等请求设置资源保护：单次请求超时 10s，请求体上限 2 MiB，响应体上限 4 MiB。状态快照请求设置 30s 超时和 16 MiB 响应限制。
 
 代码：
-- `COC/node/src/p2p.ts`，`COC/node/src/consensus.ts`
+- `Palimesh/node/src/p2p.ts`，`Palimesh/node/src/consensus.ts`
 
 ## 6) PoSe 挑战生成
 **目标**：按 epoch 生成可验证挑战。
@@ -66,7 +66,7 @@
 - 对挑战摘要签名。
 
 代码：
-- `COC/services/challenger/*`
+- `Palimesh/services/challenger/*`
 
 ## 7) 回执验证
 **目标**：验证挑战响应。
@@ -78,7 +78,7 @@
 - 按类型执行 U/S/R 校验。
 
 代码：
-- `COC/services/verifier/receipt-verifier.ts`
+- `Palimesh/services/verifier/receipt-verifier.ts`
 
 ## 8) 批次聚合
 **目标**：聚合回执并提交链上。
@@ -90,7 +90,7 @@
 - 生成 summaryHash（epoch + root + sample commitment）。
 
 代码：
-- `COC/services/aggregator/batch-aggregator.ts`
+- `Palimesh/services/aggregator/batch-aggregator.ts`
 
 ## 9) 奖励评分
 **目标**：按服务指标分配 epoch 奖励。
@@ -101,7 +101,7 @@
 - 软上限与溢出再分配。
 
 代码：
-- `COC/services/verifier/scoring.ts`
+- `Palimesh/services/verifier/scoring.ts`
 
 ## 10) 存储证明（兼容 IPFS）
 **目标**：用 Merkle 路径证明文件分片可用性。
@@ -114,9 +114,9 @@
 - 验证方基于 `(leafHash, merklePath, chunkIndex)` 复算 root 并比对。
 
 代码：
-- `COC/node/src/ipfs-unixfs.ts`
-- `COC/node/src/ipfs-merkle.ts`
-- `COC/runtime/coc-node.ts`
+- `Palimesh/node/src/ipfs-unixfs.ts`
+- `Palimesh/node/src/ipfs-merkle.ts`
+- `Palimesh/runtime/palimesh-node.ts`
 
 ## 11) 权益加权出块者选择
 **目标**：按验证者权益确定性选择出块者。
@@ -131,7 +131,7 @@
 - 治理未启用或无活跃验证者时降级为轮转制。
 
 代码：
-- `COC/node/src/chain-engine-persistent.ts`（`stakeWeightedProposer`）
+- `Palimesh/node/src/chain-engine-persistent.ts`（`stakeWeightedProposer`）
 
 ## 12) EIP-1559 动态 Base Fee
 **目标**：根据 Gas 利用率按区块调整 base fee。
@@ -145,7 +145,7 @@
 - `newBaseFee = parentBaseFee * (1 + changeRatio * 0.125)`。
 
 代码：
-- `COC/node/src/base-fee.ts`
+- `Palimesh/node/src/base-fee.ts`
 
 ## 13) 共识恢复状态机
 **目标**：区块生产或同步失败时优雅降级并恢复。
@@ -162,7 +162,7 @@
 - 强制恢复：在 `degraded` 状态停留超过 5 分钟（`MAX_DEGRADED_MS`）时，清除冷却并强制恢复。
 
 代码：
-- `COC/node/src/consensus.ts`
+- `Palimesh/node/src/consensus.ts`
 
 ## 14) BFT-lite 共识轮次
 **目标**：三阶段提交 + 权益加权法定人数实现区块最终性。
@@ -177,8 +177,8 @@
 - 超时处理：轮次在 prepare + commit 超时后失败。
 
 代码：
-- `COC/node/src/bft.ts`（轮次状态机、法定人数计算）
-- `COC/node/src/bft-coordinator.ts`（生命周期管理）
+- `Palimesh/node/src/bft.ts`（轮次状态机、法定人数计算）
+- `Palimesh/node/src/bft-coordinator.ts`（生命周期管理）
 
 ## 15) Tip 级分叉选择比较器（当前实现）
 **目标**：在竞争分叉中确定性选择链。
@@ -193,7 +193,7 @@
 - 同步时远端 `bftFinalized` 标志不被信任——远端候选一律硬编码为 `bftFinalized: false`，作为安全保守策略。
 
 代码：
-- `COC/node/src/fork-choice.ts`
+- `Palimesh/node/src/fork-choice.ts`
 
 ## 16) Kademlia DHT 路由
 **目标**：基于 XOR 距离路由的去中心化节点发现。
@@ -207,7 +207,7 @@
 - Sybil 保护：每 bucket 每 IP 最多 2 个节点（`MAX_PEERS_PER_IP_PER_BUCKET`）。
 
 代码：
-- `COC/node/src/dht.ts`
+- `Palimesh/node/src/dht.ts`
 
 ## 17) 二进制线协议
 **目标**：高效二进制帧格式用于 P2P 通信。
@@ -219,7 +219,7 @@
 - 消息类型：Handshake, Block, Transaction, BFT, Ping/Pong, FindNode/FindNodeResponse（DHT）。
 
 代码：
-- `COC/node/src/wire-protocol.ts`
+- `Palimesh/node/src/wire-protocol.ts`
 
 ## 18) DHT 网络迭代查找
 **目标**：通过 DHT 网络迭代查询发现节点。
@@ -233,7 +233,7 @@
 - 返回路由表中最终 K 个最近节点。
 
 代码：
-- `COC/node/src/dht-network.ts`（`iterativeLookup`）
+- `Palimesh/node/src/dht-network.ts`（`iterativeLookup`）
 
 ## 19) Wire Server/Client TCP 握手
 **目标**：在节点间建立经验证的 TCP 连接。
@@ -251,8 +251,8 @@
 - 重放防护边界：nonce 去重使用 BoundedSet(10,000)，本节点内存窗口语义（重启后清空，不跨节点共享）。
 
 代码：
-- `COC/node/src/wire-server.ts`
-- `COC/node/src/wire-client.ts`
+- `Palimesh/node/src/wire-server.ts`
+- `Palimesh/node/src/wire-client.ts`
 
 ## 20) 快照同步状态传输
 **目标**：从 peer 的 EVM 快照快速同步节点状态。
@@ -270,9 +270,9 @@
 - 安全前提：当前区块哈希负载不包含 `stateRoot`，因此 SnapSync 仍依赖快照提供方信誉；生产环境建议增加可信状态根锚定/多对等交叉校验。
 
 代码：
-- `COC/node/src/state-snapshot.ts`（`exportStateSnapshot`、`importStateSnapshot`）
-- `COC/node/src/consensus.ts`（`SnapSyncProvider` 接口）
-- `COC/node/src/p2p.ts`（`/p2p/state-snapshot` 端点）
+- `Palimesh/node/src/state-snapshot.ts`（`exportStateSnapshot`、`importStateSnapshot`）
+- `Palimesh/node/src/consensus.ts`（`SnapSyncProvider` 接口）
+- `Palimesh/node/src/p2p.ts`（`/p2p/state-snapshot` 端点）
 
 ## 21) BFT 等价检测
 **目标**：检测验证者双重投票以生成惩罚证据。
@@ -285,8 +285,8 @@
 - 裁剪在记录投票之后执行（而非之前），避免竞态条件。
 
 代码：
-- `COC/node/src/bft.ts`（`EquivocationDetector`）
-- `COC/node/src/bft-coordinator.ts`（集成）
+- `Palimesh/node/src/bft.ts`（`EquivocationDetector`）
+- `Palimesh/node/src/bft-coordinator.ts`（集成）
 
 ## 22) 双传输层区块/交易传播
 **目标**：通过并行传输路径最大化区块和交易传递可靠性。
@@ -303,9 +303,9 @@
 - BFT 消息也通过双传输层（HTTP gossip + Wire 协议 TCP）广播。
 
 代码：
-- `COC/node/src/consensus.ts`（`broadcastBlock` 含 wireBroadcast 回调）
-- `COC/node/src/index.ts`（`wireBroadcastFn`、`wireTxRelayFn`、`wireBftBroadcastFn`）
-- `COC/node/src/wire-server.ts`（去重、中继回调、excludeNodeId）
+- `Palimesh/node/src/consensus.ts`（`broadcastBlock` 含 wireBroadcast 回调）
+- `Palimesh/node/src/index.ts`（`wireBroadcastFn`、`wireTxRelayFn`、`wireBftBroadcastFn`）
+- `Palimesh/node/src/wire-server.ts`（去重、中继回调、excludeNodeId）
 
 ## 23) 共识指标收集
 **目标**：追踪出块和同步性能以支持可观测性。
@@ -318,7 +318,7 @@
 - `startedAtMs` 在 `start()` 中设置用于计算运行时间。
 
 代码：
-- `COC/node/src/consensus.ts`（`ConsensusMetrics` 接口、`getMetrics()`）
+- `Palimesh/node/src/consensus.ts`（`ConsensusMetrics` 接口、`getMetrics()`）
 
 ## 24) Wire 协议去重
 **目标**：在 Wire 协议层防止重复 Block/Tx 处理。
@@ -331,7 +331,7 @@
 - 统计通过 `getStats()` 暴露：`seenTxSize`、`seenBlocksSize`。
 
 代码：
-- `COC/node/src/wire-server.ts`（`seenTx`、`seenBlocks`、`handleFrame`）
+- `Palimesh/node/src/wire-server.ts`（`seenTx`、`seenBlocks`、`handleFrame`）
 
 ## 25) 跨协议中继
 **目标**：桥接 Wire 协议与 HTTP gossip 实现全网覆盖。
@@ -343,8 +343,8 @@
 - 无循环中继：Wire 和 HTTP 共享同一 BoundedSet 去重实例（通过 `sharedSeenTx`/`sharedSeenBlocks` 注入）。
 
 代码：
-- `COC/node/src/wire-server.ts`（`onTxRelay`、`onBlockRelay` 配置回调）
-- `COC/node/src/index.ts`（将中继回调接入 P2P `receiveTx`/`receiveBlock`）
+- `Palimesh/node/src/wire-server.ts`（`onTxRelay`、`onBlockRelay` 配置回调）
+- `Palimesh/node/src/index.ts`（将中继回调接入 P2P `receiveTx`/`receiveBlock`）
 
 ## 26) DHT Wire 客户端优先查找
 **目标**：高效的 wire 客户端发现用于 DHT FIND_NODE 查询。
@@ -357,8 +357,8 @@
 - 每个 peer 的 wire port 从 `dhtBootstrapPeers` 配置解析，而非使用本地 `wirePort`。
 
 代码：
-- `COC/node/src/dht-network.ts`（`findNode` 三级优先查找）
-- `COC/node/src/index.ts`（`wireClientByPeerId` 构建、`peerWirePortMap`）
+- `Palimesh/node/src/dht-network.ts`（`findNode` 三级优先查找）
+- `Palimesh/node/src/index.ts`（`wireClientByPeerId` 构建、`peerWirePortMap`）
 
 ## 27) DHT 节点验证
 **目标**：通过验证节点可达性防止 DHT 路由表投毒。
@@ -374,7 +374,7 @@
 - 加载时过滤过期节点：`lastSeenMs` 超过 24 小时的节点被排除。
 
 代码：
-- `COC/node/src/dht-network.ts`（`verifyPeer`、`iterativeLookup`）
+- `Palimesh/node/src/dht-network.ts`（`verifyPeer`、`iterativeLookup`）
 
 ## 28) 指数节点封禁
 **目标**：对异常节点实施递增的封禁时间。
@@ -387,13 +387,13 @@
 - 封禁到期后：节点可重新评估，但下次违规封禁时长翻倍。
 
 代码：
-- `COC/node/src/peer-scoring.ts`（`exponentialBanMs`、`recordInvalidData`、`applyDecay`）
+- `Palimesh/node/src/peer-scoring.ts`（`exponentialBanMs`、`recordInvalidData`、`applyDecay`）
 
 ## 29) 节点身份握手
 **目标**：在 Wire 协议 TCP 握手中通过密码学验证节点身份。
 
 算法：
-- 每个节点拥有持久化私钥（`nodePrivateKey`，来自 `COC_NODE_KEY` 环境变量 / `dataDir/node-key`）。
+- 每个节点拥有持久化私钥（`nodePrivateKey`，来自 `PALI_NODE_KEY` 环境变量 / `dataDir/node-key`）。
 - Wire 握手时，发送方签名 `wire:handshake:<chainId>:<nodeId>:<nonce>`（使用 `NodeSigner.sign()`）。
 - 接收方通过 `SignatureVerifier.recoverAddress()` 验证签名。
 - 恢复的地址必须与声称的 `nodeId` 匹配 — 不匹配则断开连接并记录 `recordInvalidData()`。
@@ -401,10 +401,10 @@
 - 配置 `verifier` 时强制签名验证（生产环境应始终配置）；无签名的握手请求将被拒绝并断开连接。
 
 代码：
-- `COC/node/src/wire-server.ts`（握手验证）
-- `COC/node/src/wire-client.ts`（握手签名）
-- `COC/node/src/config.ts`（`resolveNodeKey`）
-- `COC/node/src/crypto/signer.ts`（`NodeSigner`、`SignatureVerifier`）
+- `Palimesh/node/src/wire-server.ts`（握手验证）
+- `Palimesh/node/src/wire-client.ts`（握手签名）
+- `Palimesh/node/src/config.ts`（`resolveNodeKey`）
+- `Palimesh/node/src/crypto/signer.ts`（`NodeSigner`、`SignatureVerifier`）
 
 ## 30) BFT 消息签名
 **目标**：通过强制密码学签名防止 BFT 投票伪造。
@@ -418,8 +418,8 @@
 - 仅接受来自已知活跃验证者的消息。
 
 代码：
-- `COC/node/src/bft.ts`（`BftMessage.signature` 必填）
-- `COC/node/src/bft-coordinator.ts`（`signMessage`、`bftCanonicalMessage`、`handlePrepare`/`handleCommit` 中的验证）
+- `Palimesh/node/src/bft.ts`（`BftMessage.signature` 必填）
+- `Palimesh/node/src/bft-coordinator.ts`（`signMessage`、`bftCanonicalMessage`、`handlePrepare`/`handleCommit` 中的验证）
 
 ## 31) P2P HTTP 认证信封
 **目标**：为 HTTP gossip 写流量提供节点级认证，并支持平滑灰度上线，避免一次性网络分裂。
@@ -440,5 +440,5 @@
   - `authAcceptedRequests`、`authMissingRequests`、`authInvalidRequests`、`authRejectedRequests`、`rateLimitedRequests`。
 
 代码：
-- `COC/node/src/p2p.ts`（`buildSignedP2PPayload`、`verifySignedP2PPayload`、灰度处理）
-- `COC/node/src/config.ts`（`p2pInboundAuthMode`、`p2pAuthMaxClockSkewMs`）
+- `Palimesh/node/src/p2p.ts`（`buildSignedP2PPayload`、`verifySignedP2PPayload`、灰度处理）
+- `Palimesh/node/src/config.ts`（`p2pInboundAuthMode`、`p2pAuthMaxClockSkewMs`）

@@ -25,7 +25,7 @@ For Docker-deployed testnet nodes:
 docker compose -f docker/docker-compose.yml down
 
 # 2. Update image tag to previous version
-# Edit docker/docker-compose.yml: image: coc-node:TAG → coc-node:PREVIOUS_TAG
+# Edit docker/docker-compose.yml: image: palimesh-node:TAG → palimesh-node:PREVIOUS_TAG
 
 # 3. Restart with previous version
 docker compose -f docker/docker-compose.yml up -d
@@ -56,16 +56,16 @@ When chain data is corrupted:
 
 ```bash
 # 1. Stop the affected node
-docker stop coc-node-N
+docker stop palimesh-node-N
 
 # 2. Export snapshot from a healthy node
-curl -s http://HEALTHY_NODE:19780/p2p/state-snapshot > /tmp/coc-state-snapshot.json
+curl -s http://HEALTHY_NODE:19780/p2p/state-snapshot > /tmp/palimesh-state-snapshot.json
 
 # 3. Clear corrupted data
-rm -rf /data/coc-node-N/leveldb
+rm -rf /data/palimesh-node-N/leveldb
 
 # 4. Start node (it will sync from peers or import snapshot)
-docker start coc-node-N
+docker start palimesh-node-N
 
 # 5. Verify sync progress
 watch -n 5 'bash scripts/node-status.sh http://NODE_N:18780'
@@ -81,8 +81,8 @@ docker compose -f docker/docker-compose.yml down
 
 # 2. Clear all node data
 for i in 1 2 3; do
-  rm -rf /data/coc-node-$i/leveldb
-  rm -rf /data/coc-node-$i/peers.json
+  rm -rf /data/palimesh-node-$i/leveldb
+  rm -rf /data/palimesh-node-$i/peers.json
 done
 
 # 3. Regenerate configs if needed
@@ -117,7 +117,7 @@ curl -s http://127.0.0.1:18780 -X POST \
   -d '{"jsonrpc":"2.0","id":1,"method":"net_peerCount","params":[]}'
 
 # 4. Metrics endpoint healthy
-curl -s http://127.0.0.1:9100/metrics | grep coc_block_height
+curl -s http://127.0.0.1:9100/metrics | grep pali_block_height
 ```
 
 ## Rollback Decision Matrix

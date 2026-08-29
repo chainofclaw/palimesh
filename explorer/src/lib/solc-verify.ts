@@ -39,9 +39,9 @@ const SOLC_REMOTE_VERSION_TAGS: Record<string, string> = {
 const SOLC_ALLOWED_VERSION_TAGS = new Set(Object.values(SOLC_REMOTE_VERSION_TAGS))
 const DEFAULT_COMPILER_VERSIONS = new Set(['0.8.28', 'v0.8.28+commit.7893614a'])
 const COMPILE_TIMEOUT_MS = Number(
-  process.env.COC_VERIFY_COMPILE_TIMEOUT_MS ?? process.env.COC_VERIFY_COMPILE_WARN_MS ?? 15000,
+  process.env.PALI_VERIFY_COMPILE_TIMEOUT_MS ?? process.env.PALI_VERIFY_COMPILE_WARN_MS ?? 15000,
 )
-const MAX_SOLC_SOURCE_CHARS = Number(process.env.COC_VERIFY_MAX_SOURCE_CHARS ?? 100_000)
+const MAX_SOLC_SOURCE_CHARS = Number(process.env.PALI_VERIFY_MAX_SOURCE_CHARS ?? 100_000)
 
 /**
  * Worker entry executed via `new Worker(src, { eval: true })`.
@@ -171,8 +171,8 @@ export function safeVerifyInternalErrorMessage(_error: unknown): string {
 }
 
 function allowRemoteCompilerLoad(): boolean {
-  if (process.env.COC_SOLC_ALLOW_REMOTE === '1') return true
-  if (process.env.COC_SOLC_ALLOW_REMOTE === '0') return false
+  if (process.env.PALI_SOLC_ALLOW_REMOTE === '1') return true
+  if (process.env.PALI_SOLC_ALLOW_REMOTE === '0') return false
   return process.env.NODE_ENV !== 'production'
 }
 

@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback, useRef } from "react";
 import { BrowserProvider, formatEther } from "ethers";
-import { COC_CHAIN_ID } from "@/lib/types";
+import { PALI_CHAIN_ID } from "@/lib/types";
 
 interface EthereumProvider {
   request(args: { method: string; params?: unknown[] }): Promise<unknown>;
@@ -29,7 +29,7 @@ export interface UseWalletReturn {
   switchChain(): Promise<void>;
 }
 
-const COC_CHAIN_HEX = "0x" + COC_CHAIN_ID.toString(16);
+const PALI_CHAIN_HEX = "0x" + PALI_CHAIN_ID.toString(16);
 
 export function useWallet(): UseWalletReturn {
   const [address, setAddress] = useState<string | null>(null);
@@ -39,7 +39,7 @@ export function useWallet(): UseWalletReturn {
   const providerRef = useRef<BrowserProvider | null>(null);
 
   const connected = address !== null;
-  const wrongChain = connected && chainId !== null && chainId !== COC_CHAIN_ID;
+  const wrongChain = connected && chainId !== null && chainId !== PALI_CHAIN_ID;
 
   const fetchBalance = useCallback(async (addr: string) => {
     if (!providerRef.current) return;
@@ -129,7 +129,7 @@ export function useWallet(): UseWalletReturn {
     try {
       await window.ethereum.request({
         method: "wallet_switchEthereumChain",
-        params: [{ chainId: COC_CHAIN_HEX }],
+        params: [{ chainId: PALI_CHAIN_HEX }],
       });
     } catch (err: unknown) {
       const error = err as { code?: number };
@@ -138,10 +138,10 @@ export function useWallet(): UseWalletReturn {
           method: "wallet_addEthereumChain",
           params: [
             {
-              chainId: COC_CHAIN_HEX,
-              chainName: "COC Chain",
+              chainId: PALI_CHAIN_HEX,
+              chainName: "Palimesh Chain",
               rpcUrls: ["http://127.0.0.1:18780"],
-              nativeCurrency: { name: "COC", symbol: "COC", decimals: 18 },
+              nativeCurrency: { name: "PALI", symbol: "PALI", decimals: 18 },
             },
           ],
         });

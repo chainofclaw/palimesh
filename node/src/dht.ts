@@ -119,7 +119,7 @@ export class RoutingTable {
   /**
    * #13: attach the wire-server observed-IP resolver post-construction.
    * The routing table is built before the wire server is wired up in
-   * `coc-ipfs-wiring.ts`; this hook lets the wiring inject the resolver
+   * `palimesh-ipfs-wiring.ts`; this hook lets the wiring inject the resolver
    * once both are alive, mirroring `setAwaitReplicationResult` and the
    * other post-construction injection sites in `IpfsHttpServer`.
    */

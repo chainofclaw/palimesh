@@ -1,8 +1,8 @@
 [package]
-name = "coc-revm-wasm"
+name = "palimesh-revm-wasm"
 version = "0.1.0"
 edition = "2021"
-description = "WASM bindings for revm EVM engine for COC blockchain"
+description = "WASM bindings for revm EVM engine for Palimesh blockchain"
 
 [lib]
 crate-type = ["cdylib", "rlib"]

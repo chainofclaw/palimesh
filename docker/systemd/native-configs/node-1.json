@@ -1,5 +1,5 @@
 {
-  "_phase": "N1 \u2014 native systemd validator instance 1. Deployed to /etc/coc/node-1.json.",
+  "_phase": "N1 \u2014 native systemd validator instance 1. Deployed to /etc/palimesh/node-1.json.",
   "_note": "Ports preserved from current docker host-side mapping (28780/28781/29780/29781/28786). Peers + dhtBootstrapPeers reference 127.0.0.1 with the corresponding native ports for the other two validators on this host.",
   "nodeId": "0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266",
   "chainId": 18780,

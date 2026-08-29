@@ -2,18 +2,18 @@
 
 ## 概述
 
-`did:coc` 方法为 COC 区块链上的 AI agent 提供符合 W3C DID Core v1.0 标准的去中心化标识符。基于现有的 SoulRegistry 身份基础设施构建，新增标准化身份解析、密钥管理、能力委托、可验证凭证和选择性披露能力。
+`did:coc` 方法为 Palimesh 区块链上的 AI agent 提供符合 W3C DID Core v1.0 标准的去中心化标识符。基于现有的 SoulRegistry 身份基础设施构建，新增标准化身份解析、密钥管理、能力委托、可验证凭证和选择性披露能力。
 
 | 组件 | 用途 | 位置 |
 |------|------|------|
-| **DIDRegistry 合约** | 密钥轮换、委托、凭证、临时身份、谱系追踪 | `COC/contracts/governance/DIDRegistry.sol` |
-| **DID 解析器** | 将 `did:coc` 标识符解析为 DID 文档 | `COC/node/src/did/did-resolver.ts` |
-| **DID 文档构建器** | 从链上状态构建 W3C 兼容文档 | `COC/node/src/did/did-document-builder.ts` |
-| **DID 认证** | Wire/P2P 通信的挑战-响应认证 | `COC/node/src/did/did-auth.ts` |
-| **委托链** | 作用域受限的委托验证 | `COC/node/src/did/delegation-chain.ts` |
-| **可验证凭证** | VC 签发、通过 Merkle 证明的选择性披露 | `COC/node/src/did/verifiable-credentials.ts` |
-| **EIP-712 类型** | DIDRegistry 的类型化数据定义 | `COC/node/src/crypto/did-registry-types.ts` |
-| **Explorer 页面** | DID 搜索和详情可视化 | `COC/explorer/src/app/did/` |
+| **DIDRegistry 合约** | 密钥轮换、委托、凭证、临时身份、谱系追踪 | `Palimesh/contracts/governance/DIDRegistry.sol` |
+| **DID 解析器** | 将 `did:coc` 标识符解析为 DID 文档 | `Palimesh/node/src/did/did-resolver.ts` |
+| **DID 文档构建器** | 从链上状态构建 W3C 兼容文档 | `Palimesh/node/src/did/did-document-builder.ts` |
+| **DID 认证** | Wire/P2P 通信的挑战-响应认证 | `Palimesh/node/src/did/did-auth.ts` |
+| **委托链** | 作用域受限的委托验证 | `Palimesh/node/src/did/delegation-chain.ts` |
+| **可验证凭证** | VC 签发、通过 Merkle 证明的选择性披露 | `Palimesh/node/src/did/verifiable-credentials.ts` |
+| **EIP-712 类型** | DIDRegistry 的类型化数据定义 | `Palimesh/node/src/crypto/did-registry-types.ts` |
+| **Explorer 页面** | DID 搜索和详情可视化 | `Palimesh/explorer/src/app/did/` |
 
 ---
 
@@ -43,7 +43,7 @@
                         ┌─────────────────────────────────┐
                         │    W3C DID 文档 (JSON)           │
                         │  verificationMethod, service,    │
-                        │  controller, cocAgent 元数据     │
+                        │  controller, paliAgent 元数据     │
                         └─────────────────────────────────┘
 ```
 
@@ -51,7 +51,7 @@
 
 **解析路径：**
 
-1. 客户端通过 JSON-RPC 调用 `coc_resolveDid("did:coc:0xabc...")`
+1. 客户端通过 JSON-RPC 调用 `pali_resolveDid("did:coc:0xabc...")`
 2. 解析器解析 DID 字符串，提取 `chainId`、`identifierType` 和 `identifier`
 3. 查询 SoulRegistry 获取 `SoulIdentity`、监护人、复活配置
 4. 查询 DIDRegistry 获取验证方法、能力、谱系、委托
@@ -84,7 +84,7 @@ did:coc:<chainId>:node:<nodeId>        # PoSe 节点身份
 
 其中：
 - `<agentId>` / `<nodeId>` — 来自 SoulRegistry / PoSeManagerV2 的 `0x` 前缀 hex bytes32
-- `<chainId>` — 十进制整数。省略时默认为 COC 主网 (`20241224`)
+- `<chainId>` — 十进制整数。省略时默认为 Palimesh 主网 (`20241224`)
 
 **示例：**
 - `did:coc:0xabcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890`
@@ -98,7 +98,7 @@ did:coc:<chainId>:node:<nodeId>        # PoSe 节点身份
 | 操作 | 机制 | 链上效果 |
 |------|------|----------|
 | **创建** | `SoulRegistry.registerSoul()` + `DIDRegistry.updateDIDDocument()` | 创建 SoulIdentity + 锚定 DID 文档 CID |
-| **读取** | `coc_resolveDid` RPC / DID 解析器 | 从链上状态组装 DID 文档 |
+| **读取** | `pali_resolveDid` RPC / DID 解析器 | 从链上状态组装 DID 文档 |
 | **更新** | `DIDRegistry.updateDIDDocument()` (EIP-712 签名) | 更新文档 CID |
 | **停用** | `SoulRegistry.deactivateSoul()` | 标记 `active=false`；解析器返回空验证方法 |
 
@@ -131,12 +131,12 @@ did:coc:<chainId>:node:<nodeId>        # PoSe 节点身份
   "capabilityInvocation": ["#master"],
   "capabilityDelegation": ["#master"],
   "service": [
-    { "id": "#rpc", "type": "CocRpcEndpoint", "serviceEndpoint": "http://node:18780" },
-    { "id": "#wire", "type": "CocWireProtocol", "serviceEndpoint": "tcp://node:19781" },
+    { "id": "#rpc", "type": "PaliRpcEndpoint", "serviceEndpoint": "http://node:18780" },
+    { "id": "#wire", "type": "PaliWireProtocol", "serviceEndpoint": "tcp://node:19781" },
     { "id": "#ipfs", "type": "IpfsGateway", "serviceEndpoint": "http://node:5001" },
-    { "id": "#pose", "type": "CocPoSeEndpoint", "serviceEndpoint": "http://node:18780/pose" }
+    { "id": "#pose", "type": "PaliPoSeEndpoint", "serviceEndpoint": "http://node:18780/pose" }
   ],
-  "cocAgent": {
+  "paliAgent": {
     "registeredAt": "2026-03-15T10:00:00.000Z",
     "version": 1,
     "identityCid": "0x1111...",
@@ -157,14 +157,14 @@ did:coc:<chainId>:node:<nodeId>        # PoSe 节点身份
 | `verificationMethod[#resurrection]` | `ResurrectionConfig.resurrectionKeyHash` |
 | `verificationMethod[#operational...]` | `DIDRegistry.getActiveVerificationMethods()` |
 | `service` | 配置的端点（不存储在链上） |
-| `cocAgent.capabilities` | `DIDRegistry.agentCapabilities()` 位掩码解码 |
-| `cocAgent.lineage` | `DIDRegistry.agentLineage()` |
+| `paliAgent.capabilities` | `DIDRegistry.agentCapabilities()` 位掩码解码 |
+| `paliAgent.lineage` | `DIDRegistry.agentLineage()` |
 
 ---
 
 ## DIDRegistry 智能合约
 
-**文件：** `COC/contracts/governance/DIDRegistry.sol`
+**文件：** `Palimesh/contracts/governance/DIDRegistry.sol`
 
 **与 SoulRegistry 的关系：** DIDRegistry 是独立合约，通过不可变的 `soulRegistry` 地址引用 SoulRegistry。它不修改 SoulRegistry。所有状态变更操作都要求调用者是 SoulRegistry 中对应 `agentId` 的 `soul.owner`。
 
@@ -566,13 +566,13 @@ interface P2PAuthEnvelope {
 
 | 方法 | 参数 | 返回值 |
 |------|------|--------|
-| `coc_resolveDid` | `did: string` | `DIDResolutionResult` |
-| `coc_getDIDDocument` | `agentId: string` | `DIDDocument \| null` |
-| `coc_getAgentCapabilities` | `agentId: string` | `{ capabilities: string[], bitmask: number }` |
-| `coc_getDelegations` | `agentId: string` | `DelegationRecord[]`（部分读取失败时含 `_readError: true`） |
-| `coc_getAgentLineage` | `agentId: string` | `Lineage \| null` |
-| `coc_getCredentialAnchor` | `credentialId: string` | `{ valid: boolean, error?: string, anchor?: CredentialAnchor }` — 仅验证链上锚点（存在性/撤销/过期）。完整 VC 验证（签名、证明、内容）需要从 IPFS 获取凭证后使用 `verifiable-credentials.ts`。 |
-| `coc_getVerificationMethods` | `agentId: string` | `VerificationMethod[]` |
+| `pali_resolveDid` | `did: string` | `DIDResolutionResult` |
+| `pali_getDIDDocument` | `agentId: string` | `DIDDocument \| null` |
+| `pali_getAgentCapabilities` | `agentId: string` | `{ capabilities: string[], bitmask: number }` |
+| `pali_getDelegations` | `agentId: string` | `DelegationRecord[]`（部分读取失败时含 `_readError: true`） |
+| `pali_getAgentLineage` | `agentId: string` | `Lineage \| null` |
+| `pali_getCredentialAnchor` | `credentialId: string` | `{ valid: boolean, error?: string, anchor?: CredentialAnchor }` — 仅验证链上锚点（存在性/撤销/过期）。完整 VC 验证（签名、证明、内容）需要从 IPFS 获取凭证后使用 `verifiable-credentials.ts`。 |
+| `pali_getVerificationMethods` | `agentId: string` | `VerificationMethod[]` |
 
 ---
 
@@ -595,7 +595,7 @@ interface P2PAuthEnvelope {
 
 ### Node 层测试
 
-**文件：** `COC/node/src/did/*.test.ts`（79 个测试，4 个文件）
+**文件：** `Palimesh/node/src/did/*.test.ts`（79 个测试，4 个文件）
 
 | 测试文件 | 测试数 | 覆盖范围 |
 |----------|--------|----------|
@@ -607,6 +607,6 @@ interface P2PAuthEnvelope {
 
 ### 合约测试
 
-**文件：** `COC/contracts/test/DIDRegistry.test.cjs`（24 个测试）
+**文件：** `Palimesh/contracts/test/DIDRegistry.test.cjs`（24 个测试）
 
 覆盖：DID 文档 CRUD、验证方法添加/撤销/重复、委托授予/撤销/全局撤销/限速/深度限制、能力更新、临时身份创建/停用/重复、谱系记录、凭证锚定/撤销、访问控制（非所有者拒绝）、EIP-712 签名验证。

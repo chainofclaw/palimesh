@@ -12,7 +12,7 @@ import { tmpdir } from "node:os"
 import { join } from "node:path"
 
 async function createMfs(): Promise<{ mfs: IpfsMfs; cleanup: () => void }> {
-  const dir = mkdtempSync(join(tmpdir(), "coc-mfs-"))
+  const dir = mkdtempSync(join(tmpdir(), "palimesh-mfs-"))
   const store = new IpfsBlockstore(dir)
   await store.init()
   const unixfs = new UnixFsBuilder(store)

@@ -1,10 +1,10 @@
 # Economics v1 Rollout Playbook (中英) — Phase I Activation
 
 > **Purpose / 目的**: step-by-step procedure for flipping
-> `COC_BLOCK_REWARD_ENABLED` and `COC_FEE_DISTRIBUTION_ENABLED` on the
+> `PALI_BLOCK_REWARD_ENABLED` and `PALI_FEE_DISTRIBUTION_ENABLED` on the
 > public testnet without inducing stateRoot divergence.
-> 在公开测试网启用 `COC_BLOCK_REWARD_ENABLED` 与
-> `COC_FEE_DISTRIBUTION_ENABLED` 的逐步流程，避免诱发 stateRoot 分叉。
+> 在公开测试网启用 `PALI_BLOCK_REWARD_ENABLED` 与
+> `PALI_FEE_DISTRIBUTION_ENABLED` 的逐步流程，避免诱发 stateRoot 分叉。
 >
 > **Owner / 责任方**: ops + governance jointly. Procedure must be
 > rehearsed once on a private 3-node devnet before testnet execution.
@@ -17,21 +17,21 @@
 - [ ] `docs/economics-v1.en.md` § 8 open questions resolved by governance
       / `docs/economics-v1.zh.md` § 8 治理已 close 全部待定问题。
 - [ ] All 3 testnet validators on the same node image tag (run
-      `docker ps --format '{{.Names}}\t{{.Image}}'` on `clawchain-server`).
+      `docker ps --format '{{.Names}}\t{{.Image}}'` on `palimesh-server`).
       所有 3 个验证者使用同一节点镜像 tag。
 - [ ] Sync-node observer is healthy and ≤10 blocks behind validators.
       sync-node observer 健康且与验证者高度差 ≤10 块。
-- [ ] `COC_BFT_AUTO_RECOVERY=1` already set (was the 2026-05-04 fix).
-      `COC_BFT_AUTO_RECOVERY=1` 已生效。
-- [ ] `COC_DEV_RELAXED_QUORUM=0` confirmed on every validator.
-      所有验证者已确认 `COC_DEV_RELAXED_QUORUM=0`。
+- [ ] `PALI_BFT_AUTO_RECOVERY=1` already set (was the 2026-05-04 fix).
+      `PALI_BFT_AUTO_RECOVERY=1` 已生效。
+- [ ] `PALI_DEV_RELAXED_QUORUM=0` confirmed on every validator.
+      所有验证者已确认 `PALI_DEV_RELAXED_QUORUM=0`。
 - [ ] Last 1h chain shows 0 BFT timeouts (`docker logs --since 1h
-      coc-node-1 | grep -c 'BFT round timed out'`).
+      palimesh-node-1 | grep -c 'BFT round timed out'`).
       过去 1 小时链上 BFT timeout 计数为 0。
 - [ ] Snapshot of pre-rollout state stored: heights, stateRoots, validator
-      balances, and `coc_nodeInfo` from each validator captured to
+      balances, and `pali_nodeInfo` from each validator captured to
       `phase-j-rollout-snapshot.json`.
-      已存留 rollout 前快照: 各验证者高度、stateRoot、余额、`coc_nodeInfo`。
+      已存留 rollout 前快照: 各验证者高度、stateRoot、余额、`pali_nodeInfo`。
 
 ## 2. Activation order / 激活顺序
 
@@ -54,9 +54,9 @@ since its consensus impact is large and well-understood.
    to apply. Include this hash of the values to detect copy-paste errors:
    `keccak256("INITIAL=2e18|INTERVAL=42048000")`.
    在运营频道告知 H 与精确的环境变量值。包含 `keccak256(...)` 哈希以便检测复制粘贴错误。
-3. **Each operator updates `/root/clawd/COC/docker/.env`** with the new
+3. **Each operator updates `/root/clawd/Palimesh/docker/.env`** with the new
    vars but does NOT restart their container yet.
-   每个运营方更新 `/root/clawd/COC/docker/.env` 但**先不重启容器**。
+   每个运营方更新 `/root/clawd/Palimesh/docker/.env` 但**先不重启容器**。
 4. **At height H − 5**, all operators simultaneously run
    `docker compose up -d --force-recreate <node>`. The 5-block buffer
    absorbs clock skew between operators (no NTP coordination required).
@@ -85,20 +85,20 @@ Recommended order to minimize blast radius if a regression surfaces:
 ### 3.1 Sprint I1: block reward / 区块奖励
 
 ```bash
-# /root/clawd/COC/docker/.env (each validator host)
-COC_BLOCK_REWARD_ENABLED=1
-COC_BLOCK_REWARD_WEI=2000000000000000000
-COC_BLOCK_REWARD_HALVING_INTERVAL_BLOCKS=42048000
+# /root/clawd/Palimesh/docker/.env (each validator host)
+PALI_BLOCK_REWARD_ENABLED=1
+PALI_BLOCK_REWARD_WEI=2000000000000000000
+PALI_BLOCK_REWARD_HALVING_INTERVAL_BLOCKS=42048000
 ```
 
 Acceptance window: 30 min after H. Look for:
 观察窗口: H 之后 30 分钟。检查项:
 
-- 每个验证者地址余额每块增加 2 COC（`eth_getBalance` 在 H+10 vs H 应差 20 COC × 该验证者出块次数）。
-- Each validator's address balance increases by 2 COC per block proposed.
+- 每个验证者地址余额每块增加 2 PALI（`eth_getBalance` 在 H+10 vs H 应差 20 PALI × 该验证者出块次数）。
+- Each validator's address balance increases by 2 PALI per block proposed.
 - 三节点高度持续推进（≥10 块/30s）。
 - All 3 nodes advance height continuously.
-- 0 stateRoot divergence in `coc_chainStats` for the window.
+- 0 stateRoot divergence in `pali_chainStats` for the window.
 
 ### 3.2 Sprint I2: fee distribution / 手续费分配
 
@@ -106,7 +106,7 @@ After §3.1 has been stable for ≥24h, repeat the strategy A flip with:
 §3.1 稳定 ≥24 小时后，按策略 A 再次执行：
 
 ```bash
-COC_FEE_DISTRIBUTION_ENABLED=1
+PALI_FEE_DISTRIBUTION_ENABLED=1
 ```
 
 Acceptance: a self-sent tx with `maxPriorityFeePerGas=1 gwei` from
@@ -117,12 +117,12 @@ operator wallet credits the proposer's address with the priority fee
 ### 3.3 Sprint I3 / I4 / I5: equivocation slashing path / 等价签名 slashing
 
 These are NOT env-gated on the node side — they're contract-level
-features that activate as soon as the relayer (`coc-relayer`) is wired
+features that activate as soon as the relayer (`palimesh-relayer`) is wired
 to the deployed `EquivocationDetector` + `ValidatorRegistry` +
 `Treasury` + `InsuranceFund` contracts. Activation = deploy contracts +
-configure `coc-relayer` env (`COC_EQUIVOCATION_DETECTOR_ADDR`,
-`COC_VALIDATOR_REGISTRY_ADDR`, `COC_TREASURY_ADDR`,
-`COC_INSURANCE_FUND_ADDR`).
+configure `palimesh-relayer` env (`PALI_EQUIVOCATION_DETECTOR_ADDR`,
+`PALI_VALIDATOR_REGISTRY_ADDR`, `PALI_TREASURY_ADDR`,
+`PALI_INSURANCE_FUND_ADDR`).
 
 这部分**不在节点侧 env-gated**——它们是合约级特性，部署 `EquivocationDetector` + `ValidatorRegistry` + `Treasury` + `InsuranceFund` 并把 relayer 接到合约即生效。激活 = 部署 + 配置 relayer 环境变量。
 
@@ -154,7 +154,7 @@ re-introduces the divergence the activation was supposed to avoid.
 | BFT round timeouts cluster ≥2/min | one validator on different INITIAL/INTERVAL than others | check `.env` parity; coordinated re-flip |
 | Single validator's stateRoot diverges (J1.1 fires onPeerQuorumDiverged) | leveldb corruption from prior partial activation | J3 procedure: backup + clear + snap-sync |
 | All 3 nodes stall, prepareVotes={self only} | self-stuck proposer (J2.2 path) | wait ≤4 min for J2.2 forceClearRound; if not, restart proposer container |
-| `eth_getBalance(proposer)` doesn't increase | I1 not actually enabled OR coinbase unset | check `coc_nodeInfo` reflects new env vars; if absent, container didn't pick up new env (re-recreate) |
+| `eth_getBalance(proposer)` doesn't increase | I1 not actually enabled OR coinbase unset | check `pali_nodeInfo` reflects new env vars; if absent, container didn't pick up new env (re-recreate) |
 
 升级路径: ops → governance multi-sig holder → external auditor (only if
 suspected consensus-level vulnerability).
@@ -166,7 +166,7 @@ Every activation MUST capture (commit to a private ops repo):
 
 - Activation block height H + UTC timestamp
 - Pre/post `.env` diffs (sanitize secrets)
-- Pre/post `coc_nodeInfo` from all validators
+- Pre/post `pali_nodeInfo` from all validators
 - Block H+0..H+10 stateRoots from all validators (proof-of-consensus)
 - Operator signatures of each step (chat thread export OK)
 

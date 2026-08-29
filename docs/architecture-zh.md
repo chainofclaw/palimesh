@@ -1,4 +1,4 @@
-# COC (ChainOfClaw) 技术架构文档
+# Palimesh (Palimesh) 技术架构文档
 
 > **版本**: v1.2.0
 > **更新日期**: 2026-02-16
@@ -8,7 +8,7 @@
 
 ## 1. 系统概述
 
-COC 是基于 EVM 兼容的 PoSe (Proof of Service) 区块链，通过挑战-响应机制验证节点提供的存储、中继和在线服务，实现去中心化服务网络的激励与惩罚。
+Palimesh 是基于 EVM 兼容的 PoSe (Proof of Service) 区块链，通过挑战-响应机制验证节点提供的存储、中继和在线服务，实现去中心化服务网络的激励与惩罚。
 
 ### 1.1 核心特性
 
@@ -39,7 +39,7 @@ COC 是基于 EVM 兼容的 PoSe (Proof of Service) 区块链，通过挑战-响
 └─────────────────────────────────────────────┘
                     ↓ JSON-RPC
 ┌─────────────────────────────────────────────┐
-│          L2 节点层 (COC Nodes)               │
+│          L2 节点层 (Palimesh Nodes)               │
 │  ┌──────────┐  ┌──────────┐  ┌──────────┐  │
 │  │ RPC 服务 │  │ EVM 引擎 │  │出块+最终性│  │
 │  └──────────┘  └──────────┘  └──────────┘  │
@@ -64,7 +64,7 @@ COC 是基于 EVM 兼容的 PoSe (Proof of Service) 区块链，通过挑战-响
 
 - **chain-engine**: 区块生产、最终性确认、状态快照
 - **evm.ts**: EthereumJS VM，执行智能合约
-- **rpc.ts**: JSON-RPC 服务（57+ 方法，含 eth_*、coc_*、txpool_*）
+- **rpc.ts**: JSON-RPC 服务（57+ 方法，含 eth_*、pali_*、txpool_*）
 - **websocket-rpc.ts**: WebSocket RPC（eth_subscribe，含订阅验证与限制）
 - **consensus.ts**: 共识引擎（降级模式、自动恢复）
 - **mempool.ts**: 交易池（EIP-1559 有效 gas 价格排序）
@@ -78,9 +78,9 @@ COC 是基于 EVM 兼容的 PoSe (Proof of Service) 区块链，通过挑战-响
 
 #### 2.2.2 运行时 (`runtime/`)
 
-- **coc-agent.ts**: 挑战者/聚合器，驱动 epoch 验证循环
-- **coc-node.ts**: HTTP 服务器，响应 PoSe 挑战请求
-- **coc-relayer.ts**: L1-L2 中继器，提交 epoch 最终化和 dispute
+- **palimesh-agent.ts**: 挑战者/聚合器，驱动 epoch 验证循环
+- **palimesh-node.ts**: HTTP 服务器，响应 PoSe 挑战请求
+- **palimesh-relayer.ts**: L1-L2 中继器，提交 epoch 最终化和 dispute
 
 #### 2.2.3 服务层 (`services/`)
 
@@ -392,7 +392,7 @@ function _verifyOwnership(
     if (sig.length != 65) revert InvalidOwnershipProof();
 
     bytes32 messageHash = keccak256(
-        abi.encodePacked("coc-register:", nodeId, msg.sender)
+        abi.encodePacked("palimesh-register:", nodeId, msg.sender)
     );
     bytes32 ethSignedHash = keccak256(
         abi.encodePacked("\x19Ethereum Signed Message:\n32", messageHash)
@@ -723,7 +723,7 @@ scoring:
 {
   "level": "info",
   "timestamp": "2026-02-14T12:34:56Z",
-  "module": "coc-agent",
+  "module": "palimesh-agent",
   "event": "challenge_completed",
   "data": {
     "nodeId": "0xabc...",
@@ -880,6 +880,6 @@ GitHub Actions:
 
 ---
 
-**文档维护者**: COC 核心团队
-**联系方式**: dev@chainofclaw.org
+**文档维护者**: Palimesh 核心团队
+**联系方式**: dev@palimesh.io
 **许可证**: MIT

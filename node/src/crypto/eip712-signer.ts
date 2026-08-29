@@ -1,4 +1,4 @@
-// EIP-712 signer/verifier for COC PoSe v2.
+// EIP-712 signer/verifier for Palimesh PoSe v2.
 // Wraps ethers v6 signTypedData / verifyTypedData.
 
 import { Wallet, verifyTypedData } from "ethers"

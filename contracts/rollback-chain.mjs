@@ -1,11 +1,11 @@
 // Rollback chain leveldb to target height by deleting all blocks > target.
-// Usage: COC_DATA_DIR=/var/lib/coc/node-1 node rollback-chain.mjs <targetHeight>
+// Usage: PALI_DATA_DIR=/var/lib/coc/node-1 node rollback-chain.mjs <targetHeight>
 import { Level } from "level"
 import { resolve } from "node:path"
 
 const TARGET = BigInt(process.argv[2] ?? "212966")
-const DATA_DIR = process.env.COC_DATA_DIR
-if (!DATA_DIR) { console.error("set COC_DATA_DIR"); process.exit(1) }
+const DATA_DIR = process.env.PALI_DATA_DIR
+if (!DATA_DIR) { console.error("set PALI_DATA_DIR"); process.exit(1) }
 
 const enc = new TextEncoder()
 const dec = new TextDecoder()

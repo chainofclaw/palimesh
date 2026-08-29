@@ -1,7 +1,7 @@
 /**
  * TPS Benchmark Script
  *
- * Measures transaction throughput against a live COC node.
+ * Measures transaction throughput against a live Palimesh node.
  * Supports sustained load, burst mode, and contract interaction benchmarks.
  *
  * Usage:

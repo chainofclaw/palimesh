@@ -128,7 +128,7 @@ test("Integration: Nonce store + Block processing", async () => {
 })
 
 test("Integration: Full chain restart simulation", async () => {
-  const tmpDir = mkdtempSync(join(tmpdir(), "coc-integration-test-"))
+  const tmpDir = mkdtempSync(join(tmpdir(), "palimesh-integration-test-"))
 
   try {
     let stateRoot1: string
@@ -237,7 +237,7 @@ test("Integration: Concurrent operations", async () => {
 })
 
 test("Integration: Legacy migration + LevelDB verification", async () => {
-  const tmpDir = mkdtempSync(join(tmpdir(), "coc-integration-migrate-"))
+  const tmpDir = mkdtempSync(join(tmpdir(), "palimesh-integration-migrate-"))
 
   try {
     // Create legacy chain.json
@@ -300,7 +300,7 @@ test("Integration: Legacy migration + LevelDB verification", async () => {
 })
 
 test("Integration: BlockIndex query patterns with LevelDB", async () => {
-  const tmpDir = mkdtempSync(join(tmpdir(), "coc-integration-query-"))
+  const tmpDir = mkdtempSync(join(tmpdir(), "palimesh-integration-query-"))
 
   try {
     const db = new LevelDatabase(tmpDir, "chain")

@@ -90,7 +90,7 @@ async function main(): Promise<void> {
   console.log(`  Voter: ${config.voterId}`)
   console.log(`  Vote: ${config.approve ? "APPROVE" : "REJECT"}`)
 
-  const result = (await rpcCall(config.rpcUrl, "coc_voteProposal", [{
+  const result = (await rpcCall(config.rpcUrl, "pali_voteProposal", [{
     proposalId: config.proposalId,
     voterId: config.voterId,
     approve: config.approve,

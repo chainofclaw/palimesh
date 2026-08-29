@@ -30,7 +30,7 @@ NODE2_RPC="http://127.0.0.1:$((BASE_RPC + 1))"
 
 # Keep a manifest of everything we spawned so teardown cleans up even
 # on early failure (bash `trap` fires on error/interrupt, not just exit).
-TEMP_DIR="$(mktemp -d -t coc-c4-XXXX)"
+TEMP_DIR="$(mktemp -d -t palimesh-c4-XXXX)"
 trap 'teardown' EXIT INT TERM
 
 teardown() {
@@ -80,11 +80,11 @@ pass "uploaded, cid=${CID}"
 # from remote pushes need a tick to settle.
 sleep 2
 
-echo "--- checking provider count via node-2's coc_dhtFindProviders ---"
+echo "--- checking provider count via node-2's pali_dhtFindProviders ---"
 PROVIDERS_RES="$(curl -sf -X POST "${NODE2_RPC}" \
   -H 'content-type: application/json' \
-  -d "{\"jsonrpc\":\"2.0\",\"id\":1,\"method\":\"coc_dhtFindProviders\",\"params\":[\"${CID}\",10]}")" \
-  || fail "coc_dhtFindProviders rpc"
+  -d "{\"jsonrpc\":\"2.0\",\"id\":1,\"method\":\"pali_dhtFindProviders\",\"params\":[\"${CID}\",10]}")" \
+  || fail "pali_dhtFindProviders rpc"
 
 # Provider list format: {"result": ["peerId1", "peerId2", ...]}
 PROVIDER_COUNT="$(echo "${PROVIDERS_RES}" | grep -oE '\[[^]]*\]' | head -1 | tr ',' '\n' | wc -l)"

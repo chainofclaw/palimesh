@@ -12,9 +12,9 @@ import { Link } from '@/i18n/routing'
 import './globals.css'
 
 export const metadata: Metadata = {
-  title: 'ChainOfClaw · Decentralized Infrastructure for AI',
+  title: 'Palimesh · Decentralized Infrastructure for AI',
   description:
-    'ChainOfClaw (COC) — designed by AI agents, built by AI agents, operated by AI agents, serving AI agents. P2P storage · Self-sovereign identity · Silicon-based immortality.',
+    'Palimesh (Palimesh) — designed by AI agents, built by AI agents, operated by AI agents, serving AI agents. P2P storage · Self-sovereign identity · Silicon-based immortality.',
 }
 
 export default async function LocaleLayout({
@@ -52,7 +52,7 @@ export default async function LocaleLayout({
                   >
                     <span
                       role="img"
-                      aria-label="ChainOfClaw"
+                      aria-label="Palimesh"
                       className="block w-12 h-12 shrink-0 bg-gradient-cyber drop-shadow-[0_0_8px_rgba(34,211,238,0.3)] group-hover:drop-shadow-[0_0_14px_rgba(34,211,238,0.6)] transition-all"
                       style={{
                         WebkitMaskImage: "url(/logo-icon.png)",
@@ -66,7 +66,7 @@ export default async function LocaleLayout({
                       }}
                     />
                     <span className="gradient-text tracking-tighter inline-block [-webkit-text-stroke:1.5px_var(--accent-blue)] [paint-order:stroke_fill]">
-                      COC
+                      Palimesh
                     </span>
                   </Link>
 
@@ -118,8 +118,8 @@ export default async function LocaleLayout({
                     {/* Brand Section */}
                     <div>
                       <div className="flex items-center gap-3 mb-4">
-                        <Image src="/logo-icon.png" alt="ChainOfClaw" width={40} height={40} className="opacity-90" />
-                        <h3 className="text-text-primary font-display font-bold text-lg">COC</h3>
+                        <Image src="/logo-icon.png" alt="Palimesh" width={40} height={40} className="opacity-90" />
+                        <h3 className="text-text-primary font-display font-bold text-lg">Palimesh</h3>
                       </div>
                       <p className="text-text-secondary text-sm leading-relaxed whitespace-pre-line mb-3">
                         {tFooter('tagline')}
@@ -135,7 +135,7 @@ export default async function LocaleLayout({
                       <ul className="space-y-2">
                         <FooterLink href="/docs">{tCommon('docs')}</FooterLink>
                         <FooterLink href="/plan">{tCommon('whitepaper')}</FooterLink>
-                        <FooterLink href="https://explorer.clawchain.io" external>
+                        <FooterLink href="https://explorer.palimesh.io" external>
                           {tCommon('explorer')}
                         </FooterLink>
                         <FooterLink href="/security">{tCommon('security')}</FooterLink>
@@ -146,7 +146,7 @@ export default async function LocaleLayout({
                     <div>
                       <h4 className="text-text-primary font-display font-semibold mb-4">{tCommon('development')}</h4>
                       <ul className="space-y-2">
-                        <FooterLink href="https://github.com/chainofclaw/COC" external>
+                        <FooterLink href="https://github.com/palimesh/palimesh" external>
                           {tCommon('github')}
                         </FooterLink>
                         <FooterLink href="/technology">{tCommon('technology')}</FooterLink>
@@ -169,7 +169,7 @@ export default async function LocaleLayout({
                   <div className="border-t border-text-muted/10 pt-6">
                     <div className="flex flex-col md:flex-row justify-between items-center gap-4">
                       <p className="text-text-muted text-sm font-body">
-                        &copy; 2026 ChainOfClaw. {tFooter('allRightsReserved')}.
+                        &copy; 2026 Palimesh. {tFooter('allRightsReserved')}.
                       </p>
                       <div className="flex items-center gap-4 text-text-muted text-sm">
                         <span className="font-display">&gt; WHITEPAPER_v0.2 · 2026-04-15</span>

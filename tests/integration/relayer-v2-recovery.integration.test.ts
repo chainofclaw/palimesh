@@ -107,7 +107,7 @@ class FakePoseV2Contract {
 }
 
 test("relayer v2 recovery: evidence drain -> pending restore -> reveal -> settle", async () => {
-  const dir = mkdtempSync(join(tmpdir(), "coc-relayer-v2-recovery-"))
+  const dir = mkdtempSync(join(tmpdir(), "palimesh-relayer-v2-recovery-"))
   const evidencePath = join(dir, "evidence-agent.jsonl")
   const pendingPath = join(dir, "pending-challenges-v2.json")
   const logger = createLogger()

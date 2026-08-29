@@ -15,7 +15,7 @@
  *
  * Keeping the sampler as a plain function makes it trivially unit-
  * testable and reusable across both the agent's V2 happy path
- * (coc-agent.ts) and the ReceiptVerifierV2 pipeline when it
+ * (palimesh-agent.ts) and the ReceiptVerifierV2 pipeline when it
  * eventually gets wired. The function only needs the injection points
  * — it does not know about EIP-712, nonce registries, or Merkle
  * math-only proof validation; those layers stay with the caller.

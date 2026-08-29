@@ -44,7 +44,7 @@ export function loadPolicyFromFile(filePath: string): NodeOpsPolicy {
 }
 
 export function loadPolicyFromEnv(): NodeOpsPolicy {
-  const policyPath = process.env.COC_NODEOPS_POLICY_PATH
+  const policyPath = process.env.PALI_NODEOPS_POLICY_PATH
   if (!policyPath) {
     return { ...DEFAULT_NODEOPS_POLICY }
   }

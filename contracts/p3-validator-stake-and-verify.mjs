@@ -42,7 +42,7 @@ const CHAIN_ID = 18780n
 const STAKE_AMOUNT = 32n * 10n ** 18n
 const FUEL_AMOUNT = 1n * 10n ** 18n
 const GAS_PRICE = 5_000_000_000n
-const ART = "/passinger/projects/ClawdBot/COC/contracts/artifacts/contracts-src/governance/ValidatorRegistry.sol/ValidatorRegistry.json"
+const ART = "/passinger/projects/ClawdBot/Palimesh/contracts/artifacts/contracts-src/governance/ValidatorRegistry.sol/ValidatorRegistry.json"
 
 const { abi } = JSON.parse(await readFile(ART, "utf-8"))
 const provider = new JsonRpcProvider(RPC)
@@ -190,7 +190,7 @@ for (const e of set) {
 reader.stop()
 `
 const res = spawnSync("node", ["--experimental-strip-types", "--input-type=module", "-e", probe], {
-  cwd: "/passinger/projects/ClawdBot/COC/contracts",
+  cwd: "/passinger/projects/ClawdBot/Palimesh/contracts",
   encoding: "utf-8",
   timeout: 60_000,
 })

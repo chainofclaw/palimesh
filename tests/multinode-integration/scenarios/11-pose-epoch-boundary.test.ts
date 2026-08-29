@@ -17,7 +17,7 @@ import { Contract, JsonRpcProvider } from "ethers"
 import { readFileSync, existsSync } from "node:fs"
 
 const RPC_PORTS = [38790, 38792, 38794, 38796, 38798] as const
-const DEPLOYED_PATH = "/passinger/projects/ClawdBot/COC/tests/multinode-integration/configs-h15/deployed-pose.json"
+const DEPLOYED_PATH = "/passinger/projects/ClawdBot/Palimesh/tests/multinode-integration/configs-h15/deployed-pose.json"
 
 describe("R2.1.g — epoch boundary consistency", { timeout: 90_000 }, () => {
   let deployed: any

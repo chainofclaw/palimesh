@@ -4,7 +4,7 @@
 
 ## Executive Summary
 
-COC will evolve from a standalone L1 blockchain into an **Optimistic Rollup** architecture:
+Palimesh will evolve from a standalone L1 blockchain into an **Optimistic Rollup** architecture:
 
 ```
                           ┌─────────────────────────────────────┐
@@ -25,7 +25,7 @@ COC will evolve from a standalone L1 blockchain into an **Optimistic Rollup** ar
                                         │ compressed L2 blocks
                                         │
          ┌──────────────────────────────────────────────────────┐
-         │        Sequencer (L2) — Current COC Engine            │
+         │        Sequencer (L2) — Current Palimesh Engine            │
          │   ┌────────────────────────────────────────────────┐  │
          │   │  PersistentChainEngine (1s blocks)             │  │
          │   │  - EVM execution (133.7 TPS (EthereumJS) / 500-1000 TPS (revm))                    │  │

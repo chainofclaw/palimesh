@@ -44,7 +44,7 @@ async function openManager(): Promise<{
   db: LevelDatabase
   dir: string
 }> {
-  const dir = mkdtempSync(join(tmpdir(), "coc-state-race-"))
+  const dir = mkdtempSync(join(tmpdir(), "palimesh-state-race-"))
   const db = new LevelDatabase(dir, "state")
   await db.open()
   const trie = new PersistentStateTrie(db)

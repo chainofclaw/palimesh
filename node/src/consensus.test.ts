@@ -19,7 +19,7 @@ async function createTestEngine(): Promise<{ engine: ChainEngine; evm: EvmChain 
   const evm = await EvmChain.create(18780)
   await evm.prefund([{ address: "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266", balanceWei: "10000000000000000000000" }])
   const engine = new ChainEngine(
-    { dataDir: "/tmp/coc-consensus-test-" + Date.now(), nodeId: NODE_ID, validators: [NODE_ID], finalityDepth: 3, maxTxPerBlock: 50, minGasPriceWei: 1n },
+    { dataDir: "/tmp/palimesh-consensus-test-" + Date.now(), nodeId: NODE_ID, validators: [NODE_ID], finalityDepth: 3, maxTxPerBlock: 50, minGasPriceWei: 1n },
     evm,
   )
   return { engine, evm }
@@ -174,7 +174,7 @@ test("enforce mode rejects block without signature", async () => {
   const evm = await EvmChain.create(18780)
   const engine = new ChainEngine(
     {
-      dataDir: "/tmp/coc-sig-test-" + Date.now(),
+      dataDir: "/tmp/palimesh-sig-test-" + Date.now(),
       nodeId: NODE_ID,
       validators: [NODE_ID],
       finalityDepth: 3,
@@ -375,7 +375,7 @@ describe("cumulative weight in blocks", () => {
 test("proposer produces blocks in round-robin", async () => {
   const evm1 = await EvmChain.create(18780)
   const engine1 = new ChainEngine(
-    { dataDir: "/tmp/coc-consensus-rr-" + Date.now(), nodeId: "v1", validators: ["v1", "v2"], finalityDepth: 3, maxTxPerBlock: 50, minGasPriceWei: 1n },
+    { dataDir: "/tmp/palimesh-consensus-rr-" + Date.now(), nodeId: "v1", validators: ["v1", "v2"], finalityDepth: 3, maxTxPerBlock: 50, minGasPriceWei: 1n },
     evm1,
   )
 

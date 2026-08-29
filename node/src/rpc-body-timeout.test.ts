@@ -15,7 +15,7 @@ import { P2PNode } from "./p2p.ts"
 async function startTestRpc(): Promise<{ port: number; close: () => Promise<void> }> {
   const chainId = 18780
   const evm = await EvmChain.create(chainId)
-  const dataDir = "/tmp/coc-rpc-body-timeout-" + Date.now() + "-" + Math.random().toString(36).slice(2)
+  const dataDir = "/tmp/palimesh-rpc-body-timeout-" + Date.now() + "-" + Math.random().toString(36).slice(2)
   const chain = new ChainEngine(
     { dataDir, nodeId: "n1", validators: ["n1"], finalityDepth: 3, maxTxPerBlock: 50, minGasPriceWei: 1n },
     evm,
@@ -48,7 +48,7 @@ async function startTestRpc(): Promise<{ port: number; close: () => Promise<void
 }
 
 test("#346: RPC body read timeout kills slow client within bounded window", async (t) => {
-  process.env.COC_RPC_RATE_LIMIT_DISABLED = "1"
+  process.env.PALI_RPC_RATE_LIMIT_DISABLED = "1"
   const { port, close } = await startTestRpc()
   t.after(async () => { await close() })
 

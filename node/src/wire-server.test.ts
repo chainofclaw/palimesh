@@ -850,7 +850,7 @@ function receiveFrames(socket: net.Socket, decoder: FrameDecoder, minFrames: num
 }
 
 // --- Phase C1.2: wire BlockRequest / BlockResponse end-to-end.
-// See plans/coc-evm-abstract-turtle.md §C1.2. Exercises the full path:
+// See plans/palimesh-evm-abstract-turtle.md §C1.2. Exercises the full path:
 // WireClient.requestBlock / pushBlock → server dispatch with onBlockRequest
 // handler → BlockResponse → pending map resolves.
 

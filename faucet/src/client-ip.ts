@@ -2,7 +2,7 @@ import type { IncomingMessage } from "node:http"
 
 type HeaderValue = string | string[] | undefined
 
-export function isFaucetTrustProxyEnabled(value = process.env.COC_FAUCET_TRUST_PROXY): boolean {
+export function isFaucetTrustProxyEnabled(value = process.env.PALI_FAUCET_TRUST_PROXY): boolean {
   return value === "1"
 }
 

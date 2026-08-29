@@ -1,21 +1,21 @@
-# COC 3-Node BFT Testnet
+# Palimesh 3-Node BFT Testnet
 # Usage: docker compose -f docker/docker-compose.testnet.yml up -d
 
 x-node-base: &node-base
-  image: ${COC_NODE_IMAGE:-ghcr.io/chainofclaw/coc-node}:${IMAGE_TAG:-latest}
+  image: ${PALI_NODE_IMAGE:-ghcr.io/palimesh/palimesh-node}:${IMAGE_TAG:-latest}
   build:
     context: ..
     dockerfile: docker/Dockerfile.node
   restart: unless-stopped
   stop_grace_period: 30s
   networks:
-    - coc-p2p
-    - coc-rpc
+    - palimesh-p2p
+    - palimesh-rpc
 
 services:
   node-1:
     <<: *node-base
-    container_name: coc-node-1
+    container_name: palimesh-node-1
     ports:
       - "28780:18780"
       - "28781:18781"
@@ -29,21 +29,21 @@ services:
       - node1-data:/data/coc
       - ./testnet-configs/node-1.json:/data/coc/node-config.json:ro
     environment:
-      - COC_DATA_DIR=/data/coc
-      - COC_NODE_CONFIG=/data/coc/node-config.json
-      - COC_NODE_KEY=${COC_NODE1_KEY:?set COC_NODE1_KEY in the deployment environment}
+      - PALI_DATA_DIR=/data/coc
+      - PALI_NODE_CONFIG=/data/coc/node-config.json
+      - PALI_NODE_KEY=${PALI_NODE1_KEY:?set PALI_NODE1_KEY in the deployment environment}
       # Phase H stability env (defaults to disabled in production):
-      #   COC_DIAG_SPEC_ROOT=1       — enable speculative-compute divergence diagnostics
-      #   COC_DEV_RELAXED_QUORUM=1   — DEV-ONLY 2-of-3 BFT quorum; loses Byzantine safety
-      #   COC_BFT_AUTO_RECOVERY=1    — enable H5 forceSnapSync on persistent divergence
-      - COC_DIAG_SPEC_ROOT=${COC_DIAG_SPEC_ROOT:-0}
-      - COC_DEV_RELAXED_QUORUM=${COC_DEV_RELAXED_QUORUM:-0}
-      - COC_BFT_AUTO_RECOVERY=${COC_BFT_AUTO_RECOVERY:-0}
-      - COC_METRICS_BIND=0.0.0.0
+      #   PALI_DIAG_SPEC_ROOT=1       — enable speculative-compute divergence diagnostics
+      #   PALI_DEV_RELAXED_QUORUM=1   — DEV-ONLY 2-of-3 BFT quorum; loses Byzantine safety
+      #   PALI_BFT_AUTO_RECOVERY=1    — enable H5 forceSnapSync on persistent divergence
+      - PALI_DIAG_SPEC_ROOT=${PALI_DIAG_SPEC_ROOT:-0}
+      - PALI_DEV_RELAXED_QUORUM=${PALI_DEV_RELAXED_QUORUM:-0}
+      - PALI_BFT_AUTO_RECOVERY=${PALI_BFT_AUTO_RECOVERY:-0}
+      - PALI_METRICS_BIND=0.0.0.0
 
   node-2:
     <<: *node-base
-    container_name: coc-node-2
+    container_name: palimesh-node-2
     ports:
       - "28782:18780"
       - "28783:18781"
@@ -54,17 +54,17 @@ services:
       - node2-data:/data/coc
       - ./testnet-configs/node-2.json:/data/coc/node-config.json:ro
     environment:
-      - COC_DATA_DIR=/data/coc
-      - COC_NODE_CONFIG=/data/coc/node-config.json
-      - COC_NODE_KEY=${COC_NODE2_KEY:?set COC_NODE2_KEY in the deployment environment}
-      - COC_DIAG_SPEC_ROOT=${COC_DIAG_SPEC_ROOT:-0}
-      - COC_DEV_RELAXED_QUORUM=${COC_DEV_RELAXED_QUORUM:-0}
-      - COC_BFT_AUTO_RECOVERY=${COC_BFT_AUTO_RECOVERY:-0}
-      - COC_METRICS_BIND=0.0.0.0
+      - PALI_DATA_DIR=/data/coc
+      - PALI_NODE_CONFIG=/data/coc/node-config.json
+      - PALI_NODE_KEY=${PALI_NODE2_KEY:?set PALI_NODE2_KEY in the deployment environment}
+      - PALI_DIAG_SPEC_ROOT=${PALI_DIAG_SPEC_ROOT:-0}
+      - PALI_DEV_RELAXED_QUORUM=${PALI_DEV_RELAXED_QUORUM:-0}
+      - PALI_BFT_AUTO_RECOVERY=${PALI_BFT_AUTO_RECOVERY:-0}
+      - PALI_METRICS_BIND=0.0.0.0
 
   node-3:
     <<: *node-base
-    container_name: coc-node-3
+    container_name: palimesh-node-3
     ports:
       - "28784:18780"
       - "28785:18781"
@@ -75,17 +75,17 @@ services:
       - node3-data:/data/coc
       - ./testnet-configs/node-3.json:/data/coc/node-config.json:ro
     environment:
-      - COC_DATA_DIR=/data/coc
-      - COC_NODE_CONFIG=/data/coc/node-config.json
-      - COC_NODE_KEY=${COC_NODE3_KEY:?set COC_NODE3_KEY in the deployment environment}
-      - COC_DIAG_SPEC_ROOT=${COC_DIAG_SPEC_ROOT:-0}
-      - COC_DEV_RELAXED_QUORUM=${COC_DEV_RELAXED_QUORUM:-0}
-      - COC_BFT_AUTO_RECOVERY=${COC_BFT_AUTO_RECOVERY:-0}
-      - COC_METRICS_BIND=0.0.0.0
+      - PALI_DATA_DIR=/data/coc
+      - PALI_NODE_CONFIG=/data/coc/node-config.json
+      - PALI_NODE_KEY=${PALI_NODE3_KEY:?set PALI_NODE3_KEY in the deployment environment}
+      - PALI_DIAG_SPEC_ROOT=${PALI_DIAG_SPEC_ROOT:-0}
+      - PALI_DEV_RELAXED_QUORUM=${PALI_DEV_RELAXED_QUORUM:-0}
+      - PALI_BFT_AUTO_RECOVERY=${PALI_BFT_AUTO_RECOVERY:-0}
+      - PALI_METRICS_BIND=0.0.0.0
 
   sync-node:
     <<: *node-base
-    container_name: coc-sync-node
+    container_name: palimesh-sync-node
     ports:
       - "18780:18780"
       - "18781:18781"
@@ -96,13 +96,13 @@ services:
       - sync-data:/data/coc
       - ./testnet-configs/sync-node.json:/data/coc/node-config.json:ro
     environment:
-      - COC_DATA_DIR=/data/coc
-      - COC_NODE_CONFIG=/data/coc/node-config.json
-      - COC_NODE_KEY=${COC_SYNC_NODE_KEY:?set COC_SYNC_NODE_KEY in the deployment environment}
-      - COC_DIAG_SPEC_ROOT=${COC_DIAG_SPEC_ROOT:-0}
-      - COC_DEV_RELAXED_QUORUM=${COC_DEV_RELAXED_QUORUM:-0}
-      - COC_BFT_AUTO_RECOVERY=${COC_BFT_AUTO_RECOVERY:-0}
-      - COC_METRICS_BIND=0.0.0.0
+      - PALI_DATA_DIR=/data/coc
+      - PALI_NODE_CONFIG=/data/coc/node-config.json
+      - PALI_NODE_KEY=${PALI_SYNC_NODE_KEY:?set PALI_SYNC_NODE_KEY in the deployment environment}
+      - PALI_DIAG_SPEC_ROOT=${PALI_DIAG_SPEC_ROOT:-0}
+      - PALI_DEV_RELAXED_QUORUM=${PALI_DEV_RELAXED_QUORUM:-0}
+      - PALI_BFT_AUTO_RECOVERY=${PALI_BFT_AUTO_RECOVERY:-0}
+      - PALI_METRICS_BIND=0.0.0.0
     depends_on:
       node-1:
         condition: service_healthy
@@ -112,39 +112,39 @@ services:
         condition: service_healthy
 
   explorer:
-    image: ${COC_EXPLORER_IMAGE:-ghcr.io/chainofclaw/coc-explorer}:${IMAGE_TAG:-latest}
+    image: ${PALI_EXPLORER_IMAGE:-ghcr.io/palimesh/palimesh-explorer}:${IMAGE_TAG:-latest}
     build:
       context: ..
       dockerfile: docker/Dockerfile.explorer
       args:
         NEXT_PUBLIC_RPC_URL: http://node-1:18780
         NEXT_PUBLIC_WS_URL: ws://node-1:18781
-    container_name: coc-explorer
+    container_name: palimesh-explorer
     ports:
       - "127.0.0.1:3000:3000"
     depends_on:
       node-1:
         condition: service_healthy
     networks:
-      - coc-rpc
+      - palimesh-rpc
     restart: unless-stopped
 
   faucet:
-    image: ${COC_FAUCET_IMAGE:-ghcr.io/chainofclaw/coc-faucet}:${IMAGE_TAG:-latest}
+    image: ${PALI_FAUCET_IMAGE:-ghcr.io/palimesh/palimesh-faucet}:${IMAGE_TAG:-latest}
     build:
       context: ..
       dockerfile: docker/Dockerfile.faucet
-    container_name: coc-faucet
+    container_name: palimesh-faucet
     ports:
       - "3003:3003"
     environment:
-      - COC_FAUCET_RPC_URL=http://node-1:18780
-      - COC_FAUCET_PRIVATE_KEY=${COC_FAUCET_KEY:?set COC_FAUCET_KEY in the deployment environment}
+      - PALI_FAUCET_RPC_URL=http://node-1:18780
+      - PALI_FAUCET_PRIVATE_KEY=${PALI_FAUCET_KEY:?set PALI_FAUCET_KEY in the deployment environment}
     depends_on:
       node-1:
         condition: service_healthy
     networks:
-      - coc-rpc
+      - palimesh-rpc
     restart: unless-stopped
 
   # Phase C PoSe v2 prover sidecars.
@@ -160,23 +160,23 @@ services:
   # files even if only one writes; cross-container lock semantics under
   # force-recreate are unreliable.
   prover-1: &prover-base
-    image: ${COC_RUNTIME_IMAGE:-ghcr.io/chainofclaw/coc-runtime}:${IMAGE_TAG:-latest}
+    image: ${PALI_RUNTIME_IMAGE:-ghcr.io/palimesh/palimesh-runtime}:${IMAGE_TAG:-latest}
     build:
       context: ..
       dockerfile: docker/Dockerfile.runtime
-    container_name: coc-prover-1
-    command: ["runtime/coc-node.ts"]
+    container_name: palimesh-prover-1
+    command: ["runtime/palimesh-node.ts"]
     environment:
-      - COC_CONFIG=/app/config.json
-      - COC_NODE_KEY=${COC_NODE1_KEY:?set COC_NODE1_KEY in the deployment environment}
-      - COC_RPC_URL=http://node-1:18780
+      - PALI_CONFIG=/app/config.json
+      - PALI_NODE_KEY=${PALI_NODE1_KEY:?set PALI_NODE1_KEY in the deployment environment}
+      - PALI_RPC_URL=http://node-1:18780
     volumes:
       - node1-data:/data/coc:ro    # ← :ro is mandatory; see header comment
       - ./testnet-runtime-configs/provers/node-1.json:/app/config.json:ro
     ports:
       - "127.0.0.1:19901:18800"
     networks:
-      coc-rpc:
+      palimesh-rpc:
         aliases:
           - prover-1   # agent.json's nodeEndpoints reference http://prover-1:18800
     depends_on:
@@ -188,18 +188,18 @@ services:
 
   prover-2:
     <<: *prover-base
-    container_name: coc-prover-2
+    container_name: palimesh-prover-2
     environment:
-      - COC_CONFIG=/app/config.json
-      - COC_NODE_KEY=${COC_NODE2_KEY:?set COC_NODE2_KEY in the deployment environment}
-      - COC_RPC_URL=http://node-2:18780
+      - PALI_CONFIG=/app/config.json
+      - PALI_NODE_KEY=${PALI_NODE2_KEY:?set PALI_NODE2_KEY in the deployment environment}
+      - PALI_RPC_URL=http://node-2:18780
     volumes:
       - node2-data:/data/coc:ro
       - ./testnet-runtime-configs/provers/node-2.json:/app/config.json:ro
     ports:
       - "127.0.0.1:19902:18800"
     networks:
-      coc-rpc:
+      palimesh-rpc:
         aliases:
           - prover-2
     depends_on:
@@ -208,18 +208,18 @@ services:
 
   prover-3:
     <<: *prover-base
-    container_name: coc-prover-3
+    container_name: palimesh-prover-3
     environment:
-      - COC_CONFIG=/app/config.json
-      - COC_NODE_KEY=${COC_NODE3_KEY:?set COC_NODE3_KEY in the deployment environment}
-      - COC_RPC_URL=http://node-3:18780
+      - PALI_CONFIG=/app/config.json
+      - PALI_NODE_KEY=${PALI_NODE3_KEY:?set PALI_NODE3_KEY in the deployment environment}
+      - PALI_RPC_URL=http://node-3:18780
     volumes:
       - node3-data:/data/coc:ro
       - ./testnet-runtime-configs/provers/node-3.json:/app/config.json:ro
     ports:
       - "127.0.0.1:19903:18800"
     networks:
-      coc-rpc:
+      palimesh-rpc:
         aliases:
           - prover-3
     depends_on:
@@ -227,16 +227,16 @@ services:
         condition: service_healthy
 
   agent:
-    image: ${COC_RUNTIME_IMAGE:-ghcr.io/chainofclaw/coc-runtime}:${IMAGE_TAG:-latest}
+    image: ${PALI_RUNTIME_IMAGE:-ghcr.io/palimesh/palimesh-runtime}:${IMAGE_TAG:-latest}
     build:
       context: ..
       dockerfile: docker/Dockerfile.runtime
-    container_name: coc-agent
-    command: ["runtime/coc-agent.ts"]
+    container_name: palimesh-agent
+    command: ["runtime/palimesh-agent.ts"]
     environment:
-      - COC_DATA_DIR=/data/coc/runtime
-      - COC_CONFIG=/data/coc/runtime/agent.json
-      - COC_OPERATOR_PK=${COC_OPERATOR_PK:?set COC_OPERATOR_PK in the deployment environment}
+      - PALI_DATA_DIR=/data/coc/runtime
+      - PALI_CONFIG=/data/coc/runtime/agent.json
+      - PALI_OPERATOR_PK=${PALI_OPERATOR_PK:?set PALI_OPERATOR_PK in the deployment environment}
     volumes:
       - runtime-data:/data/coc/runtime
       - ./testnet-runtime-configs/agent.json:/data/coc/runtime/agent.json:ro
@@ -248,23 +248,23 @@ services:
       node-3:
         condition: service_healthy
     networks:
-      - coc-rpc
+      - palimesh-rpc
     restart: unless-stopped
     profiles:
       - pose
 
   relayer:
-    image: ${COC_RUNTIME_IMAGE:-ghcr.io/chainofclaw/coc-runtime}:${IMAGE_TAG:-latest}
+    image: ${PALI_RUNTIME_IMAGE:-ghcr.io/palimesh/palimesh-runtime}:${IMAGE_TAG:-latest}
     build:
       context: ..
       dockerfile: docker/Dockerfile.runtime
-    container_name: coc-relayer
-    command: ["runtime/coc-relayer.ts"]
+    container_name: palimesh-relayer
+    command: ["runtime/palimesh-relayer.ts"]
     environment:
-      - COC_DATA_DIR=/data/coc/runtime
-      - COC_CONFIG=/data/coc/runtime/relayer.json
+      - PALI_DATA_DIR=/data/coc/runtime
+      - PALI_CONFIG=/data/coc/runtime/relayer.json
       # Must match the operational owner/slasher for the deployed PoSeManagerV2.
-      - COC_SLASHER_PK=${COC_SLASHER_PK:?set COC_SLASHER_PK in the deployment environment}
+      - PALI_SLASHER_PK=${PALI_SLASHER_PK:?set PALI_SLASHER_PK in the deployment environment}
     volumes:
       - runtime-data:/data/coc/runtime
       - ./testnet-runtime-configs/relayer.json:/data/coc/runtime/relayer.json:ro
@@ -274,7 +274,7 @@ services:
       agent:
         condition: service_started
     networks:
-      - coc-rpc
+      - palimesh-rpc
     restart: unless-stopped
     profiles:
       - pose
@@ -287,10 +287,10 @@ volumes:
   runtime-data:
 
 networks:
-  coc-p2p:
+  palimesh-p2p:
     driver: bridge
     internal: true
     name: docker_coc-p2p
-  coc-rpc:
+  palimesh-rpc:
     driver: bridge
     name: docker_coc-rpc

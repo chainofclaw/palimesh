@@ -1,4 +1,4 @@
-# COC 防女巫攻击机制详解
+# Palimesh 防女巫攻击机制详解
 
 > **版本**: v1.1.0
 > **更新日期**: 2026-02-16
@@ -172,7 +172,7 @@ function requiredBond(address operator) external view returns (uint256) {
 #### 3.1.4 Agent 侧调用
 
 ```typescript
-// runtime/coc-agent.ts
+// runtime/palimesh-agent.ts
 
 async function ensureNodeRegistered(): Promise<void> {
   const signer = getSigner();
@@ -237,7 +237,7 @@ uint8 public constant MAX_NODES_PER_OPERATOR = 5;
 #### 4.1.2 指纹算法
 
 ```typescript
-// runtime/coc-agent.ts
+// runtime/palimesh-agent.ts
 
 import { hostname, networkInterfaces } from "node:os";
 
@@ -275,7 +275,7 @@ machine:node-1.example.com:00:1A:2B:3C:4D:5E:0x04abc123...
 #### 4.1.3 endpointCommitment 唯一性
 
 ```typescript
-// runtime/coc-agent.ts
+// runtime/palimesh-agent.ts
 
 const fingerprint = computeMachineFingerprint(pubkey);
 const endpointCommitment = keccak256(toUtf8Bytes(fingerprint));
@@ -494,7 +494,7 @@ function canRunAggregatorRole(epochId: number): boolean {
 
 **签名消息**:
 ```
-abi.encodePacked("coc-register:", nodeId, msg.sender)
+abi.encodePacked("palimesh-register:", nodeId, msg.sender)
 ```
 
 **合约验证**:
@@ -510,7 +510,7 @@ function _verifyOwnership(
 
     // 构造消息
     bytes32 messageHash = keccak256(
-        abi.encodePacked("coc-register:", nodeId, msg.sender)
+        abi.encodePacked("palimesh-register:", nodeId, msg.sender)
     );
 
     // EIP-191 前缀
@@ -550,7 +550,7 @@ function _pubkeyToAddress(bytes calldata pubkey) internal pure returns (address)
 #### 7.1.3 Agent 侧签名
 
 ```typescript
-// runtime/coc-agent.ts
+// runtime/palimesh-agent.ts
 
 async function ensureNodeRegistered(): Promise<void> {
   const signer = getSigner();
@@ -558,7 +558,7 @@ async function ensureNodeRegistered(): Promise<void> {
 
   // 构造签名消息（与合约一致）
   const message = Buffer.concat([
-    Buffer.from("coc-register:", "utf8"),
+    Buffer.from("palimesh-register:", "utf8"),
     Buffer.from(nodeId.slice(2), "hex"),
     Buffer.from(signer.address.slice(2), "hex"),
   ]);
@@ -985,7 +985,7 @@ verifyRelayResult: (challenge, receipt) => {
    }
    ```
 
-2. 更新 coc-agent.ts
+2. 更新 palimesh-agent.ts
    ```typescript
    const nonceRegistry = new PersistentNonceRegistry("./data/nonces");
    ```
@@ -1228,13 +1228,13 @@ verifyRelayResult: (challenge, receipt) => {
 
 ### 12.5 运维建议
 
-1. 将 `coc_getNetworkStats` 纳入告警，重点跟踪 `authRejected`、`discoveryIdentityFailures`、`dht.verifyFailures`。  
+1. 将 `pali_getNetworkStats` 纳入告警，重点跟踪 `authRejected`、`discoveryIdentityFailures`、`dht.verifyFailures`。  
 2. 对 on-chain 授权查询设置专用 RPC 节点与超时，避免授权依赖拖慢核心路径。  
 3. 在灰度期先开启 `monitor` 观测 24 小时，再切 `enforce`，并保留回滚预案。  
 
 ---
 
-**文档维护者**: COC 安全团队
-**联系方式**: security@chainofclaw.org
+**文档维护者**: Palimesh 安全团队
+**联系方式**: security@palimesh.io
 **最后审计**: 2026-02-14
 **许可证**: MIT

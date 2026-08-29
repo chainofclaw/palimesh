@@ -63,7 +63,7 @@ const SYNC_INFLIGHT_WATCHDOG_MS = 90_000
 // Without it, a height that was partly voted but not finalized at crash time
 // can deadlock BFT permanently (88780, 2026-08-05). Env-overridable for tests.
 const BFT_VOTE_REPLAY_STARTUP_DELAY_MS = Number(
-  process.env.COC_BFT_VOTE_REPLAY_DELAY_MS ?? 8_000,
+  process.env.PALI_BFT_VOTE_REPLAY_DELAY_MS ?? 8_000,
 )
 
 // Phase H15: how long without a BFT-finalized block before the fallback
@@ -79,14 +79,14 @@ const BFT_VOTE_REPLAY_STARTUP_DELAY_MS = Number(
 // PR-1I (2026-05-11): env-overridable so prod operators can shorten the
 // slow-path fallback window when an environment cannot afford 10 minutes of
 // missed liveness per stuck round. Default stays at 600 s for test/dev
-// parity; set `COC_NO_PROGRESS_TIMEOUT_MS=30000` (or similar) on prod nodes
+// parity; set `PALI_NO_PROGRESS_TIMEOUT_MS=30000` (or similar) on prod nodes
 // when single-fault recovery latency is the dominant cost. Stagger stays
 // fixed (rotational ordering protection — equivocation storm guard).
 export const NO_PROGRESS_TIMEOUT_MS = Number(
-  process.env.COC_NO_PROGRESS_TIMEOUT_MS ?? 600_000,
+  process.env.PALI_NO_PROGRESS_TIMEOUT_MS ?? 600_000,
 )
 export const NO_PROGRESS_STAGGER_MS = Number(
-  process.env.COC_NO_PROGRESS_STAGGER_MS ?? 30_000,
+  process.env.PALI_NO_PROGRESS_STAGGER_MS ?? 30_000,
 )
 const NO_PROGRESS_MAX_VALIDATORS = 10
 
@@ -106,7 +106,7 @@ const NO_PROGRESS_MAX_VALIDATORS = 10
 export const PROPOSER_UNREACHABLE_FAST_TIMEOUT_MS = 15_000
 export const PROPOSER_UNREACHABLE_TTL_MS = 60_000
 
-// PR-1M (2026-05-17, chainofclaw/COC#635): liveness-based miss-round window.
+// PR-1M (2026-05-17, palimesh/palimesh#635): liveness-based miss-round window.
 //
 // onProposerStuck — the BFT coordinator callback that feeds PR-1A's
 // `unreachableProposers` marks — only fires when a propose was actually
@@ -125,9 +125,9 @@ export const PROPOSER_UNREACHABLE_TTL_MS = 60_000
 // the mark is set; smaller than TTL so the mark cannot expire before the
 // override fires. The watchdog samples at NO_PROGRESS_STAGGER_MS granularity,
 // so keep this below that interval for first-tick detection.
-// Env-overridable via COC_PROPOSER_MISS_ROUND_TIMEOUT_MS.
+// Env-overridable via PALI_PROPOSER_MISS_ROUND_TIMEOUT_MS.
 export const PROPOSER_MISS_ROUND_TIMEOUT_MS = Number(
-  process.env.COC_PROPOSER_MISS_ROUND_TIMEOUT_MS ?? 20_000,
+  process.env.PALI_PROPOSER_MISS_ROUND_TIMEOUT_MS ?? 20_000,
 )
 
 /**
@@ -147,11 +147,11 @@ export const PROPOSER_MISS_ROUND_TIMEOUT_MS = Number(
  * proposals at the same height that BFT cannot reconcile inside one round.
  * The 60 s grace lets the wire mesh stabilize before fast-path arms.
  *
- * Override at runtime with `COC_PR1A_STARTUP_GRACE_MS`. Set to `0` to
+ * Override at runtime with `PALI_PR1A_STARTUP_GRACE_MS`. Set to `0` to
  * disable grace and restore the original PR-1A behavior.
  */
 export const PROPOSER_REACHABILITY_STARTUP_GRACE_MS = Number(
-  process.env.COC_PR1A_STARTUP_GRACE_MS ?? 60_000,
+  process.env.PALI_PR1A_STARTUP_GRACE_MS ?? 60_000,
 )
 
 /**
@@ -169,17 +169,17 @@ export const PROPOSER_REACHABILITY_STARTUP_GRACE_MS = Number(
  * caused chain to advance 10-15 blocks per restart then freeze at a
  * height where two validators each held a different propose.
  *
- * Fix: require ≥ COC_PR1A_MIN_VALIDATORS (default 4) for PR-1A to engage.
+ * Fix: require ≥ PALI_PR1A_MIN_VALIDATORS (default 4) for PR-1A to engage.
  * On N=3 clusters the chain falls back to H15's slow path (600 s default,
- * tunable via COC_NO_PROGRESS_TIMEOUT_MS — see PR-1I). The trade-off is
+ * tunable via PALI_NO_PROGRESS_TIMEOUT_MS — see PR-1I). The trade-off is
  * acceptable: N=3 is single-fault-fragile by design, so 30 s slow-path
  * latency on a single-validator stall is no worse than what the original
  * BFT contract promised before PR-1A.
  *
- * Set `COC_PR1A_MIN_VALIDATORS=0` to force-enable on any N (debug only).
+ * Set `PALI_PR1A_MIN_VALIDATORS=0` to force-enable on any N (debug only).
  */
 export const PR1A_MIN_VALIDATORS = Number(
-  process.env.COC_PR1A_MIN_VALIDATORS ?? 4,
+  process.env.PALI_PR1A_MIN_VALIDATORS ?? 4,
 )
 
 /** Race a promise against a timeout. Throws on timeout, otherwise returns the value. */

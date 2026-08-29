@@ -48,7 +48,7 @@ export interface PoseWitnessFields {
    * The fields are optional during the rollout window:
    * - Caller passes them → witness MUST verify; fail → 400
    * - Caller omits them → witness falls back to legacy rubber-stamp
-   *   behaviour (gated by `COC_POSE_WITNESS_REQUIRE_VERIFIED`; default
+   *   behaviour (gated by `PALI_POSE_WITNESS_REQUIRE_VERIFIED`; default
    *   `false` in current release to preserve interop, will flip to
    *   `true` once all agents ship the push fields).
    *

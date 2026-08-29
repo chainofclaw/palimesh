@@ -1,11 +1,11 @@
-# COC Testnet Deployment Guide
+# Palimesh Testnet Deployment Guide
 
 ## 1. Testnet Overview
 
 | Item | Value |
 |------|-------|
 | Chain ID | 18780 (0x495c) |
-| Server | 199.192.16.79 (server1.clawchain.io) |
+| Server | 199.192.16.79 (server1.palimesh.io) |
 | Nodes | 3 (BFT validators) |
 | Consensus | BFT-lite (2/3 stake-weighted quorum) |
 | Block Time | ~3 s/block (~40 blocks/min) |
@@ -52,12 +52,12 @@ curl -X POST -H 'Content-Type: application/json' \
 
 # Query chain stats
 curl -X POST -H 'Content-Type: application/json' \
-  -d '{"jsonrpc":"2.0","method":"coc_chainStats","id":1}' \
+  -d '{"jsonrpc":"2.0","method":"pali_chainStats","id":1}' \
   http://199.192.16.79:28780/
 
 # Query BFT status
 curl -X POST -H 'Content-Type: application/json' \
-  -d '{"jsonrpc":"2.0","method":"coc_getBftStatus","id":1}' \
+  -d '{"jsonrpc":"2.0","method":"pali_getBftStatus","id":1}' \
   http://199.192.16.79:28780/
 ```
 
@@ -83,22 +83,22 @@ curl -X POST -H 'Content-Type: application/json' \
 
 ```
 docker-compose.testnet.yml
-├── coc-node-1   (Validator #0)
-├── coc-node-2   (Validator #1)
-├── coc-node-3   (Validator #2)
-├── coc-explorer  (Block explorer, :3000)
-├── coc-faucet    (Faucet, :3003, optional)
-├── coc-agent     (PoSe Agent, optional, profile=pose)
-└── coc-relayer   (PoSe Relayer, optional, profile=pose)
+├── palimesh-node-1   (Validator #0)
+├── palimesh-node-2   (Validator #1)
+├── palimesh-node-3   (Validator #2)
+├── palimesh-explorer  (Block explorer, :3000)
+├── palimesh-faucet    (Faucet, :3003, optional)
+├── palimesh-agent     (PoSe Agent, optional, profile=pose)
+└── palimesh-relayer   (PoSe Relayer, optional, profile=pose)
 ```
 
 ### Network Topology
 
 ```
-coc-p2p (internal bridge)
+palimesh-p2p (internal bridge)
   └── node-1 ↔ node-2 ↔ node-3
 
-coc-rpc (external bridge)
+palimesh-rpc (external bridge)
   ├── node-1, node-2, node-3 (RPC exposed)
   ├── explorer → node-1
   ├── faucet → node-1
@@ -108,7 +108,7 @@ coc-rpc (external bridge)
 ### Start / Stop
 
 ```bash
-cd COC
+cd Palimesh
 
 # Start testnet (3 nodes + explorer)
 docker compose -f docker/docker-compose.testnet.yml up -d
@@ -117,9 +117,9 @@ docker compose -f docker/docker-compose.testnet.yml up -d
 docker compose -f docker/docker-compose.testnet.yml down
 
 # View logs
-docker logs coc-node-1 --tail 50
-docker logs coc-node-2 --tail 50
-docker logs coc-node-3 --tail 50
+docker logs palimesh-node-1 --tail 50
+docker logs palimesh-node-2 --tail 50
+docker logs palimesh-node-3 --tail 50
 
 # Wipe data and rebuild (destructive: all chain data will be lost)
 docker compose -f docker/docker-compose.testnet.yml down
@@ -145,21 +145,21 @@ docker compose -f docker/docker-compose.testnet.yml up -d
 | `eth_syncing` | Sync status |
 | `net_peerCount` | Connected peer count |
 
-### COC Extension Methods
+### Palimesh Extension Methods
 
 | Method | Description |
 |--------|-------------|
-| `coc_chainStats` | Chain statistics (blocks, TPS, validator count) |
-| `coc_getBftStatus` | BFT consensus round status |
-| `coc_getEquivocations` | BFT equivocation evidence |
+| `pali_chainStats` | Chain statistics (blocks, TPS, validator count) |
+| `pali_getBftStatus` | BFT consensus round status |
+| `pali_getEquivocations` | BFT equivocation evidence |
 
 ---
 
-## 6. OpenClaw Plugin — coc-nodeops
+## 6. OpenClaw Plugin — palimesh-nodeops
 
 ### Installation
 
-coc-nodeops runs as an OpenClaw extension plugin, providing both CLI commands and AI agent tools.
+palimesh-nodeops runs as an OpenClaw extension plugin, providing both CLI commands and AI agent tools.
 
 **Option 1: Local path install**
 
@@ -170,18 +170,18 @@ Edit `~/.openclaw/openclaw.json`:
   "plugins": {
     "enabled": true,
     "entries": {
-      "coc-nodeops": {
+      "palimesh-nodeops": {
         "enabled": true,
         "config": {
-          "runtimeDir": "/path/to/COC/runtime"
+          "runtimeDir": "/path/to/Palimesh/runtime"
         }
       }
     },
     "installs": {
-      "coc-nodeops": {
+      "palimesh-nodeops": {
         "source": "path",
-        "sourcePath": "/path/to/COC/extensions/coc-nodeops",
-        "installPath": "~/.openclaw/extensions/coc-nodeops"
+        "sourcePath": "/path/to/Palimesh/extensions/palimesh-nodeops",
+        "installPath": "~/.openclaw/extensions/palimesh-nodeops"
       }
     }
   }
@@ -192,17 +192,17 @@ Then sync files:
 
 ```bash
 rsync -av --exclude='node_modules' \
-  /path/to/COC/extensions/coc-nodeops/ \
-  ~/.openclaw/extensions/coc-nodeops/
+  /path/to/Palimesh/extensions/palimesh-nodeops/ \
+  ~/.openclaw/extensions/palimesh-nodeops/
 
-cd ~/.openclaw/extensions/coc-nodeops && npm install
+cd ~/.openclaw/extensions/palimesh-nodeops && npm install
 ```
 
 **Option 2: Manual copy**
 
 ```bash
-cp -r COC/extensions/coc-nodeops ~/.openclaw/extensions/
-cd ~/.openclaw/extensions/coc-nodeops && npm install
+cp -r Palimesh/extensions/palimesh-nodeops ~/.openclaw/extensions/
+cd ~/.openclaw/extensions/palimesh-nodeops && npm install
 ```
 
 ### Verify Installation
@@ -211,58 +211,58 @@ cd ~/.openclaw/extensions/coc-nodeops && npm install
 # From the OpenClaw project directory
 pnpm openclaw plugins list 2>&1 | grep coc
 # Expected output:
-#   COC node ops extension loading...
-#   COC extension loaded (10 agent tools registered)
+#   Palimesh node ops extension loading...
+#   Palimesh extension loaded (10 agent tools registered)
 ```
 
 ### 10 Agent Tools
 
 | Tool | Purpose | Key Parameters |
 |------|---------|----------------|
-| `coc-node-init` | Initialize a new node | `type` (dev/validator/fullnode/archive/gateway), `network` (local/testnet/custom) |
-| `coc-node-list` | List all managed nodes | none |
-| `coc-node-start` | Start a node | `name` (optional; starts all if omitted) |
-| `coc-node-stop` | Stop a node | `name` (optional) |
-| `coc-node-restart` | Restart a node | `name` (optional) |
-| `coc-node-status` | Query live status | `name` (optional) — returns blockHeight/peerCount/bftActive |
-| `coc-node-remove` | Remove a node instance | `name`, `keepData` (boolean) |
-| `coc-node-config` | View or patch config | `name`, `patch` (object, optional) |
-| `coc-node-logs` | View service logs | `name`, `service` (node/agent/relayer), `lines` |
-| `coc-rpc-query` | On-chain RPC query | `method`, `params`, `name` (optional) |
+| `palimesh-node-init` | Initialize a new node | `type` (dev/validator/fullnode/archive/gateway), `network` (local/testnet/custom) |
+| `palimesh-node-list` | List all managed nodes | none |
+| `palimesh-node-start` | Start a node | `name` (optional; starts all if omitted) |
+| `palimesh-node-stop` | Stop a node | `name` (optional) |
+| `palimesh-node-restart` | Restart a node | `name` (optional) |
+| `palimesh-node-status` | Query live status | `name` (optional) — returns blockHeight/peerCount/bftActive |
+| `palimesh-node-remove` | Remove a node instance | `name`, `keepData` (boolean) |
+| `palimesh-node-config` | View or patch config | `name`, `patch` (object, optional) |
+| `palimesh-node-logs` | View service logs | `name`, `service` (node/agent/relayer), `lines` |
+| `palimesh-rpc-query` | On-chain RPC query | `method`, `params`, `name` (optional) |
 
 ### RPC Query Allowlist
 
-The `coc-rpc-query` tool restricts calls to the following read-only methods:
+The `palimesh-rpc-query` tool restricts calls to the following read-only methods:
 
 ```
 eth_blockNumber, eth_getBlockByNumber, eth_getBlockByHash,
-net_peerCount, coc_chainStats, coc_getBftStatus,
+net_peerCount, pali_chainStats, pali_getBftStatus,
 eth_getBalance, eth_syncing, eth_getTransactionByHash,
 eth_getTransactionReceipt
 ```
 
 ### Skill Usage
 
-When an OpenClaw AI agent needs to manage COC nodes, the `coc-nodeops` skill activates automatically.
+When an OpenClaw AI agent needs to manage Palimesh nodes, the `palimesh-nodeops` skill activates automatically.
 
 Example conversations:
 
 ```
-User: Deploy a COC test node for me
-Agent: [calls coc-node-init, type=dev, network=local]
-       [calls coc-node-start]
-       [calls coc-node-status]
+User: Deploy a Palimesh test node for me
+Agent: [calls palimesh-node-init, type=dev, network=local]
+       [calls palimesh-node-start]
+       [calls palimesh-node-status]
        Node started. Block height: 5, RPC port: 18780.
 
 User: Show me the chain status
-Agent: [calls coc-rpc-query, method=coc_chainStats]
+Agent: [calls palimesh-rpc-query, method=pali_chainStats]
        Current block height: 120, 40 blocks/min, 1 validator.
 
 User: Connect to the remote testnet
-Agent: [calls coc-node-init, type=fullnode, network=custom]
-       [calls coc-node-config, patch={peers, validators, ...}]
-       [calls coc-node-start]
-       [calls coc-node-status]
+Agent: [calls palimesh-node-init, type=fullnode, network=custom]
+       [calls palimesh-node-config, patch={peers, validators, ...}]
+       [calls palimesh-node-start]
+       [calls palimesh-node-status]
        Synced to testnet height 7092, connected to 3 peers.
 ```
 
@@ -273,8 +273,8 @@ Agent: [calls coc-node-init, type=fullnode, network=custom]
 ### Option A: Docker Single Node (Easiest)
 
 ```bash
-git clone https://github.com/NGPlateform/COC.git
-cd COC
+git clone https://github.com/NGPlateform/Palimesh.git
+cd Palimesh
 
 # Build and start single node + explorer
 docker compose -f docker/docker-compose.yml up -d
@@ -292,8 +292,8 @@ Ports: RPC :18780, WS :18781, P2P :19780, Wire :19781, IPFS :5001, Metrics :9100
 **Prerequisite**: Node.js 22+
 
 ```bash
-git clone https://github.com/NGPlateform/COC.git
-cd COC && npm install
+git clone https://github.com/NGPlateform/Palimesh.git
+cd Palimesh && npm install
 
 # Run directly (auto-generates key and genesis block)
 node --experimental-strip-types node/src/index.ts
@@ -303,7 +303,7 @@ Binds to 127.0.0.1:18780 by default in single-validator mode.
 
 ### Option C: Via OpenClaw (Recommended)
 
-Ensure the coc-nodeops plugin is installed (see Section 6).
+Ensure the palimesh-nodeops plugin is installed (see Section 6).
 
 ```bash
 # Initialize a local dev node
@@ -381,18 +381,18 @@ Or verify via RPC directly:
 
 ```bash
 curl -X POST -H 'Content-Type: application/json' \
-  -d '{"jsonrpc":"2.0","method":"coc_chainStats","id":1}' \
+  -d '{"jsonrpc":"2.0","method":"pali_chainStats","id":1}' \
   http://127.0.0.1:18790/
 ```
 
 ### Option E: Docker Testnet Observer
 
 ```bash
-cd COC
+cd Palimesh
 
 # Create observer config
-mkdir -p /tmp/coc-observer
-cat > /tmp/coc-observer/node-config.json << 'EOF'
+mkdir -p /tmp/palimesh-observer
+cat > /tmp/palimesh-observer/node-config.json << 'EOF'
 {
   "chainId": 18780,
   "validators": [
@@ -426,12 +426,12 @@ cat > /tmp/coc-observer/node-config.json << 'EOF'
 EOF
 
 # Run Docker observer
-docker run -d --name coc-observer \
+docker run -d --name palimesh-observer \
   -p 18790:18780 -p 18791:18781 \
-  -v /tmp/coc-observer:/data/coc \
-  -e COC_DATA_DIR=/data/coc \
-  -e COC_NODE_CONFIG=/data/coc/node-config.json \
-  ghcr.io/chainofclaw/coc-node:latest
+  -v /tmp/palimesh-observer:/data/coc \
+  -e PALI_DATA_DIR=/data/coc \
+  -e PALI_NODE_CONFIG=/data/coc/node-config.json \
+  ghcr.io/palimesh/palimesh-node:latest
 
 # Verify sync
 sleep 15
@@ -453,7 +453,7 @@ curl -X POST -H 'Content-Type: application/json' \
 | `hexToBytes: invalid hex characters` | nodeId is not a valid hex address | Ensure nodeId is an Ethereum address derived from the private key |
 | Node stuck at height 1, no block production | Genesis block hash mismatch | Ensure all nodes share the same validators list and chainId |
 | SnapSync fails repeatedly | Unstable peer connections | Check firewall rules, confirm Wire ports are reachable |
-| `ENOENT: coc-node.ts` | Process manager script path error | Upgrade coc-nodeops to v0.2.0+ |
+| `ENOENT: palimesh-node.ts` | Process manager script path error | Upgrade palimesh-nodeops to v0.2.0+ |
 
 ### Diagnostic Commands
 
@@ -469,7 +469,7 @@ curl -sf http://localhost:18780/ -X POST \
   -d '{"jsonrpc":"2.0","method":"net_peerCount","id":1}'
 
 # Check container logs for errors
-docker logs coc-node-1 --tail 50 2>&1 | grep -E '"level":"(error|warn)"'
+docker logs palimesh-node-1 --tail 50 2>&1 | grep -E '"level":"(error|warn)"'
 
 # Via OpenClaw
 openclaw coc status

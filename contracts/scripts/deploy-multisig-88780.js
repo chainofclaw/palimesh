@@ -1,5 +1,5 @@
 /**
- * Deploy the MultiSigWallet that owns the COC 88780 contracts (#686).
+ * Deploy the MultiSigWallet that owns the Palimesh 88780 contracts (#686).
  *
  * Run this FIRST, capture the printed MULTISIG_ADDRESS, then export it so
  * deploy-governance.js / deploy-all-88780.js hand ownership to this wallet.
@@ -43,7 +43,7 @@ async function main() {
     )
   }
 
-  console.log("=== COC MultiSigWallet Deployment (#686) ===")
+  console.log("=== Palimesh MultiSigWallet Deployment (#686) ===")
   console.log(`Network:   chainId ${network.chainId}`)
   console.log(`Deployer:  ${deployer.address}`)
   console.log(`Owners (${owners.length}):`)

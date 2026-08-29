@@ -54,12 +54,12 @@ describe("MetricsCollector", () => {
 
     await collector.collect()
     const output = collector.serialize()
-    assert.ok(output.includes("coc_block_height 100"))
-    assert.ok(output.includes("coc_tx_pool_pending 5"))
-    assert.ok(output.includes("coc_peers_connected 3"))
-    assert.ok(output.includes("coc_consensus_state 0"))
-    assert.ok(output.includes("coc_uptime_seconds"))
-    assert.ok(output.includes("coc_process_memory_bytes"))
+    assert.ok(output.includes("pali_block_height 100"))
+    assert.ok(output.includes("pali_tx_pool_pending 5"))
+    assert.ok(output.includes("pali_peers_connected 3"))
+    assert.ok(output.includes("pali_consensus_state 0"))
+    assert.ok(output.includes("pali_uptime_seconds"))
+    assert.ok(output.includes("pali_process_memory_bytes"))
   })
 
   it("should handle optional sources", async () => {
@@ -76,10 +76,10 @@ describe("MetricsCollector", () => {
 
     await collector.collect()
     const output = collector.serialize()
-    assert.ok(output.includes("coc_wire_connections 4"))
-    assert.ok(output.includes("coc_bft_round_height 48"))
-    assert.ok(output.includes("coc_dht_peers_total 12"))
-    assert.ok(output.includes("coc_p2p_auth_rejected_total 3"))
+    assert.ok(output.includes("pali_wire_connections 4"))
+    assert.ok(output.includes("pali_bft_round_height 48"))
+    assert.ok(output.includes("pali_dht_peers_total 12"))
+    assert.ok(output.includes("pali_p2p_auth_rejected_total 3"))
   })
 
   it("should compute block time histogram", async () => {
@@ -95,7 +95,7 @@ describe("MetricsCollector", () => {
 
     await collector.collect()
     const output = collector.serialize()
-    assert.ok(output.includes("coc_block_time_seconds"))
+    assert.ok(output.includes("pali_block_time_seconds"))
   })
 
   it("Phase M1: should emit equivocation + fork-depth gauges when source provides getters", async () => {
@@ -110,8 +110,8 @@ describe("MetricsCollector", () => {
 
     await collector.collect()
     const output = collector.serialize()
-    assert.ok(output.includes("coc_bft_equivocations_total 7"), "expected equivocation counter emitted")
-    assert.ok(output.includes("coc_fork_choice_max_depth_blocks 2"), "expected fork-depth gauge emitted")
+    assert.ok(output.includes("pali_bft_equivocations_total 7"), "expected equivocation counter emitted")
+    assert.ok(output.includes("pali_fork_choice_max_depth_blocks 2"), "expected fork-depth gauge emitted")
   })
 
   it("Phase M1: should silently skip when equivocation/fork-depth getters are absent (back-compat)", async () => {
@@ -124,7 +124,7 @@ describe("MetricsCollector", () => {
 
     await collector.collect()
     const output = collector.serialize()
-    assert.ok(!output.includes("coc_bft_equivocations_total"), "equivocation counter should not be present without getter")
-    assert.ok(!output.includes("coc_fork_choice_max_depth_blocks"), "fork-depth gauge should not be present without getter")
+    assert.ok(!output.includes("pali_bft_equivocations_total"), "equivocation counter should not be present without getter")
+    assert.ok(!output.includes("pali_fork_choice_max_depth_blocks"), "fork-depth gauge should not be present without getter")
   })
 })

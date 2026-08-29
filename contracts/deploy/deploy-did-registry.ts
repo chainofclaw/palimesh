@@ -29,8 +29,8 @@ export function resolveDeployParams(target: DeployTarget): DIDRegistryDeployPara
   switch (target) {
     case "l2-coc":
       return {
-        rpcUrl: process.env.COC_RPC_URL ?? "http://127.0.0.1:18780",
-        chainId: parseInt(process.env.COC_CHAIN_ID ?? "18780"),
+        rpcUrl: process.env.PALI_RPC_URL ?? "http://127.0.0.1:18780",
+        chainId: parseInt(process.env.PALI_CHAIN_ID ?? "18780"),
         confirmations: 1,
         gasStrategy: "legacy",
       }

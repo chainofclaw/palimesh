@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// COC active stress probe.
+// Palimesh active stress probe.
 //
 // Fires N pre-signed txs in parallel from the probe wallet (single account,
 // sequential nonces — mempool's per-sender lane) and measures throughput,
@@ -55,7 +55,7 @@ const cfg = {
   // natural TPS at ~0.33. Floor 0.3 catches stalls without false-flagging.
   tpsMin: Number(process.env.STRESS_TPS_MIN || '0.3'),
   reportJson: process.env.STRESS_REPORT_JSON || null,
-  counterStateFile: process.env.STRESS_COUNTER_STATE || '/var/lib/coc-synthetic/stress-counter.json',
+  counterStateFile: process.env.STRESS_COUNTER_STATE || '/var/lib/palimesh-synthetic/stress-counter.json',
 }
 cfg.probePk = resolvePrivateKeyForRpc({
   envValue: process.env.PROBE_PK,
@@ -69,8 +69,8 @@ const COUNTER_BYTECODE = '0x6000600055600a6011600039600a6000f3600054600101600055
 
 const provider = new ethers.JsonRpcProvider(
   cfg.rpc,
-  { chainId: cfg.chainId, name: 'ChainOfClaw' },
-  { staticNetwork: ethers.Network.from({ chainId: cfg.chainId, name: 'ChainOfClaw' }) },
+  { chainId: cfg.chainId, name: 'Palimesh' },
+  { staticNetwork: ethers.Network.from({ chainId: cfg.chainId, name: 'Palimesh' }) },
 )
 const wallet = new ethers.Wallet(cfg.probePk, provider)
 
@@ -274,7 +274,7 @@ if (import.meta.url === `file://${process.argv[1]}`) {
     .then((stats) => {
       const head = stats.pass ? '\x1b[32mSTRESS-OK\x1b[0m' : '\x1b[31mSTRESS-FAIL\x1b[0m'
       console.log()
-      console.log(`${head}  ${stats.confirmed}/${cfg.n} confirmed  tps=${stats.tps}  p50=${stats.latencyMs.p50}ms  p95=${stats.latencyMs.p95}ms  blocks=${stats.blocksTouched}  gas=${stats.gasSpent_COC} COC${stats.mempoolCapHits > 0 ? `  mempoolCap=${stats.mempoolCapHits}` : ''}`)
+      console.log(`${head}  ${stats.confirmed}/${cfg.n} confirmed  tps=${stats.tps}  p50=${stats.latencyMs.p50}ms  p95=${stats.latencyMs.p95}ms  blocks=${stats.blocksTouched}  gas=${stats.gasSpent_COC} Palimesh${stats.mempoolCapHits > 0 ? `  mempoolCap=${stats.mempoolCapHits}` : ''}`)
       if (!stats.pass) console.log(`        reasons: ${stats.passReasons.join('; ')}`)
       if (cfg.reportJson) writeFileSync(cfg.reportJson, JSON.stringify(stats, null, 2))
       process.exit(stats.pass ? 0 : 1)

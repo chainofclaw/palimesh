@@ -33,9 +33,9 @@ import { execSync } from "node:child_process"
 import { readFileSync, existsSync } from "node:fs"
 
 const RPC_PORTS = [38790, 38792, 38794, 38796, 38798] as const
-const PARTITIONED_NODE = "coc-h15-node-3" // mid-range node for round-robin variety
-const DEPLOYED_PATH = "/passinger/projects/ClawdBot/COC/tests/multinode-integration/configs-h15/deployed-pose.json"
-const NETWORK = "coc-h15"
+const PARTITIONED_NODE = "palimesh-h15-node-3" // mid-range node for round-robin variety
+const DEPLOYED_PATH = "/passinger/projects/ClawdBot/Palimesh/tests/multinode-integration/configs-h15/deployed-pose.json"
+const NETWORK = "palimesh-h15"
 const POLL_MS = 5_000
 
 async function getBlockNumber(port: number): Promise<bigint> {
@@ -83,8 +83,8 @@ describe("R2.1.b — missing-receipts fault injection", { timeout: 360_000 }, ()
     for (let i = 0; i < heights.length; i++) {
       assert.ok(heights[i] > 0n, `validator ${RPC_PORTS[i]} unreachable: h=${heights[i]}`)
     }
-    assert.ok(containerAlive("coc-h15-agent"), "agent container missing")
-    assert.ok(containerAlive("coc-h15-relayer"), "relayer container missing")
+    assert.ok(containerAlive("palimesh-h15-agent"), "agent container missing")
+    assert.ok(containerAlive("palimesh-h15-relayer"), "relayer container missing")
     console.log(`  ✅ all 5 validators reachable, sidecars alive`)
   })
 
@@ -113,8 +113,8 @@ describe("R2.1.b — missing-receipts fault injection", { timeout: 360_000 }, ()
       console.log(`  cluster tip ${baseline} → ${lastTip} (Δ=${lastTip - baseline}) with 1 verifier offline (freeze is acceptable if round-robin landed on partitioned node)`)
 
       // sidecars still alive
-      assert.ok(containerAlive("coc-h15-agent"), "agent crashed during partition")
-      assert.ok(containerAlive("coc-h15-relayer"), "relayer crashed during partition")
+      assert.ok(containerAlive("palimesh-h15-agent"), "agent crashed during partition")
+      assert.ok(containerAlive("palimesh-h15-relayer"), "relayer crashed during partition")
       console.log(`  ✅ sidecars stable through partition`)
     } finally {
       console.log(`  reconnecting ${PARTITIONED_NODE}`)

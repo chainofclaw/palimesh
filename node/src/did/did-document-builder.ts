@@ -4,13 +4,13 @@ import type {
   DIDDocument,
   VerificationMethodEntry,
   ServiceEndpoint,
-  CocAgentMetadata,
+  PaliAgentMetadata,
   Hex32,
   AgentLineage,
 } from "./did-types.ts"
 import {
   W3C_DID_CONTEXT,
-  COC_DID_CONTEXT,
+  PALI_DID_CONTEXT,
   capabilityBitmaskToNames,
 } from "./did-types.ts"
 import { KEY_PURPOSE } from "../crypto/did-registry-types.ts"
@@ -149,7 +149,7 @@ export function buildDIDDocument(input: BuilderInput): DIDDocument {
   const svcEndpoints: ServiceEndpoint[] = services ? [...services] : []
 
   // Agent metadata
-  const agentMeta: CocAgentMetadata = {
+  const agentMeta: PaliAgentMetadata = {
     registeredAt: new Date(Number(soul.registeredAt) * 1000).toISOString(),
     version: soul.version,
   }
@@ -181,7 +181,7 @@ export function buildDIDDocument(input: BuilderInput): DIDDocument {
     : undefined
 
   const doc: DIDDocument = {
-    "@context": [W3C_DID_CONTEXT, COC_DID_CONTEXT],
+    "@context": [W3C_DID_CONTEXT, PALI_DID_CONTEXT],
     id: did,
     ...(alsoKnownAs ? { alsoKnownAs } : {}),
     controller: controllers.length === 1 ? controllers[0] : controllers,
@@ -191,7 +191,7 @@ export function buildDIDDocument(input: BuilderInput): DIDDocument {
     capabilityInvocation: capInvokeRefs,
     capabilityDelegation: capDelegateRefs,
     service: svcEndpoints.length > 0 ? svcEndpoints : undefined,
-    cocAgent: agentMeta,
+    paliAgent: agentMeta,
   }
 
   return doc
@@ -200,7 +200,7 @@ export function buildDIDDocument(input: BuilderInput): DIDDocument {
 export function buildDeactivatedDocument(agentId: string, chainId: number): DIDDocument {
   const did = agentIdToDid(agentId, chainId)
   return {
-    "@context": [W3C_DID_CONTEXT, COC_DID_CONTEXT],
+    "@context": [W3C_DID_CONTEXT, PALI_DID_CONTEXT],
     id: did,
     verificationMethod: [],
     authentication: [],

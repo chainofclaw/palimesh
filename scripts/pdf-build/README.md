@@ -1,6 +1,6 @@
-# COC Docs → PDF Builder
+# Palimesh Docs → PDF Builder
 
-把 COC 项目的 markdown 文档（BP / 生态规划 / 白皮书 / Pitch Deck）转换为正式排版的 PDF。
+把 Palimesh 项目的 markdown 文档（BP / 生态规划 / 白皮书 / Pitch Deck）转换为正式排版的 PDF。
 
 ## 关键设计
 
@@ -58,10 +58,10 @@ node build.mjs <input.md> <output.pdf>
 
 ```bash
 # 查看页数和元数据
-pdfinfo docs/COC_business_plan.zh.pdf
+pdfinfo docs/palimesh_business_plan.zh.pdf
 
 # 提取文本验证内容完整性
-pdftotext -layout docs/COC_business_plan.zh.pdf /tmp/check.txt
+pdftotext -layout docs/palimesh_business_plan.zh.pdf /tmp/check.txt
 ```
 
 ## 已知排版特性

@@ -1,10 +1,10 @@
-# COC Monitoring Stack (Prometheus + Grafana)
+# Palimesh Monitoring Stack (Prometheus + Grafana)
 # Usage: docker compose -f docker/docker-compose.monitoring.yml up -d
 
 services:
   prometheus:
     image: prom/prometheus:v2.51.0
-    container_name: coc-prometheus
+    container_name: palimesh-prometheus
     ports:
       - "127.0.0.1:9090:9090"
     volumes:
@@ -15,12 +15,12 @@ services:
       - "--config.file=/etc/prometheus/prometheus.yml"
       - "--storage.tsdb.retention.time=30d"
     networks:
-      - coc-rpc
+      - palimesh-rpc
     restart: unless-stopped
 
   grafana:
     image: grafana/grafana:10.4.1
-    container_name: coc-grafana
+    container_name: palimesh-grafana
     ports:
       - "127.0.0.1:3100:3000"
     volumes:
@@ -34,7 +34,7 @@ services:
     depends_on:
       - prometheus
     networks:
-      - coc-rpc
+      - palimesh-rpc
     restart: unless-stopped
 
 volumes:
@@ -42,6 +42,6 @@ volumes:
   grafana-data:
 
 networks:
-  coc-rpc:
+  palimesh-rpc:
     external: true
     name: docker_coc-rpc

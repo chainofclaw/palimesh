@@ -32,8 +32,8 @@ function safeBigInt(v: string | undefined | null): bigint {
 
 export default async function ValidatorsPage() {
   const [data, govValidators] = await Promise.all([
-    rpcCall<ValidatorsResponse>('coc_validators').catch(() => null),
-    rpcCall<GovernanceValidator[]>('coc_getValidators').catch(() => null),
+    rpcCall<ValidatorsResponse>('pali_validators').catch(() => null),
+    rpcCall<GovernanceValidator[]>('pali_getValidators').catch(() => null),
   ])
 
   if (!data) {
@@ -96,7 +96,7 @@ export default async function ValidatorsPage() {
           <div className="bg-white rounded-lg shadow p-4">
             <div className="text-xs font-medium text-gray-500 uppercase">Total Stake</div>
             <div className="mt-1 text-lg font-bold text-purple-600">
-              {formatStake(totalStake)} COC
+              {formatStake(totalStake)} Palimesh
             </div>
           </div>
         )}
@@ -146,7 +146,7 @@ export default async function ValidatorsPage() {
                       <td className="px-4 py-3 text-sm">
                         {stake > 0n ? (
                           <div className="space-y-1">
-                            <span className="font-mono font-medium">{formatStake(stake)} COC</span>
+                            <span className="font-mono font-medium">{formatStake(stake)} Palimesh</span>
                             <div className="flex items-center gap-2">
                               <div className="w-20 bg-gray-200 rounded-full h-1.5">
                                 <div

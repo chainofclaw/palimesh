@@ -1,5 +1,5 @@
 /**
- * COC IPFS wiring — glue between the blockstore, the DHT, and the wire
+ * Palimesh IPFS wiring — glue between the blockstore, the DHT, and the wire
  * connection manager so that:
  *
  *   - `IpfsBlockstore.get` on a local miss queries `DhtNetwork.findProviders`
@@ -44,7 +44,7 @@ function cidToRoutingKey(cid: string): string {
     : keccak256(toUtf8Bytes(cid)).toLowerCase()
 }
 
-const log = createLogger("coc-ipfs-wiring")
+const log = createLogger("palimesh-ipfs-wiring")
 
 // Default provider fan-out ceiling for a single GET. We try at most this
 // many peers before giving up; the DHT can claim far more (up to 64 per
@@ -65,7 +65,7 @@ const DEFAULT_REPLICATION_FACTOR = 3
 // How often to emit the "peerCount < 2, skipping replication" warning.
 const LOW_PEER_WARN_INTERVAL_MS = 60_000
 
-export interface CocIpfsWiringConfig {
+export interface PaliIpfsWiringConfig {
   localNodeId: string
   blockstore: IpfsBlockstore
   dht: DhtNetwork
@@ -129,7 +129,7 @@ export interface PushStripeResult {
  * `setHooks` may be called multiple times safely — each call replaces
  * individual hooks without reconfiguring the blockstore's backing store.
  */
-export function buildCocIpfsWiring(cfg: CocIpfsWiringConfig): {
+export function buildCocIpfsWiring(cfg: PaliIpfsWiringConfig): {
   blockstoreHooks: IpfsBlockstoreHooks
   onBlockRequest: (cid: string, push: boolean, bytes?: Uint8Array) => Promise<Uint8Array | null>
   /**
@@ -155,7 +155,7 @@ export function buildCocIpfsWiring(cfg: CocIpfsWiringConfig): {
    * Phase C3.1: return the PushToKResult for a recently-PUT CID, or null
    * if the CID hasn't been PUT locally within the last ~30 s (memory
    * cap) or no replication path exists. Lets the HTTP `/api/v0/add`
-   * handler add an `X-COC-Replicas-Warning` header when the number
+   * handler add an `X-Palimesh-Replicas-Warning` header when the number
    * of successful replicas is below `cfg.ipfs.minReplicas`.
    */
   awaitReplicationResult: (cid: string, timeoutMs?: number) => Promise<PushToKResult | null>

@@ -755,7 +755,7 @@ export class PersistentChainEngine {
     // 2/3+ of the validator set can't reproduce — stopping divergence at the
     // vote stage instead of the apply stage.
     //
-    // Isolation strategy (see plans/coc-phase-b-stateroot-vote.md):
+    // Isolation strategy (see plans/palimesh-phase-b-stateroot-vote.md):
     //  1. stateTrie.forkForDryRun() creates an independent PersistentStateTrie
     //     backed by v6 Trie.shallowCopy(false) — same committed root, empty
     //     CheckpointDB, already carrying one isolation checkpoint. Writes
@@ -789,9 +789,9 @@ export class PersistentChainEngine {
     // after a specific dry-run step (compute non-determinism).
     //
     // Off by default to avoid log volume in production. Enable with
-    // COC_DIAG_SPEC_ROOT=1 on testnet to capture data; safe to leave in
+    // PALI_DIAG_SPEC_ROOT=1 on testnet to capture data; safe to leave in
     // place permanently.
-    const diagEnabled = process.env.COC_DIAG_SPEC_ROOT === "1"
+    const diagEnabled = process.env.PALI_DIAG_SPEC_ROOT === "1"
     const BEACON_ROOTS_ADDR = "0x000f3df6d732807ef1319fb7b8bb8522d0beac02"
     const dumpBeaconState = async (trie: IStateTrie, label: string): Promise<void> => {
       if (!diagEnabled) return
@@ -816,13 +816,13 @@ export class PersistentChainEngine {
     // Adversarial test hook: force a specific "computed" stateRoot so
     // integration tests (scripts/adversarial-stateroot-divergence.sh) can
     // validate the pair-quorum defense end-to-end on a live devnet. The
-    // env var is deliberately prefixed COC_UNSAFE_ to make accidental
+    // env var is deliberately prefixed PALI_UNSAFE_ to make accidental
     // production use highly visible in node-config dumps / process listings.
     // Never set in a real deployment — you're telling BFT to vote on a
     // stateRoot that has no relationship to actual post-block state.
-    const adversarial = process.env.COC_UNSAFE_ADVERSARIAL_SPEC_ROOT
+    const adversarial = process.env.PALI_UNSAFE_ADVERSARIAL_SPEC_ROOT
     if (adversarial && /^0x[0-9a-fA-F]{64}$/.test(adversarial)) {
-      log.warn("COC_UNSAFE_ADVERSARIAL_SPEC_ROOT is set — returning poisoned root", {
+      log.warn("PALI_UNSAFE_ADVERSARIAL_SPEC_ROOT is set — returning poisoned root", {
         height: block.number.toString(),
         poisonRoot: adversarial,
       })
@@ -1421,7 +1421,7 @@ export class PersistentChainEngine {
       // Compared with the speculative compute's "post-fork" diag entry
       // for the SAME height on the next block, this tells us whether
       // the parent trie's view of BEACON_ROOTS is canonical.
-      if (process.env.COC_DIAG_SPEC_ROOT === "1") {
+      if (process.env.PALI_DIAG_SPEC_ROOT === "1") {
         try {
           const acc = await this.stateTrie.get("0x000f3df6d732807ef1319fb7b8bb8522d0beac02")
           log.info("[diag] post-apply MAIN trie BEACON_ROOTS state", {
@@ -1898,7 +1898,7 @@ export class PersistentChainEngine {
     const parentExcessBlobGas = tip?.excessBlobGas ?? 0n
     const parentBlobGasUsed = tip?.blobGasUsed ?? 0n
     const excessBlobGas = calculateExcessBlobGas(parentExcessBlobGas, parentBlobGasUsed)
-    const blobGasUsed = 0n  // COC does not support blob transactions
+    const blobGasUsed = 0n  // Palimesh does not support blob transactions
     const parentBeaconBlockRoot = zeroHash()
 
     const hash = hashBlockPayload({

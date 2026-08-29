@@ -30,7 +30,7 @@ echo "==> Deleting CID $CID from $NODE blockstore"
 
 # Use the IPFS HTTP API to force-evict the block (#126: block/rm bypasses
 # pin/GC indirection so chaos drills are deterministic).
-gcloud compute ssh "$NODE" --zone="$ZONE" --project="$COC_GCP_PROJECT" --quiet --command="
+gcloud compute ssh "$NODE" --zone="$ZONE" --project="$PALI_GCP_PROJECT" --quiet --command="
 set -e
 echo 'Local IPFS reachable on port 28786? '
 curl -sS --max-time 5 -X POST 'http://localhost:28786/api/v0/version' | head -c 80; echo
@@ -50,8 +50,8 @@ fi
 
 echo ""
 echo "==> Watch repair on this node (or any peer):"
-echo "    Repair tick logs: 'ipfs-repair' messages every ~10 min in coc-node@1 journal"
+echo "    Repair tick logs: 'ipfs-repair' messages every ~10 min in palimesh-node@1 journal"
 echo "    Or force-trigger now via RPC:"
 echo "      curl -sS -X POST -H 'Content-Type: application/json' \\"
-echo "        --data '{\"jsonrpc\":\"2.0\",\"method\":\"coc_dhtFindProviders\",\"params\":[\"$CID\"],\"id\":1}' \\"
+echo "        --data '{\"jsonrpc\":\"2.0\",\"method\":\"pali_dhtFindProviders\",\"params\":[\"$CID\"],\"id\":1}' \\"
 echo "        http://localhost:28780"

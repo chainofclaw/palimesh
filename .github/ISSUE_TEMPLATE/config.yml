@@ -1,8 +1,8 @@
 blank_issues_enabled: true
 contact_links:
   - name: Discord Community
-    url: https://discord.gg/chainofclaw
+    url: https://discord.gg/palimesh
     about: Join our Discord for discussions and support
   - name: Prowl Testnet Join Guide
-    url: https://github.com/chainofclaw/COC/blob/main/docs/prowl-join-guide.md
+    url: https://github.com/palimesh/palimesh/blob/main/docs/prowl-join-guide.md
     about: Learn how to run a Prowl testnet node

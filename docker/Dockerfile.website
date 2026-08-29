@@ -1,4 +1,4 @@
-# COC Project Website (Next.js 15 + next-intl)
+# Palimesh Project Website (Next.js 15 + next-intl)
 FROM node:22-slim AS deps
 WORKDIR /app
 COPY website/package.json website/package-lock.json* ./

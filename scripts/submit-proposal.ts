@@ -1,7 +1,7 @@
 /**
  * Submit Governance Proposal Script
  *
- * Submits a governance proposal to a running COC node via RPC.
+ * Submits a governance proposal to a running Palimesh node via RPC.
  *
  * Usage:
  *   node --experimental-strip-types scripts/submit-proposal.ts [options]
@@ -112,7 +112,7 @@ async function main(): Promise<void> {
   }
 
   // Check governance is enabled
-  const stats = (await rpcCall(config.rpcUrl, "coc_getDaoStats")) as { enabled: boolean }
+  const stats = (await rpcCall(config.rpcUrl, "pali_getDaoStats")) as { enabled: boolean }
   if (!stats?.enabled) {
     console.error("Governance is not enabled on this network")
     process.exit(1)
@@ -134,7 +134,7 @@ async function main(): Promise<void> {
   if (config.targetAddress) console.log(`  Address: ${config.targetAddress}`)
   if (config.stakeAmount) console.log(`  Stake: ${config.stakeAmount} wei`)
 
-  const result = (await rpcCall(config.rpcUrl, "coc_submitProposal", [proposalParams])) as {
+  const result = (await rpcCall(config.rpcUrl, "pali_submitProposal", [proposalParams])) as {
     id: string
     type: string
     status: string
@@ -145,7 +145,7 @@ async function main(): Promise<void> {
   console.log(`  Status: ${result.status}`)
 
   // Fetch current proposals to show context
-  const proposals = (await rpcCall(config.rpcUrl, "coc_getDaoProposals", ["pending"])) as Array<{
+  const proposals = (await rpcCall(config.rpcUrl, "pali_getDaoProposals", ["pending"])) as Array<{
     id: string
     type: string
     status: string

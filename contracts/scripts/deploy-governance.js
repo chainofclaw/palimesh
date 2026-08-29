@@ -29,7 +29,7 @@ async function main() {
   // #686: refuse to deploy from a public Hardhat test account.
   assertSafeDeployer(deployer.address)
 
-  console.log("=== COC Governance Deployment (UUPS) ===")
+  console.log("=== Palimesh Governance Deployment (UUPS) ===")
   console.log(`Network:  ${network.name} (chainId: ${network.chainId})`)
   console.log(`Deployer: ${deployer.address}`)
   console.log(`Balance:  ${ethers.formatEther(await ethers.provider.getBalance(deployer.address))} ETH`)

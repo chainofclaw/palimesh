@@ -1,5 +1,5 @@
 /**
- * Shared JSON-RPC helper for COC stress / probe scripts.
+ * Shared JSON-RPC helper for Palimesh stress / probe scripts.
  *
  * Consolidates the ad-hoc `rpc()` fetch wrappers previously duplicated across
  * scripts/stress-advanced.ts, scripts/tps-benchmark.ts and the throwaway

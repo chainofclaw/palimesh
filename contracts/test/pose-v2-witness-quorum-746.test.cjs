@@ -40,7 +40,7 @@ async function registerWitness(manager, funder, label) {
   const endpointCommitment = ethers.keccak256(ethers.toUtf8Bytes(`ep-${label}-${Date.now()}-${Math.random()}`))
   const metadataHash = ethers.keccak256(ethers.toUtf8Bytes(`meta-${label}`))
   const messageHash = ethers.keccak256(
-    ethers.solidityPacked(["string", "bytes32", "address"], ["coc-register:", nodeId, operator.address])
+    ethers.solidityPacked(["string", "bytes32", "address"], ["palimesh-register:", nodeId, operator.address])
   )
   const ownershipSig = await operator.signMessage(ethers.getBytes(messageHash))
   await manager.connect(operator).registerNode(

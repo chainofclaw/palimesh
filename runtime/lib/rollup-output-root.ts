@@ -1,5 +1,5 @@
 /**
- * Output root computation for COC Optimistic Rollup.
+ * Output root computation for Palimesh Optimistic Rollup.
  *
  * The output root is a commitment to a specific L2 state at a given block height.
  * It is computed as keccak256(abi.encodePacked(l2BlockNumber, stateRoot, blockHash)),

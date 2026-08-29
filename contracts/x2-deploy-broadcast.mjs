@@ -13,7 +13,7 @@ const RPCS = [
   "http://199.192.16.79:38794",
   "http://199.192.16.79:38796",
 ]
-const ART = "/passinger/projects/ClawdBot/COC/contracts/artifacts/contracts-src/governance/ValidatorRegistry.sol/ValidatorRegistry.json"
+const ART = "/passinger/projects/ClawdBot/Palimesh/contracts/artifacts/contracts-src/governance/ValidatorRegistry.sol/ValidatorRegistry.json"
 const { abi, bytecode } = JSON.parse(await readFile(ART, "utf-8"))
 const PK = "0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80"
 

@@ -85,7 +85,7 @@ export default function ContractsPage() {
     try {
       // Probe index availability first. Falls back to treating absence as unknown
       // (older nodes won't have this method yet).
-      const status = await rpc<{ enabled: boolean }>('coc_blockIndexStatus').catch(() => null)
+      const status = await rpc<{ enabled: boolean }>('pali_blockIndexStatus').catch(() => null)
       if (ctrl.signal.aborted) return
       setIndexEnabled(status?.enabled ?? null)
 
@@ -95,7 +95,7 @@ export default function ContractsPage() {
         blockNumber: string
         txHash: string
         deployedAt: number
-      }>>('coc_getContracts', [{ limit: pageSize, offset, reverse: true }]).catch(() => null)
+      }>>('pali_getContracts', [{ limit: pageSize, offset, reverse: true }]).catch(() => null)
       if (ctrl.signal.aborted) return
 
       if (indexed && indexed.length > 0) {
