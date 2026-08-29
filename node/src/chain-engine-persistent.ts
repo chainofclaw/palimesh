@@ -1806,15 +1806,32 @@ export class PersistentChainEngine {
           })
           return false
         }
-        // Verify timestamps are monotonically increasing
+        // Verify timestamps are monotonically increasing. In snap-sync adoption
+        // (skipParentHashContinuity) the blocks are already-finalized peer
+        // history: the apply path skips the monotonic check for locally-proposed
+        // blocks ("we set them ourselves"), so a proposer with a skewed clock can
+        // finalize a block whose timestamp drifts a few ms backwards. Rejecting it
+        // here wedges every re-syncing node forever (observed on v3 at block
+        // 1849578, 6ms backwards). Tolerate it in snap-sync — the block hash is
+        // still verified above and the chain is already quorum-finalized; the live
+        // apply path keeps the strict check.
         if (Number(block.timestampMs) <= Number(prev.timestampMs)) {
-          log.warn("verifyBlockChain failed: non-monotonic timestamp", {
-            index: i,
-            number: String(block.number),
-            timestampMs: Number(block.timestampMs),
-            prevTimestampMs: Number(prev.timestampMs),
-          })
-          return false
+          if (skipParentHashContinuity) {
+            log.info("verifyBlockChain: non-monotonic timestamp tolerated (snap-sync)", {
+              index: i,
+              number: String(block.number),
+              timestampMs: Number(block.timestampMs),
+              prevTimestampMs: Number(prev.timestampMs),
+            })
+          } else {
+            log.warn("verifyBlockChain failed: non-monotonic timestamp", {
+              index: i,
+              number: String(block.number),
+              timestampMs: Number(block.timestampMs),
+              prevTimestampMs: Number(prev.timestampMs),
+            })
+            return false
+          }
         }
       }
 
