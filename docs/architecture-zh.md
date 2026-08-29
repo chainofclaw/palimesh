@@ -392,7 +392,7 @@ function _verifyOwnership(
     if (sig.length != 65) revert InvalidOwnershipProof();
 
     bytes32 messageHash = keccak256(
-        abi.encodePacked("palimesh-register:", nodeId, msg.sender)
+        abi.encodePacked("coc-register:", nodeId, msg.sender)
     );
     bytes32 ethSignedHash = keccak256(
         abi.encodePacked("\x19Ethereum Signed Message:\n32", messageHash)

@@ -494,7 +494,7 @@ Use ECDSA signature + `abi.encodePacked` to construct message.
 
 **Signature Message**:
 ```
-abi.encodePacked("palimesh-register:", nodeId, msg.sender)
+abi.encodePacked("coc-register:", nodeId, msg.sender)
 ```
 
 **Contract Verification**:
@@ -510,7 +510,7 @@ function _verifyOwnership(
 
     // Construct message
     bytes32 messageHash = keccak256(
-        abi.encodePacked("palimesh-register:", nodeId, msg.sender)
+        abi.encodePacked("coc-register:", nodeId, msg.sender)
     );
 
     // EIP-191 prefix
@@ -558,7 +558,7 @@ async function ensureNodeRegistered(): Promise<void> {
 
   // Construct signature message (matches contract)
   const message = Buffer.concat([
-    Buffer.from("palimesh-register:", "utf8"),
+    Buffer.from("coc-register:", "utf8"),
     Buffer.from(nodeId.slice(2), "hex"),
     Buffer.from(signer.address.slice(2), "hex"),
   ]);

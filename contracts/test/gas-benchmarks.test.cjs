@@ -139,7 +139,7 @@ describe("Gas Benchmarks: PoSeManager", function () {
     const ownershipMessageHash = ethers.keccak256(
       ethers.solidityPacked(
         ["string", "bytes32", "address"],
-        ["palimesh-register:", nodeId, operator.address]
+        ["coc-register:", nodeId, operator.address]
       )
     )
     const ownershipSig = await operator.signMessage(ethers.getBytes(ownershipMessageHash))
@@ -161,7 +161,7 @@ describe("Gas Benchmarks: PoSeManager", function () {
     const ownershipMessageHash = ethers.keccak256(
       ethers.solidityPacked(
         ["string", "bytes32", "address"],
-        ["palimesh-register:", nodeId, operator.address]
+        ["coc-register:", nodeId, operator.address]
       )
     )
     const ownershipSig = await operator.signMessage(ethers.getBytes(ownershipMessageHash))

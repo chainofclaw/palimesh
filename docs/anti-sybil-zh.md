@@ -494,7 +494,7 @@ function canRunAggregatorRole(epochId: number): boolean {
 
 **签名消息**:
 ```
-abi.encodePacked("palimesh-register:", nodeId, msg.sender)
+abi.encodePacked("coc-register:", nodeId, msg.sender)
 ```
 
 **合约验证**:
@@ -510,7 +510,7 @@ function _verifyOwnership(
 
     // 构造消息
     bytes32 messageHash = keccak256(
-        abi.encodePacked("palimesh-register:", nodeId, msg.sender)
+        abi.encodePacked("coc-register:", nodeId, msg.sender)
     );
 
     // EIP-191 前缀
@@ -558,7 +558,7 @@ async function ensureNodeRegistered(): Promise<void> {
 
   // 构造签名消息（与合约一致）
   const message = Buffer.concat([
-    Buffer.from("palimesh-register:", "utf8"),
+    Buffer.from("coc-register:", "utf8"),
     Buffer.from(nodeId.slice(2), "hex"),
     Buffer.from(signer.address.slice(2), "hex"),
   ]);

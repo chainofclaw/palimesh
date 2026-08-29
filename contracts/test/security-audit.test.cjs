@@ -26,7 +26,7 @@ async function registerNode(pose, operator) {
   const ownershipMessageHash = ethers.keccak256(
     ethers.solidityPacked(
       ["string", "bytes32", "address"],
-      ["palimesh-register:", nodeId, operator.address]
+      ["coc-register:", nodeId, operator.address]
     )
   )
   const ownershipSig = await operator.signMessage(ethers.getBytes(ownershipMessageHash))
@@ -629,7 +629,7 @@ describe("Security: PoSeManager", function () {
     const ec = ethers.keccak256(ethers.toUtf8Bytes("ep"))
     const meta = ethers.keccak256(ethers.toUtf8Bytes("m"))
     const msgHash = ethers.keccak256(
-      ethers.solidityPacked(["string", "bytes32", "address"], ["palimesh-register:", nodeId, operator1.address])
+      ethers.solidityPacked(["string", "bytes32", "address"], ["coc-register:", nodeId, operator1.address])
     )
     const sig = await operator1.signMessage(ethers.getBytes(msgHash))
 
@@ -647,7 +647,7 @@ describe("Security: PoSeManager", function () {
     const ec = ethers.keccak256(ethers.toUtf8Bytes("ep"))
     const meta = ethers.keccak256(ethers.toUtf8Bytes("m"))
     const msgHash = ethers.keccak256(
-      ethers.solidityPacked(["string", "bytes32", "address"], ["palimesh-register:", fakeNodeId, operator1.address])
+      ethers.solidityPacked(["string", "bytes32", "address"], ["coc-register:", fakeNodeId, operator1.address])
     )
     const sig = await operator1.signMessage(ethers.getBytes(msgHash))
 
@@ -670,7 +670,7 @@ describe("Security: PoSeManager", function () {
     const sc = ethers.keccak256(ethers.toUtf8Bytes(`service:${operator2.address.toLowerCase()}`))
     const meta = ethers.keccak256(ethers.toUtf8Bytes("audit-test"))
     const msgHash = ethers.keccak256(
-      ethers.solidityPacked(["string", "bytes32", "address"], ["palimesh-register:", nodeId2, operator2.address])
+      ethers.solidityPacked(["string", "bytes32", "address"], ["coc-register:", nodeId2, operator2.address])
     )
     const sig = await operator2.signMessage(ethers.getBytes(msgHash))
 
@@ -689,7 +689,7 @@ describe("Security: PoSeManager", function () {
     const ec = ethers.keccak256(ethers.toUtf8Bytes("ep2"))
     const meta = ethers.keccak256(ethers.toUtf8Bytes("m"))
     const msgHash = ethers.keccak256(
-      ethers.solidityPacked(["string", "bytes32", "address"], ["palimesh-register:", nodeId, operator1.address])
+      ethers.solidityPacked(["string", "bytes32", "address"], ["coc-register:", nodeId, operator1.address])
     )
     const sig = await operator1.signMessage(ethers.getBytes(msgHash))
 

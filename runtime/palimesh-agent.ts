@@ -1554,10 +1554,10 @@ async function ensureNodeRegistered(): Promise<void> {
     const endpointCommitment = keccak256(toUtf8Bytes(fingerprint));
     const metadataHash = keccak256(toUtf8Bytes("palimesh-agent:auto-register"));
 
-    // Build ownership proof matching contract's abi.encodePacked("palimesh-register:", nodeId, msg.sender)
+    // Build ownership proof matching contract's abi.encodePacked("coc-register:", nodeId, msg.sender)
     // Raw bytes: 13 (string) + 32 (nodeId) + 20 (address) = 65 bytes
     const registerMsgPacked = Buffer.concat([
-      Buffer.from("palimesh-register:", "utf8"),
+      Buffer.from("coc-register:", "utf8"),
       Buffer.from(nodeId.slice(2), "hex"),
       Buffer.from(signer.address.toLowerCase().slice(2), "hex"),
     ]);
@@ -1568,12 +1568,12 @@ async function ensureNodeRegistered(): Promise<void> {
     );
 
     // Build endpoint attestation matching contract's
-    //   keccak256(abi.encodePacked("palimesh-endpoint:", endpointCommitment, nodeId))
+    //   keccak256(abi.encodePacked("coc-endpoint:", endpointCommitment, nodeId))
     // abi.encodePacked with a string + two bytes32 = 13 + 32 + 32 = 77 bytes.
-    // Previous UTF-8 `"palimesh-endpoint:${hex}:${hex}"` form produced a completely
+    // Previous UTF-8 `"coc-endpoint:${hex}:${hex}"` form produced a completely
     // different digest and made every v2 registerNode tx revert.
     const endpointPacked = Buffer.concat([
-      Buffer.from("palimesh-endpoint:", "utf8"),
+      Buffer.from("coc-endpoint:", "utf8"),
       Buffer.from(endpointCommitment.slice(2), "hex"),
       Buffer.from(nodeId.slice(2), "hex"),
     ]);

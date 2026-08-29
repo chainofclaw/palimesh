@@ -237,7 +237,7 @@ function computeRevealDigest(
 ): string {
   return solidityPackedKeccak256(
     ["string", "bytes32", "bytes32", "uint8", "bytes32", "bytes32", "bytes32"],
-    ["palimesh-fault:", challengeId, targetNodeId, faultType, evidenceLeafHash, salt, keccak256(evidenceData)],
+    ["coc-fault:", challengeId, targetNodeId, faultType, evidenceLeafHash, salt, keccak256(evidenceData)],
   )
 }
 
@@ -303,7 +303,7 @@ async function registerNode(ctx: Ctx, bondEth = "1"): Promise<{ operator: Wallet
   const metadataHash = keccak256(toUtf8Bytes("meta"))
   const messageHash = solidityPackedKeccak256(
     ["string", "bytes32", "address"],
-    ["palimesh-register:", nodeId, operator.address],
+    ["coc-register:", nodeId, operator.address],
   )
   const ownershipSig = await operator.signMessage(getBytes(messageHash))
 

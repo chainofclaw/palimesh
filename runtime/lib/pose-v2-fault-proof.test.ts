@@ -78,7 +78,7 @@ describe("pose-v2-fault-proof", () => {
       computeRevealDigest(challengeId, targetNodeId, faultType, evidenceLeafHash, salt, evidenceData),
       solidityPackedKeccak256(
         ["string", "bytes32", "bytes32", "uint8", "bytes32", "bytes32", "bytes32"],
-        ["palimesh-fault:", challengeId, targetNodeId, faultType, evidenceLeafHash, salt, solidityPackedKeccak256(["bytes"], [evidenceData])],
+        ["coc-fault:", challengeId, targetNodeId, faultType, evidenceLeafHash, salt, solidityPackedKeccak256(["bytes"], [evidenceData])],
       ),
     );
   });

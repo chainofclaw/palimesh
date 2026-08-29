@@ -30,7 +30,7 @@ async function registerNode(manager, funder, opts = {}) {
   const metadataHash = ethers.keccak256(ethers.toUtf8Bytes("meta"))
 
   const messageHash = ethers.keccak256(
-    ethers.solidityPacked(["string", "bytes32", "address"], ["palimesh-register:", nodeId, operator.address])
+    ethers.solidityPacked(["string", "bytes32", "address"], ["coc-register:", nodeId, operator.address])
   )
   const ownershipSig = await operator.signMessage(ethers.getBytes(messageHash))
 
@@ -212,7 +212,7 @@ async function openRevealedFaultChallenge(manager, challenger, targetNodeId, opt
   const revealDigest = ethers.keccak256(
     ethers.solidityPacked(
       ["string", "bytes32", "bytes32", "uint8", "bytes32", "bytes32", "bytes32"],
-      ["palimesh-fault:", challengeId, targetNodeId, faultType, evidenceLeafHash, salt, ethers.keccak256(evidenceData)]
+      ["coc-fault:", challengeId, targetNodeId, faultType, evidenceLeafHash, salt, ethers.keccak256(evidenceData)]
     )
   )
   const challengerSig = await challenger.signMessage(ethers.getBytes(revealDigest))
@@ -306,7 +306,7 @@ describe("PoSeManagerV2", function () {
       const endpointCommitment = ethers.keccak256(ethers.toUtf8Bytes(`ep-high-s-${Date.now()}`))
       const metadataHash = ethers.keccak256(ethers.toUtf8Bytes("meta"))
       const messageHash = ethers.keccak256(
-        ethers.solidityPacked(["string", "bytes32", "address"], ["palimesh-register:", nodeId, operator.address])
+        ethers.solidityPacked(["string", "bytes32", "address"], ["coc-register:", nodeId, operator.address])
       )
       const ownershipSig = malleateSignature(await operator.signMessage(ethers.getBytes(messageHash)))
 
@@ -645,7 +645,7 @@ describe("PoSeManagerV2", function () {
       const revealDigest = ethers.keccak256(
         ethers.solidityPacked(
           ["string", "bytes32", "bytes32", "uint8", "bytes32", "bytes32", "bytes32"],
-          ["palimesh-fault:", challengeId, targetNodeId, faultType, evidenceLeafHash, salt, ethers.keccak256(evidenceData)]
+          ["coc-fault:", challengeId, targetNodeId, faultType, evidenceLeafHash, salt, ethers.keccak256(evidenceData)]
         )
       )
       const challengerSig = await deployer.signMessage(ethers.getBytes(revealDigest))
@@ -741,7 +741,7 @@ describe("PoSeManagerV2", function () {
       const digestA = ethers.keccak256(
         ethers.solidityPacked(
           ["string", "bytes32", "bytes32", "uint8", "bytes32", "bytes32", "bytes32"],
-          ["palimesh-fault:", challengeA, nodeId, faultType, evidenceLeafHash, saltA, ethers.keccak256(evidenceData)]
+          ["coc-fault:", challengeA, nodeId, faultType, evidenceLeafHash, saltA, ethers.keccak256(evidenceData)]
         )
       )
       const sigA = await deployer.signMessage(ethers.getBytes(digestA))
@@ -755,7 +755,7 @@ describe("PoSeManagerV2", function () {
       const digestB = ethers.keccak256(
         ethers.solidityPacked(
           ["string", "bytes32", "bytes32", "uint8", "bytes32", "bytes32", "bytes32"],
-          ["palimesh-fault:", challengeB, nodeId, faultType, evidenceLeafHash, saltB, ethers.keccak256(evidenceData)]
+          ["coc-fault:", challengeB, nodeId, faultType, evidenceLeafHash, saltB, ethers.keccak256(evidenceData)]
         )
       )
       const sigB = await deployer.signMessage(ethers.getBytes(digestB))
@@ -795,7 +795,7 @@ describe("PoSeManagerV2", function () {
       const digest = ethers.keccak256(
         ethers.solidityPacked(
           ["string", "bytes32", "bytes32", "uint8", "bytes32", "bytes32", "bytes32"],
-          ["palimesh-fault:", challengeId, nodeId, faultType, evidenceLeafHash, salt, ethers.keccak256(evidenceData)]
+          ["coc-fault:", challengeId, nodeId, faultType, evidenceLeafHash, salt, ethers.keccak256(evidenceData)]
         )
       )
       const challengerSig = await deployer.signMessage(ethers.getBytes(digest))
@@ -837,7 +837,7 @@ describe("PoSeManagerV2", function () {
       const digest = ethers.keccak256(
         ethers.solidityPacked(
           ["string", "bytes32", "bytes32", "uint8", "bytes32", "bytes32", "bytes32"],
-          ["palimesh-fault:", challengeId, nodeId, faultType, evidenceLeafHash, salt, ethers.keccak256(evidenceData)]
+          ["coc-fault:", challengeId, nodeId, faultType, evidenceLeafHash, salt, ethers.keccak256(evidenceData)]
         )
       )
       const challengerSig = await deployer.signMessage(ethers.getBytes(digest))
@@ -913,7 +913,7 @@ describe("PoSeManagerV2", function () {
       const digestA = ethers.keccak256(
         ethers.solidityPacked(
           ["string", "bytes32", "bytes32", "uint8", "bytes32", "bytes32", "bytes32"],
-          ["palimesh-fault:", challengeA, nodeId, faultType, hashA, saltA, ethers.keccak256(dataA)]
+          ["coc-fault:", challengeA, nodeId, faultType, hashA, saltA, ethers.keccak256(dataA)]
         )
       )
       const sigA = await deployer.signMessage(ethers.getBytes(digestA))
@@ -931,7 +931,7 @@ describe("PoSeManagerV2", function () {
       const digestB = ethers.keccak256(
         ethers.solidityPacked(
           ["string", "bytes32", "bytes32", "uint8", "bytes32", "bytes32", "bytes32"],
-          ["palimesh-fault:", challengeB, nodeId, faultType, hashB, saltB, ethers.keccak256(dataB)]
+          ["coc-fault:", challengeB, nodeId, faultType, hashB, saltB, ethers.keccak256(dataB)]
         )
       )
       const sigB = await deployer.signMessage(ethers.getBytes(digestB))
@@ -1008,7 +1008,7 @@ describe("PoSeManagerV2", function () {
       const revealDigest = ethers.keccak256(
         ethers.solidityPacked(
           ["string", "bytes32", "bytes32", "uint8", "bytes32", "bytes32", "bytes32"],
-          ["palimesh-fault:", challengeId, targetNode, faultType, evidenceHash, salt, ethers.keccak256(evidenceData)]
+          ["coc-fault:", challengeId, targetNode, faultType, evidenceHash, salt, ethers.keccak256(evidenceData)]
         )
       )
       const challengerSig = await deployer.signMessage(ethers.getBytes(revealDigest))
@@ -1226,7 +1226,7 @@ describe("PoSeManagerV2", function () {
       const pubkey = operator.signingKey.publicKey
       const nodeId = ethers.keccak256(pubkey)
       const messageHash = ethers.keccak256(
-        ethers.solidityPacked(["string", "bytes32", "address"], ["palimesh-register:", nodeId, operator.address])
+        ethers.solidityPacked(["string", "bytes32", "address"], ["coc-register:", nodeId, operator.address])
       )
       const ownershipSig = await operator.signMessage(ethers.getBytes(messageHash))
 

@@ -55,10 +55,10 @@ Reverts if:
 `registerNode` is more involved — needs an `ownershipSig` proving the operator controls the BFT signing key:
 
 ```js
-// ownershipSig = personal_sign(keccak256("palimesh-register:" || poseNodeId || operator_address))
+// ownershipSig = personal_sign(keccak256("coc-register:" || poseNodeId || operator_address))
 const message = ethers.solidityPacked(
   ["string", "bytes32", "address"],
-  ["palimesh-register:", poseNodeId, operatorAddress],
+  ["coc-register:", poseNodeId, operatorAddress],
 )
 const ownershipSig = await wallet.signMessage(ethers.getBytes(keccak256(message)))
 ```

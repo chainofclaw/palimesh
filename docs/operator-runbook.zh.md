@@ -55,10 +55,10 @@ cast send --rpc-url $RPC --private-key $OPERATOR_KEY \
 `registerNode` 更复杂 — 需要一个 `ownershipSig` 证明 operator 控制 BFT 签名密钥：
 
 ```js
-// ownershipSig = personal_sign(keccak256("palimesh-register:" || poseNodeId || operator_address))
+// ownershipSig = personal_sign(keccak256("coc-register:" || poseNodeId || operator_address))
 const message = ethers.solidityPacked(
   ["string", "bytes32", "address"],
-  ["palimesh-register:", poseNodeId, operatorAddress],
+  ["coc-register:", poseNodeId, operatorAddress],
 )
 const ownershipSig = await wallet.signMessage(ethers.getBytes(keccak256(message)))
 ```

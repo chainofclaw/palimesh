@@ -221,7 +221,7 @@ console.log(`  setInsuranceFund → ${deployed.InsuranceFund.address}`)
 
 // ── Step 5: PoSeManagerV2.registerNode for each of 5 validators ────────────
 // Per contracts/test/pose-v2-e2e.test.cjs:133 + PoSeManagerV2.sol:761
-//   ownershipSig = personal_sign( keccak256("palimesh-register:" || nodeId || operator_addr) )
+//   ownershipSig = personal_sign( keccak256("coc-register:" || nodeId || operator_addr) )
 // where operator = node owner = msg.sender of registerNode().
 // Each validator wallet stakes itself (operator == nodeAddr), bond = MIN_BOND
 // (read from contract; defaults 0.02 ETH per recent deploys).
@@ -262,9 +262,9 @@ for (let i = 0; i < VALIDATOR_KEYS.length; i++) {
   const endpointCommitment = ethers.keccak256(ethers.toUtf8Bytes(`palimesh-ep-h15-v${i + 1}`))
   const metadataHash = ethers.keccak256(ethers.toUtf8Bytes("h15-fork-meta"))
 
-  // ownershipSig: personal_sign of packed("palimesh-register:", poseNodeId, operatorAddr)
+  // ownershipSig: personal_sign of packed("coc-register:", poseNodeId, operatorAddr)
   const messageHash = ethers.keccak256(
-    ethers.solidityPacked(["string", "bytes32", "address"], ["palimesh-register:", poseNodeId, w.address])
+    ethers.solidityPacked(["string", "bytes32", "address"], ["coc-register:", poseNodeId, w.address])
   )
   const ownershipSig = await w.signMessage(ethers.getBytes(messageHash))
 

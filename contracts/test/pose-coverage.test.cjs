@@ -31,7 +31,7 @@ async function registerNode(manager, funder, opts = {}) {
   const metadataHash = ethers.keccak256(ethers.toUtf8Bytes("meta"))
 
   const messageHash = ethers.keccak256(
-    ethers.solidityPacked(["string", "bytes32", "address"], ["palimesh-register:", nodeId, operator.address])
+    ethers.solidityPacked(["string", "bytes32", "address"], ["coc-register:", nodeId, operator.address])
   )
   const ownershipSig = await operator.signMessage(ethers.getBytes(messageHash))
 
@@ -635,7 +635,7 @@ describe("PoSeManager: Extended Coverage", function () {
 
       // First register with this endpoint
       const messageHash1 = ethers.keccak256(
-        ethers.solidityPacked(["string", "bytes32", "address"], ["palimesh-register:", nodeId2, operator2.address])
+        ethers.solidityPacked(["string", "bytes32", "address"], ["coc-register:", nodeId2, operator2.address])
       )
       const sig1 = await operator2.signMessage(ethers.getBytes(messageHash1))
       const bond = await manager.requiredBond(operator2.address)
@@ -651,7 +651,7 @@ describe("PoSeManager: Extended Coverage", function () {
       const nodeId3 = ethers.keccak256(pubkey3)
 
       const messageHash3 = ethers.keccak256(
-        ethers.solidityPacked(["string", "bytes32", "address"], ["palimesh-register:", nodeId3, operator3.address])
+        ethers.solidityPacked(["string", "bytes32", "address"], ["coc-register:", nodeId3, operator3.address])
       )
       const sig3 = await operator3.signMessage(ethers.getBytes(messageHash3))
       const bond3 = await manager.requiredBond(operator3.address)
@@ -676,7 +676,7 @@ describe("PoSeManager: Extended Coverage", function () {
       const endpointCommitment = ethers.keccak256(ethers.toUtf8Bytes(`ep-high-s-owner-${Date.now()}`))
       const metadataHash = ethers.keccak256(ethers.toUtf8Bytes("meta"))
       const ownershipMsgHash = ethers.keccak256(
-        ethers.solidityPacked(["string", "bytes32", "address"], ["palimesh-register:", nodeId, operator.address])
+        ethers.solidityPacked(["string", "bytes32", "address"], ["coc-register:", nodeId, operator.address])
       )
       const ownershipSig = malleateSignature(await operator.signMessage(ethers.getBytes(ownershipMsgHash)))
       const bond = await manager.requiredBond(operator.address)
@@ -700,13 +700,13 @@ describe("PoSeManager: Extended Coverage", function () {
       const metadataHash = ethers.keccak256(ethers.toUtf8Bytes("meta"))
 
       const ownershipMsgHash = ethers.keccak256(
-        ethers.solidityPacked(["string", "bytes32", "address"], ["palimesh-register:", nodeId, operator.address])
+        ethers.solidityPacked(["string", "bytes32", "address"], ["coc-register:", nodeId, operator.address])
       )
       const ownershipSig = await operator.signMessage(ethers.getBytes(ownershipMsgHash))
 
-      // Build valid endpoint attestation: sign "palimesh-endpoint:" + endpointCommitment + nodeId
+      // Build valid endpoint attestation: sign "coc-endpoint:" + endpointCommitment + nodeId
       const endpointMsgHash = ethers.keccak256(
-        ethers.solidityPacked(["string", "bytes32", "bytes32"], ["palimesh-endpoint:", endpointCommitment, nodeId])
+        ethers.solidityPacked(["string", "bytes32", "bytes32"], ["coc-endpoint:", endpointCommitment, nodeId])
       )
       const endpointAttestation = await operator.signMessage(ethers.getBytes(endpointMsgHash))
 
@@ -731,12 +731,12 @@ describe("PoSeManager: Extended Coverage", function () {
       const metadataHash = ethers.keccak256(ethers.toUtf8Bytes("meta"))
 
       const ownershipMsgHash = ethers.keccak256(
-        ethers.solidityPacked(["string", "bytes32", "address"], ["palimesh-register:", nodeId, operator.address])
+        ethers.solidityPacked(["string", "bytes32", "address"], ["coc-register:", nodeId, operator.address])
       )
       const ownershipSig = await operator.signMessage(ethers.getBytes(ownershipMsgHash))
 
       const endpointMsgHash = ethers.keccak256(
-        ethers.solidityPacked(["string", "bytes32", "bytes32"], ["palimesh-endpoint:", endpointCommitment, nodeId])
+        ethers.solidityPacked(["string", "bytes32", "bytes32"], ["coc-endpoint:", endpointCommitment, nodeId])
       )
       const endpointAttestation = malleateSignature(await operator.signMessage(ethers.getBytes(endpointMsgHash)))
       const bond = await manager.requiredBond(operator.address)
@@ -760,7 +760,7 @@ describe("PoSeManager: Extended Coverage", function () {
       const metadataHash = ethers.keccak256(ethers.toUtf8Bytes("meta"))
 
       const ownershipMsgHash = ethers.keccak256(
-        ethers.solidityPacked(["string", "bytes32", "address"], ["palimesh-register:", nodeId, operator.address])
+        ethers.solidityPacked(["string", "bytes32", "address"], ["coc-register:", nodeId, operator.address])
       )
       const ownershipSig = await operator.signMessage(ethers.getBytes(ownershipMsgHash))
 
