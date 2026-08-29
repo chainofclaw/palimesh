@@ -1,4 +1,4 @@
-import { keccak256, parseEther } from "ethers"
+import { keccak256, parseEther, Contract, JsonRpcProvider } from "ethers"
 import { appendFileSync, existsSync, readFileSync } from "node:fs"
 import { join } from "node:path"
 import { loadNodeConfig } from "./config.ts"
@@ -53,6 +53,11 @@ import { EvidenceReason } from "../../services/verifier/anti-cheat-policy.ts"
 import { hashSlashEvidencePayload, resolveEvidencePaths } from "../../services/common/slash-evidence.ts"
 import { ValidatorRegistryReader } from "../../runtime/lib/validator-registry-reader.ts"
 import type { ValidatorEntry } from "../../runtime/lib/validator-registry-reader.ts"
+import { CoreSetReader, nodeIdToAddress } from "../../runtime/lib/core-set-reader.ts"
+import type { ActiveValidator } from "../../runtime/lib/core-set-reader.ts"
+import { CoreSetDriver } from "../../runtime/lib/core-set-driver.ts"
+import { readBestRewardManifest } from "../../runtime/lib/reward-manifest.ts"
+import { currentEpochId } from "../../runtime/lib/epoch-utils.ts"
 
 const log = createLogger("node")
 
@@ -203,6 +208,9 @@ if (config.validatorAddresses) {
 
 // BFT coordinator setup
 let bftCoordinator: BftCoordinator | undefined
+// Module-scoped so the core-set driver (constructed after `consensus` below)
+// can reuse the registry reader for candidate discovery.
+let registryReader: ValidatorRegistryReader | undefined
 
 // Phase H4: rate-limit immediate snap-sync triggered by BFT peer-quorum
 // divergence so a divergence storm doesn't spawn parallel sync attempts.
@@ -1043,6 +1051,14 @@ if (bftEnabled) {
         ? BigInt(config.validatorRegistryFromBlock)
         : undefined,
     })
+    registryReader = reader
+
+    // When the core-set feature is ENFORCING (enabled and not shadow), the
+    // CoreSetDriver below owns the BFT set: the registry reader still runs for
+    // candidate/stake discovery, but must not also write the set (single owner,
+    // avoids two sources racing updateValidators). In shadow mode (or disabled)
+    // the registry reader keeps driving the set exactly as before.
+    const coreSetEnforcing = config.coreSet.enabled && !config.coreSet.shadow
 
     const applyActiveSet = () => {
       const active = reader.getActiveSet()
@@ -1050,6 +1066,10 @@ if (bftEnabled) {
         log.warn("ValidatorRegistry returned empty active set; keeping fallback validators", {
           fallbackCount: validators.length,
         })
+        return
+      }
+      if (coreSetEnforcing) {
+        // Core-set driver owns the BFT set; discovery only here.
         return
       }
       const next = active.map((e: ValidatorEntry) => ({
@@ -1338,6 +1358,140 @@ const consensus = new ConsensusEngine(chain, p2p, {
   },
 })
 consensus.start()
+
+// Core-set ranking driver (two-tier core / non-core). Constructed here — after
+// `consensus` exists — because the driver ticks immediately on start and must
+// be able to call consensus.onValidatorSetChange without hitting the TDZ.
+// Feature-flagged and independent of the registry: the candidate pool is the
+// ValidatorRegistry active set when configured, otherwise the static
+// config.validators + validatorStakes. When enabled+enforcing the driver owns
+// the BFT set (the registry reader yields ownership via `coreSetEnforcing`); in
+// shadow mode it only logs. Bond + epoch reward roots are read from
+// PoSeManagerV2 over this node's own RPC (optional — perf drops to 0 when absent).
+if (bftEnabled && config.coreSet.enabled) {
+  const coreRpcUrl = process.env.COC_VALIDATOR_REGISTRY_RPC_URL || `http://127.0.0.1:${config.rpcPort}`
+  const CORE_ZERO_ROOT = `0x${"0".repeat(64)}`
+  const corePoseAddr = config.coreSet.poseManagerV2Address
+  const corePoseV2 = corePoseAddr
+    ? new Contract(
+        corePoseAddr,
+        [
+          "function getNode(bytes32 nodeId) view returns (tuple(bytes32 nodeId, bytes pubkeyNode, uint8 serviceFlags, bytes32 serviceCommitment, bytes32 endpointCommitment, uint256 bondAmount, bytes32 metadataHash, uint64 registeredAtEpoch, uint64 unlockEpoch, bool active))",
+          "function epochRewardRoots(uint64 epochId) view returns (bytes32)",
+        ],
+        new JsonRpcProvider(coreRpcUrl),
+      )
+    : null
+  if (!corePoseAddr) {
+    log.warn("core-set enabled without poseManagerV2Address; ranking will use stake only (no bond/perf)")
+  }
+
+  // Static-config candidate source (used when no ValidatorRegistry): every node
+  // in config.validators is a candidate; stake from validatorStakes.
+  const CORE_DEFAULT_STAKE = 1_000_000_000_000_000_000n
+  const coreStaticStakeById = new Map<string, bigint>()
+  for (const s of config.validatorStakes ?? []) {
+    try {
+      coreStaticStakeById.set(String(s.id).toLowerCase(), BigInt(s.stake))
+    } catch {
+      /* skip malformed stake entry */
+    }
+  }
+  const coreGetActiveValidators = (): ActiveValidator[] =>
+    registryReader
+      ? registryReader.getActiveSet().map((e: ValidatorEntry) => ({
+          nodeId: e.nodeId,
+          address: nodeIdToAddress(e.nodeId),
+          stake: e.stake,
+          // pubkey lets the reader derive the PoSe nodeId (keccak256(pubkey)) for
+          // bond/reward — distinct from the registry nodeId (keccak256(pubkey[1:])).
+          pubkey: e.pubkey,
+        }))
+      : config.validators.map((id) => ({
+          nodeId: id,
+          address: id.toLowerCase(),
+          stake: coreStaticStakeById.get(id.toLowerCase()) ?? CORE_DEFAULT_STAKE,
+        }))
+
+  const coreReader = new CoreSetReader({
+    getActiveValidators: coreGetActiveValidators,
+    getBond: async (nodeId: string) => {
+      if (!corePoseV2) return 0n
+      const node = (await corePoseV2.getNode(nodeId)) as { bondAmount?: bigint }
+      return node?.bondAmount !== undefined ? BigInt(node.bondAmount) : 0n
+    },
+    getEpochRewardRoot: async (epoch: number) => {
+      if (!corePoseV2) return CORE_ZERO_ROOT
+      return String(await corePoseV2.epochRewardRoots(BigInt(epoch)))
+    },
+    loadRewardManifest: (epoch: number) =>
+      config.coreSet.rewardManifestDir
+        ? readBestRewardManifest(config.coreSet.rewardManifestDir, epoch)
+        : null,
+  })
+
+  // Phase 2 — on-chain canonical: when CoreSetManager is configured, read the
+  // finalized core set from it instead of recomputing locally. nodeIds map to
+  // BFT ids via nodeIdToAddress; stakes come from the registry active set.
+  const coreSetMgrAddr = config.coreSet.coreSetManagerAddress
+  const coreSetMgr = coreSetMgrAddr
+    ? new Contract(
+        coreSetMgrAddr,
+        [
+          "function isCoreSetFinalized(uint64) view returns (bool)",
+          "function getCoreSet(uint64) view returns (bytes32[])",
+        ],
+        new JsonRpcProvider(coreRpcUrl),
+      )
+    : null
+  const coreStakeByNodeId = (nodeId: string): bigint => {
+    if (!registryReader) return 0n
+    const hit = registryReader.getActiveSet().find((e: ValidatorEntry) => e.nodeId.toLowerCase() === nodeId.toLowerCase())
+    return hit ? hit.stake : 0n
+  }
+  const getCanonicalCoreSet = coreSetMgr
+    ? async (epoch: number): Promise<Array<{ id: string; stake: bigint }> | null> => {
+        const finalized = (await coreSetMgr.isCoreSetFinalized(BigInt(epoch))) as boolean
+        if (!finalized) return null
+        const nodeIds = (await coreSetMgr.getCoreSet(BigInt(epoch))) as string[]
+        return nodeIds.map((nid) => ({ id: nodeIdToAddress(nid), stake: coreStakeByNodeId(nid) }))
+      }
+    : undefined
+
+  const coreDriver = new CoreSetDriver(
+    {
+      reader: coreReader,
+      getCanonicalCoreSet,
+      applySet: (next) => {
+        // Keep proposer rotation in lockstep with the BFT quorum set — otherwise
+        // a demoted node stays in the round-robin and proposes blocks it can no
+        // longer get quorum for (a stall). updateProposerSet exists on
+        // PersistentChainEngine; guarded for other IChainEngine impls.
+        ;(chain as { updateProposerSet?: (ids: string[]) => void }).updateProposerSet?.(
+          next.map((v) => v.id),
+        )
+        consensus.onValidatorSetChange(next)
+      },
+      currentEpoch: currentEpochId,
+      log: {
+        info: (msg, meta) => log.info(msg, meta),
+        warn: (msg, meta) => log.warn(msg, meta),
+      },
+    },
+    {
+      enabled: config.coreSet.enabled,
+      shadow: config.coreSet.shadow,
+      minCore: config.coreSet.minCore,
+      maxCore: config.coreSet.maxCore,
+      topN: config.coreSet.topN,
+      weightStakeBps: config.coreSet.weightStakeBps,
+      weightBondBps: config.coreSet.weightBondBps,
+      weightPerfBps: config.coreSet.weightPerfBps,
+      lagEpochs: config.coreSet.lagEpochs,
+    },
+  )
+  coreDriver.start()
+}
 
 // Phase J1.3: route chain-engine local apply rejection (stateRoot
 // mismatch on a non-locally-proposed block) into consensus.requestSyncNow.
