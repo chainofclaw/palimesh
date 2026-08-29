@@ -28,16 +28,17 @@ export function formatAddress(address: string): string {
   return formatHash(address, 6, 4)
 }
 
-export function formatTimestamp(ts: number): string {
+export function formatTimestamp(ts: number, locale?: string): string {
   const date = new Date(ts * 1000)
   const now = Date.now()
   const diff = now - date.getTime()
 
-  if (diff < 60000) return `${Math.floor(diff / 1000)}秒前`
-  if (diff < 3600000) return `${Math.floor(diff / 60000)}分钟前`
-  if (diff < 86400000) return `${Math.floor(diff / 3600000)}小时前`
+  const rtf = new Intl.RelativeTimeFormat(locale, { numeric: 'always' })
+  if (diff < 60000) return rtf.format(-Math.floor(diff / 1000), 'second')
+  if (diff < 3600000) return rtf.format(-Math.floor(diff / 60000), 'minute')
+  if (diff < 86400000) return rtf.format(-Math.floor(diff / 3600000), 'hour')
 
-  return date.toLocaleString('zh-CN')
+  return date.toLocaleString(locale)
 }
 
 export function formatValue(value: bigint | string | number, decimals = 18): string {

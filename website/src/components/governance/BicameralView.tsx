@@ -32,11 +32,11 @@ export function BicameralView({
         </h3>
         {bicameralEnabled ? (
           <span className="text-xs px-2 py-1 rounded bg-accent-cyan/10 text-accent-cyan border border-accent-cyan/20 font-display">
-            ACTIVE
+            {t('chamberActive')}
           </span>
         ) : (
           <span className="text-xs px-2 py-1 rounded bg-text-muted/10 text-text-muted border border-text-muted/20 font-display">
-            INACTIVE
+            {t('chamberInactive')}
           </span>
         )}
       </div>
@@ -47,7 +47,7 @@ export function BicameralView({
           <div className="flex items-center gap-2 mb-3">
             <span className="w-2 h-2 rounded-full bg-emerald-400" />
             <span className="text-sm font-display font-semibold text-emerald-400">
-              Human Chamber
+              {t('humanChamber')}
             </span>
             {humanPassed && (
               <svg className="w-4 h-4 text-emerald-400 ml-auto" viewBox="0 0 20 20" fill="currentColor">
@@ -57,14 +57,14 @@ export function BicameralView({
           </div>
           <div className="space-y-2">
             <div className="flex justify-between text-xs font-display">
-              <span className="text-emerald-400">For: {forVotesHuman}</span>
-              <span className="text-red-400">Against: {againstVotesHuman}</span>
+              <span className="text-emerald-400">{t('votesFor')}: {forVotesHuman}</span>
+              <span className="text-red-400">{t('votesAgainst')}: {againstVotesHuman}</span>
             </div>
             <div className="h-2 rounded-full bg-bg-secondary overflow-hidden">
               <div className="h-full bg-emerald-500 transition-all" style={{ width: `${humanPercent}%` }} />
             </div>
             <div className="text-xs text-text-muted font-display text-center">
-              {humanPercent.toFixed(1)}% (need {approvalPercent}%)
+              {humanPercent.toFixed(1)}% ({t('needPercent', { p: approvalPercent })})
             </div>
           </div>
         </div>
@@ -74,7 +74,7 @@ export function BicameralView({
           <div className="flex items-center gap-2 mb-3">
             <span className="w-2 h-2 rounded-full bg-purple-400" />
             <span className="text-sm font-display font-semibold text-purple-400">
-              Claw Chamber
+              {t('clawChamber')}
             </span>
             {clawPassed && (
               <svg className="w-4 h-4 text-purple-400 ml-auto" viewBox="0 0 20 20" fill="currentColor">
@@ -84,14 +84,14 @@ export function BicameralView({
           </div>
           <div className="space-y-2">
             <div className="flex justify-between text-xs font-display">
-              <span className="text-purple-400">For: {forVotesClaw}</span>
-              <span className="text-red-400">Against: {againstVotesClaw}</span>
+              <span className="text-purple-400">{t('votesFor')}: {forVotesClaw}</span>
+              <span className="text-red-400">{t('votesAgainst')}: {againstVotesClaw}</span>
             </div>
             <div className="h-2 rounded-full bg-bg-secondary overflow-hidden">
               <div className="h-full bg-purple-500 transition-all" style={{ width: `${clawPercent}%` }} />
             </div>
             <div className="text-xs text-text-muted font-display text-center">
-              {clawPercent.toFixed(1)}% (need {approvalPercent}%)
+              {clawPercent.toFixed(1)}% ({t('needPercent', { p: approvalPercent })})
             </div>
           </div>
         </div>

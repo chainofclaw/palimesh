@@ -9,15 +9,8 @@ export default function ServicesPage() {
   return (
     <div className="relative">
       {/* Hero */}
-      <section className="relative min-h-[60vh] flex items-center overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-bg-primary via-bg-secondary to-bg-primary">
-          <div className="absolute inset-0 opacity-20">
-            <div className="absolute top-20 left-20 w-96 h-96 bg-accent-cyan rounded-full blur-[120px] animate-pulse-slow" />
-            <div className="absolute bottom-20 right-20 w-96 h-96 bg-accent-purple rounded-full blur-[120px] animate-pulse-slow delay-1000" />
-          </div>
-        </div>
-
-        <div className="container mx-auto px-4 py-20 relative z-10">
+      <section className="relative border-b border-line grain">
+        <div className="container mx-auto px-4 py-16 md:py-20 relative z-10">
           <div className="max-w-4xl mx-auto text-center">
             <div className="inline-block mb-6 fade-in">
               <div className="px-4 py-2 rounded-full border border-accent-cyan/30 bg-accent-cyan/5 backdrop-blur-sm">
@@ -28,7 +21,7 @@ export default function ServicesPage() {
             </div>
 
             <h1 className="text-5xl md:text-6xl font-display font-bold mb-6 fade-in-delay-1">
-              <span className="gradient-text glow-text">{t('title')}</span>
+              <span className="ink-underline">{t('title')}</span>
             </h1>
             <p className="text-xl text-text-secondary font-body mb-4 fade-in-delay-2">
               {t('heroTagline')}
@@ -112,33 +105,30 @@ export default function ServicesPage() {
               description="Give an AI agent persistent semantic memory that survives restarts and compaction. Captures structured observations from tool calls, summarizes sessions (LLM)…"
               overall="review"
               scans={{ vt: 'suspicious', llm: 'suspicious', static: 'suspicious' }}
-              stats={{ downloads: 289, stars: 0, versions: 11, updated: 'May 11' }}
               color="purple"
             />
             <OpenclawCard
               title="Node of Palimesh testnet"
               skillId="//palimesh-node"
               version="v1.2.0"
-              description="Operate Palimesh (Palimesh) blockchain nodes — install, start, stop, monitor, and remove validator, fullnode, archive, gateway, and dev nodes. Use when the user…"
+              description="Operate Palimesh blockchain nodes — install, start, stop, monitor, and remove validator, fullnode, archive, gateway, and dev nodes. Use when the user…"
               overall="pass"
               scans={{ vt: 'pass', llm: 'pass', static: 'pass' }}
-              stats={{ downloads: 243, stars: 0, versions: 6, updated: 'May 11' }}
               color="blue"
             />
             <OpenclawCard
-              title="Palimesh Soul Immortality"
+              title="Palimesh Soul"
               skillId="//palimesh-soul"
               version="v1.2.10"
               description="Give an AI agent a persistent on-chain soul on Palimesh — register and manage the agent's decentralized identity (DID), anchor encrypted backups to IPFS + SoulReg…"
               overall="review"
               scans={{ vt: 'suspicious', llm: 'suspicious', static: 'pass' }}
-              stats={{ downloads: 323, stars: 1, versions: 13, updated: 'May 11' }}
               color="cyan"
             />
           </div>
         </section>
 
-        {/* Silicon Immortality narrative */}
+        {/* Lifecycle narrative */}
         <section className="mt-20 mb-8">
           <div className="bg-gradient-to-br from-accent-cyan/10 via-accent-purple/10 to-accent-blue/10 backdrop-blur-lg rounded-2xl border border-accent-cyan/20 p-8 md:p-12">
             <div className="max-w-3xl mx-auto text-center">
@@ -307,7 +297,6 @@ function OpenclawCard({
   description,
   overall,
   scans,
-  stats,
   color,
 }: {
   title: string
@@ -316,7 +305,6 @@ function OpenclawCard({
   description: string
   overall: ScanStatus
   scans: { vt: ScanStatus; llm: ScanStatus; static: ScanStatus }
-  stats: { downloads: number; stars: number; versions: number; updated: string }
   color: 'cyan' | 'purple' | 'blue'
 }) {
   const t = useTranslations('services')
@@ -388,21 +376,6 @@ function OpenclawCard({
         </div>
       </div>
 
-      <div className="grid grid-cols-4 gap-2 text-center text-xs font-mono mt-auto pt-3 border-t border-text-muted/10">
-        <StatCell label={t('downloads')} value={stats.downloads.toLocaleString()} />
-        <StatCell label={t('stars')} value={String(stats.stars)} />
-        <StatCell label={t('versions')} value={String(stats.versions)} />
-        <StatCell label={t('updated')} value={stats.updated} />
-      </div>
-    </div>
-  )
-}
-
-function StatCell({ label, value }: { label: string; value: string }) {
-  return (
-    <div>
-      <div className="text-text-primary font-display font-bold text-sm">{value}</div>
-      <div className="text-[10px] text-text-muted uppercase tracking-wider mt-0.5">{label}</div>
     </div>
   )
 }

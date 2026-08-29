@@ -91,7 +91,7 @@ export function NetworkStats() {
   if (!stats) {
     return (
       <div className="bg-red-950/20 border border-red-500/30 rounded-lg p-4 text-red-400">
-        {t('network.error') || '无法连接到Palimesh网络节点'}
+        {t('network.error')}
       </div>
     )
   }
