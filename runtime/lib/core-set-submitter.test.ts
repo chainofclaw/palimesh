@@ -1,16 +1,22 @@
 import { describe, it } from "node:test"
 import assert from "node:assert/strict"
-import { buildFinalizeArgs, submitFinalizeCoreSet } from "./core-set-submitter.ts"
+import { SigningKey, keccak256 } from "ethers"
+import { buildFinalizeArgs, submitFinalizeCoreSet, poseNodeIdFromPubkey } from "./core-set-submitter.ts"
 import { buildRewardTree, hashRewardLeaf } from "../../services/common/reward-tree.ts"
 import { keccak256Hex } from "../../services/relayer/keccak256.ts"
 import type { RewardManifest } from "./reward-manifest.ts"
 import type { Hex32 } from "../../services/common/pose-types.ts"
 
 const EPOCH = 100
-const nid = (b: string) => `0x${b.repeat(32)}` as Hex32
 
-function makeManifest(entries: Array<{ nodeId: Hex32; amount: bigint }>): RewardManifest {
-  const leaves = entries.map((e) => ({ epochId: BigInt(EPOCH), nodeId: e.nodeId, amount: e.amount }))
+// Deterministic candidate: pubkey + PoSe nodeId (keccak of full pubkey).
+function cand(privTag: string) {
+  const pub = SigningKey.computePublicKey("0x" + privTag.padStart(64, "0"), false)
+  return { pubkey: pub, poseNodeId: keccak256(pub) as Hex32 }
+}
+
+function makeManifest(entries: Array<{ poseNodeId: Hex32; amount: bigint }>): RewardManifest {
+  const leaves = entries.map((e) => ({ epochId: BigInt(EPOCH), nodeId: e.poseNodeId, amount: e.amount }))
   const root = buildRewardTree(leaves).root
   return {
     epochId: EPOCH,
@@ -18,14 +24,14 @@ function makeManifest(entries: Array<{ nodeId: Hex32; amount: bigint }>): Reward
     totalReward: "0",
     slashTotal: "0",
     treasuryDelta: "0",
-    leaves: entries.map((e) => ({ nodeId: e.nodeId, amount: e.amount.toString() })),
+    leaves: entries.map((e) => ({ nodeId: e.poseNodeId, amount: e.amount.toString() })),
     proofs: {},
     scoringInputsHash: "0x",
     generatedAtMs: 0,
   }
 }
 
-// Mirror MerkleProofLite.verify (sorted-pair keccak) to confirm proofs verify.
+// Mirror MerkleProofLite.verify (sorted-pair keccak).
 function foldProof(leaf: string, proof: string[]): string {
   let c = leaf.toLowerCase()
   for (const p of proof) {
@@ -36,46 +42,50 @@ function foldProof(leaf: string, proof: string[]): string {
   return c
 }
 
-describe("core-set-submitter / buildFinalizeArgs", () => {
+describe("core-set-submitter (pubkey-based)", () => {
+  const a1 = cand("a1")
+  const b2 = cand("b2")
+  const c3 = cand("c3")
   const entries = [
-    { nodeId: nid("a1"), amount: 300n },
-    { nodeId: nid("b2"), amount: 100n },
+    { poseNodeId: a1.poseNodeId, amount: 300n },
+    { poseNodeId: b2.poseNodeId, amount: 100n },
   ]
 
-  it("maps reward amounts per candidate (0 when absent from manifest)", () => {
+  it("keys reward amounts by PoSe nodeId (derived from pubkey); 0 when absent", () => {
     const manifest = makeManifest(entries)
-    const candidates = [nid("a1"), nid("b2"), nid("c3")] // c3 has no reward leaf
-    const args = buildFinalizeArgs(EPOCH, candidates, manifest)
+    const args = buildFinalizeArgs(EPOCH, [a1.pubkey, b2.pubkey, c3.pubkey], manifest)
     assert.deepEqual(args.rewardAmounts, [300n, 100n, 0n])
-    assert.equal(args.candidateNodeIds.length, 3)
+    assert.deepEqual(args.pubkeys, [a1.pubkey, b2.pubkey, c3.pubkey])
   })
 
-  it("emits an empty proof for zero-reward candidates and a real proof otherwise", () => {
+  it("emits a real proof for rewarded candidates, empty for zero-reward", () => {
     const manifest = makeManifest(entries)
-    const args = buildFinalizeArgs(EPOCH, [nid("a1"), nid("c3")], manifest)
-    assert.ok(args.rewardProofs[0].length > 0, "a1 has a non-empty proof")
-    assert.deepEqual(args.rewardProofs[1], []) // c3 zero reward → empty proof
+    const args = buildFinalizeArgs(EPOCH, [a1.pubkey, c3.pubkey], manifest)
+    assert.ok(args.rewardProofs[0].length > 0)
+    assert.deepEqual(args.rewardProofs[1], [])
   })
 
-  it("generated proofs verify against the manifest root (correct proof key)", () => {
+  it("proofs (keyed by PoSe nodeId) fold to the manifest root", () => {
     const manifest = makeManifest(entries)
     const root = manifest.rewardRoot.toLowerCase()
-    const args = buildFinalizeArgs(EPOCH, [nid("a1"), nid("b2")], manifest)
-    for (let i = 0; i < 2; i++) {
-      const leaf = hashRewardLeaf({ epochId: BigInt(EPOCH), nodeId: entries[i].nodeId, amount: entries[i].amount })
-      assert.equal(foldProof(leaf, args.rewardProofs[i]), root, `proof ${i} must fold to root`)
-    }
+    const args = buildFinalizeArgs(EPOCH, [a1.pubkey, b2.pubkey], manifest)
+    const leafFor = (e: { poseNodeId: Hex32; amount: bigint }) =>
+      hashRewardLeaf({ epochId: BigInt(EPOCH), nodeId: e.poseNodeId, amount: e.amount })
+    assert.equal(foldProof(leafFor(entries[0]), args.rewardProofs[0]), root)
+    assert.equal(foldProof(leafFor(entries[1]), args.rewardProofs[1]), root)
   })
 
-  it("handles a null/empty manifest (all rewards 0, empty proofs)", () => {
-    const args = buildFinalizeArgs(EPOCH, [nid("a1"), nid("b2")], null)
+  it("poseNodeIdFromPubkey = keccak256(pubkey)", () => {
+    assert.equal(poseNodeIdFromPubkey(a1.pubkey), keccak256(a1.pubkey))
+  })
+
+  it("null manifest → all rewards 0, empty proofs", () => {
+    const args = buildFinalizeArgs(EPOCH, [a1.pubkey, b2.pubkey], null)
     assert.deepEqual(args.rewardAmounts, [0n, 0n])
     assert.deepEqual(args.rewardProofs, [[], []])
   })
-})
 
-describe("core-set-submitter / submitFinalizeCoreSet", () => {
-  it("submits when not finalized and skips when already finalized", async () => {
+  it("submitFinalizeCoreSet submits once, skips when already finalized", async () => {
     const calls: unknown[] = []
     let finalized = false
     const contract = {
@@ -86,12 +96,10 @@ describe("core-set-submitter / submitFinalizeCoreSet", () => {
         return { wait: async () => undefined }
       },
     }
-    const args = buildFinalizeArgs(EPOCH, [nid("a1")], null)
-    const sent1 = await submitFinalizeCoreSet(contract, args)
-    assert.equal(sent1, true)
+    const args = buildFinalizeArgs(EPOCH, [a1.pubkey], null)
+    assert.equal(await submitFinalizeCoreSet(contract, args), true)
     assert.equal(calls.length, 1)
-    const sent2 = await submitFinalizeCoreSet(contract, args)
-    assert.equal(sent2, false) // already finalized → no second tx
+    assert.equal(await submitFinalizeCoreSet(contract, args), false)
     assert.equal(calls.length, 1)
   })
 })

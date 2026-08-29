@@ -86,6 +86,7 @@ contract CoreSetManager is Initializable, UUPSUpgradeable {
     error AlreadyFinalized();
     error LengthMismatch();
     error CandidateNotActive(bytes32 nodeId);
+    error BadPubkey();
     error EpochNotFinalized();
     error BadRewardProof(bytes32 nodeId);
     error BadParams();
@@ -162,25 +163,32 @@ contract CoreSetManager is Initializable, UUPSUpgradeable {
     /**
      * @notice Ingest candidate data for `epochId`, verify each input on-chain,
      *         compute the composite ranking, and store the resulting core set.
-     * @param candidateNodeIds The candidate pool (must each be an active
-     *        ValidatorRegistry member; only staked nodes are core-eligible).
-     * @param rewardAmounts    Per-candidate PoSe reward for the epoch (0 if the
-     *        candidate has no reward leaf). Non-zero amounts are Merkle-verified.
-     * @param rewardProofs     Merkle proof for each non-zero reward against
-     *        poseManager.epochRewardRoots(epochId). Ignored when amount == 0.
+     * @dev Candidates are supplied as 65-byte uncompressed pubkeys, NOT nodeIds,
+     *      because ValidatorRegistry and PoSeManagerV2 derive DIFFERENT nodeIds
+     *      from the same key: ValidatorRegistry uses keccak256(pubkey[1:]) (the
+     *      EVM-address-anchored id), PoSeManagerV2 uses keccak256(pubkey) (the
+     *      full-pubkey id). Deriving both here from one pubkey lets us read stake
+     *      against the registry id AND bond/reward against the PoSe id for the
+     *      SAME node — trustlessly, since the contract recomputes both ids.
+     * @param pubkeys       65-byte (0x04||X||Y) pubkeys of the candidate pool
+     *        (each must be an active ValidatorRegistry member — staked).
+     * @param rewardAmounts Per-candidate PoSe reward for the epoch (0 if none).
+     * @param rewardProofs  Merkle proof for each non-zero reward against
+     *        poseManager.epochRewardRoots(epochId), keyed by the PoSe nodeId.
      */
     function finalizeCoreSet(
         uint64 epochId,
-        bytes32[] calldata candidateNodeIds,
+        bytes[] calldata pubkeys,
         uint256[] calldata rewardAmounts,
         bytes32[][] calldata rewardProofs
     ) external onlyRelayer {
         if (isCoreSetFinalized[epochId]) revert AlreadyFinalized();
-        uint256 n = candidateNodeIds.length;
+        uint256 n = pubkeys.length;
         if (rewardAmounts.length != n || rewardProofs.length != n) revert LengthMismatch();
 
         bytes32 root = poseManager.epochRewardRoots(epochId);
 
+        bytes32[] memory regNodeIds = new bytes32[](n); // registry id (BFT id + store)
         uint256[] memory stakes = new uint256[](n);
         uint256[] memory bonds = new uint256[](n);
         uint256[] memory rewards = new uint256[](n);
@@ -189,16 +197,20 @@ contract CoreSetManager is Initializable, UUPSUpgradeable {
         uint256 sumReward;
 
         for (uint256 i; i < n; i++) {
-            bytes32 nid = candidateNodeIds[i];
-            if (!validatorRegistry.isActive(nid)) revert CandidateNotActive(nid);
-            uint256 stake = validatorRegistry.getValidator(nid).stake;
-            uint256 bond = poseManager.getNodeBond(nid);
+            bytes calldata pk = pubkeys[i];
+            if (pk.length != 65 || pk[0] != bytes1(0x04)) revert BadPubkey();
+            bytes32 regNid = keccak256(pk[1:]);   // ValidatorRegistry nodeId
+            bytes32 poseNid = keccak256(pk);       // PoSeManagerV2 nodeId
+            if (!validatorRegistry.isActive(regNid)) revert CandidateNotActive(regNid);
+            uint256 stake = validatorRegistry.getValidator(regNid).stake;
+            uint256 bond = poseManager.getNodeBond(poseNid);
             uint256 amt = rewardAmounts[i];
             if (amt > 0) {
                 if (root == bytes32(0)) revert EpochNotFinalized();
-                bytes32 leaf = keccak256(abi.encodePacked(epochId, nid, amt));
-                if (!MerkleProofLite.verify(rewardProofs[i], root, leaf)) revert BadRewardProof(nid);
+                bytes32 leaf = keccak256(abi.encodePacked(epochId, poseNid, amt));
+                if (!MerkleProofLite.verify(rewardProofs[i], root, leaf)) revert BadRewardProof(regNid);
             }
+            regNodeIds[i] = regNid;
             stakes[i] = stake;
             bonds[i] = bond;
             rewards[i] = amt;
@@ -222,7 +234,7 @@ contract CoreSetManager is Initializable, UUPSUpgradeable {
         for (uint256 i = 1; i < n; i++) {
             uint256 key = idx[i];
             uint256 j = i;
-            while (j > 0 && _ranksBelow(scores[idx[j - 1]], candidateNodeIds[idx[j - 1]], scores[key], candidateNodeIds[key])) {
+            while (j > 0 && _ranksBelow(scores[idx[j - 1]], regNodeIds[idx[j - 1]], scores[key], regNodeIds[key])) {
                 idx[j] = idx[j - 1];
                 j--;
             }
@@ -239,7 +251,7 @@ contract CoreSetManager is Initializable, UUPSUpgradeable {
             uint256 target = topN < minCore ? minCore : (topN > upper ? upper : topN);
             uint256 k = target > n ? n : target;
             bytes32[] memory sel = new bytes32[](k);
-            for (uint256 i; i < k; i++) sel[i] = candidateNodeIds[idx[i]];
+            for (uint256 i; i < k; i++) sel[i] = regNodeIds[idx[i]];
             _coreSet[epochId] = sel;
         }
 

@@ -1403,6 +1403,9 @@ if (bftEnabled && config.coreSet.enabled) {
           nodeId: e.nodeId,
           address: nodeIdToAddress(e.nodeId),
           stake: e.stake,
+          // pubkey lets the reader derive the PoSe nodeId (keccak256(pubkey)) for
+          // bond/reward — distinct from the registry nodeId (keccak256(pubkey[1:])).
+          pubkey: e.pubkey,
         }))
       : config.validators.map((id) => ({
           nodeId: id,

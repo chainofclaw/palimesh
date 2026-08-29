@@ -21,6 +21,7 @@
  * real ethers contract calls.
  */
 
+import { keccak256 } from "ethers"
 import type { CoreCandidate } from "./core-set-selector.ts"
 import type { RewardManifest } from "./reward-manifest.ts"
 import { buildRewardTree } from "../../services/common/reward-tree.ts"
@@ -32,6 +33,20 @@ const ZERO_ROOT = `0x${"0".repeat(64)}`
 /** Lowercased BFT id from a bytes32 nodeId: 0x + trailing 20 bytes (40 hex). */
 export function nodeIdToAddress(nodeId: string): string {
   return ("0x" + nodeId.slice(-40)).toLowerCase()
+}
+
+/**
+ * PoSe nodeId = keccak256(65-byte uncompressed pubkey). Differs from the
+ * ValidatorRegistry nodeId (keccak256(pubkey[1:])), so bond/reward lookups must
+ * use THIS id, not the registry id. Returns "" when the pubkey is unavailable.
+ */
+export function poseNodeIdFromPubkey(pubkey: string | undefined): string {
+  if (!pubkey || pubkey.length < 4) return ""
+  try {
+    return keccak256(pubkey).toLowerCase()
+  } catch {
+    return ""
+  }
 }
 
 /**
@@ -85,14 +100,16 @@ export interface ActiveValidator {
   nodeId: string
   address: string
   stake: bigint
+  /** 65-byte uncompressed pubkey; used to derive the PoSe nodeId for bond/reward. */
+  pubkey?: string
 }
 
 /** Injected on-chain accessors (wired to ethers by the driver). */
 export interface CoreSetReaderDeps {
   /** Candidate pool + stake — only staked ValidatorRegistry members are eligible. */
   getActiveValidators: () => ActiveValidator[]
-  /** PoSeManagerV2 bond for a nodeId; 0 when the node has no PoSe bond. */
-  getBond: (nodeId: string) => Promise<bigint>
+  /** PoSeManagerV2 bond for a PoSe nodeId; 0 when the node has no PoSe bond. */
+  getBond: (poseNodeId: string) => Promise<bigint>
   /** On-chain PoSeManagerV2.epochRewardRoots[epochId] (finalized reward root). */
   getEpochRewardRoot: (epochId: number) => Promise<string>
   /** Load the local reward manifest for an epoch (expanded, Merkle-verified below). */
@@ -123,13 +140,17 @@ export class CoreSetReader {
 
     const candidates: CoreCandidate[] = []
     for (const v of active) {
-      const bond = await this.deps.getBond(v.nodeId).catch(() => 0n)
+      // Bond + reward are keyed by the PoSe nodeId (keccak256(pubkey)), NOT the
+      // registry nodeId. Without a pubkey we cannot derive it → bond/reward drop
+      // to 0 for that candidate (score falls back to stake).
+      const poseNodeId = poseNodeIdFromPubkey(v.pubkey)
+      const bond = poseNodeId ? await this.deps.getBond(poseNodeId).catch(() => 0n) : 0n
       candidates.push({
         nodeId: v.nodeId,
         address: v.address,
         stake: v.stake,
         bond,
-        rewardAmount: rewards.get(v.nodeId.toLowerCase()) ?? 0n,
+        rewardAmount: poseNodeId ? rewards.get(poseNodeId) ?? 0n : 0n,
       })
     }
     return candidates

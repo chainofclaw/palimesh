@@ -9,9 +9,18 @@ import {
 import { buildRewardTree } from "../../services/common/reward-tree.ts"
 import type { RewardManifest } from "./reward-manifest.ts"
 import type { Hex32 } from "../../services/common/pose-types.ts"
+import { SigningKey, keccak256 } from "ethers"
 
 const EPOCH = 100
 const nid = (b: string) => `0x${b.repeat(32)}` as Hex32
+// Candidate with a real pubkey → registry nodeId (keccak(pubkey[1:])) + PoSe
+// nodeId (keccak(pubkey)); mirrors how the two contracts derive ids.
+const candKey = (tag: string) => {
+  const pubkey = SigningKey.computePublicKey("0x" + tag.padStart(64, "0"), false)
+  const regNodeId = keccak256("0x" + pubkey.slice(4)) as Hex32
+  const poseNodeId = keccak256(pubkey) as Hex32
+  return { pubkey, regNodeId, poseNodeId, address: ("0x" + regNodeId.slice(-40)).toLowerCase() }
+}
 const ZERO_ROOT = `0x${"0".repeat(64)}`
 
 // Build a manifest whose leaves reproduce a real Merkle root for EPOCH.
@@ -84,43 +93,46 @@ describe("core-set-reader / nodeIdToAddress", () => {
 })
 
 describe("core-set-reader / CoreSetReader.buildCandidates", () => {
+  const A = candKey("a1")
+  const B = candKey("b2")
   const active = [
-    { nodeId: nid("aa"), address: nodeIdToAddress(nid("aa")), stake: 32n },
-    { nodeId: nid("bb"), address: nodeIdToAddress(nid("bb")), stake: 40n },
+    { nodeId: A.regNodeId, address: A.address, stake: 32n, pubkey: A.pubkey },
+    { nodeId: B.regNodeId, address: B.address, stake: 40n, pubkey: B.pubkey },
   ]
 
   function makeDeps(over: Partial<CoreSetReaderDeps> = {}): CoreSetReaderDeps {
     return {
       getActiveValidators: () => active,
-      getBond: async (n) => (n === nid("aa") ? 5n : 7n),
+      // bond keyed by PoSe nodeId (proves the reader looks it up correctly)
+      getBond: async (poseNid) => (poseNid.toLowerCase() === A.poseNodeId.toLowerCase() ? 5n : 7n),
       getEpochRewardRoot: async () => ZERO_ROOT,
       loadRewardManifest: () => null,
       ...over,
     }
   }
 
-  it("assembles candidates with stake + bond, reward 0 when unverifiable", async () => {
+  it("assembles candidates with stake + bond (by PoSe nodeId), reward 0 when unverifiable", async () => {
     const reader = new CoreSetReader(makeDeps())
     const c = await reader.buildCandidates(EPOCH)
     assert.equal(c.length, 2)
-    const aa = c.find((x) => x.nodeId === nid("aa"))!
+    const aa = c.find((x) => x.nodeId === A.regNodeId)!
     assert.equal(aa.stake, 32n)
     assert.equal(aa.bond, 5n)
     assert.equal(aa.rewardAmount, 0n)
-    assert.equal(aa.address, nodeIdToAddress(nid("aa")))
+    assert.equal(aa.address, A.address)
   })
 
-  it("includes verified reward amounts when the manifest matches the on-chain root", async () => {
+  it("includes verified reward amounts (keyed by PoSe nodeId) when the manifest matches", async () => {
     const { manifest, root } = makeManifest([
-      { nodeId: nid("aa"), amount: 111n },
-      { nodeId: nid("bb"), amount: 222n },
+      { nodeId: A.poseNodeId, amount: 111n },
+      { nodeId: B.poseNodeId, amount: 222n },
     ])
     const reader = new CoreSetReader(
       makeDeps({ getEpochRewardRoot: async () => root, loadRewardManifest: () => manifest }),
     )
     const c = await reader.buildCandidates(EPOCH)
-    assert.equal(c.find((x) => x.nodeId === nid("aa"))!.rewardAmount, 111n)
-    assert.equal(c.find((x) => x.nodeId === nid("bb"))!.rewardAmount, 222n)
+    assert.equal(c.find((x) => x.nodeId === A.regNodeId)!.rewardAmount, 111n)
+    assert.equal(c.find((x) => x.nodeId === B.regNodeId)!.rewardAmount, 222n)
   })
 
   it("returns empty when there are no active validators", async () => {
