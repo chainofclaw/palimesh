@@ -82,8 +82,27 @@ export default function HomePage() {
         </div>
       </section>
 
+      {/* ============ Origins teaser ============ */}
+      <section className="py-section bg-bg-secondary border-y border-line grain">
+        <div className="container mx-auto px-4 max-w-3xl">
+          <div className="sheet-stack">
+            <div className="sheet p-8 md:p-10">
+              <p className="kicker mb-3">{t('origins.kicker')}</p>
+              <h2 className="text-3xl md:text-4xl font-display font-bold mb-4">{t('origins.title')}</h2>
+              <p className="text-text-secondary leading-relaxed mb-6">{t('origins.body')}</p>
+              <Link
+                href="/story"
+                className="inline-block px-5 py-2.5 rounded-lg border border-line bg-bg-primary text-sm text-text-primary hover:border-accent-purple hover:text-accent-purple transition-colors"
+              >
+                {t('origins.cta')} →
+              </Link>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* ============ Architecture ============ */}
-      <section className="py-section bg-bg-secondary border-y border-line">
+      <section className="py-section">
         <div className="container mx-auto px-4">
           <SectionHead kicker={t('architecture.kicker')} title={t('architecture.title')} subtitle={t('architecture.subtitle')} />
           <div className="max-w-3xl mx-auto space-y-3">

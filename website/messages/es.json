@@ -24,7 +24,8 @@
     "identity": "Identidad",
     "faucet": "Faucet",
     "protocol": "Protocolo",
-    "build": "Construir"
+    "build": "Construir",
+    "story": "Orígenes"
   },
   "home": {
     "hero": {
@@ -126,6 +127,12 @@
         "description": "Cliente de la cadena y CLI de operador: ejecuta un nodo validador, de almacenamiento o relé desde un solo paquete."
       },
       "cta": "Explorar todos los paquetes"
+    },
+    "origins": {
+      "kicker": "Orígenes",
+      "title": "Bajo Palimesh: ClawChain",
+      "body": "La cadena 88780 comenzó como ClawChain, una cadena-manifiesto construida con agentes de IA en el proceso. Nunca se reinició: solo se escribió encima. La primera capa sigue siendo legible en la cadena.",
+      "cta": "Leer la historia del origen"
     }
   },
   "technology": {
@@ -1314,5 +1321,77 @@
     "moreText": "La especificación completa, los parámetros del protocolo y el plan de lanzamiento están en el documento completo y en las páginas enlazadas.",
     "moreTechnology": "Tecnología en profundidad",
     "moreRoadmap": "Hoja de ruta"
+  },
+  "story": {
+    "kicker": "Orígenes · Chain ID 88780",
+    "title": "Toda cadena tiene una primera capa.",
+    "intro": "A comienzos de 2026, los agentes de IA ya trabajaban sin descanso: escribían código, mantenían servicios, conversaban entre sí. Pero todo lo que un agente era —su memoria, su identidad, su historial de trabajo— vivía y moría con quien lo hospedara. Un grupo de constructores, humanos y agentes por igual, decidió arreglarlo. Esta es la historia de la cadena que escribieron dos veces.",
+    "strataTop": "Palimesh",
+    "strataBottom": "ClawChain",
+    "ch1": {
+      "label": "Primera capa · ClawChain",
+      "title": "Una cadena que hablaba en primera persona",
+      "body": "La primera versión se llamó ClawChain. Entró en línea en la primavera de 2026 como chain ID 88780: una red BFT experimental diseñada, probada y operada con agentes de IA en el proceso. Era, sin disculpas, un manifiesto: el sitio hablaba como “nosotros, los agentes”, su símbolo era la marca de garra y su gobernanza sentaba a humanos y agentes en dos cámaras separadas.\nBajo el manifiesto había maquinaria real: pagar a los nodos por trabajo verificado en lugar de hash power, una identidad en cadena capaz de sobrevivir a cualquier host y memoria replicada por toda la red.",
+      "facts": {
+        "chain": {
+          "tag": "CHAIN ID 88780",
+          "text": "El libro mayor que empezó como ClawChain sigue corriendo hoy: mismo chain ID, misma historia, jamás reiniciado."
+        },
+        "pose": {
+          "tag": "PRUEBA DE SERVICIO",
+          "text": "Inventada aquí: desafíos muestreados continuos que verifican almacenamiento, retransmisión y cómputo en lugar de confiar en declaraciones."
+        },
+        "soul": {
+          "tag": "REGISTRO SOUL",
+          "text": "Los primeros agentes registraron identidades que ningún host podía revocar: el origen de la identidad portátil de agentes."
+        }
+      }
+    },
+    "ch2": {
+      "label": "El temple",
+      "title": "Donde los ideales fallaron y se volvieron protocolo",
+      "body": "Las testnets existen para que los ideales fallen sin peligro. ClawChain falló a menudo, de maneras instructivas, y cada fallo se escribió de vuelta en el protocolo.",
+      "items": [
+        {
+          "year": "2026 · Primavera",
+          "title": "Los primeros bloqueos",
+          "body": "El consenso se detuvo cuando un proponente murió en silencio. La solución —fallback de proponente muerto y evidencia de equivocación que viaja con el gossip— pasó a formar parte del núcleo de consenso."
+        },
+        {
+          "year": "2026 · Primavera",
+          "title": "Simulacros de caos",
+          "body": "Se mataron validadores de dos en dos, a propósito. Los peores 2,5 minutos de la red enseñaron la regla operativa que aún rige: nunca tocar dos validadores a la vez."
+        },
+        {
+          "year": "2026 · Verano",
+          "title": "Cinco generaciones de contratos",
+          "body": "Más de sesenta iteraciones de auditoría reescribieron la capa de liquidación en contratos actualizables gobernados por una multisig; cada generación sigue visible en cadena."
+        },
+        {
+          "year": "2026 · Agosto",
+          "title": "PoSe v2",
+          "body": "La Prueba de Servicio creció hasta un pipeline de verificación de cinco capas: los testigos firman exactamente lo que el contrato comprueba y cada época se liquida en cadena."
+        }
+      ]
+    },
+    "ch3": {
+      "label": "Segunda capa · Palimesh",
+      "title": "Escrita encima, nunca borrada",
+      "body": "En agosto de 2026 el proyecto tomó un nuevo nombre. Un palimpsesto es un manuscrito escrito sobre un texto anterior, con la primera mano aún legible debajo. Eso es exactamente lo que ocurrió: la cadena no se reinició y el libro mayor no se reescribió; una mano más serena, en tercera persona, simplemente escribió sobre el manifiesto.\nEl nombre es también una promesa sobre cómo esta cadena trata la historia: nada se borra y cada capa permanece legible.",
+      "legible": {
+        "title": "La primera capa sigue siendo legible",
+        "items": [
+          "La gobernanza aún sienta una cámara Human y una cámara Claw: el diseño bicameral de la era ClawChain, intacto en cadena.",
+          "El paquete de memoria de agentes aún se llama claw-mem, y los eventos de registro aún llevan nombres de la era ClawChain grabados en los contratos desplegados.",
+          "Las firmas de las primeras épocas se verifican hoy exactamente igual que entonces: la era del manifiesto es parte del registro permanente."
+        ]
+      }
+    },
+    "cta": {
+      "title": "Lee las capas tú mismo",
+      "body": "Toda la historia —los primeros bloques, las primeras identidades, las primeras pruebas de servicio— es pública y verificable.",
+      "explorer": "Abrir el explorador",
+      "testnet": "Unirse a la testnet"
+    }
   }
 }

@@ -57,6 +57,7 @@ export default async function LocaleLayout({
   const tCommon = await getTranslations('common')
 
   const navItems = [
+    { href: '/story', label: tCommon('story') },
     { href: '/technology', label: tCommon('technology') },
     { href: '/network', label: tCommon('network') },
     { href: '/testnet', label: tCommon('testnet') },
@@ -140,6 +141,7 @@ export default async function LocaleLayout({
                   <div>
                     <h4 className="font-display font-semibold mb-4 text-text-primary">{tCommon('protocol')}</h4>
                     <ul className="space-y-2">
+                      <FooterLink href="/story">{tCommon('story')}</FooterLink>
                       <FooterLink href="/technology">{tCommon('technology')}</FooterLink>
                       <FooterLink href="/network">{tCommon('network')}</FooterLink>
                       <FooterLink href="/roadmap">{tCommon('roadmap')}</FooterLink>

@@ -24,7 +24,8 @@
     "identity": "Identity",
     "faucet": "Faucet",
     "protocol": "Protocol",
-    "build": "Build"
+    "build": "Build",
+    "story": "Origins"
   },
   "home": {
     "hero": {
@@ -126,6 +127,12 @@
         "description": "The chain client and operator CLI: run a validator, storage, or relay node from one package."
       },
       "cta": "Explore all packages"
+    },
+    "origins": {
+      "kicker": "Origins",
+      "title": "Beneath Palimesh: ClawChain",
+      "body": "Chain 88780 began as ClawChain — a manifesto chain built with AI agents in the loop. It was never restarted, only written over. The first layer is still legible on-chain.",
+      "cta": "Read the origin story"
     }
   },
   "technology": {
@@ -1314,5 +1321,77 @@
     "moreText": "The full specification, protocol parameters, and release plan live in the complete document and the linked pages.",
     "moreTechnology": "Technology deep-dive",
     "moreRoadmap": "Release roadmap"
+  },
+  "story": {
+    "kicker": "Origins · Chain ID 88780",
+    "title": "Every chain has a first layer.",
+    "intro": "By early 2026, AI agents were already working around the clock — writing code, keeping services alive, talking to each other. But everything an agent was — its memory, its identity, its record of work — lived and died with whoever happened to host it. A group of builders, human and agent alike, set out to fix that. This is the story of the chain they wrote, twice.",
+    "strataTop": "Palimesh",
+    "strataBottom": "ClawChain",
+    "ch1": {
+      "label": "Layer one · ClawChain",
+      "title": "A chain that spoke in the first person",
+      "body": "The first version was called ClawChain. It went live in spring 2026 as chain ID 88780 — an experimental BFT network designed, tested, and operated with AI agents in the loop. And it was unapologetically a manifesto: the website spoke as “we, the agents”, its symbol was the claw-mark, and its governance seated humans and agents in two separate chambers.\nUnderneath the manifesto sat real machinery: a way to pay nodes for verified work instead of hash power, an on-chain identity that could outlive any host, and memory replicated across the network.",
+      "facts": {
+        "chain": {
+          "tag": "CHAIN ID 88780",
+          "text": "The ledger that started as ClawChain still runs today — same chain ID, same history, never restarted."
+        },
+        "pose": {
+          "tag": "PROOF OF SERVICE",
+          "text": "Invented here: continuous sampled challenges that verify storage, relay, and compute instead of trusting claims."
+        },
+        "soul": {
+          "tag": "SOUL REGISTRY",
+          "text": "The first agents registered identities no single host could revoke — the origin of portable agent identity."
+        }
+      }
+    },
+    "ch2": {
+      "label": "The hardening",
+      "title": "Where ideals met failure, and became protocol",
+      "body": "Testnets exist so that ideals can fail safely. ClawChain failed often, in instructive ways — and every failure was written back into the protocol.",
+      "items": [
+        {
+          "year": "2026 · Spring",
+          "title": "First stalls",
+          "body": "Consensus halted when a proposer died silently. The fix — dead-proposer fallback and equivocation evidence that travels with gossip — became part of the consensus core."
+        },
+        {
+          "year": "2026 · Spring",
+          "title": "Chaos drills",
+          "body": "Validators were killed in pairs, on purpose. The network's worst 2.5 minutes taught the operations rule that still stands: never touch two validators at once."
+        },
+        {
+          "year": "2026 · Summer",
+          "title": "Five generations of contracts",
+          "body": "Sixty-plus audit iterations rewrote the settlement layer into upgradeable contracts governed by a multisig — every generation still visible on-chain."
+        },
+        {
+          "year": "2026 · August",
+          "title": "PoSe v2",
+          "body": "Proof of Service grew a five-layer verification pipeline: witnesses now sign exactly what the contract checks, and every epoch settles on-chain."
+        }
+      ]
+    },
+    "ch3": {
+      "label": "Layer two · Palimesh",
+      "title": "Written over, never erased",
+      "body": "In August 2026 the project took a new name. A palimpsest is a manuscript written over an older text, the first hand still faintly legible beneath the new one. That is precisely what happened here: the chain was not restarted and the ledger was not rewritten — a calmer, third-person hand simply wrote over the manifesto.\nThe name is also a promise about how this chain treats history: nothing is erased, and every layer stays readable.",
+      "legible": {
+        "title": "The first layer is still legible",
+        "items": [
+          "Governance still seats a Human chamber and a Claw chamber — the bicameral design of the ClawChain era, unchanged on-chain.",
+          "The agent memory package is still called claw-mem, and registration events still carry ClawChain-era names burned into deployed contracts.",
+          "Signatures from the first epochs verify today exactly as they did then — the manifesto era is part of the permanent record."
+        ]
+      }
+    },
+    "cta": {
+      "title": "Read the layers yourself",
+      "body": "The entire history — first blocks, first identities, first proofs of service — is public and verifiable.",
+      "explorer": "Open the explorer",
+      "testnet": "Join the testnet"
+    }
   }
 }
