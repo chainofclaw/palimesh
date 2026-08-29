@@ -7,9 +7,17 @@ import { PoseV2DisputeExecutor } from "./lib/pose-v2-dispute-executor.ts";
 import {
   writeSettledRewardManifest,
   verifyManifestSignature,
+  readBestRewardManifest,
   type ChallengerRewardEntry,
   type ChallengerRewardSettlementEntry,
 } from "./lib/reward-manifest.ts";
+import { ValidatorRegistryReader } from "./lib/validator-registry-reader.ts";
+import {
+  buildFinalizeArgs,
+  submitFinalizeCoreSet,
+  selectCandidatePubkeys,
+  type CoreSetManagerContract,
+} from "./lib/core-set-submitter.ts";
 import type { SlashEvidence } from "../services/verifier/anti-cheat-policy.ts";
 import { createLogger } from "../node/src/logger.ts";
 import { buildDomain } from "../node/src/crypto/eip712-types.ts";
@@ -137,6 +145,31 @@ const poseV2Abi = [
 const poseV2Contract = poseV2Address && signer ? new Contract(poseV2Address, poseV2Abi, signer) : null;
 const challengeBondWei = BigInt(config.challengeBondWei ?? "100000000000000000"); // 0.1 ETH
 
+// Core-set finalization (C write-half). When COC_CORE_SET_MANAGER_ADDRESS is set,
+// each tick — after the reward epoch is finalized — the relayer submits the
+// active registry validators' pubkeys + verified reward proofs to
+// CoreSetManager.finalizeCoreSet, which ranks them on-chain. A ValidatorRegistry
+// reader supplies the candidate pubkeys (scanned from ValidatorRegistered events).
+const coreSetManagerAddress = process.env.COC_CORE_SET_MANAGER_ADDRESS
+  || (config as { coreSetManagerAddress?: string }).coreSetManagerAddress;
+const coreSetManager = coreSetManagerAddress && signer
+  ? new Contract(coreSetManagerAddress, [
+      "function isCoreSetFinalized(uint64) view returns (bool)",
+      "function finalizeCoreSet(uint64 epochId, bytes[] pubkeys, uint256[] rewardAmounts, bytes32[][] rewardProofs)",
+    ], signer)
+  : null;
+const coreSetRegistryReader = (coreSetManager && validatorRegistryAddressForBridge)
+  ? new ValidatorRegistryReader({
+      rpcUrl: l1Rpc,
+      address: validatorRegistryAddressForBridge as `0x${string}`,
+      persistPath: join(config.dataDir, "coreset-registry-reader.state.json"),
+      fromBlock: process.env.COC_VALIDATOR_REGISTRY_FROM_BLOCK
+        ? BigInt(process.env.COC_VALIDATOR_REGISTRY_FROM_BLOCK)
+        : undefined,
+    })
+  : null;
+let lastCoreSetEpoch = 0;
+
 const contractReader = useV2 ? new ContractReader({
   l2RpcUrl: config.l2RpcUrl ?? l1Rpc,
   poseManagerV2Address: poseV2Address,
@@ -196,6 +229,7 @@ async function tick(): Promise<void> {
     if (useV2) {
       await tryInitEpochNonce();
       await tryFinalizeV2();
+      await tryFinalizeCoreSet();
       await tryPollBftEquivocations();
       await tryDispute();
       await tryDisputeV2();
@@ -785,6 +819,54 @@ export function bridgeBftSlash(evidence: EquivocationEvidence): void {
         });
       });
   }
+}
+
+// Core-set finalization: submit the ranked candidate pool for the finalized epoch.
+async function tryFinalizeCoreSet(): Promise<void> {
+  if (!coreSetManager || !coreSetRegistryReader) return;
+  const candidate = resolveFinalizationCandidate(lastCoreSetEpoch);
+  if (candidate === null) return;
+  try {
+    if (await coreSetManager.isCoreSetFinalized(BigInt(candidate))) {
+      lastCoreSetEpoch = candidate;
+      return;
+    }
+  } catch {
+    /* not finalized (or view reverted) — attempt below */
+  }
+  // Candidate pool = active ValidatorRegistry members with a known 65-byte pubkey
+  // (the contract needs the pubkey to derive both the registry + PoSe nodeIds).
+  const pubkeys = selectCandidatePubkeys(coreSetRegistryReader.getActiveSet());
+  if (pubkeys.length === 0) {
+    lastCoreSetEpoch = candidate;
+    return;
+  }
+  const manifest = readBestRewardManifest(rewardManifestDir, candidate);
+  const args = buildFinalizeArgs(candidate, pubkeys, manifest);
+  const sent = await submitFinalizeCoreSet(
+    coreSetManager as unknown as CoreSetManagerContract,
+    args,
+  );
+  lastCoreSetEpoch = candidate;
+  if (sent) {
+    log.info("core-set finalized on-chain", { epoch: candidate, candidates: pubkeys.length });
+  }
+}
+
+// Warm the core-set registry reader (scans ValidatorRegistered events for pubkeys).
+if (coreSetRegistryReader) {
+  void (async () => {
+    try {
+      await coreSetRegistryReader.init();
+      coreSetRegistryReader.start();
+      log.info("core-set registry reader ready", {
+        active: coreSetRegistryReader.getActiveSet().length,
+      });
+    } catch (e) {
+      log.warn("core-set registry reader init failed; poll loop self-heals", { error: String(e) });
+      coreSetRegistryReader.start();
+    }
+  })();
 }
 
 setInterval(() => void tick(), intervalMs);

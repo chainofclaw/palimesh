@@ -1,7 +1,7 @@
 import { describe, it } from "node:test"
 import assert from "node:assert/strict"
 import { SigningKey, keccak256 } from "ethers"
-import { buildFinalizeArgs, submitFinalizeCoreSet, poseNodeIdFromPubkey } from "./core-set-submitter.ts"
+import { buildFinalizeArgs, submitFinalizeCoreSet, poseNodeIdFromPubkey, selectCandidatePubkeys } from "./core-set-submitter.ts"
 import { buildRewardTree, hashRewardLeaf } from "../../services/common/reward-tree.ts"
 import { keccak256Hex } from "../../services/relayer/keccak256.ts"
 import type { RewardManifest } from "./reward-manifest.ts"
@@ -101,5 +101,26 @@ describe("core-set-submitter (pubkey-based)", () => {
     assert.equal(calls.length, 1)
     assert.equal(await submitFinalizeCoreSet(contract, args), false)
     assert.equal(calls.length, 1)
+  })
+})
+
+describe("selectCandidatePubkeys", () => {
+  const good1 = "0x04" + "aa".repeat(64) // 65-byte uncompressed => 132 chars
+  const good2 = "0x04" + "bb".repeat(64)
+
+  it("keeps only entries with a valid 65-byte (132-char) pubkey, preserving order", () => {
+    const active = [
+      { pubkey: good1 },
+      { pubkey: undefined }, // seeded from contract state, no pubkey
+      { pubkey: good2 },
+      { pubkey: "0x04" + "cc".repeat(32) }, // wrong length (33-byte)
+      {}, // no pubkey field at all
+    ]
+    assert.deepEqual(selectCandidatePubkeys(active), [good1, good2])
+  })
+
+  it("returns [] when no entry carries a usable pubkey", () => {
+    assert.deepEqual(selectCandidatePubkeys([{ pubkey: undefined }, {}]), [])
+    assert.deepEqual(selectCandidatePubkeys([]), [])
   })
 })

@@ -33,6 +33,18 @@ export function poseNodeIdFromPubkey(pubkey: string): string {
 }
 
 /**
+ * Select the candidate pubkeys from an active-validator set: only entries with a
+ * known 65-byte uncompressed pubkey (0x + 130 hex = 132 chars) are usable, since
+ * CoreSetManager needs the pubkey to derive both nodeIds. Entries seeded from
+ * contract state (no pubkey) or with a malformed pubkey are dropped.
+ */
+export function selectCandidatePubkeys(active: ReadonlyArray<{ pubkey?: string }>): string[] {
+  return active
+    .filter((e): e is { pubkey: string } => typeof e.pubkey === "string" && e.pubkey.length === 132)
+    .map((e) => e.pubkey)
+}
+
+/**
  * Build finalizeCoreSet args. Pure. `candidatePubkeys` are the candidate pool's
  * 65-byte pubkeys (active ValidatorRegistry members); `manifest` supplies the
  * PoSe reward leaves for the epoch (its root must equal epochRewardRoots[epochId]).
