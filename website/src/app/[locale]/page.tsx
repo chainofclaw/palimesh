@@ -15,7 +15,7 @@ export default function HomePage() {
           <div className="grid md:grid-cols-2 gap-12 items-center">
             <div>
               <p className="kicker mb-4">{t('hero.kicker')}</p>
-              <h1 className="text-4xl md:text-6xl font-display font-bold leading-[1.08] mb-6">
+              <h1 className="display-xl font-display font-bold mb-6">
                 <span className="ink-underline">{t('hero.title')}</span>
               </h1>
               <p className="text-lg text-text-secondary leading-relaxed mb-8 max-w-xl">

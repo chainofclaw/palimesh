@@ -10,9 +10,9 @@
 
 :root {
   /* Paper backgrounds */
-  --bg-primary: #faf7f1;
-  --bg-secondary: #f3eee4;
-  --bg-elevated: #ffffff;
+  --bg-primary: #faf6ec;
+  --bg-secondary: #f1e9d8;
+  --bg-elevated: #fffdf8;
 
   /* Accents (from the brand mark: violet → teal) */
   --accent-cyan: #0f9d8f;   /* teal, data/positive */
@@ -26,7 +26,7 @@
   --text-muted: #8a8378;
 
   /* Hairlines */
-  --line: #e7e0d2;
+  --line: #e3d8bf;
   --border-subtle: rgba(76, 60, 32, 0.12);
   --border-glow: rgba(109, 77, 224, 0.3);
 
@@ -56,6 +56,24 @@ body {
   line-height: 1.65;
   overflow-x: hidden;
   -webkit-font-smoothing: antialiased;
+}
+
+/* 全站羊皮纸底纹:极轻纤维噪点铺满页面(fixed,不随滚动) */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  opacity: 0.4;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 240 240' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='b'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.44 0 0 0 0 0.38 0 0 0 0 0.28 0 0 0 0.035 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23b)'/%3E%3C/svg%3E");
+}
+
+/* 编辑部级超大标题(exaggerated-minimal display) */
+.display-xl {
+  font-size: clamp(2.75rem, 6vw, 4.75rem);
+  letter-spacing: -0.02em;
+  line-height: 1.06;
 }
 
 h1, h2, h3, h4, h5, h6 {

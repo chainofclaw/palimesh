@@ -7,36 +7,17 @@ export default function TechnologyPage() {
 
   return (
     <div className="relative">
-      {/* Header - Tech Futurism */}
-      <section className="relative min-h-[60vh] flex items-center overflow-hidden">
-        {/* Animated Background */}
-        <div className="absolute inset-0 bg-gradient-to-br from-bg-primary via-bg-secondary to-bg-primary">
-          <div className="absolute inset-0 opacity-20">
-            <div className="absolute top-20 right-20 w-96 h-96 bg-accent-purple rounded-full blur-[120px] animate-pulse-slow" />
-            <div className="absolute bottom-20 left-20 w-96 h-96 bg-accent-blue rounded-full blur-[120px] animate-pulse-slow delay-1000" />
-          </div>
-        </div>
-
-        <div className="container mx-auto px-4 py-20 relative z-10">
-          <div className="max-w-4xl mx-auto text-center">
-            {/* Pre-title */}
-            <div className="inline-block mb-6 fade-in">
-              <div className="px-4 py-2 rounded-full border border-accent-purple/30 bg-accent-purple/5 backdrop-blur-sm">
-                <span className="font-display text-sm text-accent-purple tracking-wider">
-                  &gt; TECHNICAL_ARCHITECTURE
-                </span>
-              </div>
-            </div>
-
-            <h1 className="text-5xl md:text-6xl font-display font-bold mb-6 fade-in-delay-1">
-              <span className="gradient-text glow-text">{t('title')}</span>
+      {/* Header - 羊皮纸 hero */}
+      <section className="vellum deckle-bottom">
+        <div className="container mx-auto px-4 py-16 md:py-20">
+          <div className="max-w-3xl mx-auto text-center">
+            <p className="kicker mb-4">TECHNICAL_ARCHITECTURE</p>
+            <h1 className="display-xl font-display font-bold mb-5">
+              <span className="ink-underline">{t('title')}</span>
             </h1>
-            <p className="text-xl text-text-secondary font-body fade-in-delay-2">{t('subtitle')}</p>
+            <p className="text-lg text-text-secondary leading-relaxed">{t('subtitle')}</p>
           </div>
         </div>
-
-        {/* Bottom Glow Line */}
-        <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-accent-purple to-transparent" />
       </section>
 
       <div className="container mx-auto px-4 py-16 max-w-6xl">

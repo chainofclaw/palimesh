@@ -21,7 +21,7 @@ export default function StoryPage() {
         <div className="container mx-auto px-4 py-20 md:py-28 max-w-3xl relative">
           <Reveal>
             <p className="kicker mb-4">{t('kicker')}</p>
-            <h1 className="text-4xl md:text-6xl font-display font-bold leading-[1.1] mb-8">
+            <h1 className="display-xl font-display font-bold mb-8">
               <span className="ink-underline">{t('title')}</span>
             </h1>
             <p className="dropcap text-lg md:text-xl text-text-secondary leading-relaxed">{t('intro')}</p>

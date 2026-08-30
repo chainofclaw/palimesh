@@ -12,8 +12,6 @@ export default function RoadmapPage() {
         {/* Animated Background */}
         <div className="absolute inset-0 bg-gradient-to-br from-bg-primary via-bg-secondary to-bg-primary">
           <div className="absolute inset-0 opacity-30">
-            <div className="absolute top-10 left-10 w-96 h-96 bg-accent-cyan rounded-full blur-[120px] animate-pulse-slow" />
-            <div className="absolute bottom-10 right-10 w-96 h-96 bg-accent-purple rounded-full blur-[120px] animate-pulse-slow delay-1000" />
           </div>
         </div>
 
@@ -23,7 +21,7 @@ export default function RoadmapPage() {
             <div className="inline-block mb-6 fade-in">
               <div className="px-4 py-2 rounded-full border border-accent-cyan/30 bg-accent-cyan/5 backdrop-blur-sm">
                 <span className="font-display text-sm text-accent-cyan tracking-wider">
-                  &gt; DEVELOPMENT_ROADMAP
+                  DEVELOPMENT_ROADMAP
                 </span>
               </div>
             </div>
@@ -186,7 +184,7 @@ export default function RoadmapPage() {
               >
                 <div className="absolute inset-0 bg-gradient-cyber opacity-100 group-hover:opacity-90 transition-opacity" />
                 <div className="absolute inset-0 bg-gradient-cyber blur-xl opacity-50 group-hover:opacity-75 transition-opacity" />
-                <span className="relative text-white">&gt; {t('cta.github')}</span>
+                <span className="relative text-white">{t('cta.github')}</span>
               </a>
               <a
                 href="/docs"

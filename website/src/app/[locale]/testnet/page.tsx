@@ -9,28 +9,14 @@ export default function TestnetPage() {
   return (
     <div className="relative">
       {/* Hero Section */}
-      <section className="relative min-h-[60vh] flex items-center overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-bg-primary via-bg-secondary to-bg-primary">
-          <div className="absolute inset-0 opacity-20">
-            <div className="absolute top-20 left-20 w-96 h-96 bg-accent-cyan rounded-full blur-[120px] animate-pulse-slow" />
-            <div className="absolute bottom-20 right-20 w-96 h-96 bg-accent-purple rounded-full blur-[120px] animate-pulse-slow delay-1000" />
-          </div>
-        </div>
-
-        <div className="container mx-auto px-4 py-20 relative z-10">
-          <div className="max-w-4xl mx-auto text-center">
-            <div className="inline-block mb-6 fade-in">
-              <div className="px-4 py-2 rounded-full border border-accent-cyan/30 bg-accent-cyan/5 backdrop-blur-sm">
-                <span className="font-display text-sm text-accent-cyan tracking-wider">
-                  &gt; CANARY_TESTNET_88780_LIVE
-                </span>
-              </div>
-            </div>
-
-            <h1 className="text-5xl md:text-6xl font-display font-bold mb-6 fade-in-delay-1">
-              <span className="gradient-text glow-text">{t('title')}</span>
+      <section className="vellum deckle-bottom">
+        <div className="container mx-auto px-4 py-16 md:py-20">
+          <div className="max-w-3xl mx-auto text-center">
+            <p className="kicker mb-4">CANARY_TESTNET_88780_LIVE</p>
+            <h1 className="display-xl font-display font-bold mb-5">
+              <span className="ink-underline">{t('title')}</span>
             </h1>
-            <p className="text-xl text-text-secondary font-body mb-8 fade-in-delay-2">
+            <p className="text-lg text-text-secondary leading-relaxed mb-8">
               {t('subtitle')}
             </p>
 
@@ -53,7 +39,6 @@ export default function TestnetPage() {
           </div>
         </div>
 
-        <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-accent-cyan to-transparent" />
       </section>
 
       <div className="container mx-auto px-4 py-16 max-w-6xl">
@@ -135,7 +120,7 @@ export default function TestnetPage() {
                 <p><span className="text-accent-cyan">Network Name:</span> Palimesh Canary 88780</p>
                 <p><span className="text-accent-cyan">RPC URL:</span> https://rpc.palimesh.io</p>
                 <p><span className="text-accent-cyan">Chain ID:</span> 88780</p>
-                <p><span className="text-accent-cyan">Currency Symbol:</span> Palimesh</p>
+                <p><span className="text-accent-cyan">Currency Symbol:</span> PALI</p>
                 <p><span className="text-accent-cyan">Explorer:</span> https://explorer.palimesh.io</p>
               </div>
             </div>

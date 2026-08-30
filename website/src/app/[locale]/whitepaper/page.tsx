@@ -13,13 +13,13 @@ export default function WhitepaperPage() {
   return (
     <div>
       {/* Hero */}
-      <section className="border-b border-line grain">
+      <section className="vellum deckle-bottom">
         <div className="container mx-auto px-4 py-16 md:py-20 max-w-3xl">
           <p className="kicker mb-4">{t('kicker')}</p>
-          <h1 className="text-4xl md:text-5xl font-display font-bold mb-5">
+          <h1 className="display-xl font-display font-bold mb-5">
             <span className="ink-underline">{t('title')}</span>
           </h1>
-          <p className="text-lg text-text-secondary leading-relaxed mb-8">{t('abstract')}</p>
+          <p className="dropcap text-lg text-text-secondary leading-relaxed mb-8">{t('abstract')}</p>
           <div className="flex flex-wrap gap-3">
             <a
               href={`/downloads/palimesh_whitepaper.${mdLang}.md`}
@@ -43,7 +43,7 @@ export default function WhitepaperPage() {
       <section className="py-16">
         <div className="container mx-auto px-4 max-w-3xl space-y-6">
           {sections.map((s) => (
-            <div key={s} className="sheet p-7">
+            <div key={s} className="vellum-card p-7">
               <h2 className="font-display font-semibold text-2xl mb-3">{t(`${s}.title`)}</h2>
               <p className="text-text-secondary leading-relaxed">{t(`${s}.body`)}</p>
             </div>
