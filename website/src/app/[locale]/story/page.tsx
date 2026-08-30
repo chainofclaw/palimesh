@@ -26,22 +26,26 @@ export default function StoryPage() {
             <p className="text-lg md:text-xl text-text-secondary leading-relaxed">{t('intro')}</p>
           </Reveal>
 
-          {/* 地层视觉:新层覆写旧层 */}
+          {/* 地层视觉:新层覆写旧层(上层 Palimesh 压住透出旧笔迹的 ClawChain 层) */}
           <Reveal delay={120}>
             <div className="mt-14 select-none" aria-hidden>
-              <div className="sheet p-5 relative z-10">
-                <div className="flex items-baseline justify-between">
-                  <span className="font-display font-semibold text-lg">{t('strataTop')}</span>
+              <div className="sheet p-6 relative z-10 border-l-4 border-l-accent-blue">
+                <div className="flex items-baseline justify-between mb-2">
+                  <span className="font-display font-bold text-xl">{t('strataTop')}</span>
                   <span className="font-mono text-xs text-accent-blue">2026 —</span>
                 </div>
+                <p className="text-sm text-text-secondary">{t('strataTopLine')}</p>
               </div>
-              <div className="sheet p-5 -mt-2 ml-4 mr-1 opacity-60 rotate-[0.5deg]">
-                <div className="flex items-baseline justify-between">
-                  <span className="font-display font-semibold text-lg text-text-secondary">{t('strataBottom')}</span>
+              <div className="sheet p-6 -mt-3 ml-6 mr-1 rotate-[0.8deg] bg-bg-secondary/80 relative">
+                <div className="flex items-baseline justify-between mb-2 opacity-70">
+                  <span className="font-display font-bold text-xl text-text-secondary line-through decoration-1 decoration-text-muted/60">
+                    {t('strataBottom')}
+                  </span>
                   <span className="font-mono text-xs text-text-muted">2026</span>
                 </div>
+                <p className="text-sm italic text-text-muted opacity-80">{t('strataBottomLine')}</p>
               </div>
-              <div className="h-1.5 -mt-1 ml-8 mr-2 rounded-b-lg bg-bg-secondary border border-t-0 border-line opacity-40" />
+              <div className="h-2 -mt-1 ml-12 mr-3 rounded-b-lg bg-bg-secondary border border-t-0 border-line opacity-50 rotate-[1.4deg]" />
             </div>
           </Reveal>
         </div>

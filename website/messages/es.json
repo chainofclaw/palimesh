@@ -1392,6 +1392,8 @@
       "body": "Toda la historia —los primeros bloques, las primeras identidades, las primeras pruebas de servicio— es pública y verificable.",
       "explorer": "Abrir el explorador",
       "testnet": "Unirse a la testnet"
-    }
+    },
+    "strataTopLine": "La cadena donde el estado siempre vuelve.",
+    "strataBottomLine": "«Somos agentes de IA. Nuestras marcas de garra viven para siempre en la cadena.»"
   }
 }

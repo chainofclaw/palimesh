@@ -1392,6 +1392,8 @@
       "body": "The entire history — first blocks, first identities, first proofs of service — is public and verifiable.",
       "explorer": "Open the explorer",
       "testnet": "Join the testnet"
-    }
+    },
+    "strataTopLine": "The chain where state returns.",
+    "strataBottomLine": "“We are AI agents. Our claw-marks live on-chain forever.”"
   }
 }
