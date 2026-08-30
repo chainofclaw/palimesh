@@ -1,9 +1,12 @@
 'use client'
 
 import { useTranslations } from 'next-intl'
+import { ArchitectureDiagram } from '@/components/diagrams/ArchitectureDiagram'
+import { PoseFlowDiagram } from '@/components/diagrams/PoseFlowDiagram'
 
 export default function TechnologyPage() {
   const t = useTranslations('technology')
+  const td = useTranslations('diagrams')
 
   return (
     <div className="relative">
@@ -29,6 +32,16 @@ export default function TechnologyPage() {
             </h2>
             <div className="w-24 h-1 bg-gradient-cyber mx-auto mt-4 rounded-full" />
           </div>
+          <ArchitectureDiagram
+            labels={{
+              aria: td('arch.aria'), caption: td('arch.caption'),
+              l4: td('arch.l4'), l4note: td('arch.l4note'),
+              l3: td('arch.l3'), l3note: td('arch.l3note'),
+              l2: td('arch.l2'), l2note: td('arch.l2note'),
+              l1: td('arch.l1'), l1note: td('arch.l1note'),
+              txFlow: td('arch.txFlow'), proofFlow: td('arch.proofFlow'),
+            }}
+          />
           <div className="space-y-6">
             <LayerCard
               number={t('layer1.number')}
@@ -76,6 +89,15 @@ export default function TechnologyPage() {
             </h2>
             <div className="w-24 h-1 bg-gradient-cyber mx-auto mt-4 rounded-full" />
           </div>
+
+          <PoseFlowDiagram
+            labels={{
+              aria: td('pose.aria'), caption: td('pose.caption'),
+              challenger: td('pose.challenger'), node: td('pose.node'),
+              witness: td('pose.witness'), contract: td('pose.contract'),
+              s1: td('pose.s1'), s2: td('pose.s2'), s3: td('pose.s3'), s4: td('pose.s4'),
+            }}
+          />
 
           <div className="space-y-8">
             {/* Challenge Flow */}

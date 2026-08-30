@@ -3,12 +3,15 @@
 import { useTranslations } from 'next-intl'
 import { Link } from '@/i18n/routing'
 import { Reveal, ReadingProgress } from '@/components/story/Reveal'
+import { AgentLayersDiagram } from '@/components/diagrams/AgentLayersDiagram'
+import { ScrollInk, SealInk, QuillInk } from '@/components/ink/InkArt'
 
 type Moment = { year: string; title: string; body: string }
 
 export default function StoryPage() {
   const t = useTranslations('story')
   const tp = useTranslations('home.parchment')
+  const td = useTranslations('diagrams')
   const moments = t.raw('ch2.items') as Moment[]
   const legible = t.raw('ch3.legible.items') as string[]
 
@@ -56,7 +59,7 @@ export default function StoryPage() {
       <section className="py-section">
         <div className="container mx-auto px-4 max-w-3xl">
           <Reveal>
-            <ChapterHead label={t('ch1.label')} title={t('ch1.title')} />
+            <ChapterHead label={t('ch1.label')} title={t('ch1.title')} icon={<ScrollInk size={26} />} />
             <p className="text-text-secondary leading-relaxed text-lg mb-8 whitespace-pre-line">{t('ch1.body')}</p>
           </Reveal>
           <div className="grid sm:grid-cols-3 gap-4">
@@ -76,7 +79,7 @@ export default function StoryPage() {
       <section className="py-section bg-bg-secondary border-y border-line grain">
         <div className="container mx-auto px-4 max-w-3xl">
           <Reveal>
-            <ChapterHead label={t('ch2.label')} title={t('ch2.title')} />
+            <ChapterHead label={t('ch2.label')} title={t('ch2.title')} icon={<SealInk size={26} />} />
             <p className="text-text-secondary leading-relaxed text-lg mb-12">{t('ch2.body')}</p>
           </Reveal>
           <ol className="relative border-l-2 border-line ml-2 space-y-10">
@@ -98,8 +101,19 @@ export default function StoryPage() {
       <section className="py-section">
         <div className="container mx-auto px-4 max-w-3xl">
           <Reveal>
-            <ChapterHead label={t('ch3.label')} title={t('ch3.title')} />
+            <ChapterHead label={t('ch3.label')} title={t('ch3.title')} icon={<QuillInk size={26} />} />
             <p className="text-text-secondary leading-relaxed text-lg mb-10 whitespace-pre-line">{t('ch3.body')}</p>
+          </Reveal>
+          <Reveal delay={60}>
+            <AgentLayersDiagram
+              labels={{
+                aria: td('agent.aria'),
+                caption: td('agent.caption'),
+                layers: (['identity', 'memory', 'experience', 'reputation', 'assets', 'relationships']).map(
+                  (l) => tp(`layers.${l}`),
+                ),
+              }}
+            />
           </Reveal>
           <Reveal delay={100}>
             <div className="sheet-stack">
@@ -154,10 +168,13 @@ export default function StoryPage() {
   )
 }
 
-function ChapterHead({ label, title }: { label: string; title: string }) {
+function ChapterHead({ label, title, icon }: { label: string; title: string; icon?: React.ReactNode }) {
   return (
     <div className="mb-6">
-      <p className="kicker mb-3">{label}</p>
+      <div className="flex items-center gap-3 mb-3">
+        {icon && <span className="text-accent-purple/70">{icon}</span>}
+        <p className="kicker">{label}</p>
+      </div>
       <h2 className="text-3xl md:text-4xl font-display font-bold">{title}</h2>
     </div>
   )

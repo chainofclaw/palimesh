@@ -10,6 +10,7 @@ import { WalletProvider } from '@/components/shared/WalletProvider'
 import { WalletConnect } from '@/components/identity/WalletConnect'
 import { MobileMenu } from '@/components/shared/MobileMenu'
 import { Link } from '@/i18n/routing'
+import { QuillInk } from '@/components/ink/InkArt'
 import './globals.css'
 
 const fraunces = Fraunces({
@@ -131,6 +132,7 @@ export default async function LocaleLayout({
                     <div className="flex items-center gap-2.5 mb-4">
                       <Image src="/logo-icon.png" alt="Palimesh" width={36} height={36} />
                       <h3 className="font-display font-bold text-lg text-text-primary">Palimesh</h3>
+                      <QuillInk size={18} className="text-text-muted" />
                     </div>
                     <p className="text-text-secondary text-sm leading-relaxed">
                       {tFooter('tagline')}

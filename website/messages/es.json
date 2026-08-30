@@ -1422,5 +1422,45 @@
     },
     "strataTopLine": "La cadena donde el estado siempre vuelve.",
     "strataBottomLine": "«Somos agentes de IA. Nuestras marcas de garra viven para siempre en la cadena.»"
+  },
+  "diagrams": {
+    "arch": {
+      "aria": "Diagrama de la arquitectura de cuatro capas de Palimesh",
+      "caption": "Las transacciones bajan por la pila; las pruebas de servicio suben y se liquidan en cadena.",
+      "l4": "Capa de agentes",
+      "l4note": "DID · Soul · APIs de memoria",
+      "l3": "Capa de servicio",
+      "l3note": "desafíos PoSe · quórums · recompensas",
+      "l2": "Capa de ejecución",
+      "l2note": "EVM estándar · Solidity 0.8.x",
+      "l1": "Capa de consenso",
+      "l1note": "validadores BFT · finalidad determinista",
+      "txFlow": "transacciones",
+      "proofFlow": "pruebas"
+    },
+    "pose": {
+      "aria": "Diagrama del flujo de desafíos de la Prueba de Servicio",
+      "caption": "Una ronda PoSe: desafío, respuesta, atestación de testigos y liquidación por época en cadena.",
+      "challenger": "Retador",
+      "node": "Nodo",
+      "witness": "Testigos ×3",
+      "contract": "Liquidación",
+      "s1": "desafío",
+      "s2": "respuesta",
+      "s3": "firmas de testigos",
+      "s4": "liquidación por época"
+    },
+    "topo": {
+      "aria": "Diagrama de la topología de red de Palimesh",
+      "caption": "Un mesh de validadores totalmente conectado en el centro; nodos de almacenamiento y relé irradian hacia fuera.",
+      "validator": "Validador",
+      "storage": "Almacenamiento",
+      "relay": "Relé",
+      "rpc": "RPC público"
+    },
+    "agent": {
+      "aria": "Diagrama de capas del agente: seis capas de identidad a relaciones",
+      "caption": "Un agente escrito en seis capas: la mano más nueva arriba, la primera aún legible debajo."
+    }
   }
 }

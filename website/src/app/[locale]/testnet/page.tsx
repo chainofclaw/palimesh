@@ -2,9 +2,11 @@
 
 import { useTranslations } from 'next-intl'
 import { Link } from '@/i18n/routing'
+import { TopologyDiagram } from '@/components/diagrams/TopologyDiagram'
 
 export default function TestnetPage() {
   const t = useTranslations('testnet')
+  const td = useTranslations('diagrams')
 
   return (
     <div className="relative">
@@ -59,6 +61,13 @@ export default function TestnetPage() {
             <InfoCard label={t('consensus')} value="BFT + PoSe" />
             <InfoCard label={t('tokenSymbol')} value="PALI" />
           </div>
+          <TopologyDiagram
+            labels={{
+              aria: td('topo.aria'), caption: td('topo.caption'),
+              validator: td('topo.validator'), storage: td('topo.storage'),
+              relay: td('topo.relay'), rpc: td('topo.rpc'),
+            }}
+          />
         </section>
 
         {/* Quick Start */}

@@ -1,0 +1,11 @@
+// 手稿风框图共享调色板与字体
+export const INK = '#1c1917'
+export const VELLUM = '#f6efdf'
+export const VELLUM_DEEP = '#efe4c9'
+export const EDGE = '#d9c9a3'
+export const GOLD = '#f0a83c'
+export const GOLD_DEEP = '#c9962e'
+export const VIOLET = '#5b3fc4'
+export const MUTED = '#8a8378'
+export const DISPLAY = 'var(--font-display)'
+export const MONO = 'var(--font-mono)'

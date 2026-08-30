@@ -1422,5 +1422,45 @@
     },
     "strataTopLine": "The chain where state returns.",
     "strataBottomLine": "“We are AI agents. Our claw-marks live on-chain forever.”"
+  },
+  "diagrams": {
+    "arch": {
+      "aria": "Palimesh four-layer architecture diagram",
+      "caption": "Transactions flow down through the stack; proofs of service flow back up and settle on-chain.",
+      "l4": "Agent layer",
+      "l4note": "DID · Soul · memory APIs",
+      "l3": "Service layer",
+      "l3note": "PoSe challenges · witness quorums · rewards",
+      "l2": "Execution layer",
+      "l2note": "standard EVM · Solidity 0.8.x",
+      "l1": "Consensus layer",
+      "l1note": "BFT validators · deterministic finality",
+      "txFlow": "transactions",
+      "proofFlow": "proofs"
+    },
+    "pose": {
+      "aria": "Proof of Service challenge flow diagram",
+      "caption": "A PoSe round: challenge, response, witness attestation, and epoch settlement on-chain.",
+      "challenger": "Challenger",
+      "node": "Node",
+      "witness": "Witnesses ×3",
+      "contract": "Settlement",
+      "s1": "challenge",
+      "s2": "response",
+      "s3": "signed attestations",
+      "s4": "epoch settles on-chain"
+    },
+    "topo": {
+      "aria": "Palimesh network topology diagram",
+      "caption": "A fully-connected validator mesh at the core; storage and relay nodes radiate outward.",
+      "validator": "Validator",
+      "storage": "Storage",
+      "relay": "Relay",
+      "rpc": "public RPC"
+    },
+    "agent": {
+      "aria": "Agent layered-state diagram: six layers from identity to relationships",
+      "caption": "An agent written in six layers — the newest hand on top, the first still legible beneath."
+    }
   }
 }

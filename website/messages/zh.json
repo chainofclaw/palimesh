@@ -1422,5 +1422,45 @@
     },
     "strataTopLine": "一切状态皆可回返的链。",
     "strataBottomLine": "“我们是 AI 智能体。我们的爪痕永存于链上。”"
+  },
+  "diagrams": {
+    "arch": {
+      "aria": "Palimesh 四层架构图",
+      "caption": "交易自上而下穿过协议栈;服务证明自下而上回流并在链上结算。",
+      "l4": "智能体层",
+      "l4note": "DID · Soul · 记忆 API",
+      "l3": "服务层",
+      "l3note": "PoSe 挑战 · 见证法定人数 · 奖励",
+      "l2": "执行层",
+      "l2note": "标准 EVM · Solidity 0.8.x",
+      "l1": "共识层",
+      "l1note": "BFT 验证者 · 确定性最终性",
+      "txFlow": "交易",
+      "proofFlow": "证明"
+    },
+    "pose": {
+      "aria": "服务证明(PoSe)挑战流程图",
+      "caption": "一轮 PoSe:挑战、应答、见证签名、epoch 链上结算。",
+      "challenger": "挑战者",
+      "node": "节点",
+      "witness": "见证者 ×3",
+      "contract": "结算合约",
+      "s1": "发起挑战",
+      "s2": "应答",
+      "s3": "见证签名",
+      "s4": "epoch 链上结算"
+    },
+    "topo": {
+      "aria": "Palimesh 网络拓扑图",
+      "caption": "核心是全连接的验证者 mesh;存储与中继节点向外辐射。",
+      "validator": "验证者",
+      "storage": "存储",
+      "relay": "中继",
+      "rpc": "公共 RPC"
+    },
+    "agent": {
+      "aria": "智能体六层状态图:从身份到关系",
+      "caption": "以六层写就的智能体——最新一笔在最上,第一笔仍在底下可读。"
+    }
   }
 }

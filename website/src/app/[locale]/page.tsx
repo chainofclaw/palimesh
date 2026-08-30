@@ -3,9 +3,12 @@
 import { useTranslations } from 'next-intl'
 import { Link } from '@/i18n/routing'
 import { NetworkStats } from '@/components/NetworkStats'
+import { ArchitectureDiagram } from '@/components/diagrams/ArchitectureDiagram'
+import { AgentLayersDiagram } from '@/components/diagrams/AgentLayersDiagram'
 
 export default function HomePage() {
   const t = useTranslations('home')
+  const td = useTranslations('diagrams')
 
   return (
     <div className="overflow-hidden">
@@ -98,22 +101,17 @@ export default function HomePage() {
             ))}
           </div>
 
-          {/* Agent 六层叠写:每个智能体都是一部重写本 */}
-          <div className="max-w-2xl mx-auto mb-14">
-            <p className="text-center text-text-secondary leading-relaxed mb-6">{t('parchment.layers.caption')}</p>
-            <div className="space-y-1.5" role="list">
-              {(['relationships', 'assets', 'reputation', 'experience', 'memory', 'identity'] as const).map((l, i) => (
-                <div
-                  key={l}
-                  role="listitem"
-                  className="vellum-card px-5 py-2.5 flex items-baseline justify-between"
-                  style={{ marginLeft: `${i * 12}px`, marginRight: `${i * 12}px`, opacity: 1 - i * 0.08 }}
-                >
-                  <span className="font-display font-semibold text-text-primary">{t(`parchment.layers.${l}`)}</span>
-                  <span className="font-mono text-[11px] text-text-muted">L{6 - i}</span>
-                </div>
-              ))}
-            </div>
+          {/* Agent 六层叠写:手稿式框图 */}
+          <div className="max-w-2xl mx-auto mb-10">
+            <AgentLayersDiagram
+              labels={{
+                aria: td('agent.aria'),
+                caption: td('agent.caption'),
+                layers: (['identity', 'memory', 'experience', 'reputation', 'assets', 'relationships'] as const).map(
+                  (l) => t(`parchment.layers.${l}`),
+                ),
+              }}
+            />
           </div>
 
           {/* 双笔迹视觉卡:旧墨透出,新墨在上 */}
@@ -150,22 +148,18 @@ export default function HomePage() {
       <section className="py-section">
         <div className="container mx-auto px-4">
           <SectionHead kicker={t('architecture.kicker')} title={t('architecture.title')} subtitle={t('architecture.subtitle')} />
-          <div className="max-w-3xl mx-auto space-y-3">
-            {(['l4', 'l3', 'l2', 'l1'] as const).map((layer, i) => (
-              <div
-                key={layer}
-                className="sheet sheet-hover p-5 flex items-start gap-5"
-                style={{ marginLeft: `${i * 14}px`, marginRight: `${(3 - i) * 14}px` }}
-              >
-                <span className="font-mono text-xs text-accent-blue pt-1 shrink-0">
-                  L{4 - i}
-                </span>
-                <div>
-                  <h3 className="font-display font-semibold text-lg mb-1">{t(`architecture.${layer}.name`)}</h3>
-                  <p className="text-text-secondary text-sm leading-relaxed">{t(`architecture.${layer}.description`)}</p>
-                </div>
-              </div>
-            ))}
+          <div className="max-w-3xl mx-auto">
+            <ArchitectureDiagram
+              labels={{
+                aria: td('arch.aria'),
+                caption: td('arch.caption'),
+                l4: td('arch.l4'), l4note: td('arch.l4note'),
+                l3: td('arch.l3'), l3note: td('arch.l3note'),
+                l2: td('arch.l2'), l2note: td('arch.l2note'),
+                l1: td('arch.l1'), l1note: td('arch.l1note'),
+                txFlow: td('arch.txFlow'), proofFlow: td('arch.proofFlow'),
+              }}
+            />
           </div>
         </div>
       </section>
