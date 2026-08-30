@@ -98,6 +98,24 @@ export default function HomePage() {
             ))}
           </div>
 
+          {/* Agent 六层叠写:每个智能体都是一部重写本 */}
+          <div className="max-w-2xl mx-auto mb-14">
+            <p className="text-center text-text-secondary leading-relaxed mb-6">{t('parchment.layers.caption')}</p>
+            <div className="space-y-1.5" role="list">
+              {(['relationships', 'assets', 'reputation', 'experience', 'memory', 'identity'] as const).map((l, i) => (
+                <div
+                  key={l}
+                  role="listitem"
+                  className="vellum-card px-5 py-2.5 flex items-baseline justify-between"
+                  style={{ marginLeft: `${i * 12}px`, marginRight: `${i * 12}px`, opacity: 1 - i * 0.08 }}
+                >
+                  <span className="font-display font-semibold text-text-primary">{t(`parchment.layers.${l}`)}</span>
+                  <span className="font-mono text-[11px] text-text-muted">L{6 - i}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+
           {/* 双笔迹视觉卡:旧墨透出,新墨在上 */}
           <div className="max-w-3xl mx-auto">
             <div className="vellum-card p-8 md:p-10">
@@ -113,7 +131,10 @@ export default function HomePage() {
                 </div>
               </div>
             </div>
-            <div className="text-center mt-8">
+            <p className="text-center font-display italic text-lg text-accent-purple mt-10">
+              {t('parchment.claim')}
+            </p>
+            <div className="text-center mt-6">
               <Link
                 href="/story"
                 className="inline-block px-5 py-2.5 rounded-lg border border-line bg-bg-primary text-sm text-text-primary hover:border-accent-purple hover:text-accent-purple transition-colors"

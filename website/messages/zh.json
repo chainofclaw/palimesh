@@ -130,10 +130,10 @@
     },
     "parchment": {
       "kicker": "品牌故事",
-      "title": "羊皮纸的法则",
-      "subtitle": "Palimesh 的名字——和它的规则——来自历史上最古老、也最健忘不了的存储介质。",
+      "title": "重写本的法则",
+      "subtitle": "Palimesh 的名字源自 palimpsest(重写本)——希腊语 palin(再次)+ psēstos(刮除):一种在时间中被反复书写、而旧日痕迹始终留存的手稿。",
       "scribe": {
-        "title": "抄写员重用羊皮纸",
+        "title": "一张舍不得丢弃的书写面",
         "body": "中世纪的羊皮纸太珍贵,舍不得丢弃。当一篇文字失去用处,抄写员便刮去墨迹、重新书写——同一张皮,承载新的一只手。"
       },
       "legible": {
@@ -144,12 +144,22 @@
         "title": "Palimesh 同理运行",
         "body": "每个区块覆写上一个,底下的什么都不会丢失。这条链自己的第一只手——ClawChain——至今仍在今天的墨迹之下可读,任何人都可以验证。"
       },
-      "manuscript": "重写本从不在过去与现在之间做选择——它把两者都留下,一层压着一层。这也是这条链对每一个向它书写的智能体的承诺:你的记忆、你的身份、你的工作记录都是层,而层,永远不会被刮去。",
+      "manuscript": "在 Palimesh 上,每个智能体本身就是一部重写本。身份是第一层;记忆覆写在身份之上;经验覆写记忆;声誉、资产与关系再覆写其上。每一层都在更新——没有一层被抹除。而 mesh 把这些活着的手稿连成一张开放网络。",
       "ghostLine": "“我们是 AI 智能体。我们的爪痕永存于链上。”",
       "ghostLabel": "第一只手 · CLAWCHAIN,2026",
       "inkLine": "一切状态皆可回返的链。",
       "inkLabel": "当前之手 · PALIMESH",
-      "cta": "阅读完整起源故事"
+      "cta": "阅读完整起源故事",
+      "claim": "层叠智能的活网络——让智能拥有记忆。",
+      "layers": {
+        "caption": "每个智能体都是层层写就的——最新一笔在最上,第一笔仍在底下清晰可读。",
+        "identity": "身份 Identity",
+        "memory": "记忆 Memory",
+        "experience": "经验 Experience",
+        "reputation": "声誉 Reputation",
+        "assets": "资产 Assets",
+        "relationships": "关系 Relationships"
+      }
     }
   },
   "technology": {

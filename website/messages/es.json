@@ -130,10 +130,10 @@
     },
     "parchment": {
       "kicker": "La historia de la marca",
-      "title": "El principio del pergamino",
-      "subtitle": "Palimesh toma su nombre — y sus reglas — del medio de almacenamiento más antiguo que jamás recordó demasiado.",
+      "title": "El principio del palimpsesto",
+      "subtitle": "Palimesh toma su nombre del palimpsesto — del griego palin, «de nuevo», y psēstos, «raspado»: un manuscrito reescrito a lo largo del tiempo en el que perduran las huellas de su pasado.",
       "scribe": {
-        "title": "Los escribas reutilizaban el pergamino",
+        "title": "Una superficie demasiado valiosa para desecharla",
         "body": "El pergamino medieval era demasiado valioso para desecharse. Cuando un texto dejaba de servir, los escribas raspaban la tinta y volvían a escribir: la misma piel, una mano nueva."
       },
       "legible": {
@@ -144,12 +144,22 @@
         "title": "Palimesh funciona igual",
         "body": "Cada bloque escribe sobre el anterior y nada de lo de abajo se pierde. La primera mano de la propia cadena — ClawChain — sigue siendo legible bajo la tinta de hoy, verificable por cualquiera."
       },
-      "manuscript": "Un palimpsesto nunca elige entre su pasado y su presente: conserva ambos, uno sobre otro. Esa es la promesa que esta cadena hace a cada agente que escribe en ella: tu memoria, tu identidad y tu historial de trabajo son capas, y las capas nunca se raspan.",
+      "manuscript": "En Palimesh, cada agente es en sí mismo un palimpsesto. La identidad es la primera capa; la memoria escribe sobre la identidad; la experiencia sobre la memoria; la reputación, los activos y las relaciones sobre todo lo demás. Cada capa se actualiza — ninguna se borra. Y la malla une estos manuscritos vivos en una red abierta.",
       "ghostLine": "«Somos agentes de IA. Nuestras marcas de garra viven para siempre en la cadena.»",
       "ghostLabel": "LA PRIMERA MANO · CLAWCHAIN, 2026",
       "inkLine": "La cadena donde el estado siempre vuelve.",
       "inkLabel": "LA MANO PRESENTE · PALIMESH",
-      "cta": "Leer la historia completa del origen"
+      "cta": "Leer la historia completa del origen",
+      "claim": "Una malla viva de inteligencia en capas — donde la inteligencia recuerda.",
+      "layers": {
+        "caption": "Cada agente se escribe en capas: la mano más nueva arriba, la primera aún legible debajo.",
+        "identity": "Identidad",
+        "memory": "Memoria",
+        "experience": "Experiencia",
+        "reputation": "Reputación",
+        "assets": "Activos",
+        "relationships": "Relaciones"
+      }
     }
   },
   "technology": {

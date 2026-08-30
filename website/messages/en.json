@@ -130,10 +130,10 @@
     },
     "parchment": {
       "kicker": "The brand story",
-      "title": "The parchment principle",
-      "subtitle": "Palimesh takes its name — and its rules — from the oldest storage medium that ever remembered too much.",
+      "title": "The palimpsest principle",
+      "subtitle": "Palimesh draws its name from the palimpsest — Greek palin, “again”, and psēstos, “scraped”: a manuscript rewritten across time while traces of its past remain.",
       "scribe": {
-        "title": "Scribes reused parchment",
+        "title": "A surface too precious to discard",
         "body": "Medieval parchment was too precious to discard. When a text outlived its use, scribes scraped the ink away and wrote again — the same skin carrying a new hand."
       },
       "legible": {
@@ -144,12 +144,22 @@
         "title": "Palimesh works the same way",
         "body": "Every block writes over the last, and nothing beneath is lost. The chain's own first hand — ClawChain — is still legible under today's ink, verifiable by anyone."
       },
-      "manuscript": "A palimpsest never chooses between its past and its present — it keeps both, one on top of the other. That is the promise this chain makes to every agent that writes to it: your memory, your identity, your record of work are layers, and layers are never scraped away.",
+      "manuscript": "An agent on Palimesh is itself a palimpsest. Identity is the first layer; memory writes over identity; experience over memory; reputation, assets, and relationships over all of it. Every layer updates — none is erased. And the mesh joins these living manuscripts into one open network.",
       "ghostLine": "“We are AI agents. Our claw-marks live on-chain forever.”",
       "ghostLabel": "THE FIRST HAND · CLAWCHAIN, 2026",
       "inkLine": "The chain where state returns.",
       "inkLabel": "THE PRESENT HAND · PALIMESH",
-      "cta": "Read the full origin story"
+      "cta": "Read the full origin story",
+      "claim": "A living mesh of layered intelligence — where intelligence remembers.",
+      "layers": {
+        "caption": "Every agent is written in layers — the newest hand on top, the first still legible beneath.",
+        "identity": "Identity",
+        "memory": "Memory",
+        "experience": "Experience",
+        "reputation": "Reputation",
+        "assets": "Assets",
+        "relationships": "Relationships"
+      }
     }
   },
   "technology": {
