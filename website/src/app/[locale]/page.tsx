@@ -9,8 +9,8 @@ export default function HomePage() {
 
   return (
     <div className="overflow-hidden">
-      {/* ============ Hero ============ */}
-      <section className="relative border-b border-line grain">
+      {/* ============ Hero(羊皮纸底)============ */}
+      <section className="relative vellum deckle-bottom">
         <div className="container mx-auto px-4 py-20 md:py-28">
           <div className="grid md:grid-cols-2 gap-12 items-center">
             <div>
@@ -82,19 +82,43 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* ============ Origins teaser ============ */}
+      {/* ============ 品牌故事:羊皮纸法则 ============ */}
       <section className="py-section bg-bg-secondary border-y border-line grain">
-        <div className="container mx-auto px-4 max-w-3xl">
-          <div className="sheet-stack">
-            <div className="sheet p-8 md:p-10">
-              <p className="kicker mb-3">{t('origins.kicker')}</p>
-              <h2 className="text-3xl md:text-4xl font-display font-bold mb-4">{t('origins.title')}</h2>
-              <p className="text-text-secondary leading-relaxed mb-6">{t('origins.body')}</p>
+        <div className="container mx-auto px-4">
+          <SectionHead kicker={t('parchment.kicker')} title={t('parchment.title')} subtitle={t('parchment.subtitle')} />
+
+          {/* 三拍叙事 */}
+          <div className="grid md:grid-cols-3 gap-6 max-w-5xl mx-auto mb-12">
+            {(['scribe', 'legible', 'chain'] as const).map((beat, i) => (
+              <div key={beat} className="vellum-card p-7">
+                <div className="font-display text-2xl text-accent-purple/70 mb-3">{['I', 'II', 'III'][i]}</div>
+                <h3 className="font-display font-semibold text-lg mb-2">{t(`parchment.${beat}.title`)}</h3>
+                <p className="text-sm text-text-secondary leading-relaxed">{t(`parchment.${beat}.body`)}</p>
+              </div>
+            ))}
+          </div>
+
+          {/* 双笔迹视觉卡:旧墨透出,新墨在上 */}
+          <div className="max-w-3xl mx-auto">
+            <div className="vellum-card p-8 md:p-10">
+              <p className="dropcap text-text-primary leading-loose text-lg mb-8">{t('parchment.manuscript')}</p>
+              <div className="border-t border-dashed border-[#d8c9a8] pt-6 space-y-4">
+                <div>
+                  <p className="script-ghost text-base leading-relaxed">{t('parchment.ghostLine')}</p>
+                  <p className="font-mono text-[11px] text-text-muted mt-1">{t('parchment.ghostLabel')}</p>
+                </div>
+                <div>
+                  <p className="font-display text-xl text-text-primary">{t('parchment.inkLine')}</p>
+                  <p className="font-mono text-[11px] text-accent-blue mt-1">{t('parchment.inkLabel')}</p>
+                </div>
+              </div>
+            </div>
+            <div className="text-center mt-8">
               <Link
                 href="/story"
                 className="inline-block px-5 py-2.5 rounded-lg border border-line bg-bg-primary text-sm text-text-primary hover:border-accent-purple hover:text-accent-purple transition-colors"
               >
-                {t('origins.cta')} →
+                {t('parchment.cta')} →
               </Link>
             </div>
           </div>

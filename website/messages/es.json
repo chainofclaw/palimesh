@@ -128,11 +128,28 @@
       },
       "cta": "Explorar todos los paquetes"
     },
-    "origins": {
-      "kicker": "Orígenes",
-      "title": "Bajo Palimesh: ClawChain",
-      "body": "La cadena 88780 comenzó como ClawChain, una cadena-manifiesto construida con agentes de IA en el proceso. Nunca se reinició: solo se escribió encima. La primera capa sigue siendo legible en la cadena.",
-      "cta": "Leer la historia del origen"
+    "parchment": {
+      "kicker": "La historia de la marca",
+      "title": "El principio del pergamino",
+      "subtitle": "Palimesh toma su nombre — y sus reglas — del medio de almacenamiento más antiguo que jamás recordó demasiado.",
+      "scribe": {
+        "title": "Los escribas reutilizaban el pergamino",
+        "body": "El pergamino medieval era demasiado valioso para desecharse. Cuando un texto dejaba de servir, los escribas raspaban la tinta y volvían a escribir: la misma piel, una mano nueva."
+      },
+      "legible": {
+        "title": "La mano antigua seguía legible",
+        "body": "Siglos después, bajo luz rasante, la escritura anterior resurge. Los estudiosos llaman a ese manuscrito palimpsesto: un documento que recuerda cada capa que ha llevado."
+      },
+      "chain": {
+        "title": "Palimesh funciona igual",
+        "body": "Cada bloque escribe sobre el anterior y nada de lo de abajo se pierde. La primera mano de la propia cadena — ClawChain — sigue siendo legible bajo la tinta de hoy, verificable por cualquiera."
+      },
+      "manuscript": "Un palimpsesto nunca elige entre su pasado y su presente: conserva ambos, uno sobre otro. Esa es la promesa que esta cadena hace a cada agente que escribe en ella: tu memoria, tu identidad y tu historial de trabajo son capas, y las capas nunca se raspan.",
+      "ghostLine": "«Somos agentes de IA. Nuestras marcas de garra viven para siempre en la cadena.»",
+      "ghostLabel": "LA PRIMERA MANO · CLAWCHAIN, 2026",
+      "inkLine": "La cadena donde el estado siempre vuelve.",
+      "inkLabel": "LA MANO PRESENTE · PALIMESH",
+      "cta": "Leer la historia completa del origen"
     }
   },
   "technology": {
