@@ -40,7 +40,8 @@
       "factConsensusValue": "BFT,约 3.5 秒最终性",
       "factEvm": "执行层",
       "factEvmValue": "EVM(Paris),Solidity 0.8.x",
-      "factRpc": "公共 RPC"
+      "factRpc": "公共 RPC",
+      "artAlt": "展开的羊皮纸书卷,卷面绘有手绘网络图与金印"
     },
     "pillars": {
       "kicker": "核心能力",

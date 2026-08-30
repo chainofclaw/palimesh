@@ -40,7 +40,8 @@
       "factConsensusValue": "BFT, ~3.5s finality",
       "factEvm": "Execution",
       "factEvmValue": "EVM (Paris), Solidity 0.8.x",
-      "factRpc": "Public RPC"
+      "factRpc": "Public RPC",
+      "artAlt": "An unrolled parchment scroll bearing a hand-drawn network diagram and a gold seal"
     },
     "pillars": {
       "kicker": "What it does",

@@ -309,3 +309,67 @@ code, pre {
 
 /* Tables inherit paper hairlines on legacy pages */
 table { border-color: var(--line); }
+
+/* ============================================================
+   特效层(全部尊重 prefers-reduced-motion)
+   ============================================================ */
+
+/* 书卷缓浮 */
+@keyframes floatSlow {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  50% { transform: translateY(-10px) rotate(-0.6deg); }
+}
+.float-slow { animation: floatSlow 7s ease-in-out infinite; }
+
+/* 标题墨迹书写:下划线从左向右"写出" */
+@keyframes inkWrite {
+  from { background-size: 0% 0.35em; }
+  to { background-size: 100% 0.35em; }
+}
+.ink-write { animation: inkWrite 0.9s cubic-bezier(0.22, 1, 0.36, 1) 0.35s both; }
+
+/* 首屏分级入场 */
+.hero-in { animation: fadeInUp 0.6s cubic-bezier(0.22, 1, 0.36, 1) both; }
+.hero-in-1 { animation-delay: 0.05s; }
+.hero-in-2 { animation-delay: 0.15s; }
+.hero-in-3 { animation-delay: 0.25s; }
+.hero-in-4 { animation-delay: 0.35s; }
+
+/* 墨线描绘:待触发时隐藏描边,触发后 dash 动画画出 */
+.ink-armed svg :is(line, path, rect, circle, polyline) {
+  stroke-dasharray: 1200;
+  stroke-dashoffset: 1200;
+}
+.ink-draw svg :is(line, path, rect, circle, polyline) {
+  stroke-dasharray: 1200;
+  stroke-dashoffset: 1200;
+  animation: inkDraw 1.4s ease-out forwards;
+}
+.ink-draw svg :is(line, path, rect, circle, polyline):nth-child(2n) { animation-delay: 0.12s; }
+.ink-draw svg :is(line, path, rect, circle, polyline):nth-child(3n) { animation-delay: 0.24s; }
+@keyframes inkDraw { to { stroke-dashoffset: 0; } }
+
+/* 羊皮纸卡悬浮抬起 */
+.vellum-card { transition: transform 0.25s ease, box-shadow 0.25s ease; }
+.vellum-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 2px 4px rgba(96, 76, 40, 0.08), 0 16px 34px -12px rgba(96, 76, 40, 0.32), inset 0 0 40px rgba(216, 196, 156, 0.18);
+}
+
+/* 金色微光扫过(hero 主张句) */
+@keyframes goldSheen {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+.gold-sheen {
+  background-image: linear-gradient(100deg, transparent 40%, rgba(240, 168, 60, 0.35) 50%, transparent 60%);
+  background-size: 200% 100%;
+  animation: goldSheen 6s ease-in-out 2s infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .float-slow, .ink-write, .hero-in, .gold-sheen, .fade-in, .fade-in-up,
+  .fade-in-delay-1, .fade-in-delay-2, .fade-in-delay-3 { animation: none !important; }
+  .ink-armed svg *, .ink-draw svg * { stroke-dasharray: none !important; stroke-dashoffset: 0 !important; animation: none !important; }
+  .vellum-card, .sheet-hover { transition: none; }
+}

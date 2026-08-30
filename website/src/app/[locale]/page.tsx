@@ -3,8 +3,11 @@
 import { useTranslations } from 'next-intl'
 import { Link } from '@/i18n/routing'
 import { NetworkStats } from '@/components/NetworkStats'
+import Image from 'next/image'
 import { ArchitectureDiagram } from '@/components/diagrams/ArchitectureDiagram'
 import { AgentLayersDiagram } from '@/components/diagrams/AgentLayersDiagram'
+import { TopologyDiagram } from '@/components/diagrams/TopologyDiagram'
+import { Parallax, InkDraw } from '@/components/fx/Effects'
 
 export default function HomePage() {
   const t = useTranslations('home')
@@ -17,14 +20,14 @@ export default function HomePage() {
         <div className="container mx-auto px-4 py-20 md:py-28">
           <div className="grid md:grid-cols-2 gap-12 items-center">
             <div>
-              <p className="kicker mb-4">{t('hero.kicker')}</p>
-              <h1 className="display-xl font-display font-bold mb-6">
-                <span className="ink-underline">{t('hero.title')}</span>
+              <p className="kicker mb-4 hero-in hero-in-1">{t('hero.kicker')}</p>
+              <h1 className="display-xl font-display font-bold mb-6 hero-in hero-in-2">
+                <span className="ink-underline ink-write">{t('hero.title')}</span>
               </h1>
-              <p className="text-lg text-text-secondary leading-relaxed mb-8 max-w-xl">
+              <p className="text-lg text-text-secondary leading-relaxed mb-8 max-w-xl hero-in hero-in-3">
                 {t('hero.subtitle')}
               </p>
-              <div className="flex flex-wrap gap-3">
+              <div className="flex flex-wrap gap-3 hero-in hero-in-4">
                 <Link
                   href="/testnet"
                   className="px-6 py-3 rounded-lg bg-text-primary text-bg-primary font-medium hover:bg-accent-purple transition-colors"
@@ -40,20 +43,35 @@ export default function HomePage() {
               </div>
             </div>
 
-            {/* Layered-sheet visual with protocol facts */}
-            <div className="relative md:pl-8">
-              <div className="sheet-stack">
-                <div className="sheet p-8">
-                  <div className="font-mono text-xs text-text-muted mb-6 flex items-center gap-2">
-                    <div className="w-2 h-2 bg-accent-cyan rounded-full animate-pulse" />
-                    {t('hero.factsLabel')}
+            {/* 羊皮纸书卷主题图 + 叠压的协议参数卡 */}
+            <div className="relative md:pl-4 hero-in hero-in-3">
+              <Parallax speed={0.07}>
+                <div className="float-slow">
+                  <Image
+                    src="/art/scroll.png"
+                    alt={t('hero.artAlt')}
+                    width={1200}
+                    height={1000}
+                    priority
+                    sizes="(min-width: 768px) 46vw, 100vw"
+                    className="w-full h-auto"
+                  />
+                </div>
+              </Parallax>
+              <div className="md:absolute md:-bottom-4 md:-left-2 md:w-[58%] mt-2 md:mt-0">
+                <div className="sheet-stack">
+                  <div className="sheet gold-sheen p-5">
+                    <div className="font-mono text-xs text-text-muted mb-4 flex items-center gap-2">
+                      <div className="w-2 h-2 bg-accent-cyan rounded-full animate-pulse" />
+                      {t('hero.factsLabel')}
+                    </div>
+                    <dl className="space-y-3.5">
+                      <HeroFact label={t('hero.factChain')} value="88780" mono />
+                      <HeroFact label={t('hero.factConsensus')} value={t('hero.factConsensusValue')} />
+                      <HeroFact label={t('hero.factEvm')} value={t('hero.factEvmValue')} />
+                      <HeroFact label={t('hero.factRpc')} value="rpc.palimesh.io" mono />
+                    </dl>
                   </div>
-                  <dl className="space-y-5">
-                    <HeroFact label={t('hero.factChain')} value="88780" mono />
-                    <HeroFact label={t('hero.factConsensus')} value={t('hero.factConsensusValue')} />
-                    <HeroFact label={t('hero.factEvm')} value={t('hero.factEvmValue')} />
-                    <HeroFact label={t('hero.factRpc')} value="rpc.palimesh.io" mono />
-                  </dl>
                 </div>
               </div>
             </div>
@@ -103,6 +121,7 @@ export default function HomePage() {
 
           {/* Agent 六层叠写:手稿式框图 */}
           <div className="max-w-2xl mx-auto mb-10">
+            <InkDraw>
             <AgentLayersDiagram
               labels={{
                 aria: td('agent.aria'),
@@ -112,6 +131,7 @@ export default function HomePage() {
                 ),
               }}
             />
+            </InkDraw>
           </div>
 
           {/* 双笔迹视觉卡:旧墨透出,新墨在上 */}
@@ -149,6 +169,7 @@ export default function HomePage() {
         <div className="container mx-auto px-4">
           <SectionHead kicker={t('architecture.kicker')} title={t('architecture.title')} subtitle={t('architecture.subtitle')} />
           <div className="max-w-3xl mx-auto">
+            <InkDraw>
             <ArchitectureDiagram
               labels={{
                 aria: td('arch.aria'),
@@ -160,6 +181,7 @@ export default function HomePage() {
                 txFlow: td('arch.txFlow'), proofFlow: td('arch.proofFlow'),
               }}
             />
+            </InkDraw>
           </div>
         </div>
       </section>
@@ -186,6 +208,17 @@ export default function HomePage() {
       <section className="py-section bg-bg-secondary border-y border-line grain">
         <div className="container mx-auto px-4">
           <SectionHead kicker={t('node.kicker')} title={t('node.title')} subtitle={t('node.subtitle')} />
+          <div className="max-w-3xl mx-auto mb-12">
+            <InkDraw>
+              <TopologyDiagram
+                labels={{
+                  aria: td('topo.aria'), caption: td('topo.caption'),
+                  validator: td('topo.validator'), storage: td('topo.storage'),
+                  relay: td('topo.relay'), rpc: td('topo.rpc'),
+                }}
+              />
+            </InkDraw>
+          </div>
           <div className="grid md:grid-cols-3 gap-6 mb-10">
             {(['fn', 'sn', 'rn'] as const).map((role) => (
               <div key={role} className="sheet sheet-hover p-6">

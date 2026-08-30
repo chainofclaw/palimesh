@@ -40,7 +40,8 @@
       "factConsensusValue": "BFT, 약 3.5초 최종성",
       "factEvm": "실행 레이어",
       "factEvmValue": "EVM (Paris), Solidity 0.8.x",
-      "factRpc": "공개 RPC"
+      "factRpc": "공개 RPC",
+      "artAlt": "손으로 그린 네트워크 도해와 금인이 있는 펼쳐진 양피지 두루마리"
     },
     "pillars": {
       "kicker": "핵심 기능",

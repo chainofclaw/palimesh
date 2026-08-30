@@ -40,7 +40,8 @@
       "factConsensusValue": "BFT, finalidad ~3,5 s",
       "factEvm": "Ejecución",
       "factEvmValue": "EVM (Paris), Solidity 0.8.x",
-      "factRpc": "RPC público"
+      "factRpc": "RPC público",
+      "artAlt": "Un pergamino desenrollado con un diagrama de red dibujado a mano y un sello dorado"
     },
     "pillars": {
       "kicker": "Qué hace",

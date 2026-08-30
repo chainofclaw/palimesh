@@ -40,7 +40,8 @@
       "factConsensusValue": "BFT、約3.5秒のファイナリティ",
       "factEvm": "実行レイヤー",
       "factEvmValue": "EVM(Paris)、Solidity 0.8.x",
-      "factRpc": "公開RPC"
+      "factRpc": "公開RPC",
+      "artAlt": "手描きのネットワーク図と金印が記された、広げられた羊皮紙の巻物"
     },
     "pillars": {
       "kicker": "できること",
