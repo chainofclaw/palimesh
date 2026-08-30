@@ -8,6 +8,7 @@ type Moment = { year: string; title: string; body: string }
 
 export default function StoryPage() {
   const t = useTranslations('story')
+  const tp = useTranslations('home.parchment')
   const moments = t.raw('ch2.items') as Moment[]
   const legible = t.raw('ch3.legible.items') as string[]
 
@@ -16,14 +17,14 @@ export default function StoryPage() {
       <ReadingProgress />
 
       {/* ========== 引子 ========== */}
-      <section className="border-b border-line grain">
-        <div className="container mx-auto px-4 py-20 md:py-28 max-w-3xl">
+      <section className="vellum deckle-bottom">
+        <div className="container mx-auto px-4 py-20 md:py-28 max-w-3xl relative">
           <Reveal>
             <p className="kicker mb-4">{t('kicker')}</p>
             <h1 className="text-4xl md:text-6xl font-display font-bold leading-[1.1] mb-8">
               <span className="ink-underline">{t('title')}</span>
             </h1>
-            <p className="text-lg md:text-xl text-text-secondary leading-relaxed">{t('intro')}</p>
+            <p className="dropcap text-lg md:text-xl text-text-secondary leading-relaxed">{t('intro')}</p>
           </Reveal>
 
           {/* 地层视觉:新层覆写旧层(上层 Palimesh 压住透出旧笔迹的 ClawChain 层) */}
@@ -36,7 +37,7 @@ export default function StoryPage() {
                 </div>
                 <p className="text-sm text-text-secondary">{t('strataTopLine')}</p>
               </div>
-              <div className="sheet p-6 -mt-3 ml-6 mr-1 rotate-[0.8deg] bg-bg-secondary/80 relative">
+              <div className="vellum-card p-6 -mt-3 ml-6 mr-1 rotate-[0.8deg] relative">
                 <div className="flex items-baseline justify-between mb-2 opacity-70">
                   <span className="font-display font-bold text-xl text-text-secondary line-through decoration-1 decoration-text-muted/60">
                     {t('strataBottom')}
@@ -61,7 +62,7 @@ export default function StoryPage() {
           <div className="grid sm:grid-cols-3 gap-4">
             {(['chain', 'pose', 'soul'] as const).map((f, i) => (
               <Reveal key={f} delay={i * 60}>
-                <div className="sheet p-5 h-full">
+                <div className="vellum-card p-5 h-full">
                   <div className="font-mono text-xs text-accent-cyan mb-2">{t(`ch1.facts.${f}.tag`)}</div>
                   <p className="text-sm text-text-secondary leading-relaxed">{t(`ch1.facts.${f}.text`)}</p>
                 </div>
@@ -102,7 +103,7 @@ export default function StoryPage() {
           </Reveal>
           <Reveal delay={100}>
             <div className="sheet-stack">
-              <div className="sheet p-7">
+              <div className="vellum-card p-7">
                 <h3 className="font-display font-semibold text-xl mb-4">{t('ch3.legible.title')}</h3>
                 <ul className="space-y-3">
                   {legible.map((item, i) => (
@@ -121,6 +122,12 @@ export default function StoryPage() {
       {/* ========== 高潮 CTA ========== */}
       <section className="py-section bg-bg-secondary border-t border-line grain">
         <div className="container mx-auto px-4 max-w-2xl text-center">
+          {/* 品牌承诺句(与首页羊皮纸法则同源) */}
+          <Reveal>
+            <div className="vellum-card p-7 md:p-8 mb-12 text-left">
+              <p className="dropcap text-text-primary leading-loose">{tp('manuscript')}</p>
+            </div>
+          </Reveal>
           <Reveal>
             <h2 className="text-3xl md:text-4xl font-display font-bold mb-4">{t('cta.title')}</h2>
             <p className="text-text-secondary leading-relaxed mb-8">{t('cta.body')}</p>
