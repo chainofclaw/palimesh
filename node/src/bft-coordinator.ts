@@ -126,6 +126,21 @@ export interface BftCoordinatorConfig {
    */
   getChainHeight?: () => bigint | Promise<bigint>
   /**
+   * Phase J1.1 follower fix (2026-08-30): fetch the locally-applied block at
+   * `height` so the early-divergence gate can distinguish a genuine
+   * divergence from a caught-up follower. A node applying blocks via BFT
+   * onFinalized without casting prepare votes has no localVote, so
+   * localStateRoot is <unset> — but its chain may already hold the EXACT
+   * (blockHash, stateRoot) the peer quorum agreed on. Firing forceSnapSync
+   * there re-imports state that is already correct; on the 2026-08-30 v3
+   * incident this looped ~1/s and ballooned leveldb-state to 30G. When this
+   * dep is provided and the local block matches the peer quorum pair, the
+   * J1.1 fire is suppressed. Lookup failures fail OPEN (fire proceeds).
+   *
+   * Optional — when omitted, J1.1 behaves as before (fires on unset root).
+   */
+  getLocalBlock?: (height: bigint) => ChainBlock | null | Promise<ChainBlock | null>
+  /**
    * PR-1A (2026-05-10): callback fired when a BFT round times out and the
    * round's proposer was *not* the local node. The parent (consensus engine)
    * uses this signal to mark the proposer unreachable, which arms the fast-
@@ -151,6 +166,9 @@ export class BftCoordinator {
   private deferredBlock: ChainBlock | null = null
   private lastFinalizedHeight: bigint = 0n
   private lastFinalizedAtMs: number = Date.now()
+  // Follower fix: height currently undergoing an async getLocalBlock confirm
+  // inside tryEarlyDivergenceDetect — blocks concurrent duplicate confirms.
+  private earlyDivergenceConfirmHeight: bigint | null = null
   private warnedNoVerifier = false
   private livenessWatchdogTimer: ReturnType<typeof setInterval> | null = null
   // Phase H5: counts consecutive BFT rounds where peers reached quorum on
@@ -411,7 +429,7 @@ export class BftCoordinator {
         // retransmits because Phase J1.1's per-height dedup may have been
         // rolled back by a previous rejected-callback path (see
         // docs/phase-j-stall-2026-05-06-corner-case.md).
-        if (msg.type === "prepare") this.tryEarlyDivergenceDetect(msg.height)
+        if (msg.type === "prepare") await this.tryEarlyDivergenceDetect(msg.height)
       }
       return
     }
@@ -425,7 +443,7 @@ export class BftCoordinator {
         )
         if (!isDup) {
           this.pendingMessages.push(msg)
-          if (msg.type === "prepare") this.tryEarlyDivergenceDetect(msg.height)
+          if (msg.type === "prepare") await this.tryEarlyDivergenceDetect(msg.height)
         }
       }
       return
@@ -535,7 +553,7 @@ export class BftCoordinator {
         // OTHER-validator stake aggregate over the 2/3 threshold. Probe early
         // so we don't have to wait for the round timeout (which is the H4
         // path) when peers form quorum on a state we cannot reproduce.
-        if (this.activeRound) this.tryEarlyDivergenceDetect(this.activeRound.state.height)
+        if (this.activeRound) await this.tryEarlyDivergenceDetect(this.activeRound.state.height)
         break
       }
       case "commit": {
@@ -872,7 +890,7 @@ export class BftCoordinator {
    *   - 1s global cooldown (lastEarlyDivergenceFireAtMs) — bounds callback
    *     rate when adjacent heights diverge in lockstep
    */
-  private tryEarlyDivergenceDetect(height: bigint): void {
+  private async tryEarlyDivergenceDetect(height: bigint): Promise<void> {
     if (!this.cfg.onPeerQuorumDiverged && !this.cfg.onPersistentDivergence) return
     if (this.lastEarlyDivergenceFireHeight === height) return
 
@@ -915,6 +933,45 @@ export class BftCoordinator {
 
     const divergence = this.computePeerQuorumDivergence(otherVotes, localStateRoot)
     if (!divergence) return
+
+    // Follower fix (2026-08-30): an unset localStateRoot only means we did
+    // not VOTE at this height — not that our state diverged. Before firing,
+    // check whether the local chain already holds the exact block+state the
+    // peer quorum agreed on (the caught-up-follower case). If so, there is
+    // nothing to cure and forceSnapSync would just re-import identical
+    // state (the v3 30G leveldb-bloat loop). Deliberately NOT setting the
+    // per-height dedup here: a reorg could replace the local block, and a
+    // later prepare at this height should then re-evaluate. Lookup failures
+    // fail OPEN — a broken lookup must never mask a real divergence.
+    if (!localStateRoot && this.cfg.getLocalBlock) {
+      // Guard the await window: another prepare at the same height arriving
+      // mid-lookup must not run a second confirm + double-fire (the dedup
+      // mark is only set after this block).
+      if (this.earlyDivergenceConfirmHeight === height) return
+      this.earlyDivergenceConfirmHeight = height
+      try {
+        const localBlock = await Promise.resolve(this.cfg.getLocalBlock(height))
+        if (
+          localBlock
+          && localBlock.hash === divergence.peerBlockHash
+          && localBlock.stateRoot
+          && localBlock.stateRoot === divergence.peerStateRoot
+        ) {
+          log.debug("Phase J1.1: peer-quorum matches locally-applied block — follower, not divergence", {
+            height: height.toString(),
+            blockHash: localBlock.hash,
+          })
+          return
+        }
+      } catch (err) {
+        log.debug("Phase J1.1: getLocalBlock failed during divergence confirm — failing open", {
+          height: height.toString(),
+          error: String(err),
+        })
+      } finally {
+        this.earlyDivergenceConfirmHeight = null
+      }
+    }
 
     // Mark fired BEFORE invoking callback to prevent re-entry on synchronous
     // callbacks that themselves trigger more BFT message handling. We may

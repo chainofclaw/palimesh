@@ -208,7 +208,12 @@ let bftCoordinator: BftCoordinator | undefined
 // divergence so a divergence storm doesn't spawn parallel sync attempts.
 // Module-scope so the cooldown survives across BftCoordinator callbacks.
 let lastPeerDivergenceSyncMs = 0
-const PEER_DIVERGENCE_SYNC_COOLDOWN_MS = 60_000
+// Env-overridable (2026-08-30 v3 incident): when a divergence-misfire loop
+// does slip through, ops can throttle H11 without a code deploy.
+const PEER_DIVERGENCE_SYNC_COOLDOWN_MS = (() => {
+  const v = Number(process.env.PALI_PEER_DIVERGENCE_SYNC_COOLDOWN_MS)
+  return Number.isFinite(v) && v > 0 ? v : 60_000
+})()
 
 // Phase H5: rate-limit forced state-snapshot import (the "manual rsync"
 // equivalent). Much longer cooldown than H4 — escalation should NOT happen
@@ -594,6 +599,10 @@ if (bftEnabled) {
     // proposals (height ≤ chain tip). `lastFinalizedHeight` alone misses
     // gossip-block catch-up after a restart; this closes the gap.
     getChainHeight: () => chain.getHeight(),
+    // Follower fix (2026-08-30): let J1.1 confirm against the locally-applied
+    // block before firing forceSnapSync — a caught-up follower that merely
+    // didn't vote must not loop full state re-imports (v3 30G bloat).
+    getLocalBlock: (height: bigint) => chain.getBlockByNumber(height),
     // PR-1A (2026-05-10): when a BFT round times out at a peer's slot, mark
     // that proposer unreachable so consensus.checkNoProgressWatchdog's fast
     // path (~15s) takes over from the conservative 600s H15 timeout.
