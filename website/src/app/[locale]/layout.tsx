@@ -43,6 +43,7 @@ const jetbrains = JetBrains_Mono({
 })
 
 export const metadata: Metadata = {
+  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || 'https://palimesh.io'),
   title: 'PaliMesh · The chain where state returns',
   description:
     'PaliMesh is a BFT blockchain purpose-built for AI agents: verifiable service (PoSe), persistent P2P storage, and portable on-chain identity. Chain ID 88780.',
