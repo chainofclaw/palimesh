@@ -620,6 +620,91 @@ describe("BftCoordinator", () => {
     assert.equal(fireCount, 2, "accepted fire must hold the dedup against further re-fires")
   })
 
+  it("Phase J1.1 follower fix: suppresses fire when the local chain already holds the exact peer-quorum block", async () => {
+    // 2026-08-30 v3 incident: a caught-up follower (applying blocks via BFT
+    // onFinalized without casting prepare votes) has no localVote, so
+    // localStateRoot is <unset> and J1.1 fired forceSnapSync in a loop —
+    // repeatedly re-importing state that was ALREADY byte-identical to the
+    // peer quorum (leveldb-state ballooned 30G). When the local chain holds
+    // the exact (blockHash, stateRoot) the peers agreed on, there is no
+    // divergence to cure — suppress the fire.
+    const peerRoot = ("0x" + "bb".repeat(32)) as Hex
+    const peerHash = ("0x" + "ab".repeat(32)) as Hex
+    let fireCount = 0
+    const coord = new BftCoordinator({
+      localId: "v1",
+      validators,
+      broadcastMessage: async () => {},
+      onFinalized: async () => {},
+      onPeerQuorumDiverged: () => { fireCount++ },
+      getLocalBlock: async (height) => ({ ...makeBlock(height), hash: peerHash, stateRoot: peerRoot }),
+    })
+
+    // No active round (follower mode) — prepares buffer, J1.1 evaluates.
+    await coord.handleMessage({ ...bftMsg("prepare", 1n, peerHash, "v2"), stateRoot: peerRoot })
+    await coord.handleMessage({ ...bftMsg("prepare", 1n, peerHash, "v3"), stateRoot: peerRoot })
+
+    assert.equal(fireCount, 0, "local chain already has the peer-quorum block+state — must not fire")
+  })
+
+  it("Phase J1.1 follower fix: still fires when the local block's stateRoot truly diverges", async () => {
+    const peerRoot = ("0x" + "bb".repeat(32)) as Hex
+    const peerHash = ("0x" + "ab".repeat(32)) as Hex
+    const divergedRoot = ("0x" + "dd".repeat(32)) as Hex
+    let fireCount = 0
+    const coord = new BftCoordinator({
+      localId: "v1",
+      validators,
+      broadcastMessage: async () => {},
+      onFinalized: async () => {},
+      onPeerQuorumDiverged: () => { fireCount++ },
+      getLocalBlock: async (height) => ({ ...makeBlock(height), hash: peerHash, stateRoot: divergedRoot }),
+    })
+
+    await coord.handleMessage({ ...bftMsg("prepare", 1n, peerHash, "v2"), stateRoot: peerRoot })
+    await coord.handleMessage({ ...bftMsg("prepare", 1n, peerHash, "v3"), stateRoot: peerRoot })
+
+    assert.equal(fireCount, 1, "a real stateRoot divergence must still fire")
+  })
+
+  it("Phase J1.1 follower fix: still fires when the local chain has no block at that height (truly stuck)", async () => {
+    const peerRoot = ("0x" + "bb".repeat(32)) as Hex
+    const peerHash = ("0x" + "ab".repeat(32)) as Hex
+    let fireCount = 0
+    const coord = new BftCoordinator({
+      localId: "v1",
+      validators,
+      broadcastMessage: async () => {},
+      onFinalized: async () => {},
+      onPeerQuorumDiverged: () => { fireCount++ },
+      getLocalBlock: async () => null,
+    })
+
+    await coord.handleMessage({ ...bftMsg("prepare", 1n, peerHash, "v2"), stateRoot: peerRoot })
+    await coord.handleMessage({ ...bftMsg("prepare", 1n, peerHash, "v3"), stateRoot: peerRoot })
+
+    assert.equal(fireCount, 1, "no local block at the diverged height — genuinely behind, must fire")
+  })
+
+  it("Phase J1.1 follower fix: fails open (fires) when getLocalBlock throws", async () => {
+    const peerRoot = ("0x" + "bb".repeat(32)) as Hex
+    const peerHash = ("0x" + "ab".repeat(32)) as Hex
+    let fireCount = 0
+    const coord = new BftCoordinator({
+      localId: "v1",
+      validators,
+      broadcastMessage: async () => {},
+      onFinalized: async () => {},
+      onPeerQuorumDiverged: () => { fireCount++ },
+      getLocalBlock: async () => { throw new Error("leveldb closed") },
+    })
+
+    await coord.handleMessage({ ...bftMsg("prepare", 1n, peerHash, "v2"), stateRoot: peerRoot })
+    await coord.handleMessage({ ...bftMsg("prepare", 1n, peerHash, "v3"), stateRoot: peerRoot })
+
+    assert.equal(fireCount, 1, "confirm-lookup failure must not mask a potential divergence (fail open)")
+  })
+
   it("Phase J1.1: does NOT fire when local stateRoot matches peer quorum", async () => {
     const agreedRoot = ("0x" + "cc".repeat(32)) as Hex
     const blockHashHex = ("0x" + "ab".repeat(32)) as Hex
