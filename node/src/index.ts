@@ -1053,12 +1053,18 @@ if (bftEnabled) {
     })
     registryReader = reader
 
-    // When the core-set feature is ENFORCING (enabled and not shadow), the
-    // CoreSetDriver below owns the BFT set: the registry reader still runs for
-    // candidate/stake discovery, but must not also write the set (single owner,
-    // avoids two sources racing updateValidators). In shadow mode (or disabled)
-    // the registry reader keeps driving the set exactly as before.
-    const coreSetEnforcing = config.coreSet.enabled && !config.coreSet.shadow
+    // When the core-set feature is ENABLED (shadow OR enforcing), the registry
+    // reader is discovery-only and must never write the BFT set:
+    //  - enforcing: the CoreSetDriver below owns the set (single owner, avoids
+    //    two sources racing updateValidators);
+    //  - shadow: NOBODY may write the set — shadow's contract is zero consensus
+    //    impact (the static config set stays authoritative while the driver
+    //    only logs). Without this, merely turning shadow on would swap the
+    //    live 4-val static set for the raw 5-member registry set (val6 joins
+    //    quorum) — a real membership change, not an observation mode.
+    // Only with core-set fully disabled does the reader keep the legacy
+    // behavior of driving the set directly (the 07-05-era registry mode).
+    const coreSetOwnsSet = config.coreSet.enabled
 
     const applyActiveSet = () => {
       const active = reader.getActiveSet()
@@ -1068,8 +1074,9 @@ if (bftEnabled) {
         })
         return
       }
-      if (coreSetEnforcing) {
-        // Core-set driver owns the BFT set; discovery only here.
+      if (coreSetOwnsSet) {
+        // Core-set feature owns (or freezes, in shadow) the BFT set;
+        // discovery only here.
         return
       }
       const next = active.map((e: ValidatorEntry) => ({
@@ -1365,7 +1372,7 @@ consensus.start()
 // Feature-flagged and independent of the registry: the candidate pool is the
 // ValidatorRegistry active set when configured, otherwise the static
 // config.validators + validatorStakes. When enabled+enforcing the driver owns
-// the BFT set (the registry reader yields ownership via `coreSetEnforcing`); in
+// the BFT set (the registry reader yields ownership via `coreSetOwnsSet`); in
 // shadow mode it only logs. Bond + epoch reward roots are read from
 // PoSeManagerV2 over this node's own RPC (optional — perf drops to 0 when absent).
 if (bftEnabled && config.coreSet.enabled) {
