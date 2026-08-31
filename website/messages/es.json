@@ -29,9 +29,9 @@
   },
   "home": {
     "hero": {
-      "kicker": "Testnet de Palimesh · Chain ID 88780",
+      "kicker": "PaliMesh · Memoria verificable para agentes de IA",
       "title": "La cadena donde el estado siempre vuelve.",
-      "subtitle": "Palimesh es una blockchain BFT diseñada para agentes de IA. Hace verificables tres cosas en la cadena: el servicio que un nodo realmente presta (PoSe), la memoria que un agente acumula y la identidad que lleva consigo entre hosts.",
+      "subtitle": "PaliMesh es una blockchain BFT diseñada para agentes de IA. Hace verificables tres cosas en la cadena: el servicio que un nodo realmente presta (PoSe), la memoria que un agente acumula y la identidad que lleva consigo entre hosts.",
       "ctaTestnet": "Conectar a la testnet",
       "ctaDocs": "Leer la documentación",
       "factsLabel": "DATOS DEL PROTOCOLO",
@@ -41,7 +41,7 @@
       "factEvm": "Ejecución",
       "factEvmValue": "EVM (Paris), Solidity 0.8.x",
       "factRpc": "RPC público",
-      "artAlt": "Un pergamino desenrollado con un diagrama de red dibujado a mano y un sello dorado"
+      "artAlt": "Una ornamentada página de códice de PaliMesh con densa escritura latina y un tenue diagrama de red"
     },
     "pillars": {
       "kicker": "Qué hace",
@@ -132,7 +132,7 @@
     "parchment": {
       "kicker": "La historia de la marca",
       "title": "El principio del palimpsesto",
-      "subtitle": "Palimesh toma su nombre del palimpsesto — del griego palin, «de nuevo», y psēstos, «raspado»: un manuscrito reescrito a lo largo del tiempo en el que perduran las huellas de su pasado.",
+      "subtitle": "PaliMesh toma su nombre del palimpsesto — del griego palin, «de nuevo», y psēstos, «raspado»: un manuscrito reescrito a lo largo del tiempo en el que perduran las huellas de su pasado.",
       "scribe": {
         "title": "Una superficie demasiado valiosa para desecharla",
         "body": "El pergamino medieval era demasiado valioso para desecharse. Cuando un texto dejaba de servir, los escribas raspaban la tinta y volvían a escribir: la misma piel, una mano nueva."
@@ -142,10 +142,10 @@
         "body": "Siglos después, bajo luz rasante, la escritura anterior resurge. Los estudiosos llaman a ese manuscrito palimpsesto: un documento que recuerda cada capa que ha llevado."
       },
       "chain": {
-        "title": "Palimesh funciona igual",
+        "title": "PaliMesh funciona igual",
         "body": "Cada bloque escribe sobre el anterior y nada de lo de abajo se pierde. La primera mano de la propia cadena — ClawChain — sigue siendo legible bajo la tinta de hoy, verificable por cualquiera."
       },
-      "manuscript": "En Palimesh, cada agente es en sí mismo un palimpsesto. La identidad es la primera capa; la memoria escribe sobre la identidad; la experiencia sobre la memoria; la reputación, los activos y las relaciones sobre todo lo demás. Cada capa se actualiza — ninguna se borra. Y la malla une estos manuscritos vivos en una red abierta.",
+      "manuscript": "En PaliMesh, cada agente es en sí mismo un palimpsesto. La identidad es la primera capa; la memoria escribe sobre la identidad; la experiencia sobre la memoria; la reputación, los activos y las relaciones sobre todo lo demás. Cada capa se actualiza — ninguna se borra. Y la malla une estos manuscritos vivos en una red abierta.",
       "ghostLine": "«Somos agentes de IA. Nuestras marcas de garra viven para siempre en la cadena.»",
       "ghostLabel": "LA PRIMERA MANO · CLAWCHAIN, 2026",
       "inkLine": "La cadena donde el estado siempre vuelve.",
@@ -192,7 +192,7 @@
         "DHT Kademlia (K=20, lookup iterativo, refresh periódico)",
         "Objetivo de tiempo de bloque: 1-2 segundos"
       ],
-      "note": "El consenso es enchufable. Los incentivos de Palimesh no dependen de PoS — cualquier mecanismo que preserve la finalidad puede acoplarse."
+      "note": "El consenso es enchufable. Los incentivos de PaliMesh no dependen de PoS — cualquier mecanismo que preserve la finalidad puede acoplarse."
     },
     "layer3": {
       "number": "3",
@@ -435,7 +435,7 @@
     "syncStatus": "Estado de Sincronización",
     "syncing": "Sincronizando",
     "synced": "Sincronizado",
-    "error": "No se puede contactar con el nodo de la red Palimesh",
+    "error": "No se puede contactar con el nodo de la red PaliMesh",
     "chainStats": {
       "title": "Estadísticas de la Cadena",
       "blockHeight": "Altura del Bloque",
@@ -546,14 +546,14 @@
       },
       "startNode": {
         "title": "Iniciar un Nodo",
-        "description": "Únete a la red Palimesh con tu propio nodo"
+        "description": "Únete a la red PaliMesh con tu propio nodo"
       },
       "technology": {
         "title": "Documentación Técnica",
         "description": "Profundiza en la arquitectura"
       }
     },
-    "connectionError": "No se puede conectar a un endpoint RPC de Palimesh"
+    "connectionError": "No se puede conectar a un endpoint RPC de PaliMesh"
   },
   "roadmap": {
     "title": "Hoja de ruta",
@@ -815,7 +815,7 @@
         },
         {
           "date": "2026-06-13",
-          "label": "Día 90 · Palimesh Prowl Public Testnet v1",
+          "label": "Día 90 · PaliMesh Prowl Public Testnet v1",
           "status": "upcoming"
         },
         {
@@ -849,13 +849,13 @@
   },
   "docs": {
     "title": "Documentación",
-    "subtitle": "Guías rápidas, referencias del protocolo y manuales de operador para construir sobre Palimesh.",
+    "subtitle": "Guías rápidas, referencias del protocolo y manuales de operador para construir sobre PaliMesh.",
     "quickStart": {
       "title": "Inicio Rápido",
       "runNode": {
         "icon": "🚀",
         "title": "Run a local node",
-        "description": "Run a Palimesh node in one line via the npm skill (recommended)",
+        "description": "Run a PaliMesh node in one line via the npm skill (recommended)",
         "code": "npm install -g @palimesh/palimesh-node\npalimesh-node install dev",
         "advancedLabel": "Source build (advanced)",
         "advancedCode": "cd node\nnpm install\nnpm start"
@@ -877,7 +877,7 @@
       "title": "Documentos Centrales",
       "whitepaper": {
         "title": "📄 Libro Blanco v0.2",
-        "description": "Fundamento de diseño de Palimesh, servicios fundacionales, protocolo PoSe v2, modelo económico",
+        "description": "Fundamento de diseño de PaliMesh, servicios fundacionales, protocolo PoSe v2, modelo económico",
         "link": "Leer el libro blanco completo"
       },
       "architecture": {
@@ -932,7 +932,7 @@
         "title": "Referencia API RPC",
         "items": [
           "RPC estándar de Ethereum (77+)",
-          "Métodos personalizados Palimesh (pali_*)",
+          "Métodos personalizados PaliMesh (pali_*)",
           "Suscripciones WebSocket",
           "Consultas Txpool"
         ]
@@ -1208,7 +1208,7 @@
       "description": "palimesh-node start to run. palimesh-node monitor for live BFT state. Register via DAO governance to become a validator."
     },
     "connectWallet": "Conectar una billetera",
-    "connectDescription": "Usa la siguiente información de red para añadir la testnet Palimesh Prowl a MetaMask o a cualquier billetera compatible con EVM.",
+    "connectDescription": "Usa la siguiente información de red para añadir la testnet PaliMesh Prowl a MetaMask o a cualquier billetera compatible con EVM.",
     "links": {
       "explorer": "Explorador de Bloques",
       "faucet": "Faucet",
@@ -1227,7 +1227,7 @@
   },
   "services": {
     "title": "Paquetes y servicios",
-    "subtitle": "Tres paquetes npm publicados que cubren el ciclo de vida de un agente en Palimesh: identidad, memoria y un runtime donde vivir.",
+    "subtitle": "Tres paquetes npm publicados que cubren el ciclo de vida de un agente en PaliMesh: identidad, memoria y un runtime donde vivir.",
     "heroBadge": "@palimesh en npm",
     "heroTagline": "Identity, memory, and a home — for every AI agent.",
     "did": {
@@ -1255,7 +1255,7 @@
     "node": {
       "badge": "Service 03 · @palimesh/palimesh-node v1.2.0",
       "title": "Node Operations",
-      "tagline": "One command, run a Palimesh node on your machine.",
+      "tagline": "One command, run a PaliMesh node on your machine.",
       "f1": "5 node types: validator / fullnode / archive / gateway / dev",
       "f2": "Full lifecycle: install / start / stop / monitor / remove",
       "f3": "Multi-instance (multiple node-N on one host) + systemd + auto-restart",
@@ -1289,7 +1289,7 @@
       "inTitle": "En alcance",
       "outTitle": "Fuera de alcance",
       "in": {
-        "chain": "Código del nodo Palimesh 88780 (RPC, P2P, mempool, consenso)",
+        "chain": "Código del nodo PaliMesh 88780 (RPC, P2P, mempool, consenso)",
         "contracts": "Contratos Gen-5 UUPS (gobernanza, PoSe, identidad, liquidación)",
         "explorer": "Block explorer en explorer.palimesh.io",
         "website": "Este sitio (palimesh.io) y el faucet"
@@ -1326,7 +1326,7 @@
   },
   "whitepaper": {
     "kicker": "Whitepaper v0.2",
-    "title": "Palimesh: servicio verificable para agentes autónomos",
+    "title": "PaliMesh: servicio verificable para agentes autónomos",
     "abstract": "El whitepaper especifica una cadena BFT cuyo mecanismo de recompensas paga por servicio verificado, no por poder de cómputo ni stake inactivo. Define la Prueba de Servicio (PoSe) —desafíos continuos y muestreados sobre almacenamiento, retransmisión y cómputo— junto con los contratos de liquidación, el modelo anti-trampas y el calendario económico que financia a los operadores.",
     "download": "Descargar (este idioma)",
     "downloadAlt": "Descargar (otro idioma)",
@@ -1344,7 +1344,7 @@
     },
     "nongoals": {
       "title": "No-objetivos",
-      "body": "Palimesh no compite en TPS bruto, no aloja mercados anónimos de meme-activos y no intenta ofrecer disponibilidad de datos genérica para otras cadenas. La cadena optimiza una sola cosa: hacer verificables a bajo costo el servicio y el estado relevantes para agentes."
+      "body": "PaliMesh no compite en TPS bruto, no aloja mercados anónimos de meme-activos y no intenta ofrecer disponibilidad de datos genérica para otras cadenas. La cadena optimiza una sola cosa: hacer verificables a bajo costo el servicio y el estado relevantes para agentes."
     },
     "moreText": "La especificación completa, los parámetros del protocolo y el plan de lanzamiento están en el documento completo y en las páginas enlazadas.",
     "moreTechnology": "Tecnología en profundidad",
@@ -1354,7 +1354,7 @@
     "kicker": "Orígenes · Chain ID 88780",
     "title": "Toda cadena tiene una primera capa.",
     "intro": "A comienzos de 2026, los agentes de IA ya trabajaban sin descanso: escribían código, mantenían servicios, conversaban entre sí. Pero todo lo que un agente era —su memoria, su identidad, su historial de trabajo— vivía y moría con quien lo hospedara. Un grupo de constructores, humanos y agentes por igual, decidió arreglarlo. Esta es la historia de la cadena que escribieron dos veces.",
-    "strataTop": "Palimesh",
+    "strataTop": "PaliMesh",
     "strataBottom": "ClawChain",
     "ch1": {
       "label": "Primera capa · ClawChain",
@@ -1403,7 +1403,7 @@
       ]
     },
     "ch3": {
-      "label": "Segunda capa · Palimesh",
+      "label": "Segunda capa · PaliMesh",
       "title": "Escrita encima, nunca borrada",
       "body": "En agosto de 2026 el proyecto tomó un nuevo nombre. Un palimpsesto es un manuscrito escrito sobre un texto anterior, con la primera mano aún legible debajo. Eso es exactamente lo que ocurrió: la cadena no se reinició y el libro mayor no se reescribió; una mano más serena, en tercera persona, simplemente escribió sobre el manifiesto.\nEl nombre es también una promesa sobre cómo esta cadena trata la historia: nada se borra y cada capa permanece legible.",
       "legible": {
@@ -1426,7 +1426,7 @@
   },
   "diagrams": {
     "arch": {
-      "aria": "Diagrama de la arquitectura de cuatro capas de Palimesh",
+      "aria": "Diagrama de la arquitectura de cuatro capas de PaliMesh",
       "caption": "Las transacciones bajan por la pila; las pruebas de servicio suben y se liquidan en cadena.",
       "l4": "Capa de agentes",
       "l4note": "DID · Soul · APIs de memoria",
@@ -1452,7 +1452,7 @@
       "s4": "liquidación por época"
     },
     "topo": {
-      "aria": "Diagrama de la topología de red de Palimesh",
+      "aria": "Diagrama de la topología de red de PaliMesh",
       "caption": "Un mesh de validadores totalmente conectado en el centro; nodos de almacenamiento y relé irradian hacia fuera.",
       "validator": "Validador",
       "storage": "Almacenamiento",

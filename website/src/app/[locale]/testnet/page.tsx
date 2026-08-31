@@ -25,7 +25,7 @@ export default function TestnetPage() {
             <div className="flex flex-col sm:flex-row gap-4 justify-center fade-in-delay-2">
               <Link
                 href="/docs"
-                className="px-8 py-3 rounded-lg bg-gradient-cyber text-white font-display font-semibold hover:shadow-glow-md transition-all hover:scale-105"
+                className="px-8 py-3 rounded-lg bg-text-primary text-bg-primary font-medium hover:bg-accent-purple transition-colors"
               >
                 {t('joinNow')}
               </Link>
@@ -48,9 +48,9 @@ export default function TestnetPage() {
         <section className="mb-16">
           <div className="text-center mb-12 fade-in-up">
             <h2 className="text-3xl md:text-4xl font-display font-bold mb-2">
-              <span className="gradient-text">{t('networkInfo')}</span>
+              <span>{t('networkInfo')}</span>
             </h2>
-            <div className="w-24 h-1 bg-gradient-cyber mx-auto mt-4 rounded-full" />
+            <div className="w-16 h-px bg-line mx-auto mt-4 rounded-full" />
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -74,14 +74,14 @@ export default function TestnetPage() {
         <section className="mb-16">
           <div className="text-center mb-6 fade-in-up">
             <h2 className="text-3xl md:text-4xl font-display font-bold mb-2">
-              <span className="gradient-text">{t('quickStart')}</span>
+              <span>{t('quickStart')}</span>
             </h2>
-            <div className="w-24 h-1 bg-gradient-cyber mx-auto mt-4 rounded-full" />
+            <div className="w-16 h-px bg-line mx-auto mt-4 rounded-full" />
           </div>
 
           {/* Recommended deploy via palimesh-node skill */}
           <div className="max-w-3xl mx-auto mb-10">
-            <div className="rounded-xl border border-accent-cyan/30 bg-accent-cyan/5 backdrop-blur-sm px-5 py-4 flex items-start gap-3">
+            <div className="rounded-xl border border-accent-cyan/30 bg-accent-cyan/5 px-5 py-4 flex items-start gap-3">
               <span className="font-display text-xs text-accent-cyan tracking-wider px-2 py-0.5 rounded border border-accent-cyan/40 bg-accent-cyan/10 shrink-0 whitespace-nowrap mt-0.5">
                 {t('paliNodeBadge')}
               </span>
@@ -118,15 +118,15 @@ export default function TestnetPage() {
 
         {/* Connect Wallet */}
         <section className="mb-16">
-          <div className="bg-bg-secondary/50 backdrop-blur-lg rounded-2xl border border-text-muted/10 p-8 md:p-12">
+          <div className="vellum-card p-8 md:p-12">
             <div className="max-w-2xl mx-auto text-center">
               <h2 className="text-3xl font-display font-bold mb-4">
-                <span className="gradient-text">{t('connectWallet')}</span>
+                <span>{t('connectWallet')}</span>
               </h2>
               <p className="text-text-secondary font-body mb-8">{t('connectDescription')}</p>
 
               <div className="bg-bg-primary/50 rounded-lg p-6 text-left font-mono text-sm text-text-secondary space-y-2">
-                <p><span className="text-accent-cyan">Network Name:</span> Palimesh Canary 88780</p>
+                <p><span className="text-accent-cyan">Network Name:</span> PaliMesh Canary 88780</p>
                 <p><span className="text-accent-cyan">RPC URL:</span> https://rpc.palimesh.io</p>
                 <p><span className="text-accent-cyan">Chain ID:</span> 88780</p>
                 <p><span className="text-accent-cyan">Currency Symbol:</span> PALI</p>
@@ -171,7 +171,7 @@ export default function TestnetPage() {
 
 function InfoCard({ label, value, mono }: { label: string; value: string; mono?: boolean }) {
   return (
-    <div className="bg-bg-secondary/50 backdrop-blur-lg rounded-xl border border-text-muted/10 p-6 hover:border-accent-cyan/30 transition-colors">
+    <div className="vellum-card p-6 hover:border-accent-cyan/30 transition-colors">
       <div className="text-xs font-display text-text-muted uppercase tracking-wider mb-2">{label}</div>
       <div className={`text-xl font-bold text-text-primary ${mono ? 'font-mono text-base' : 'font-display'}`}>
         {value}
@@ -188,7 +188,7 @@ function StepCard({ step, title, description, color }: { step: string; title: st
   }
 
   return (
-    <div className={`bg-gradient-to-b ${colorMap[color] ?? colorMap.cyan} backdrop-blur-lg rounded-xl border p-6`}>
+    <div className={`bg-gradient-to-b ${colorMap[color] ?? colorMap.cyan} rounded-xl border p-6`}>
       <div className="text-3xl font-display font-bold text-text-muted/30 mb-4">{step}</div>
       <h3 className="text-lg font-display font-bold text-text-primary mb-2">{title}</h3>
       <p className="text-text-secondary text-sm font-body">{description}</p>
@@ -205,7 +205,7 @@ function QuickLink({ title, href, external, icon }: { title: string; href: strin
   }
 
   const content = (
-    <div className="bg-bg-secondary/50 backdrop-blur-lg rounded-xl border border-text-muted/10 p-6 hover:border-accent-cyan/30 transition-all hover:scale-105 group cursor-pointer">
+    <div className="vellum-card p-6 hover:border-accent-cyan/30 transition-all group cursor-pointer">
       <svg className="w-6 h-6 text-accent-cyan mb-3 group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d={icons[icon] ?? icons.code} />
       </svg>

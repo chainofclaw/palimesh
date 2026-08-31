@@ -186,7 +186,7 @@ export default function PostDetailPage() {
           <button
             type="submit"
             disabled={submitting || !replyContent.trim()}
-            className="px-6 py-2.5 rounded-lg bg-gradient-cyber text-white font-display font-semibold hover:shadow-glow-md transition-all disabled:opacity-50 text-sm"
+            className="px-6 py-2.5 rounded-lg bg-text-primary text-bg-primary font-medium transition-all disabled:opacity-50 text-sm"
           >
             {submitting ? t('submitting') : t('submitReply')}
           </button>

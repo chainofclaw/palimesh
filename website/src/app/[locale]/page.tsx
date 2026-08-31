@@ -14,73 +14,59 @@ export default function HomePage() {
   const td = useTranslations('diagrams')
 
   return (
-    <div className="overflow-hidden">
-      {/* ============ Hero(羊皮纸底)============ */}
-      <section className="relative vellum deckle-bottom">
-        <div className="container mx-auto px-4 py-20 md:py-28">
-          <div className="grid md:grid-cols-2 gap-12 items-center">
-            <div>
+    <div className="site-canvas overflow-hidden">
+      {/* ============ Hero（与全站共享同一羊皮纸底）============ */}
+      <section className="manuscript-hero relative">
+        <MeshField />
+        <div className="container relative z-10 mx-auto px-4 py-20 md:py-28 lg:py-32">
+          <div className="grid items-center gap-14 md:grid-cols-[0.92fr_1.08fr] lg:gap-20">
+            <div className="hero-copy">
               <p className="kicker mb-4 hero-in hero-in-1">{t('hero.kicker')}</p>
-              <h1 className="display-xl font-display font-bold mb-6 hero-in hero-in-2">
-                <span className="ink-underline ink-write">{t('hero.title')}</span>
+              <h1 className="hero-title display-xl font-display font-bold mb-6 hero-in hero-in-2">
+                <span>{t('hero.title')}</span>
               </h1>
-              <p className="text-lg text-text-secondary leading-relaxed mb-8 max-w-xl hero-in hero-in-3">
+              <p className="hero-deck text-lg text-text-secondary leading-relaxed mb-8 max-w-xl hero-in hero-in-3">
                 {t('hero.subtitle')}
               </p>
               <div className="flex flex-wrap gap-3 hero-in hero-in-4">
                 <Link
                   href="/testnet"
-                  className="px-6 py-3 rounded-lg bg-text-primary text-bg-primary font-medium hover:bg-accent-purple transition-colors"
+                  className="seal-button"
                 >
                   {t('hero.ctaTestnet')}
                 </Link>
                 <Link
                   href="/docs"
-                  className="px-6 py-3 rounded-lg border border-line bg-bg-elevated text-text-primary font-medium hover:border-accent-blue hover:text-accent-blue transition-colors"
+                  className="ink-button"
                 >
                   {t('hero.ctaDocs')}
                 </Link>
               </div>
             </div>
 
-            {/* 羊皮纸书卷主题图 + 叠压的协议参数卡 */}
-            <div className="relative md:pl-4 hero-in hero-in-3">
+            {/* 透明边缘的经文式品牌羊皮纸 */}
+            <div className="hero-art-shell relative hero-in hero-in-3">
               <Parallax speed={0.07}>
-                <div className="float-slow">
+                <div className="hero-parchment float-slow">
                   <Image
-                    src="/art/scroll.png"
+                    src="/art/palimesh-codex-v4.webp"
                     alt={t('hero.artAlt')}
-                    width={1200}
-                    height={1000}
+                    width={1549}
+                    height={1015}
                     priority
                     sizes="(min-width: 768px) 46vw, 100vw"
                     className="w-full h-auto"
                   />
                 </div>
               </Parallax>
-              <div className="md:absolute md:-bottom-4 md:-left-2 md:w-[58%] mt-2 md:mt-0">
-                <div className="sheet-stack">
-                  <div className="sheet gold-sheen p-5">
-                    <div className="font-mono text-xs text-text-muted mb-4 flex items-center gap-2">
-                      <div className="w-2 h-2 bg-accent-cyan rounded-full animate-pulse" />
-                      {t('hero.factsLabel')}
-                    </div>
-                    <dl className="space-y-3.5">
-                      <HeroFact label={t('hero.factChain')} value="88780" mono />
-                      <HeroFact label={t('hero.factConsensus')} value={t('hero.factConsensusValue')} />
-                      <HeroFact label={t('hero.factEvm')} value={t('hero.factEvmValue')} />
-                      <HeroFact label={t('hero.factRpc')} value="rpc.palimesh.io" mono />
-                    </dl>
-                  </div>
-                </div>
-              </div>
             </div>
           </div>
         </div>
       </section>
 
       {/* ============ Three pillars ============ */}
-      <section className="py-section">
+      <AntiqueDivider />
+      <section className="chapter-section py-section">
         <div className="container mx-auto px-4">
           <SectionHead kicker={t('pillars.kicker')} title={t('pillars.title')} subtitle={t('pillars.subtitle')} />
           <div className="grid md:grid-cols-3 gap-6">
@@ -104,14 +90,15 @@ export default function HomePage() {
       </section>
 
       {/* ============ 品牌故事:羊皮纸法则 ============ */}
-      <section className="py-section bg-bg-secondary border-y border-line grain">
+      <AntiqueDivider />
+      <section className="folio-band py-section">
         <div className="container mx-auto px-4">
           <SectionHead kicker={t('parchment.kicker')} title={t('parchment.title')} subtitle={t('parchment.subtitle')} />
 
           {/* 三拍叙事 */}
           <div className="grid md:grid-cols-3 gap-6 max-w-5xl mx-auto mb-12">
             {(['scribe', 'legible', 'chain'] as const).map((beat, i) => (
-              <div key={beat} className="vellum-card p-7">
+              <div key={beat} className="vellum-card manuscript-card p-7">
                 <div className="font-display text-2xl text-accent-purple/70 mb-3">{['I', 'II', 'III'][i]}</div>
                 <h3 className="font-display font-semibold text-lg mb-2">{t(`parchment.${beat}.title`)}</h3>
                 <p className="text-sm text-text-secondary leading-relaxed">{t(`parchment.${beat}.body`)}</p>
@@ -136,7 +123,7 @@ export default function HomePage() {
 
           {/* 双笔迹视觉卡:旧墨透出,新墨在上 */}
           <div className="max-w-3xl mx-auto">
-            <div className="vellum-card p-8 md:p-10">
+            <div className="vellum-card manuscript-card p-8 md:p-10">
               <p className="dropcap text-text-primary leading-loose text-lg mb-8">{t('parchment.manuscript')}</p>
               <div className="border-t border-dashed border-[#d8c9a8] pt-6 space-y-4">
                 <div>
@@ -165,7 +152,8 @@ export default function HomePage() {
       </section>
 
       {/* ============ Architecture ============ */}
-      <section className="py-section">
+      <AntiqueDivider />
+      <section className="chapter-section py-section">
         <div className="container mx-auto px-4">
           <SectionHead kicker={t('architecture.kicker')} title={t('architecture.title')} subtitle={t('architecture.subtitle')} />
           <div className="max-w-3xl mx-auto">
@@ -187,7 +175,8 @@ export default function HomePage() {
       </section>
 
       {/* ============ Live network ============ */}
-      <section className="py-section">
+      <AntiqueDivider />
+      <section className="chapter-section py-section">
         <div className="container mx-auto px-4">
           <SectionHead kicker={t('live.kicker')} title={t('live.title')} subtitle={t('live.subtitle')} />
           <div className="max-w-4xl mx-auto">
@@ -205,7 +194,8 @@ export default function HomePage() {
       </section>
 
       {/* ============ Run a node ============ */}
-      <section className="py-section bg-bg-secondary border-y border-line grain">
+      <AntiqueDivider />
+      <section className="folio-band py-section">
         <div className="container mx-auto px-4">
           <SectionHead kicker={t('node.kicker')} title={t('node.title')} subtitle={t('node.subtitle')} />
           <div className="max-w-3xl mx-auto mb-12">
@@ -221,7 +211,7 @@ export default function HomePage() {
           </div>
           <div className="grid md:grid-cols-3 gap-6 mb-10">
             {(['fn', 'sn', 'rn'] as const).map((role) => (
-              <div key={role} className="sheet sheet-hover p-6">
+              <div key={role} className="sheet sheet-hover folio-card p-6">
                 <div className="font-mono text-xs text-accent-cyan mb-3 uppercase tracking-widest">
                   {t(`node.${role}.tag`)}
                 </div>
@@ -242,12 +232,13 @@ export default function HomePage() {
       </section>
 
       {/* ============ Products ============ */}
-      <section className="py-section">
+      <AntiqueDivider />
+      <section className="chapter-section py-section">
         <div className="container mx-auto px-4">
           <SectionHead kicker={t('products.kicker')} title={t('products.title')} subtitle={t('products.subtitle')} />
           <div className="grid md:grid-cols-3 gap-6 mb-10">
             {(['soul', 'mem', 'node'] as const).map((p) => (
-              <div key={p} className="sheet sheet-hover p-6">
+              <div key={p} className="sheet sheet-hover folio-card p-6">
                 <div className="font-mono text-xs text-text-muted mb-3">{t(`products.${p}.pkg`)}</div>
                 <h3 className="font-display font-semibold text-xl mb-2">{t(`products.${p}.name`)}</h3>
                 <p className="text-text-secondary text-sm leading-relaxed">{t(`products.${p}.description`)}</p>
@@ -275,16 +266,20 @@ function SectionHead({ kicker, title, subtitle }: { kicker: string; title: strin
     <div className="text-center max-w-2xl mx-auto mb-14">
       <p className="kicker mb-3">{kicker}</p>
       <h2 className="text-3xl md:text-4xl font-display font-bold mb-4">{title}</h2>
+      <div className="section-flourish" aria-hidden="true">
+        <span />
+        <i />
+        <span />
+      </div>
       <p className="text-text-secondary leading-relaxed">{subtitle}</p>
     </div>
   )
 }
 
-function HeroFact({ label, value, mono }: { label: string; value: string; mono?: boolean }) {
+function AntiqueDivider() {
   return (
-    <div className="flex items-baseline justify-between gap-4 border-b border-line pb-3 last:border-b-0 last:pb-0">
-      <dt className="text-sm text-text-muted">{label}</dt>
-      <dd className={`text-text-primary ${mono ? 'font-mono text-sm' : 'font-medium text-sm'}`}>{value}</dd>
+    <div className="antique-divider" aria-hidden="true">
+      <span />
     </div>
   )
 }
@@ -292,11 +287,34 @@ function HeroFact({ label, value, mono }: { label: string; value: string; mono?:
 function PillarCard({ index, title, description }: { index: string; title: string; description: string }) {
   return (
     <div className="sheet-stack">
-      <div className="sheet sheet-hover p-7 h-full">
+      <div className="sheet sheet-hover folio-card p-7 h-full">
         <div className="font-mono text-xs text-accent-blue mb-4">{index}</div>
         <h3 className="font-display font-semibold text-xl mb-3">{title}</h3>
         <p className="text-text-secondary text-sm leading-relaxed">{description}</p>
       </div>
     </div>
+  )
+}
+
+function MeshField() {
+  return (
+    <svg
+      className="mesh-field"
+      aria-hidden="true"
+      viewBox="0 0 1400 760"
+      preserveAspectRatio="xMidYMid slice"
+    >
+      <g className="mesh-lines">
+        <path d="M70 185 248 92 416 192 594 75 780 168 956 88 1150 185 1335 104" />
+        <path d="M70 185 180 370 416 192 510 390 780 168 860 382 1150 185 1240 390" />
+        <path d="M180 370 342 620 510 390 690 605 860 382 1042 615 1240 390" />
+        <path d="M248 92 180 370M594 75 510 390M956 88 860 382M1335 104 1240 390" />
+      </g>
+      <g className="mesh-nodes">
+        {[['70','185'],['248','92'],['416','192'],['594','75'],['780','168'],['956','88'],['1150','185'],['1335','104'],['180','370'],['510','390'],['860','382'],['1240','390'],['342','620'],['690','605'],['1042','615']].map(([cx, cy]) => (
+          <circle key={`${cx}-${cy}`} cx={cx} cy={cy} r="4.5" />
+        ))}
+      </g>
+    </svg>
   )
 }

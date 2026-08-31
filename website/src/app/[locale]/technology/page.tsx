@@ -28,9 +28,9 @@ export default function TechnologyPage() {
         <section className="mb-20">
           <div className="text-center mb-12 fade-in-up">
             <h2 className="text-3xl md:text-4xl font-display font-bold mb-2">
-              <span className="gradient-text">{t('layersTitle')}</span>
+              <span>{t('layersTitle')}</span>
             </h2>
-            <div className="w-24 h-1 bg-gradient-cyber mx-auto mt-4 rounded-full" />
+            <div className="w-16 h-px bg-line mx-auto mt-4 rounded-full" />
           </div>
           <ArchitectureDiagram
             labels={{
@@ -85,9 +85,9 @@ export default function TechnologyPage() {
         <section className="mb-20">
           <div className="text-center mb-12 fade-in-up">
             <h2 className="text-3xl md:text-4xl font-display font-bold mb-2">
-              <span className="gradient-text">{t('poseProtocol.title')}</span>
+              <span>{t('poseProtocol.title')}</span>
             </h2>
-            <div className="w-24 h-1 bg-gradient-cyber mx-auto mt-4 rounded-full" />
+            <div className="w-16 h-px bg-line mx-auto mt-4 rounded-full" />
           </div>
 
           <PoseFlowDiagram
@@ -101,7 +101,7 @@ export default function TechnologyPage() {
 
           <div className="space-y-8">
             {/* Challenge Flow */}
-            <div className="relative bg-bg-elevated p-8 rounded-xl border border-accent-blue/30 hover:border-accent-blue/50 transition-all duration-500 noise-texture glow-border fade-in-delay-1">
+            <div className="relative bg-bg-elevated p-8 rounded-xl border border-accent-blue/30 hover:border-accent-blue/50 transition-all duration-500 fade-in-delay-1">
               <h3 className="text-2xl font-display font-semibold mb-6 text-accent-blue">{t('poseProtocol.challengeFlow')}</h3>
               <div className="space-y-4">
                 <FlowStep
@@ -157,7 +157,7 @@ export default function TechnologyPage() {
             </div>
 
             {/* Anti-Sybil */}
-            <div className="relative bg-bg-elevated p-6 rounded-lg border border-accent-cyan/30 hover:border-accent-cyan/50 transition-all duration-500 noise-texture fade-in-delay-3">
+            <div className="relative bg-bg-elevated p-6 rounded-lg border border-accent-cyan/30 hover:border-accent-cyan/50 transition-all duration-500 fade-in-delay-3">
               <h3 className="text-xl font-display font-semibold mb-4 text-accent-cyan">{t('poseProtocol.antiSybilTitle')}</h3>
               <div className="grid md:grid-cols-2 gap-4">
                 <ul className="space-y-2 text-text-secondary font-body">
@@ -185,9 +185,9 @@ export default function TechnologyPage() {
         <section className="mb-20">
           <div className="text-center mb-12 fade-in-up">
             <h2 className="text-3xl md:text-4xl font-display font-bold mb-2">
-              <span className="gradient-text">{t('performance.title')}</span>
+              <span>{t('performance.title')}</span>
             </h2>
-            <div className="w-24 h-1 bg-gradient-cyber mx-auto mt-4 rounded-full" />
+            <div className="w-16 h-px bg-line mx-auto mt-4 rounded-full" />
           </div>
           <div className="grid md:grid-cols-3 gap-6">
             <MetricCard
@@ -227,9 +227,9 @@ export default function TechnologyPage() {
         <section className="mb-20">
           <div className="text-center mb-12 fade-in-up">
             <h2 className="text-3xl md:text-4xl font-display font-bold mb-2">
-              <span className="gradient-text">{t('comparison.title')}</span>
+              <span>{t('comparison.title')}</span>
             </h2>
-            <div className="w-24 h-1 bg-gradient-cyber mx-auto mt-4 rounded-full" />
+            <div className="w-16 h-px bg-line mx-auto mt-4 rounded-full" />
           </div>
           <div className="overflow-x-auto fade-in-delay-1">
             <table className="min-w-full bg-bg-elevated border border-text-muted/20 rounded-lg overflow-hidden">
@@ -238,7 +238,7 @@ export default function TechnologyPage() {
                   <th className="px-6 py-4 text-left text-sm font-display font-semibold text-text-primary">{t('comparison.dimensions.barrier')}</th>
                   <th className="px-6 py-4 text-left text-sm font-display font-semibold text-text-primary">PoW</th>
                   <th className="px-6 py-4 text-left text-sm font-display font-semibold text-text-primary">PoS</th>
-                  <th className="px-6 py-4 text-left text-sm font-display font-semibold text-accent-cyan border-l-2 border-accent-cyan/30">Palimesh (PoSe)</th>
+                  <th className="px-6 py-4 text-left text-sm font-display font-semibold text-accent-cyan border-l-2 border-accent-cyan/30">PaliMesh (PoSe)</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-text-muted/10">
@@ -292,9 +292,9 @@ export default function TechnologyPage() {
         <section className="pb-8">
           <div className="text-center mb-12 fade-in-up">
             <h2 className="text-3xl md:text-4xl font-display font-bold mb-2">
-              <span className="gradient-text">{t('techStack.title')}</span>
+              <span>{t('techStack.title')}</span>
             </h2>
-            <div className="w-24 h-1 bg-gradient-cyber mx-auto mt-4 rounded-full" />
+            <div className="w-16 h-px bg-line mx-auto mt-4 rounded-full" />
           </div>
           <div className="grid md:grid-cols-2 gap-6">
             <TechStackCard
@@ -345,11 +345,11 @@ function LayerCard({
   const colors = colorMap[color]
 
   return (
-    <div className="group bg-bg-elevated rounded-xl border border-text-muted/10 hover:border-accent-cyan/50 overflow-hidden transition-all duration-500 hover:shadow-glow-md noise-texture fade-in-up">
+    <div className="group bg-bg-elevated rounded-xl border border-text-muted/10 hover:border-accent-cyan/50 overflow-hidden transition-all duration-500 fade-in-up">
       <div className={`relative bg-gradient-to-r ${colors.gradient} p-6 overflow-hidden`}>
         <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 data-flow" />
         <div className="flex items-center gap-4 mb-2 relative z-10">
-          <div className="bg-white/10 backdrop-blur-sm rounded-lg w-14 h-14 flex items-center justify-center font-display font-bold text-2xl text-white border border-white/20 group-hover:scale-110 transition-transform duration-500">
+          <div className="bg-white/10 rounded-lg w-14 h-14 flex items-center justify-center font-display font-bold text-2xl text-white border border-white/20 group-hover:scale-110 transition-transform duration-500">
             {number}
           </div>
           <div>
@@ -388,7 +388,7 @@ function FlowStep({
 }) {
   return (
     <div className="flex gap-4 group">
-      <div className="bg-gradient-to-br from-accent-blue to-accent-cyan text-white rounded-lg w-12 h-12 flex items-center justify-center font-display font-bold flex-shrink-0 shadow-glow-sm group-hover:shadow-glow-md transition-all duration-500 group-hover:scale-110">
+      <div className="bg-gradient-to-br from-accent-blue to-accent-cyan text-white rounded-lg w-12 h-12 flex items-center justify-center font-display font-bold flex-shrink-0 group-hover:shadow-glow-md transition-all duration-500 group-hover:scale-110">
         {step}
       </div>
       <div className="flex-1">
@@ -418,7 +418,7 @@ function FormulaCard({
   rationale: string
 }) {
   return (
-    <div className="group bg-bg-elevated p-6 rounded-lg border border-text-muted/10 hover:border-accent-purple/50 transition-all duration-500 hover:shadow-glow-md noise-texture">
+    <div className="group bg-bg-elevated p-6 rounded-lg border border-text-muted/10 hover:border-accent-purple/50 transition-all duration-500">
       <h4 className="font-display font-bold text-text-primary mb-4 group-hover:text-accent-purple transition-colors">{title}</h4>
       <div className="bg-accent-blue/10 p-4 rounded-lg mb-4 font-display text-sm text-accent-blue border border-accent-blue/20 overflow-x-auto">
         {formula}
@@ -448,10 +448,10 @@ function MetricCard({
   description: string
 }) {
   return (
-    <div className="group bg-bg-elevated p-6 rounded-lg border border-text-muted/10 hover:border-accent-cyan/50 transition-all duration-500 text-center hover:shadow-glow-md noise-texture fade-in-up">
-      <div className="absolute inset-0 bg-gradient-cyber opacity-0 group-hover:opacity-5 rounded-lg transition-opacity duration-500" />
+    <div className="group bg-bg-elevated p-6 rounded-lg border border-text-muted/10 hover:border-accent-cyan/50 transition-all duration-500 text-center fade-in-up">
+      <div className="absolute inset-0 bg-accent-blue opacity-0 group-hover:opacity-5 rounded-lg transition-opacity duration-500" />
       <h4 className="text-xs font-display font-medium text-text-muted uppercase tracking-wider mb-3">{title}</h4>
-      <p className="text-4xl font-display font-bold gradient-text mb-3 group-hover:glow-text transition-all">
+      <p className="text-4xl font-display font-bold mb-3 transition-all">
         {value}
       </p>
       <p className="text-sm text-text-secondary font-body">{description}</p>
@@ -491,8 +491,8 @@ function ComparisonRow({
 
 function TechStackCard({ title, items }: { title: string; items: string[] }) {
   return (
-    <div className="group bg-bg-elevated p-6 rounded-lg border border-text-muted/10 hover:border-accent-blue/50 transition-all duration-500 hover:shadow-glow-md noise-texture fade-in-up">
-      <div className="absolute inset-0 bg-gradient-cyber opacity-0 group-hover:opacity-5 rounded-lg transition-opacity duration-500" />
+    <div className="group bg-bg-elevated p-6 rounded-lg border border-text-muted/10 hover:border-accent-blue/50 transition-all duration-500 fade-in-up">
+      <div className="absolute inset-0 bg-accent-blue opacity-0 group-hover:opacity-5 rounded-lg transition-opacity duration-500" />
       <h3 className="text-lg font-display font-bold mb-4 text-text-primary group-hover:text-accent-blue transition-colors">
         {title}
       </h3>

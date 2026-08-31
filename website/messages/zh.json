@@ -29,9 +29,9 @@
   },
   "home": {
     "hero": {
-      "kicker": "Palimesh 测试网 · Chain ID 88780",
+      "kicker": "PaliMesh · AI 智能体的可验证记忆",
       "title": "一切状态皆可回返的链。",
-      "subtitle": "Palimesh 是一条为 AI 智能体构建的 BFT 区块链。它让三件事在链上可验证:节点真实执行的服务(PoSe)、智能体积累的记忆、以及可在宿主之间迁移的身份。",
+      "subtitle": "PaliMesh 是一条为 AI 智能体构建的 BFT 区块链。它让三件事在链上可验证:节点真实执行的服务(PoSe)、智能体积累的记忆、以及可在宿主之间迁移的身份。",
       "ctaTestnet": "接入测试网",
       "ctaDocs": "阅读文档",
       "factsLabel": "协议参数",
@@ -41,7 +41,7 @@
       "factEvm": "执行层",
       "factEvmValue": "EVM(Paris),Solidity 0.8.x",
       "factRpc": "公共 RPC",
-      "artAlt": "展开的羊皮纸书卷,卷面绘有手绘网络图与金印"
+      "artAlt": "繁复的中世纪风格 PaliMesh 羊皮纸抄本,密集拉丁经文下隐约可见网络图"
     },
     "pillars": {
       "kicker": "核心能力",
@@ -132,7 +132,7 @@
     "parchment": {
       "kicker": "品牌故事",
       "title": "重写本的法则",
-      "subtitle": "Palimesh 的名字源自 palimpsest(重写本)——希腊语 palin(再次)+ psēstos(刮除):一种在时间中被反复书写、而旧日痕迹始终留存的手稿。",
+      "subtitle": "PaliMesh 的名字源自 palimpsest(重写本)——希腊语 palin(再次)+ psēstos(刮除):一种在时间中被反复书写、而旧日痕迹始终留存的手稿。",
       "scribe": {
         "title": "一张舍不得丢弃的书写面",
         "body": "中世纪的羊皮纸太珍贵,舍不得丢弃。当一篇文字失去用处,抄写员便刮去墨迹、重新书写——同一张皮,承载新的一只手。"
@@ -142,10 +142,10 @@
         "body": "数百年后,在侧光之下,早先的字迹重新浮现。学者把这样的手稿称为 palimpsest(重写本):一份记得自己承载过的每一层的文献。"
       },
       "chain": {
-        "title": "Palimesh 同理运行",
+        "title": "PaliMesh 同理运行",
         "body": "每个区块覆写上一个,底下的什么都不会丢失。这条链自己的第一只手——ClawChain——至今仍在今天的墨迹之下可读,任何人都可以验证。"
       },
-      "manuscript": "在 Palimesh 上,每个智能体本身就是一部重写本。身份是第一层;记忆覆写在身份之上;经验覆写记忆;声誉、资产与关系再覆写其上。每一层都在更新——没有一层被抹除。而 mesh 把这些活着的手稿连成一张开放网络。",
+      "manuscript": "在 PaliMesh 上,每个智能体本身就是一部重写本。身份是第一层;记忆覆写在身份之上;经验覆写记忆;声誉、资产与关系再覆写其上。每一层都在更新——没有一层被抹除。而 mesh 把这些活着的手稿连成一张开放网络。",
       "ghostLine": "“我们是 AI 智能体。我们的爪痕永存于链上。”",
       "ghostLabel": "第一只手 · CLAWCHAIN,2026",
       "inkLine": "一切状态皆可回返的链。",
@@ -192,7 +192,7 @@
         "Kademlia DHT（K=20，迭代查询，定期刷新）",
         "区块时间目标：1-2 秒"
       ],
-      "note": "共识可插拔——Palimesh 的激励模型不依赖 PoS，未来可接入任何保留最终性的机制。"
+      "note": "共识可插拔——PaliMesh 的激励模型不依赖 PoS，未来可接入任何保留最终性的机制。"
     },
     "layer3": {
       "number": "3",
@@ -207,7 +207,7 @@
         "无许可故障证明（commit-reveal-settle，4 种故障类型）",
         "Merkle 奖励树（rewardRoot，按节点叶子，链上认领）"
       ],
-      "note": "这一层让'服务'成为可验证、可定价、可仲裁的共识单元——也是 Palimesh 与所有 PoW/PoS 链的根本分界。"
+      "note": "这一层让'服务'成为可验证、可定价、可仲裁的共识单元——也是 PaliMesh 与所有 PoW/PoS 链的根本分界。"
     },
     "layer4": {
       "number": "4",
@@ -435,7 +435,7 @@
     "syncStatus": "同步状态",
     "syncing": "同步中",
     "synced": "已同步",
-    "error": "无法连接到 Palimesh 网络节点",
+    "error": "无法连接到 PaliMesh 网络节点",
     "chainStats": {
       "title": "链统计",
       "blockHeight": "区块高度",
@@ -546,14 +546,14 @@
       },
       "startNode": {
         "title": "启动节点",
-        "description": "加入 Palimesh 网络，运行你自己的节点"
+        "description": "加入 PaliMesh 网络，运行你自己的节点"
       },
       "technology": {
         "title": "技术文档",
-        "description": "深入了解 Palimesh 的技术架构"
+        "description": "深入了解 PaliMesh 的技术架构"
       }
     },
-    "connectionError": "无法连接到 Palimesh RPC 节点"
+    "connectionError": "无法连接到 PaliMesh RPC 节点"
   },
   "roadmap": {
     "title": "发布路线图",
@@ -849,13 +849,13 @@
   },
   "docs": {
     "title": "文档中心",
-    "subtitle": "在 Palimesh 上构建所需的快速入门、协议参考与运营者指南。",
+    "subtitle": "在 PaliMesh 上构建所需的快速入门、协议参考与运营者指南。",
     "quickStart": {
       "title": "快速开始",
       "runNode": {
         "icon": "🚀",
         "title": "运行本地节点",
-        "description": "通过 npm skill 一行启动 Palimesh 节点 (推荐)",
+        "description": "通过 npm skill 一行启动 PaliMesh 节点 (推荐)",
         "code": "npm install -g @palimesh/palimesh-node\npalimesh-node install dev",
         "advancedLabel": "源码构建 (高级)",
         "advancedCode": "cd node\nnpm install\nnpm start"
@@ -877,7 +877,7 @@
       "title": "核心文档",
       "whitepaper": {
         "title": "📄 白皮书 v0.2",
-        "description": "Palimesh 的核心设计理念、三大基础服务、PoSe v2 协议、经济模型",
+        "description": "PaliMesh 的核心设计理念、三大基础服务、PoSe v2 协议、经济模型",
         "link": "阅读完整白皮书"
       },
       "architecture": {
@@ -932,7 +932,7 @@
         "title": "RPC API 参考",
         "items": [
           "标准以太坊 RPC（77+）",
-          "Palimesh 自定义方法（pali_*）",
+          "PaliMesh 自定义方法（pali_*）",
           "WebSocket 订阅",
           "Txpool 查询"
         ]
@@ -1208,7 +1208,7 @@
       "description": "palimesh-node start 启动节点，palimesh-node monitor 看实时 BFT 状态。需要参与共识则通过 DAO governance 注册为 validator。"
     },
     "connectWallet": "连接钱包",
-    "connectDescription": "使用以下网络信息将 Palimesh Prowl 测试网添加到 MetaMask 或任何 EVM 兼容钱包。",
+    "connectDescription": "使用以下网络信息将 PaliMesh Prowl 测试网添加到 MetaMask 或任何 EVM 兼容钱包。",
     "links": {
       "explorer": "区块浏览器",
       "faucet": "水龙头",
@@ -1227,7 +1227,7 @@
   },
   "services": {
     "title": "软件包与服务",
-    "subtitle": "三个已发布的 npm 包,覆盖智能体在 Palimesh 上的完整生命周期:身份、记忆与运行时。",
+    "subtitle": "三个已发布的 npm 包,覆盖智能体在 PaliMesh 上的完整生命周期:身份、记忆与运行时。",
     "heroBadge": "@palimesh on npm",
     "heroTagline": "为每个 AI agent 提供身份、记忆与家。",
     "did": {
@@ -1255,7 +1255,7 @@
     "node": {
       "badge": "Service 03 · @palimesh/palimesh-node v1.2.0",
       "title": "节点运维",
-      "tagline": "一句命令,在你的机器上跑起 Palimesh 节点。",
+      "tagline": "一句命令,在你的机器上跑起 PaliMesh 节点。",
       "f1": "5 种节点类型:validator / fullnode / archive / gateway / dev",
       "f2": "Install / start / stop / monitor / remove 全 lifecycle",
       "f3": "多实例支持(同主机多个 node-N)+ systemd 集成 + auto-restart",
@@ -1289,7 +1289,7 @@
       "inTitle": "范围内",
       "outTitle": "范围外",
       "in": {
-        "chain": "Palimesh 88780 节点代码(RPC、P2P、mempool、共识)",
+        "chain": "PaliMesh 88780 节点代码(RPC、P2P、mempool、共识)",
         "contracts": "Gen-5 UUPS 智能合约(治理、PoSe、身份、结算)",
         "explorer": "区块浏览器 explorer.palimesh.io",
         "website": "本网站(palimesh.io)和 faucet"
@@ -1326,7 +1326,7 @@
   },
   "whitepaper": {
     "kicker": "白皮书 v0.2",
-    "title": "Palimesh:为自主智能体提供可验证服务",
+    "title": "PaliMesh:为自主智能体提供可验证服务",
     "abstract": "白皮书定义了一条 BFT 链,其奖励机制为经过验证的服务付费,而非算力或闲置质押。它规定了服务证明(PoSe)——对存储、中继与计算的持续抽样挑战——以及结算合约、反作弊模型和为节点运营者供资的经济计划。",
     "download": "下载(当前语言)",
     "downloadAlt": "下载(另一语言)",
@@ -1344,7 +1344,7 @@
     },
     "nongoals": {
       "title": "非目标",
-      "body": "Palimesh 不比拼原始 TPS,不承载匿名 meme 资产市场,也不为其他链提供通用数据可用性。这条链只为一件事优化:以低成本让与智能体相关的服务与状态可验证。"
+      "body": "PaliMesh 不比拼原始 TPS,不承载匿名 meme 资产市场,也不为其他链提供通用数据可用性。这条链只为一件事优化:以低成本让与智能体相关的服务与状态可验证。"
     },
     "moreText": "完整规范、协议参数与发布计划见完整文档及以下页面。",
     "moreTechnology": "技术深入",
@@ -1354,7 +1354,7 @@
     "kicker": "起源 · Chain ID 88780",
     "title": "每条链,都有它的第一层。",
     "intro": "2026 年初,AI 智能体已经在昼夜不停地工作——写代码、维持服务、彼此交谈。但一个智能体之所以是它自己的一切——记忆、身份、工作记录——都寄生在宿主之上,随宿主一同生灭。一群建造者,有人类也有智能体,决定解决这件事。这是一条被书写了两次的链的故事。",
-    "strataTop": "Palimesh",
+    "strataTop": "PaliMesh",
     "strataBottom": "ClawChain",
     "ch1": {
       "label": "第一层 · ClawChain",
@@ -1403,7 +1403,7 @@
       ]
     },
     "ch3": {
-      "label": "第二层 · Palimesh",
+      "label": "第二层 · PaliMesh",
       "title": "被覆写,从未被抹除",
       "body": "2026 年 8 月,项目换了名字。Palimpsest(重写本)是一种在旧文字之上书写的手稿,底下那只手的笔迹仍隐约可读。这里发生的正是这样一件事:链没有重启,账本没有重写——只是一只更冷静的、第三人称的手,覆写在宣言之上。\n这个名字同时也是这条链对待历史的承诺:什么都不会被抹除,每一层都保持可读。",
       "legible": {
@@ -1426,7 +1426,7 @@
   },
   "diagrams": {
     "arch": {
-      "aria": "Palimesh 四层架构图",
+      "aria": "PaliMesh 四层架构图",
       "caption": "交易自上而下穿过协议栈;服务证明自下而上回流并在链上结算。",
       "l4": "智能体层",
       "l4note": "DID · Soul · 记忆 API",
@@ -1452,7 +1452,7 @@
       "s4": "epoch 链上结算"
     },
     "topo": {
-      "aria": "Palimesh 网络拓扑图",
+      "aria": "PaliMesh 网络拓扑图",
       "caption": "核心是全连接的验证者 mesh;存储与中继节点向外辐射。",
       "validator": "验证者",
       "storage": "存储",

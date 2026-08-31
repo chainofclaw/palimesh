@@ -1,6 +1,6 @@
 import { JsonRpcProvider } from 'ethers'
 
-// Default Palimesh R3.2 testnet (88780). 18780 was decommissioned 2026-05-12.
+// Default PaliMesh R3.2 testnet (88780). 18780 was decommissioned 2026-05-12.
 export const CHAIN_ID = Number(process.env.NEXT_PUBLIC_CHAIN_ID || '88780')
 
 // Browser / client bundle: NEXT_PUBLIC_* only. Server: PALI_RPC_URL for SSR (same chain as Explorer).
@@ -9,14 +9,14 @@ export const WS_URL = process.env.NEXT_PUBLIC_WS_URL || 'ws://127.0.0.1:28790'
 
 export const SERVER_RPC_URL = process.env.PALI_RPC_URL || RPC_URL
 
-/** Server-side JSON-RPC uses PALI_RPC_URL; client uses NEXT_PUBLIC_RPC_URL (falls back when Palimesh is unset). */
+/** Server-side JSON-RPC uses PALI_RPC_URL; client uses NEXT_PUBLIC_RPC_URL (falls back when PaliMesh is unset). */
 export function getEffectiveRpcUrl(): string {
   return typeof window === 'undefined' ? SERVER_RPC_URL : RPC_URL
 }
 
 export const provider = new JsonRpcProvider(SERVER_RPC_URL, {
   chainId: CHAIN_ID,
-  name: 'Palimesh',
+  name: 'PaliMesh',
 })
 
 export function formatHash(hash: string, start = 6, end = 4): string {

@@ -18,7 +18,7 @@ export default function DocsPage() {
         <div className="container mx-auto px-4 relative z-10">
           <div className="max-w-4xl mx-auto text-center">
             <div className="inline-block mb-6 fade-in">
-              <div className="px-4 py-2 rounded-full border border-accent-cyan/30 bg-accent-cyan/5 backdrop-blur-sm">
+              <div className="px-4 py-2 rounded-full border border-accent-cyan/30 bg-accent-cyan/5">
                 <span className="font-display text-sm text-accent-cyan tracking-wider">
                   DOCUMENTATION_v2.0
                 </span>
@@ -26,7 +26,7 @@ export default function DocsPage() {
             </div>
 
             <h1 className="text-4xl md:text-6xl font-display font-bold mb-6 fade-in-delay-1">
-              <span className="gradient-text glow-text">{t('title')}</span>
+              <span className="ink-underline">{t('title')}</span>
             </h1>
             <p className="text-xl text-text-secondary max-w-2xl mx-auto font-body fade-in-delay-2">
               {t('subtitle')}
@@ -42,9 +42,9 @@ export default function DocsPage() {
         <section className="mb-20">
           <div className="text-center mb-12 fade-in-up">
             <h2 className="text-3xl md:text-4xl font-display font-bold mb-2">
-              <span className="gradient-text">{t('quickStart.title')}</span>
+              <span>{t('quickStart.title')}</span>
             </h2>
-            <div className="w-24 h-1 bg-gradient-cyber mx-auto mt-4 rounded-full" />
+            <div className="w-16 h-px bg-line mx-auto mt-4 rounded-full" />
           </div>
           <div className="grid md:grid-cols-3 gap-6">
             <QuickStartCard
@@ -79,7 +79,7 @@ export default function DocsPage() {
             <h2 className="text-3xl md:text-4xl font-display font-bold mb-2">
               {t('coreDocs.title')}
             </h2>
-            <div className="w-24 h-1 bg-gradient-cyber mx-auto mt-4 rounded-full" />
+            <div className="w-16 h-px bg-line mx-auto mt-4 rounded-full" />
           </div>
           <div className="grid md:grid-cols-2 gap-6">
             <DocCard
@@ -126,7 +126,7 @@ export default function DocsPage() {
             <h2 className="text-3xl md:text-4xl font-display font-bold mb-2">
               {t('devGuides.title')}
             </h2>
-            <div className="w-24 h-1 bg-gradient-cyber mx-auto mt-4 rounded-full" />
+            <div className="w-16 h-px bg-line mx-auto mt-4 rounded-full" />
           </div>
           <div className="grid md:grid-cols-2 gap-6">
             <GuideCard
@@ -162,9 +162,9 @@ export default function DocsPage() {
             <h2 className="text-3xl md:text-4xl font-display font-bold mb-2">
               {t('implementationStatus.title')}
             </h2>
-            <div className="w-24 h-1 bg-gradient-cyber mx-auto mt-4 rounded-full" />
+            <div className="w-16 h-px bg-line mx-auto mt-4 rounded-full" />
           </div>
-          <div className="bg-bg-elevated rounded-xl p-8 border border-text-muted/10 noise-texture fade-in-delay-1">
+          <div className="bg-bg-elevated rounded-xl p-8 border border-text-muted/10 fade-in-delay-1">
             <div className="grid md:grid-cols-3 gap-6 mb-6">
               <StatusItem
                 label={t('implementationStatus.chainEngine.label')}
@@ -220,7 +220,7 @@ export default function DocsPage() {
                 href="https://github.com/palimesh/palimesh"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="group inline-flex items-center gap-3 px-8 py-4 rounded-lg font-display font-semibold border-2 border-accent-cyan/50 bg-accent-cyan/5 hover:bg-accent-cyan/10 hover:border-accent-cyan transition-all hover:shadow-glow-md"
+                className="group inline-flex items-center gap-3 px-8 py-4 rounded-lg font-display font-semibold border-2 border-accent-cyan/50 bg-accent-cyan/5 hover:bg-accent-cyan/10 hover:border-accent-cyan transition-all"
               >
                 <svg className="w-6 h-6 text-accent-cyan" fill="currentColor" viewBox="0 0 24 24">
                   <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
@@ -239,7 +239,7 @@ export default function DocsPage() {
             <h2 className="text-3xl md:text-4xl font-display font-bold mb-2">
               {t('tools.title')}
             </h2>
-            <div className="w-24 h-1 bg-gradient-cyber mx-auto mt-4 rounded-full" />
+            <div className="w-16 h-px bg-line mx-auto mt-4 rounded-full" />
           </div>
           <div className="grid md:grid-cols-3 gap-6">
             <ToolCard
@@ -269,12 +269,12 @@ export default function DocsPage() {
 
         {/* Resources */}
         <section className="fade-in-up">
-          <div className="relative bg-gradient-to-br from-accent-cyan/10 via-accent-blue/10 to-accent-purple/10 rounded-xl p-10 border border-accent-cyan/30 overflow-hidden noise-texture">
-            <div className="absolute inset-0 bg-gradient-cyber opacity-5" />
+          <div className="relative bg-gradient-to-br from-accent-cyan/10 via-accent-blue/10 to-accent-purple/10 rounded-xl p-10 border border-accent-cyan/30 overflow-hidden">
+            <div className="absolute inset-0 bg-accent-blue opacity-[0.04]" />
 
             <div className="relative z-10">
               <h2 className="text-3xl font-display font-bold mb-8 text-center">
-                <span className="gradient-text">{t('resources.title')}</span>
+                <span>{t('resources.title')}</span>
               </h2>
               <div className="grid md:grid-cols-2 gap-6">
                 <ResourceLink
@@ -325,10 +325,10 @@ function QuickStartCard({
 }) {
   return (
     <div
-      className="group relative bg-bg-elevated rounded-xl p-6 border border-text-muted/10 hover:border-accent-cyan/50 transition-all duration-500 hover:shadow-glow-md noise-texture fade-in-up"
+      className="group relative bg-bg-elevated rounded-xl p-6 border border-text-muted/10 hover:border-accent-cyan/50 transition-all duration-500 fade-in-up"
       style={{ animationDelay: `${delay}s` }}
     >
-      <div className="absolute inset-0 bg-gradient-cyber opacity-0 group-hover:opacity-5 rounded-xl transition-opacity duration-500" />
+      <div className="absolute inset-0 bg-accent-blue opacity-0 group-hover:opacity-5 rounded-xl transition-opacity duration-500" />
 
       <div className="text-5xl mb-4 filter grayscale group-hover:grayscale-0 transition-all duration-500 float">
         {icon}
@@ -372,10 +372,10 @@ function DocCard({
 }) {
   return (
     <div
-      className="group relative bg-bg-elevated rounded-xl p-6 border border-text-muted/10 hover:border-accent-cyan/50 transition-all duration-500 hover:shadow-glow-md noise-texture fade-in-up"
+      className="group relative bg-bg-elevated rounded-xl p-6 border border-text-muted/10 hover:border-accent-cyan/50 transition-all duration-500 fade-in-up"
       style={{ animationDelay: `${delay}s` }}
     >
-      <div className="absolute inset-0 bg-gradient-cyber opacity-0 group-hover:opacity-5 rounded-xl transition-opacity duration-500" />
+      <div className="absolute inset-0 bg-accent-blue opacity-0 group-hover:opacity-5 rounded-xl transition-opacity duration-500" />
 
       <h3 className="text-xl font-display font-bold mb-3 text-text-primary group-hover:text-accent-cyan transition-colors">
         {title}
@@ -414,10 +414,10 @@ function GuideCard({
 }) {
   return (
     <div
-      className="group relative bg-bg-elevated rounded-xl p-6 border border-text-muted/10 hover:border-accent-cyan/50 transition-all duration-500 hover:shadow-glow-md noise-texture fade-in-up"
+      className="group relative bg-bg-elevated rounded-xl p-6 border border-text-muted/10 hover:border-accent-cyan/50 transition-all duration-500 fade-in-up"
       style={{ animationDelay: `${delay}s` }}
     >
-      <div className="absolute inset-0 bg-gradient-cyber opacity-0 group-hover:opacity-5 rounded-xl transition-opacity duration-500" />
+      <div className="absolute inset-0 bg-accent-blue opacity-0 group-hover:opacity-5 rounded-xl transition-opacity duration-500" />
 
       <div className="flex items-center gap-3 mb-4">
         <span className="text-4xl filter grayscale group-hover:grayscale-0 transition-all duration-500">
@@ -487,10 +487,10 @@ function ToolCard({
 }) {
   return (
     <div
-      className="group relative bg-bg-elevated rounded-xl p-6 border border-text-muted/10 hover:border-accent-cyan/50 transition-all duration-500 hover:shadow-glow-md noise-texture fade-in-up"
+      className="group relative bg-bg-elevated rounded-xl p-6 border border-text-muted/10 hover:border-accent-cyan/50 transition-all duration-500 fade-in-up"
       style={{ animationDelay: `${delay}s` }}
     >
-      <div className="absolute inset-0 bg-gradient-cyber opacity-0 group-hover:opacity-5 rounded-xl transition-opacity duration-500" />
+      <div className="absolute inset-0 bg-accent-blue opacity-0 group-hover:opacity-5 rounded-xl transition-opacity duration-500" />
 
       <h3 className="text-xl font-display font-bold mb-3 text-text-primary group-hover:text-accent-cyan transition-colors">
         {title}
@@ -535,7 +535,7 @@ function ResourceLink({
   return (
     <Link
       href={href}
-      className="group block bg-bg-elevated/50 backdrop-blur-sm p-6 rounded-xl border border-text-muted/10 hover:border-accent-cyan/50 hover:bg-bg-elevated transition-all duration-500 hover:shadow-glow-md"
+      className="group block bg-bg-elevated/50 p-6 rounded-xl border border-text-muted/10 hover:border-accent-cyan/50 hover:bg-bg-elevated transition-all duration-500"
     >
       <h3 className="font-display font-bold mb-2 text-text-primary group-hover:text-accent-cyan transition-colors flex items-center gap-2">
         <span>{title}</span>

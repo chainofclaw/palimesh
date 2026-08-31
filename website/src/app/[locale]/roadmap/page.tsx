@@ -19,7 +19,7 @@ export default function RoadmapPage() {
           <div className="max-w-5xl mx-auto">
             {/* Pre-title */}
             <div className="inline-block mb-6 fade-in">
-              <div className="px-4 py-2 rounded-full border border-accent-cyan/30 bg-accent-cyan/5 backdrop-blur-sm">
+              <div className="px-4 py-2 rounded-full border border-accent-cyan/30 bg-accent-cyan/5">
                 <span className="font-display text-sm text-accent-cyan tracking-wider">
                   DEVELOPMENT_ROADMAP
                 </span>
@@ -28,7 +28,7 @@ export default function RoadmapPage() {
 
             {/* Title */}
             <h1 className="text-5xl md:text-6xl font-display font-bold mb-6 fade-in-delay-1">
-              <span className="gradient-text glow-text">{t('title')}</span>
+              <span className="ink-underline">{t('title')}</span>
             </h1>
             <p className="text-xl text-text-secondary max-w-3xl font-body fade-in-delay-2">
               {t('subtitle')}
@@ -45,9 +45,9 @@ export default function RoadmapPage() {
         <section className="mb-20">
           <div className="text-center mb-12 fade-in-up">
             <h2 className="text-3xl md:text-4xl font-display font-bold mb-4">
-              <span className="gradient-text">{t('whitepaper.title')}</span>
+              <span>{t('whitepaper.title')}</span>
             </h2>
-            <div className="w-24 h-1 bg-gradient-cyber mx-auto mt-4 rounded-full" />
+            <div className="w-16 h-px bg-line mx-auto mt-4 rounded-full" />
           </div>
           <div className="space-y-6">
             <PhaseCard
@@ -85,9 +85,9 @@ export default function RoadmapPage() {
         <section className="mb-20">
           <div className="text-center mb-12 fade-in-up">
             <h2 className="text-3xl md:text-4xl font-display font-bold mb-4">
-              <span className="gradient-text">{t('implementation.title')}</span>
+              <span>{t('implementation.title')}</span>
             </h2>
-            <div className="w-24 h-1 bg-gradient-cyber mx-auto mt-4 rounded-full" />
+            <div className="w-16 h-px bg-line mx-auto mt-4 rounded-full" />
           </div>
           <div className="space-y-4">
             <CycleGroup
@@ -111,9 +111,9 @@ export default function RoadmapPage() {
         <section className="mb-20">
           <div className="text-center mb-12 fade-in-up">
             <h2 className="text-3xl md:text-4xl font-display font-bold mb-4">
-              <span className="gradient-text">{t('milestones.title')}</span>
+              <span>{t('milestones.title')}</span>
             </h2>
-            <div className="w-24 h-1 bg-gradient-cyber mx-auto mt-4 rounded-full" />
+            <div className="w-16 h-px bg-line mx-auto mt-4 rounded-full" />
           </div>
           <div className="relative max-w-4xl mx-auto">
             <div className="absolute left-4 md:left-1/2 md:-translate-x-1/2 top-0 bottom-0 w-px bg-gradient-to-b from-accent-cyan via-accent-blue to-accent-purple opacity-40" />
@@ -129,9 +129,9 @@ export default function RoadmapPage() {
         <section>
           <div className="text-center mb-12 fade-in-up">
             <h2 className="text-3xl md:text-4xl font-display font-bold mb-4">
-              <span className="gradient-text">{t('future.title')}</span>
+              <span>{t('future.title')}</span>
             </h2>
-            <div className="w-24 h-1 bg-gradient-cyber mx-auto mt-4 rounded-full" />
+            <div className="w-16 h-px bg-line mx-auto mt-4 rounded-full" />
           </div>
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
             <FuturePlanCard
@@ -170,25 +170,25 @@ export default function RoadmapPage() {
         {/* CTA */}
         <section className="mt-20 relative overflow-hidden rounded-xl">
           <div className="absolute inset-0 bg-gradient-to-br from-accent-cyan/10 via-accent-blue/10 to-accent-purple/10" />
-          <div className="absolute inset-0 noise-texture" />
+          <div className="absolute inset-0" />
 
           <div className="relative z-10 p-12 text-center">
             <h2 className="text-3xl md:text-4xl font-display font-bold mb-4 fade-in-up">
-              <span className="gradient-text">{t('cta.title')}</span>
+              <span>{t('cta.title')}</span>
             </h2>
             <p className="mb-8 text-text-secondary font-body text-lg fade-in-delay-1">{t('cta.subtitle')}</p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center fade-in-delay-2">
               <a
                 href="https://github.com/palimesh/palimesh"
-                className="group relative px-8 py-4 rounded-lg font-display font-semibold text-lg overflow-hidden transition-all hover:scale-105"
+                className="group relative px-8 py-4 rounded-lg font-display font-semibold text-lg overflow-hidden transition-all"
               >
-                <div className="absolute inset-0 bg-gradient-cyber opacity-100 group-hover:opacity-90 transition-opacity" />
-                <div className="absolute inset-0 bg-gradient-cyber blur-xl opacity-50 group-hover:opacity-75 transition-opacity" />
+                <div className="absolute inset-0 bg-accent-purple opacity-100 group-hover:opacity-90 transition-opacity" />
+                <div className="absolute inset-0 bg-accent-blue/30 blur-xl opacity-50 group-hover:opacity-60 transition-opacity" />
                 <span className="relative text-white">{t('cta.github')}</span>
               </a>
               <a
                 href="/docs"
-                className="group px-8 py-4 rounded-lg font-display font-semibold text-lg border-2 border-accent-cyan/50 bg-accent-cyan/5 hover:bg-accent-cyan/10 hover:border-accent-cyan transition-all hover:shadow-glow-md backdrop-blur-sm"
+                className="group px-8 py-4 rounded-lg font-display font-semibold text-lg border-2 border-accent-cyan/50 bg-accent-cyan/5 hover:bg-accent-cyan/10 hover:border-accent-cyan transition-all"
               >
                 <span className="text-accent-cyan group-hover:text-accent-cyan/90">
                   {t('cta.docs')} →
@@ -239,9 +239,9 @@ function PhaseCard({
   const config = statusConfig[status]
 
   return (
-    <div className="group relative bg-bg-elevated rounded-xl overflow-hidden border border-text-muted/10 hover:border-accent-cyan/50 transition-all duration-500 hover:shadow-glow-md noise-texture fade-in-up">
+    <div className="group relative bg-bg-elevated rounded-xl overflow-hidden border border-text-muted/10 hover:border-accent-cyan/50 transition-all duration-500 fade-in-up">
       {/* Header */}
-      <div className="relative bg-gradient-cyber p-6 overflow-hidden">
+      <div className="relative bg-accent-purple p-6 overflow-hidden">
         <div className="absolute inset-0 opacity-10">
           <div className="absolute inset-0 bg-gradient-to-br from-accent-cyan via-accent-blue to-accent-purple" />
         </div>
@@ -251,7 +251,7 @@ function PhaseCard({
             <h3 className="text-2xl font-display font-bold text-white mt-1">{title}</h3>
           </div>
           <span
-            className={`${config.bg} ${config.text} ${config.border} ${config.glow} border-2 px-4 py-2 rounded-lg font-display font-semibold text-sm backdrop-blur-sm`}
+            className={`${config.bg} ${config.text} ${config.border} ${config.glow} border-2 px-4 py-2 rounded-lg font-display font-semibold text-sm`}
           >
             {statusLabel}
           </span>
@@ -278,14 +278,14 @@ function PhaseCard({
 
 function CycleGroup({ title, cycles }: { title: string; cycles: { num: number; desc: string }[] }) {
   return (
-    <div className="group bg-bg-elevated rounded-xl p-6 border border-text-muted/10 hover:border-accent-cyan/50 transition-all duration-500 noise-texture fade-in-up">
+    <div className="group bg-bg-elevated rounded-xl p-6 border border-text-muted/10 hover:border-accent-cyan/50 transition-all duration-500 fade-in-up">
       <h3 className="text-xl font-display font-bold mb-6 text-text-primary group-hover:text-accent-cyan transition-colors">
         {title}
       </h3>
       <div className="space-y-3">
         {cycles.map((c) => (
           <div key={c.num} className="flex gap-4 items-start group/item">
-            <span className="bg-gradient-cyber text-white rounded-lg px-3 py-1.5 font-display font-bold text-sm min-w-[5rem] text-center shadow-glow-sm">
+            <span className="bg-accent-purple text-white rounded-lg px-3 py-1.5 font-display font-bold text-sm min-w-[5rem] text-center">
               Cycle {c.num}
             </span>
             <span className="text-text-secondary font-body flex-1 group-hover/item:text-text-primary transition-colors">
@@ -325,7 +325,7 @@ function MilestoneRow({
           <span className={`font-display font-bold ${statusColor.text}`}>{date}</span>
         </div>
         <div className={`absolute left-2 md:left-1/2 md:-translate-x-1/2 w-5 h-5 rounded-full ${statusColor.dot} border-2 border-bg-primary ring-2 ring-bg-elevated`} />
-        <div className={`md:pl-8 p-4 rounded-xl bg-bg-elevated border ${statusColor.border} noise-texture`}>
+        <div className={`md:pl-8 p-4 rounded-xl bg-bg-elevated border ${statusColor.border}`}>
           <div className="md:hidden font-display text-sm mb-1 text-text-muted">{date}</div>
           <p className="text-text-primary font-body leading-relaxed">{label}</p>
         </div>
@@ -336,9 +336,9 @@ function MilestoneRow({
 
 function FuturePlanCard({ icon, title, items }: { icon: string; title: string; items: string[] }) {
   return (
-    <div className="group relative bg-bg-elevated rounded-xl p-6 border border-text-muted/10 hover:border-accent-cyan/50 transition-all duration-500 hover:shadow-glow-md noise-texture fade-in-up">
+    <div className="group relative bg-bg-elevated rounded-xl p-6 border border-text-muted/10 hover:border-accent-cyan/50 transition-all duration-500 fade-in-up">
       {/* Hover Glow Effect */}
-      <div className="absolute inset-0 bg-gradient-cyber opacity-0 group-hover:opacity-5 rounded-xl transition-opacity duration-500" />
+      <div className="absolute inset-0 bg-accent-blue opacity-0 group-hover:opacity-5 rounded-xl transition-opacity duration-500" />
 
       {/* Icon */}
       <div className="text-5xl mb-4 filter grayscale group-hover:grayscale-0 transition-all duration-500 float relative z-10">

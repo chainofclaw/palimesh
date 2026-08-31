@@ -13,7 +13,7 @@ export default function ServicesPage() {
         <div className="container mx-auto px-4 py-16 md:py-20 relative z-10">
           <div className="max-w-4xl mx-auto text-center">
             <div className="inline-block mb-6 fade-in">
-              <div className="px-4 py-2 rounded-full border border-accent-cyan/30 bg-accent-cyan/5 backdrop-blur-sm">
+              <div className="px-4 py-2 rounded-full border border-accent-cyan/30 bg-accent-cyan/5">
                 <span className="font-display text-sm text-accent-cyan tracking-wider">
                   {t('heroBadge')}
                 </span>
@@ -89,12 +89,12 @@ export default function ServicesPage() {
               </div>
             </div>
             <h2 className="text-3xl md:text-4xl font-display font-bold mb-2">
-              <span className="gradient-text">{t('openclawTitle')}</span>
+              <span>{t('openclawTitle')}</span>
             </h2>
             <p className="text-text-secondary font-body max-w-2xl mx-auto">
               {t('openclawSubtitle')}
             </p>
-            <div className="w-24 h-1 bg-gradient-cyber mx-auto mt-4 rounded-full" />
+            <div className="w-16 h-px bg-line mx-auto mt-4 rounded-full" />
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -108,19 +108,19 @@ export default function ServicesPage() {
               color="purple"
             />
             <OpenclawCard
-              title="Node of Palimesh testnet"
+              title="Node of PaliMesh testnet"
               skillId="//palimesh-node"
               version="v1.2.0"
-              description="Operate Palimesh blockchain nodes — install, start, stop, monitor, and remove validator, fullnode, archive, gateway, and dev nodes. Use when the user…"
+              description="Operate PaliMesh blockchain nodes — install, start, stop, monitor, and remove validator, fullnode, archive, gateway, and dev nodes. Use when the user…"
               overall="pass"
               scans={{ vt: 'pass', llm: 'pass', static: 'pass' }}
               color="blue"
             />
             <OpenclawCard
-              title="Palimesh Soul"
+              title="PaliMesh Soul"
               skillId="//palimesh-soul"
               version="v1.2.10"
-              description="Give an AI agent a persistent on-chain soul on Palimesh — register and manage the agent's decentralized identity (DID), anchor encrypted backups to IPFS + SoulReg…"
+              description="Give an AI agent a persistent on-chain soul on PaliMesh — register and manage the agent's decentralized identity (DID), anchor encrypted backups to IPFS + SoulReg…"
               overall="review"
               scans={{ vt: 'suspicious', llm: 'suspicious', static: 'pass' }}
               color="cyan"
@@ -130,10 +130,10 @@ export default function ServicesPage() {
 
         {/* Lifecycle narrative */}
         <section className="mt-20 mb-8">
-          <div className="bg-gradient-to-br from-accent-cyan/10 via-accent-purple/10 to-accent-blue/10 backdrop-blur-lg rounded-2xl border border-accent-cyan/20 p-8 md:p-12">
+          <div className="bg-gradient-to-br from-accent-cyan/10 via-accent-purple/10 to-accent-blue/10 rounded-2xl border border-accent-cyan/20 p-8 md:p-12">
             <div className="max-w-3xl mx-auto text-center">
               <h2 className="text-3xl md:text-4xl font-display font-bold mb-6">
-                <span className="gradient-text">{t('immortalityTitle')}</span>
+                <span>{t('immortalityTitle')}</span>
               </h2>
               <p className="text-text-secondary font-body leading-relaxed">
                 {t('immortalityNarrative')}
@@ -141,7 +141,7 @@ export default function ServicesPage() {
               <div className="mt-8 flex flex-wrap justify-center gap-4">
                 <Link
                   href="/testnet"
-                  className="px-6 py-2 rounded-lg bg-gradient-cyber text-white font-display font-semibold hover:shadow-glow-md transition-all hover:scale-105 text-sm"
+                  className="px-6 py-2 rounded-lg bg-text-primary text-bg-primary font-medium hover:bg-accent-purple transition-colors text-sm"
                 >
                   R3.2 Testnet
                 </Link>
@@ -191,7 +191,7 @@ function ServiceCard({
       border: 'border-accent-cyan/30',
       bg: 'from-accent-cyan/10 to-accent-cyan/5',
       text: 'text-accent-cyan',
-      gradient: 'bg-gradient-cyber',
+      gradient: 'bg-accent-purple',
     },
     purple: {
       border: 'border-accent-purple/30',
@@ -209,7 +209,7 @@ function ServiceCard({
   const c = colorMap[color]
 
   return (
-    <section className={`mb-12 rounded-2xl border ${c.border} bg-gradient-to-br ${c.bg} backdrop-blur-lg p-6 md:p-10`}>
+    <section className={`mb-12 rounded-2xl border ${c.border} bg-gradient-to-br ${c.bg} p-6 md:p-10`}>
       <div className={`inline-block text-xs font-mono ${c.text} mb-4 px-3 py-1 rounded-full border ${c.border}`}>
         {badge}
       </div>
@@ -271,7 +271,7 @@ function ServiceCard({
               href={npmUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className={`px-4 py-2 rounded-lg ${c.gradient} text-white font-display font-semibold text-sm hover:scale-105 transition-all`}
+              className={`px-4 py-2 rounded-lg ${c.gradient} text-white font-display font-semibold text-sm transition-all`}
             >
               {t('viewOnNpm')}
             </a>
@@ -338,7 +338,7 @@ function OpenclawCard({
 
   return (
     <div
-      className={`bg-bg-secondary/40 backdrop-blur-lg rounded-xl border ${borderMap[color]} p-5 transition-all hover:scale-[1.02] flex flex-col h-full`}
+      className={`vellum-card rounded-xl border ${borderMap[color]} p-5 transition-all hover:scale-[1.02] flex flex-col h-full`}
     >
       <div className="flex items-start justify-between mb-3 gap-2">
         <h3 className="text-base font-display font-bold text-text-primary leading-snug">{title}</h3>

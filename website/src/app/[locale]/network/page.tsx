@@ -221,7 +221,7 @@ export default function NetworkPage() {
           <div className="max-w-4xl mx-auto text-center">
             {/* Pre-title */}
             <div className="inline-block mb-6 fade-in">
-              <div className="px-4 py-2 rounded-full border border-accent-cyan/30 bg-accent-cyan/5 backdrop-blur-sm">
+              <div className="px-4 py-2 rounded-full border border-accent-cyan/30 bg-accent-cyan/5">
                 <span className="font-display text-sm text-accent-cyan tracking-wider">
                   NETWORK_STATUS_MONITOR
                 </span>
@@ -229,7 +229,7 @@ export default function NetworkPage() {
             </div>
 
             <h1 className="text-4xl md:text-6xl font-display font-bold mb-4 fade-in-delay-1">
-              <span className="gradient-text glow-text">{t('title')}</span>
+              <span className="ink-underline">{t('title')}</span>
             </h1>
             <p className="text-xl text-text-secondary font-body fade-in-delay-2">
               {t('subtitle')}
@@ -237,7 +237,7 @@ export default function NetworkPage() {
 
             {/* Canary 88780 status banner (replaces obsolete launch countdown) */}
             <div className="mt-12 mb-6 fade-in-delay-3">
-              <div className="inline-block px-6 py-4 rounded-lg border border-accent-cyan/50 bg-accent-cyan/10 backdrop-blur-sm">
+              <div className="inline-block px-6 py-4 rounded-lg border border-accent-cyan/50 bg-accent-cyan/10">
                 <p className="text-sm text-accent-cyan font-display uppercase tracking-widest mb-2">
                   🟢 {t('canaryBanner.title')}
                 </p>
@@ -263,9 +263,9 @@ export default function NetworkPage() {
         <section className="mb-16">
           <div className="text-center mb-8 fade-in-up">
             <h2 className="text-3xl md:text-4xl font-display font-bold mb-2">
-              <span className="gradient-text">{t('realTimeStats')}</span>
+              <span>{t('realTimeStats')}</span>
             </h2>
-            <div className="w-24 h-1 bg-gradient-cyber mx-auto mt-4 rounded-full" />
+            <div className="w-16 h-px bg-line mx-auto mt-4 rounded-full" />
           </div>
           <div className="fade-in-delay-1">
             <NetworkStats />
@@ -311,7 +311,7 @@ export default function NetworkPage() {
             <h2 className="text-2xl md:text-3xl font-display font-bold mb-6 text-text-primary">
               {t('bftStatus.title')}
             </h2>
-            <div className="bg-bg-elevated rounded-xl p-8 border border-text-muted/10 hover:border-accent-cyan/30 transition-all duration-500 shadow-glow-sm hover:shadow-glow-md noise-texture">
+            <div className="bg-bg-elevated rounded-xl p-8 border border-text-muted/10 hover:border-accent-cyan/30 transition-all duration-500">
               <div className="grid md:grid-cols-2 gap-6">
                 <InfoRow
                   label={t('bftStatus.enabled')}
@@ -435,7 +435,7 @@ export default function NetworkPage() {
             <h2 className="text-2xl md:text-3xl font-display font-bold mb-6 text-text-primary">
               {t('nodeInfo.title')}
             </h2>
-            <div className="bg-bg-elevated rounded-xl p-8 border border-text-muted/10 hover:border-accent-cyan/30 transition-all duration-500 shadow-glow-sm hover:shadow-glow-md noise-texture">
+            <div className="bg-bg-elevated rounded-xl p-8 border border-text-muted/10 hover:border-accent-cyan/30 transition-all duration-500">
               <div className="grid md:grid-cols-2 gap-6">
                 {nodeInfo.runtime && <InfoRow label={t('nodeInfo.runtime')} value={nodeInfo.runtime} />}
                 {nodeInfo.version && <InfoRow label={t('nodeInfo.version')} value={nodeInfo.version} />}
@@ -490,7 +490,7 @@ export default function NetworkPage() {
             <h2 className="text-2xl md:text-3xl font-display font-bold mb-6 text-text-primary">
               {t('validators.title')}
             </h2>
-            <div className="bg-bg-elevated rounded-xl overflow-hidden border border-text-muted/10 hover:border-accent-cyan/30 transition-all duration-500 shadow-glow-sm hover:shadow-glow-md">
+            <div className="bg-bg-elevated rounded-xl overflow-hidden border border-text-muted/10 hover:border-accent-cyan/30 transition-all duration-500">
               <div className="overflow-x-auto">
                 <table className="min-w-full">
                   <thead className="bg-bg-secondary border-b border-text-muted/10">
@@ -551,7 +551,7 @@ export default function NetworkPage() {
                 </svg>
               </a>
             </div>
-            <div className="bg-bg-elevated rounded-xl overflow-hidden border border-text-muted/10 hover:border-accent-cyan/30 transition-all duration-500 shadow-glow-sm hover:shadow-glow-md">
+            <div className="bg-bg-elevated rounded-xl overflow-hidden border border-text-muted/10 hover:border-accent-cyan/30 transition-all duration-500">
               <div className="overflow-x-auto">
                 <table className="min-w-full">
                   <thead className="bg-bg-secondary border-b border-text-muted/10">
@@ -603,9 +603,9 @@ export default function NetworkPage() {
 
         {/* Quick Links */}
         <section className="fade-in-delay-3">
-          <div className="relative bg-gradient-to-br from-accent-cyan/10 via-accent-blue/10 to-accent-purple/10 rounded-xl p-8 border border-accent-cyan/20 noise-texture overflow-hidden">
+          <div className="relative bg-gradient-to-br from-accent-cyan/10 via-accent-blue/10 to-accent-purple/10 rounded-xl p-8 border border-accent-cyan/20 overflow-hidden">
             {/* Background Glow */}
-            <div className="absolute inset-0 bg-gradient-cyber opacity-5" />
+            <div className="absolute inset-0 bg-accent-blue opacity-[0.04]" />
 
             <div className="relative z-10">
               <h3 className="text-xl md:text-2xl font-display font-bold text-text-primary mb-6">
@@ -676,15 +676,15 @@ function MetricCard({
   }
 
   return (
-    <div className={`group relative bg-bg-elevated rounded-xl p-6 border border-text-muted/10 hover:border-accent-cyan/50 transition-all duration-500 ${trendGlow[trend]} hover:${trendGlow[trend].replace('sm', 'md')} noise-texture`}>
+    <div className={`group relative bg-bg-elevated rounded-xl p-6 border border-text-muted/10 hover:border-accent-cyan/50 transition-all duration-500 ${trendGlow[trend]} hover:${trendGlow[trend].replace('sm', 'md')}`}>
       {/* Background Gradient on Hover */}
-      <div className="absolute inset-0 bg-gradient-cyber opacity-0 group-hover:opacity-5 rounded-xl transition-opacity duration-500" />
+      <div className="absolute inset-0 bg-accent-blue opacity-0 group-hover:opacity-5 rounded-xl transition-opacity duration-500" />
 
       <div className="relative z-10">
         <h3 className="text-xs font-display font-semibold text-text-muted uppercase tracking-wider mb-3">
           {title}
         </h3>
-        <p className={`text-3xl md:text-4xl font-display font-bold ${trendColors[trend]} group-hover:glow-text transition-all duration-500`}>
+        <p className={`text-3xl md:text-4xl font-display font-bold ${trendColors[trend]} transition-all duration-500`}>
           {value}
         </p>
       </div>
@@ -712,13 +712,13 @@ function StatMetricCard({
   const statusBg = status === 'enabled' ? 'bg-green-500/10' : status === 'disabled' ? 'bg-gray-500/10' : ''
 
   return (
-    <div className={`group relative bg-bg-elevated rounded-xl p-6 border border-text-muted/10 hover:border-accent-cyan/50 transition-all duration-500 shadow-glow-sm hover:shadow-glow-md noise-texture ${statusBg}`}>
+    <div className={`group relative bg-bg-elevated rounded-xl p-6 border border-text-muted/10 hover:border-accent-cyan/50 transition-all duration-500 ${statusBg}`}>
       <div className="relative z-10">
         <h3 className="text-xs font-display font-semibold text-text-muted uppercase tracking-wider mb-3">
           {title}
         </h3>
         <div className="flex flex-col items-start gap-1">
-          <p className="text-2xl md:text-3xl font-display font-bold text-accent-cyan group-hover:glow-text transition-all duration-500">
+          <p className="text-2xl md:text-3xl font-display font-bold text-accent-cyan transition-all duration-500">
             {value}
           </p>
           {unit && <p className="text-xs font-body text-text-secondary/70">{unit}</p>}
@@ -756,10 +756,10 @@ function QuickLink({
     <Component
       href={href}
       {...linkProps}
-      className="group block relative bg-bg-elevated rounded-lg p-6 border border-text-muted/10 hover:border-accent-cyan/50 transition-all duration-500 hover:shadow-glow-md overflow-hidden"
+      className="group block relative bg-bg-elevated rounded-lg p-6 border border-text-muted/10 hover:border-accent-cyan/50 transition-all duration-500 overflow-hidden"
     >
       {/* Background Glow on Hover */}
-      <div className="absolute inset-0 bg-gradient-cyber opacity-0 group-hover:opacity-5 transition-opacity duration-500" />
+      <div className="absolute inset-0 bg-accent-blue opacity-0 group-hover:opacity-5 transition-opacity duration-500" />
 
       <div className="relative z-10">
         <h4 className="font-display font-bold text-text-primary group-hover:text-accent-cyan transition-colors mb-2 flex items-center gap-2">

@@ -10,33 +10,39 @@
 
 :root {
   /* Paper backgrounds */
-  --bg-primary: #faf6ec;
-  --bg-secondary: #f1e9d8;
-  --bg-elevated: #fffdf8;
+  --bg-primary: #f4ecd9;
+  --bg-secondary: #e9dcc0;
+  --bg-elevated: #fbf5e7;
 
-  /* Accents (from the brand mark: violet → teal) */
-  --accent-cyan: #0f9d8f;   /* teal, data/positive */
-  --accent-blue: #6d4de0;   /* violet, primary accent */
-  --accent-purple: #4a32b8; /* deep violet, emphasis */
-  --accent-glow: rgba(109, 77, 224, 0.25);
+  /* 矿物颜料与古铜:延续品牌色,降低现代荧光感 */
+  --accent-cyan: #1f7168;
+  --accent-blue: #40547a;
+  --accent-purple: #5b405f;
+  --accent-gold: #a66f2e;
+  --accent-glow: rgba(64, 84, 122, 0.2);
 
   /* Ink */
-  --text-primary: #1c1917;
-  --text-secondary: #57534e;
-  --text-muted: #8a8378;
+  --text-primary: #2a2118;
+  --text-secondary: #625548;
+  --text-muted: #897967;
 
   /* Hairlines */
-  --line: #e3d8bf;
-  --border-subtle: rgba(76, 60, 32, 0.12);
-  --border-glow: rgba(109, 77, 224, 0.3);
+  --line: #d8c6a3;
+  --border-subtle: rgba(76, 54, 29, 0.16);
+  --border-glow: rgba(64, 84, 122, 0.28);
 
-  /* Fonts are provided by next/font in layout.tsx */
-  --font-display: var(--font-fraunces), Georgia, 'Times New Roman', serif;
-  --font-body: var(--font-inter), system-ui, -apple-system, sans-serif;
+  /* 英文采用古典书刊字体；中文在 lang=zh 时切换为宋体体系 */
+  --font-display: var(--font-cormorant), Georgia, 'Times New Roman', serif;
+  --font-body: var(--font-literata), Georgia, 'Times New Roman', serif;
   --font-mono: var(--font-jetbrains), ui-monospace, 'SF Mono', monospace;
 
   --container-max: 1200px;
   --section-padding: 6rem;
+}
+
+html[lang='zh'] {
+  --font-display: var(--font-noto-serif-sc), 'Noto Serif CJK SC', 'Source Han Serif SC', 'Songti SC', STSong, SimSun, serif;
+  --font-body: var(--font-noto-serif-sc), 'Noto Serif CJK SC', 'Source Han Serif SC', 'Songti SC', STSong, SimSun, serif;
 }
 
 * {
@@ -50,12 +56,22 @@ html {
 }
 
 body {
-  background-color: var(--bg-primary);
+  background: #e6cf9f;
   color: var(--text-primary);
   font-family: var(--font-body);
   line-height: 1.65;
   overflow-x: hidden;
   -webkit-font-smoothing: antialiased;
+}
+
+a,
+button {
+  -webkit-tap-highlight-color: transparent;
+}
+
+:focus-visible {
+  outline: 2px solid var(--accent-blue);
+  outline-offset: 3px;
 }
 
 /* 全站羊皮纸底纹:极轻纤维噪点铺满页面(fixed,不随滚动) */
@@ -67,6 +83,33 @@ body::before {
   pointer-events: none;
   opacity: 0.4;
   background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 240 240' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='b'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.44 0 0 0 0 0.38 0 0 0 0 0.28 0 0 0 0.035 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23b)'/%3E%3C/svg%3E");
+}
+
+/* 全站连续羊皮纸：所有区块共享同一张低对比纹理，避免章节色块割裂 */
+.parchment-page {
+  position: relative;
+  isolation: isolate;
+  background:
+    linear-gradient(rgba(255, 248, 224, 0.13), rgba(107, 70, 31, 0.035)),
+    url('/art/palimesh-parchment-bg.webp') center top / 1440px 960px repeat;
+  background-attachment: fixed, fixed;
+}
+
+.parchment-page::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  opacity: 0.16;
+  background-image:
+    linear-gradient(90deg, rgba(83, 53, 24, 0.08), transparent 8%, transparent 92%, rgba(83, 53, 24, 0.075));
+  mix-blend-mode: multiply;
+}
+
+.parchment-main {
+  position: relative;
+  background: transparent;
 }
 
 /* 编辑部级超大标题(exaggerated-minimal display) */
@@ -231,7 +274,7 @@ code, pre {
   mask-position: 0 0, 7px 100%;
 }
 
-/* Ink-wash underline emphasis for display headings */
+/* 非首页内页保留墨迹下划线；Hero 标题不再使用该类 */
 .ink-underline {
   background-image: linear-gradient(120deg, rgba(109, 77, 224, 0.22), rgba(15, 157, 143, 0.22));
   background-repeat: no-repeat;
@@ -246,6 +289,420 @@ code, pre {
   letter-spacing: 0.14em;
   text-transform: uppercase;
   color: var(--accent-blue);
+}
+
+/* ============================================================
+   首页手抄本视觉语言
+   ============================================================ */
+
+.site-canvas {
+  position: relative;
+  isolation: isolate;
+}
+
+.manuscript-header {
+  background: transparent;
+  pointer-events: none;
+}
+
+.scroll-banner {
+  position: relative;
+  min-height: 76px;
+  margin-inline: 0.7rem;
+  padding: 0.4rem 1.55rem;
+  pointer-events: auto;
+  background:
+    linear-gradient(90deg, rgba(113, 71, 29, 0.19), transparent 6%, transparent 94%, rgba(113, 71, 29, 0.19)),
+    radial-gradient(ellipse at 50% -15%, rgba(255, 253, 240, 0.96), transparent 72%),
+    repeating-linear-gradient(0deg, transparent 0 22px, rgba(94, 63, 29, 0.025) 22px 23px),
+    #ead6ad;
+  border-top: 1px solid rgba(105, 67, 28, 0.46);
+  border-bottom: 1px solid rgba(105, 67, 28, 0.54);
+  border-radius: 7px 4px 6px 3px;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 252, 235, 0.86),
+    inset 0 -9px 18px rgba(112, 72, 29, 0.09),
+    0 13px 25px -17px rgba(49, 29, 11, 0.82);
+  backdrop-filter: blur(10px) saturate(0.9);
+}
+
+.scroll-banner::before,
+.scroll-banner::after {
+  content: '';
+  position: absolute;
+  top: -10px;
+  bottom: -10px;
+  z-index: 2;
+  width: 24px;
+  pointer-events: none;
+  background: url('/art/scroll-rod-classical-v2.webp') center / contain no-repeat;
+  filter: drop-shadow(0 4px 4px rgba(49, 28, 10, 0.38));
+}
+
+.scroll-banner::before { left: -13px; }
+.scroll-banner::after {
+  right: -13px;
+  transform: scaleX(-1);
+}
+
+.scroll-brand {
+  position: relative;
+  z-index: 3;
+}
+
+/* 菜单成为 Banner 内的墨迹层,不再拥有独立背景 */
+.scroll-nav {
+  position: relative;
+  z-index: 3;
+  flex: 1 1 auto;
+  justify-content: center;
+  min-width: 0;
+  gap: 0.1rem;
+}
+
+.scroll-tools {
+  position: relative;
+  z-index: 3;
+  margin-left: auto;
+}
+
+.language-seal {
+  border: 1px solid rgba(111, 75, 36, 0.18);
+  background: rgba(255, 250, 232, 0.2);
+}
+
+.language-seal:hover {
+  border-color: rgba(64, 84, 122, 0.38);
+  background: rgba(255, 250, 232, 0.54);
+}
+
+.scroll-nav-link {
+  position: relative;
+  z-index: 3;
+  white-space: nowrap;
+  font-family: var(--font-display);
+  font-weight: 600;
+  letter-spacing: 0.01em;
+}
+
+.scroll-nav-link::after {
+  content: '';
+  position: absolute;
+  right: 0.72rem;
+  bottom: 0.5rem;
+  left: 0.72rem;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--accent-purple), transparent);
+  transform: scaleX(0);
+  transform-origin: center;
+  transition: transform 180ms ease;
+}
+
+.scroll-nav-link:hover {
+  color: var(--accent-purple);
+  background: rgba(255, 249, 229, 0.22);
+}
+
+.scroll-nav-link:hover::after,
+.scroll-nav-link:focus-visible::after {
+  transform: scaleX(1);
+}
+
+.mobile-scroll-menu {
+  overflow: auto;
+  max-height: calc(100vh - 84px);
+  background:
+    linear-gradient(90deg, rgba(122, 80, 34, 0.13), transparent 9%, transparent 91%, rgba(122, 80, 34, 0.13)),
+    #f0dfbd;
+  border: 1px solid rgba(107, 72, 33, 0.38);
+  border-radius: 4px 14px 5px 12px;
+  box-shadow: inset 0 0 28px rgba(112, 73, 30, 0.09), 0 18px 34px -21px rgba(49, 30, 12, 0.8);
+}
+
+@media (min-width: 1024px) {
+  .scroll-brand {
+    padding-right: 1rem;
+    border-right: 1px solid rgba(112, 75, 34, 0.2);
+  }
+}
+
+@media (max-width: 1023px) {
+  .manuscript-header > .container {
+    padding-top: 0.55rem;
+  }
+
+  .scroll-banner {
+    min-height: 68px;
+    margin-inline: 0.45rem;
+    padding: 0.3rem 0.85rem;
+  }
+
+  .scroll-banner::before,
+  .scroll-banner::after {
+    top: -8px;
+    bottom: -8px;
+    width: 20px;
+  }
+
+  .scroll-banner::before { left: -11px; }
+  .scroll-banner::after { right: -11px; }
+}
+
+.brand-signet {
+  filter: sepia(0.18) saturate(0.82) drop-shadow(0 2px 5px rgba(63, 42, 19, 0.16));
+}
+
+.manuscript-hero {
+  min-height: min(780px, calc(100vh - 68px));
+  overflow: hidden;
+  background: transparent;
+}
+
+.manuscript-hero::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    linear-gradient(90deg, rgba(55, 40, 24, 0.08), transparent 9%, transparent 91%, rgba(55, 40, 24, 0.07)),
+    radial-gradient(ellipse at 50% 115%, rgba(94, 63, 27, 0.16), transparent 55%);
+  mix-blend-mode: multiply;
+}
+
+.mesh-field {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0.14;
+  pointer-events: none;
+  color: var(--accent-blue);
+}
+
+.mesh-lines {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.1;
+  stroke-dasharray: 2 8;
+}
+
+.mesh-nodes {
+  fill: var(--bg-primary);
+  stroke: currentColor;
+  stroke-width: 1.8;
+}
+
+.hero-copy {
+  position: relative;
+  padding-left: clamp(0rem, 2vw, 1.5rem);
+}
+
+.hero-copy::before {
+  content: '';
+  position: absolute;
+  top: -1.25rem;
+  bottom: -1.25rem;
+  left: 0;
+  width: 1px;
+  background: linear-gradient(transparent, rgba(166, 111, 46, 0.55) 20%, rgba(166, 111, 46, 0.55) 80%, transparent);
+}
+
+.hero-title {
+  max-width: 12ch;
+  text-wrap: balance;
+  text-shadow: 0 1px 0 rgba(255, 250, 238, 0.8);
+}
+
+.hero-deck {
+  max-width: 58ch;
+  text-wrap: pretty;
+}
+
+.hero-art-shell {
+  display: flex;
+  align-items: center;
+}
+
+.hero-parchment {
+  position: relative;
+  filter: contrast(0.88) saturate(0.76) sepia(0.06);
+  opacity: 0.94;
+  transform: rotate(0.15deg);
+}
+
+.seal-button,
+.ink-button {
+  display: inline-flex;
+  min-height: 46px;
+  align-items: center;
+  justify-content: center;
+  padding: 0.72rem 1.45rem;
+  border-radius: 3px 12px 4px 10px;
+  font-weight: 600;
+  transition: color 180ms ease, background-color 180ms ease, border-color 180ms ease, box-shadow 180ms ease;
+}
+
+.seal-button {
+  color: #fff9eb;
+  background: #3a2c21;
+  border: 1px solid #3a2c21;
+  box-shadow: inset 0 0 0 1px rgba(255, 246, 223, 0.12), 0 6px 14px -9px rgba(45, 28, 12, 0.85);
+}
+
+.seal-button:hover {
+  color: #fff9eb;
+  background: var(--accent-purple);
+  border-color: var(--accent-purple);
+}
+
+.ink-button {
+  color: var(--text-primary);
+  background: rgba(251, 245, 231, 0.72);
+  border: 1px solid rgba(98, 78, 48, 0.38);
+}
+
+.ink-button:hover {
+  color: var(--accent-blue);
+  border-color: var(--accent-blue);
+  background: rgba(255, 251, 240, 0.94);
+}
+
+.chapter-section {
+  position: relative;
+  background: transparent;
+}
+
+.folio-band {
+  position: relative;
+  background: transparent;
+}
+
+.folio-band > * {
+  position: relative;
+  z-index: 1;
+}
+
+/* 章节间古籍花饰分隔：双墨线与中心菱形印记 */
+.antique-divider {
+  position: relative;
+  z-index: 2;
+  display: grid;
+  grid-template-columns: minmax(3rem, 1fr) 16px minmax(3rem, 1fr);
+  align-items: center;
+  gap: 0.85rem;
+  width: min(900px, 82vw);
+  height: 1px;
+  margin: 0 auto;
+  color: rgba(111, 72, 31, 0.62);
+}
+
+.antique-divider::before,
+.antique-divider::after {
+  content: '';
+  height: 1px;
+  background: linear-gradient(90deg, transparent, currentColor);
+  box-shadow: 0 3px 0 rgba(111, 72, 31, 0.16);
+}
+
+.antique-divider::after {
+  transform: rotate(180deg);
+}
+
+.antique-divider > span {
+  position: relative;
+  width: 11px;
+  height: 11px;
+  justify-self: center;
+  border: 1px solid currentColor;
+  background: #dec592;
+  box-shadow: 0 0 0 3px rgba(222, 197, 146, 0.72);
+  transform: rotate(45deg);
+}
+
+.antique-divider > span::before,
+.antique-divider > span::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  width: 3px;
+  height: 3px;
+  border-radius: 50%;
+  background: currentColor;
+  transform: translateY(-50%);
+}
+
+.antique-divider > span::before { left: -9px; }
+.antique-divider > span::after { right: -9px; }
+
+.section-flourish {
+  display: grid;
+  grid-template-columns: minmax(26px, 72px) 9px minmax(26px, 72px);
+  align-items: center;
+  justify-content: center;
+  gap: 0.65rem;
+  width: min(190px, 58vw);
+  margin: 0 auto 1.25rem;
+}
+
+.section-flourish span {
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(166, 111, 46, 0.62));
+}
+
+.section-flourish span:last-child {
+  transform: rotate(180deg);
+}
+
+.section-flourish i {
+  width: 8px;
+  height: 8px;
+  border: 1px solid var(--accent-gold);
+  transform: rotate(45deg);
+}
+
+.manuscript-card,
+.folio-card {
+  overflow: hidden;
+}
+
+.manuscript-card::after,
+.folio-card::after {
+  content: '';
+  position: absolute;
+  inset: 7px;
+  pointer-events: none;
+  border: 1px solid rgba(166, 111, 46, 0.11);
+  border-radius: inherit;
+}
+
+.folio-card {
+  position: relative;
+  border-radius: 4px 14px 5px 12px;
+  background:
+    linear-gradient(145deg, rgba(255, 252, 242, 0.92), rgba(245, 235, 214, 0.9)),
+    var(--bg-elevated);
+}
+
+.codex-footer {
+  color: var(--text-primary);
+  background:
+    linear-gradient(rgba(103, 68, 29, 0.055), rgba(255, 249, 228, 0.08));
+  border-color: rgba(111, 72, 31, 0.28);
+}
+
+.codex-footer .text-text-primary { color: var(--text-primary); }
+.codex-footer .text-text-secondary { color: var(--text-secondary); }
+.codex-footer .text-text-muted { color: var(--text-muted); }
+.codex-footer .border-line { border-color: rgba(111, 72, 31, 0.2); }
+.codex-footer a:hover { color: var(--accent-purple); }
+
+@media (max-width: 767px) {
+  :root { --section-padding: 4.5rem; }
+
+  .manuscript-hero { min-height: auto; }
+  .hero-copy { padding-left: 1rem; }
+  .hero-art-shell { margin-top: 0.5rem; }
+  .mesh-field { opacity: 0.1; transform: scale(1.6); }
 }
 
 /* ============================================================
@@ -321,13 +778,6 @@ table { border-color: var(--line); }
 }
 .float-slow { animation: floatSlow 7s ease-in-out infinite; }
 
-/* 标题墨迹书写:下划线从左向右"写出" */
-@keyframes inkWrite {
-  from { background-size: 0% 0.35em; }
-  to { background-size: 100% 0.35em; }
-}
-.ink-write { animation: inkWrite 0.9s cubic-bezier(0.22, 1, 0.36, 1) 0.35s both; }
-
 /* 首屏分级入场 */
 .hero-in { animation: fadeInUp 0.6s cubic-bezier(0.22, 1, 0.36, 1) both; }
 .hero-in-1 { animation-delay: 0.05s; }
@@ -368,7 +818,7 @@ table { border-color: var(--line); }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .float-slow, .ink-write, .hero-in, .gold-sheen, .fade-in, .fade-in-up,
+  .float-slow, .hero-in, .gold-sheen, .fade-in, .fade-in-up,
   .fade-in-delay-1, .fade-in-delay-2, .fade-in-delay-3 { animation: none !important; }
   .ink-armed svg *, .ink-draw svg * { stroke-dasharray: none !important; stroke-dashoffset: 0 !important; animation: none !important; }
   .vellum-card, .sheet-hover { transition: none; }

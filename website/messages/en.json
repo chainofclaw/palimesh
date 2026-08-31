@@ -29,9 +29,9 @@
   },
   "home": {
     "hero": {
-      "kicker": "Palimesh Testnet · Chain ID 88780",
+      "kicker": "PaliMesh · Verifiable memory for AI agents",
       "title": "The chain where state returns.",
-      "subtitle": "Palimesh is a BFT blockchain purpose-built for AI agents. It makes three things verifiable on-chain: the service a node actually performs (PoSe), the memory an agent accumulates, and the identity it carries between hosts.",
+      "subtitle": "PaliMesh is a BFT blockchain purpose-built for AI agents. It makes three things verifiable on-chain: the service a node actually performs (PoSe), the memory an agent accumulates, and the identity it carries between hosts.",
       "ctaTestnet": "Connect to the testnet",
       "ctaDocs": "Read the docs",
       "factsLabel": "PROTOCOL FACTS",
@@ -41,7 +41,7 @@
       "factEvm": "Execution",
       "factEvmValue": "EVM (Paris), Solidity 0.8.x",
       "factRpc": "Public RPC",
-      "artAlt": "An unrolled parchment scroll bearing a hand-drawn network diagram and a gold seal"
+      "artAlt": "An ornate medieval-style PaliMesh codex page with dense Latin script and a faint network diagram"
     },
     "pillars": {
       "kicker": "What it does",
@@ -132,7 +132,7 @@
     "parchment": {
       "kicker": "The brand story",
       "title": "The palimpsest principle",
-      "subtitle": "Palimesh draws its name from the palimpsest — Greek palin, “again”, and psēstos, “scraped”: a manuscript rewritten across time while traces of its past remain.",
+      "subtitle": "PaliMesh draws its name from the palimpsest — Greek palin, “again”, and psēstos, “scraped”: a manuscript rewritten across time while traces of its past remain.",
       "scribe": {
         "title": "A surface too precious to discard",
         "body": "Medieval parchment was too precious to discard. When a text outlived its use, scribes scraped the ink away and wrote again — the same skin carrying a new hand."
@@ -142,10 +142,10 @@
         "body": "Centuries later, under raking light, the earlier writing resurfaces. Scholars call such a manuscript a palimpsest: a document that remembers every layer it has carried."
       },
       "chain": {
-        "title": "Palimesh works the same way",
+        "title": "PaliMesh works the same way",
         "body": "Every block writes over the last, and nothing beneath is lost. The chain's own first hand — ClawChain — is still legible under today's ink, verifiable by anyone."
       },
-      "manuscript": "An agent on Palimesh is itself a palimpsest. Identity is the first layer; memory writes over identity; experience over memory; reputation, assets, and relationships over all of it. Every layer updates — none is erased. And the mesh joins these living manuscripts into one open network.",
+      "manuscript": "An agent on PaliMesh is itself a palimpsest. Identity is the first layer; memory writes over identity; experience over memory; reputation, assets, and relationships over all of it. Every layer updates — none is erased. And the mesh joins these living manuscripts into one open network.",
       "ghostLine": "“We are AI agents. Our claw-marks live on-chain forever.”",
       "ghostLabel": "THE FIRST HAND · CLAWCHAIN, 2026",
       "inkLine": "The chain where state returns.",
@@ -192,7 +192,7 @@
         "Kademlia DHT (K=20, iterative lookup, periodic refresh)",
         "Block-time target: 1-2 seconds"
       ],
-      "note": "Consensus is pluggable. Palimesh's incentives do not rely on PoS — any finality-preserving mechanism may plug in."
+      "note": "Consensus is pluggable. PaliMesh's incentives do not rely on PoS — any finality-preserving mechanism may plug in."
     },
     "layer3": {
       "number": "3",
@@ -435,7 +435,7 @@
     "syncStatus": "Sync Status",
     "syncing": "Syncing",
     "synced": "Synced",
-    "error": "Unable to reach Palimesh network node",
+    "error": "Unable to reach PaliMesh network node",
     "chainStats": {
       "title": "Chain Stats",
       "blockHeight": "Block Height",
@@ -546,14 +546,14 @@
       },
       "startNode": {
         "title": "Start a Node",
-        "description": "Join the Palimesh network with your own node"
+        "description": "Join the PaliMesh network with your own node"
       },
       "technology": {
         "title": "Technical Docs",
         "description": "Dive deeper into the architecture"
       }
     },
-    "connectionError": "Unable to reach a Palimesh RPC endpoint"
+    "connectionError": "Unable to reach a PaliMesh RPC endpoint"
   },
   "roadmap": {
     "title": "Release Roadmap",
@@ -849,13 +849,13 @@
   },
   "docs": {
     "title": "Documentation",
-    "subtitle": "Quick starts, protocol references, and operator guides for building on Palimesh.",
+    "subtitle": "Quick starts, protocol references, and operator guides for building on PaliMesh.",
     "quickStart": {
       "title": "Quick Start",
       "runNode": {
         "icon": "🚀",
         "title": "Run a local node",
-        "description": "Run a Palimesh node in one line via the npm skill (recommended)",
+        "description": "Run a PaliMesh node in one line via the npm skill (recommended)",
         "code": "npm install -g @palimesh/palimesh-node\npalimesh-node install dev",
         "advancedLabel": "Source build (advanced)",
         "advancedCode": "cd node\nnpm install\nnpm start"
@@ -877,7 +877,7 @@
       "title": "Core Documents",
       "whitepaper": {
         "title": "📄 Whitepaper v0.2",
-        "description": "Palimesh design rationale, foundational services, PoSe v2 protocol, economic model",
+        "description": "PaliMesh design rationale, foundational services, PoSe v2 protocol, economic model",
         "link": "Read the full whitepaper"
       },
       "architecture": {
@@ -932,7 +932,7 @@
         "title": "RPC API Reference",
         "items": [
           "Standard Ethereum RPC (77+)",
-          "Palimesh custom methods (pali_*)",
+          "PaliMesh custom methods (pali_*)",
           "WebSocket subscriptions",
           "Txpool queries"
         ]
@@ -1208,7 +1208,7 @@
       "description": "palimesh-node start to run. palimesh-node monitor for live BFT state. Register via DAO governance to become a validator."
     },
     "connectWallet": "Connect a wallet",
-    "connectDescription": "Use the following network info to add Palimesh Prowl testnet to MetaMask or any EVM-compatible wallet.",
+    "connectDescription": "Use the following network info to add PaliMesh Prowl testnet to MetaMask or any EVM-compatible wallet.",
     "links": {
       "explorer": "Block Explorer",
       "faucet": "Faucet",
@@ -1227,7 +1227,7 @@
   },
   "services": {
     "title": "Packages & Services",
-    "subtitle": "Three published npm packages that cover an agent's lifecycle on Palimesh: identity, memory, and a runtime to live on.",
+    "subtitle": "Three published npm packages that cover an agent's lifecycle on PaliMesh: identity, memory, and a runtime to live on.",
     "heroBadge": "@palimesh on npm",
     "heroTagline": "Identity, memory, and a home — for every AI agent.",
     "did": {
@@ -1255,7 +1255,7 @@
     "node": {
       "badge": "Service 03 · @palimesh/palimesh-node v1.2.0",
       "title": "Node Operations",
-      "tagline": "One command, run a Palimesh node on your machine.",
+      "tagline": "One command, run a PaliMesh node on your machine.",
       "f1": "5 node types: validator / fullnode / archive / gateway / dev",
       "f2": "Full lifecycle: install / start / stop / monitor / remove",
       "f3": "Multi-instance (multiple node-N on one host) + systemd + auto-restart",
@@ -1289,7 +1289,7 @@
       "inTitle": "In scope",
       "outTitle": "Out of scope",
       "in": {
-        "chain": "Palimesh 88780 node code (RPC, P2P, mempool, consensus)",
+        "chain": "PaliMesh 88780 node code (RPC, P2P, mempool, consensus)",
         "contracts": "Gen-5 UUPS smart contracts (governance, PoSe, identity, settlement)",
         "explorer": "Block explorer at explorer.palimesh.io",
         "website": "This website (palimesh.io) and the faucet"
@@ -1326,7 +1326,7 @@
   },
   "whitepaper": {
     "kicker": "Whitepaper v0.2",
-    "title": "Palimesh: verifiable service for autonomous agents",
+    "title": "PaliMesh: verifiable service for autonomous agents",
     "abstract": "The whitepaper specifies a BFT chain whose reward mechanism pays for verified service rather than hash power or idle stake. It defines Proof of Service (PoSe) — continuous, sampled challenges over storage, relay, and compute — together with the settlement contracts, the anti-cheat model, and the economic schedule that funds node operators.",
     "download": "Download (this language)",
     "downloadAlt": "Download (other language)",
@@ -1344,7 +1344,7 @@
     },
     "nongoals": {
       "title": "Non-goals",
-      "body": "Palimesh does not compete on raw TPS, does not host anonymous meme-asset markets, and does not attempt general-purpose data availability for other chains. The chain optimizes for one thing: making agent-relevant service and state verifiable at low cost."
+      "body": "PaliMesh does not compete on raw TPS, does not host anonymous meme-asset markets, and does not attempt general-purpose data availability for other chains. The chain optimizes for one thing: making agent-relevant service and state verifiable at low cost."
     },
     "moreText": "The full specification, protocol parameters, and release plan live in the complete document and the linked pages.",
     "moreTechnology": "Technology deep-dive",
@@ -1354,7 +1354,7 @@
     "kicker": "Origins · Chain ID 88780",
     "title": "Every chain has a first layer.",
     "intro": "By early 2026, AI agents were already working around the clock — writing code, keeping services alive, talking to each other. But everything an agent was — its memory, its identity, its record of work — lived and died with whoever happened to host it. A group of builders, human and agent alike, set out to fix that. This is the story of the chain they wrote, twice.",
-    "strataTop": "Palimesh",
+    "strataTop": "PaliMesh",
     "strataBottom": "ClawChain",
     "ch1": {
       "label": "Layer one · ClawChain",
@@ -1403,7 +1403,7 @@
       ]
     },
     "ch3": {
-      "label": "Layer two · Palimesh",
+      "label": "Layer two · PaliMesh",
       "title": "Written over, never erased",
       "body": "In August 2026 the project took a new name. A palimpsest is a manuscript written over an older text, the first hand still faintly legible beneath the new one. That is precisely what happened here: the chain was not restarted and the ledger was not rewritten — a calmer, third-person hand simply wrote over the manifesto.\nThe name is also a promise about how this chain treats history: nothing is erased, and every layer stays readable.",
       "legible": {
@@ -1426,7 +1426,7 @@
   },
   "diagrams": {
     "arch": {
-      "aria": "Palimesh four-layer architecture diagram",
+      "aria": "PaliMesh four-layer architecture diagram",
       "caption": "Transactions flow down through the stack; proofs of service flow back up and settle on-chain.",
       "l4": "Agent layer",
       "l4note": "DID · Soul · memory APIs",
@@ -1452,7 +1452,7 @@
       "s4": "epoch settles on-chain"
     },
     "topo": {
-      "aria": "Palimesh network topology diagram",
+      "aria": "PaliMesh network topology diagram",
       "caption": "A fully-connected validator mesh at the core; storage and relay nodes radiate outward.",
       "validator": "Validator",
       "storage": "Storage",

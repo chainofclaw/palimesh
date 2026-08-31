@@ -22,6 +22,14 @@ export async function rpcCall<T>(method: string, params: unknown[] = []): Promis
   const json = await response.json()
 
   if (json.error) {
+    // 过渡兼容:现网节点仍服务 coc_* 命名空间;Phase 4 节点升级后移除
+    if (
+      method.startsWith('pali_') &&
+      typeof json.error.message === 'string' &&
+      json.error.message.includes('method not supported')
+    ) {
+      return rpcCall<T>(method.replace(/^pali_/, 'coc_'), params)
+    }
     throw new Error(json.error.message || 'RPC error')
   }
 

@@ -30,7 +30,7 @@ export default function StoryPage() {
             <p className="dropcap text-lg md:text-xl text-text-secondary leading-relaxed">{t('intro')}</p>
           </Reveal>
 
-          {/* 地层视觉:新层覆写旧层(上层 Palimesh 压住透出旧笔迹的 ClawChain 层) */}
+          {/* 地层视觉:新层覆写旧层(上层 PaliMesh 压住透出旧笔迹的 ClawChain 层) */}
           <Reveal delay={120}>
             <div className="mt-14 select-none" aria-hidden>
               <div className="sheet p-6 relative z-10 border-l-4 border-l-accent-blue">
@@ -97,7 +97,7 @@ export default function StoryPage() {
         </div>
       </section>
 
-      {/* ========== 第三章:Palimesh ========== */}
+      {/* ========== 第三章:PaliMesh ========== */}
       <section className="py-section">
         <div className="container mx-auto px-4 max-w-3xl">
           <Reveal>

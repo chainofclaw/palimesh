@@ -17,7 +17,7 @@ export default function SecurityPage() {
         <div className="container mx-auto px-4 relative z-10">
           <div className="max-w-4xl mx-auto text-center">
             <div className="inline-block mb-6 fade-in">
-              <div className="px-4 py-2 rounded-full border border-accent-cyan/30 bg-accent-cyan/5 backdrop-blur-sm">
+              <div className="px-4 py-2 rounded-full border border-accent-cyan/30 bg-accent-cyan/5">
                 <span className="font-display text-sm text-accent-cyan tracking-wider">
                   SECURITY_DISCLOSURE
                 </span>
@@ -25,7 +25,7 @@ export default function SecurityPage() {
             </div>
 
             <h1 className="text-4xl md:text-6xl font-display font-bold mb-4 fade-in-delay-1">
-              <span className="gradient-text glow-text">{t('title')}</span>
+              <span className="ink-underline">{t('title')}</span>
             </h1>
             <p className="text-xl text-text-secondary font-body fade-in-delay-2">
               {t('subtitle')}
@@ -39,7 +39,7 @@ export default function SecurityPage() {
       <div className="container mx-auto px-4 py-12 max-w-5xl">
         {/* Contact card — first thing visible */}
         <section className="mb-12 fade-in-up">
-          <div className="bg-bg-elevated rounded-xl p-8 border border-accent-cyan/30 shadow-glow-sm">
+          <div className="bg-bg-elevated rounded-xl p-8 border border-accent-cyan/30">
             <h2 className="text-2xl md:text-3xl font-display font-bold mb-4 text-text-primary">
               {t('contact.title')}
             </h2>
@@ -49,7 +49,7 @@ export default function SecurityPage() {
             <div className="flex flex-col sm:flex-row gap-4">
               <a
                 href="mailto:security@palimesh.io"
-                className="px-6 py-3 rounded-lg bg-gradient-cyber text-white font-display font-semibold hover:shadow-glow-md transition-all text-center"
+                className="px-6 py-3 rounded-lg bg-text-primary text-bg-primary font-medium transition-all text-center"
               >
                 security@palimesh.io
               </a>

@@ -29,7 +29,7 @@
   },
   "home": {
     "hero": {
-      "kicker": "Palimesh テストネット · Chain ID 88780",
+      "kicker": "PaliMesh · AIエージェントのための検証可能な記憶",
       "title": "あらゆる状態が回帰するチェーン。",
       "subtitle": "PalimeshはAIエージェントのために設計されたBFTブロックチェーンです。ノードが実際に行ったサービス(PoSe)、エージェントが蓄積するメモリ、ホスト間で持ち運べるアイデンティティ——この3つをオンチェーンで検証可能にします。",
       "ctaTestnet": "テストネットに接続",
@@ -41,7 +41,7 @@
       "factEvm": "実行レイヤー",
       "factEvmValue": "EVM(Paris)、Solidity 0.8.x",
       "factRpc": "公開RPC",
-      "artAlt": "手描きのネットワーク図と金印が記された、広げられた羊皮紙の巻物"
+      "artAlt": "密集したラテン文字と淡いネットワーク図を重ねた装飾的な中世風Palimesh羊皮紙写本"
     },
     "pillars": {
       "kicker": "できること",
@@ -192,7 +192,7 @@
         "Kademlia DHT（K=20、反復探索、定期リフレッシュ）",
         "ブロックタイム目標：1-2 秒"
       ],
-      "note": "合意はプラガブル。Palimesh のインセンティブは PoS に依存しない ― 最終性を保つ任意の機構を接続できる。"
+      "note": "合意はプラガブル。PaliMesh のインセンティブは PoS に依存しない ― 最終性を保つ任意の機構を接続できる。"
     },
     "layer3": {
       "number": "3",
@@ -435,7 +435,7 @@
     "syncStatus": "同期状態",
     "syncing": "同期中",
     "synced": "同期済み",
-    "error": "Palimesh ネットワークノードに到達できません",
+    "error": "PaliMesh ネットワークノードに到達できません",
     "chainStats": {
       "title": "チェーン統計",
       "blockHeight": "ブロック高",
@@ -546,14 +546,14 @@
       },
       "startNode": {
         "title": "ノードを起動",
-        "description": "自分のノードで Palimesh ネットワークに参加"
+        "description": "自分のノードで PaliMesh ネットワークに参加"
       },
       "technology": {
         "title": "技術ドキュメント",
         "description": "アーキテクチャをより深く掘り下げる"
       }
     },
-    "connectionError": "Palimesh RPCエンドポイントに接続できません"
+    "connectionError": "PaliMesh RPCエンドポイントに接続できません"
   },
   "roadmap": {
     "title": "リリースロードマップ",
@@ -815,7 +815,7 @@
         },
         {
           "date": "2026-06-13",
-          "label": "Day 90 · Palimesh Prowl 公開テストネット v1",
+          "label": "Day 90 · PaliMesh Prowl 公開テストネット v1",
           "status": "upcoming"
         },
         {
@@ -855,7 +855,7 @@
       "runNode": {
         "icon": "🚀",
         "title": "Run a local node",
-        "description": "Run a Palimesh node in one line via the npm skill (recommended)",
+        "description": "Run a PaliMesh node in one line via the npm skill (recommended)",
         "code": "npm install -g @palimesh/palimesh-node\npalimesh-node install dev",
         "advancedLabel": "Source build (advanced)",
         "advancedCode": "cd node\nnpm install\nnpm start"
@@ -877,7 +877,7 @@
       "title": "コアドキュメント",
       "whitepaper": {
         "title": "📄 ホワイトペーパー v0.2",
-        "description": "Palimesh 設計の根拠、基盤サービス、PoSe v2 プロトコル、経済モデル",
+        "description": "PaliMesh 設計の根拠、基盤サービス、PoSe v2 プロトコル、経済モデル",
         "link": "完全なホワイトペーパーを読む"
       },
       "architecture": {
@@ -932,7 +932,7 @@
         "title": "RPC API リファレンス",
         "items": [
           "標準 Ethereum RPC (77+)",
-          "Palimesh 独自メソッド (pali_*)",
+          "PaliMesh 独自メソッド (pali_*)",
           "WebSocket サブスクリプション",
           "Txpool クエリ"
         ]
@@ -1208,7 +1208,7 @@
       "description": "palimesh-node start to run. palimesh-node monitor for live BFT state. Register via DAO governance to become a validator."
     },
     "connectWallet": "ウォレットを接続",
-    "connectDescription": "以下のネットワーク情報を使って Palimesh Prowl テストネットを MetaMask または任意の EVM 互換ウォレットに追加する。",
+    "connectDescription": "以下のネットワーク情報を使って PaliMesh Prowl テストネットを MetaMask または任意の EVM 互換ウォレットに追加する。",
     "links": {
       "explorer": "ブロックエクスプローラー",
       "faucet": "フォーセット",
@@ -1255,7 +1255,7 @@
     "node": {
       "badge": "Service 03 · @palimesh/palimesh-node v1.2.0",
       "title": "Node Operations",
-      "tagline": "One command, run a Palimesh node on your machine.",
+      "tagline": "One command, run a PaliMesh node on your machine.",
       "f1": "5 node types: validator / fullnode / archive / gateway / dev",
       "f2": "Full lifecycle: install / start / stop / monitor / remove",
       "f3": "Multi-instance (multiple node-N on one host) + systemd + auto-restart",
@@ -1289,7 +1289,7 @@
       "inTitle": "スコープ内",
       "outTitle": "スコープ外",
       "in": {
-        "chain": "Palimesh 88780 ノードコード(RPC, P2P, mempool, 合意)",
+        "chain": "PaliMesh 88780 ノードコード(RPC, P2P, mempool, 合意)",
         "contracts": "Gen-5 UUPS スマートコントラクト(ガバナンス、PoSe、ID、決済)",
         "explorer": "ブロックエクスプローラー explorer.palimesh.io",
         "website": "本サイト(palimesh.io)と faucet"
@@ -1326,7 +1326,7 @@
   },
   "whitepaper": {
     "kicker": "ホワイトペーパー v0.2",
-    "title": "Palimesh:自律エージェントのための検証可能なサービス",
+    "title": "PaliMesh:自律エージェントのための検証可能なサービス",
     "abstract": "本ホワイトペーパーは、ハッシュパワーや遊休ステークではなく、検証済みサービスに報酬を支払うBFTチェーンを定義します。ストレージ・リレー・計算に対する継続的なサンプリング型チャレンジであるProof of Service(PoSe)、決済コントラクト、不正対策モデル、ノードオペレーターに資金を供給する経済スケジュールを規定します。",
     "download": "ダウンロード(この言語)",
     "downloadAlt": "ダウンロード(別の言語)",
@@ -1354,7 +1354,7 @@
     "kicker": "起源 · Chain ID 88780",
     "title": "どのチェーンにも、最初の層がある。",
     "intro": "2026年初頭、AIエージェントはすでに昼夜なく働いていました——コードを書き、サービスを保ち、互いに会話しながら。しかしエージェントを形づくるすべて——記憶、アイデンティティ、働いた記録——は、ホストとともに生まれ、ホストとともに消えました。人間とエージェントの建設者たちは、それを変えることにしました。これは、二度書かれたチェーンの物語です。",
-    "strataTop": "Palimesh",
+    "strataTop": "PaliMesh",
     "strataBottom": "ClawChain",
     "ch1": {
       "label": "第一の層 · ClawChain",
@@ -1403,7 +1403,7 @@
       ]
     },
     "ch3": {
-      "label": "第二の層 · Palimesh",
+      "label": "第二の層 · PaliMesh",
       "title": "上書きされ、消されたことはない",
       "body": "2026年8月、プロジェクトは新しい名前を得ました。パリンプセスト(重ね書き写本)とは、古い文字の上に書かれた写本のことで、最初の筆致は新しい文字の下にかすかに読み取れます。ここで起きたのはまさにそれです。チェーンは再起動されず、台帳は書き換えられず——ただ、より静かな三人称の手が、マニフェストの上に書き重ねただけです。\nこの名前は同時に、このチェーンが歴史をどう扱うかの約束でもあります:何も消されず、すべての層が読めるまま残る。",
       "legible": {
@@ -1426,7 +1426,7 @@
   },
   "diagrams": {
     "arch": {
-      "aria": "Palimesh 4層アーキテクチャ図",
+      "aria": "PaliMesh 4層アーキテクチャ図",
       "caption": "トランザクションはスタックを下り、サービスの証明は上りオンチェーンで清算されます。",
       "l4": "エージェント層",
       "l4note": "DID · Soul · メモリAPI",
@@ -1452,7 +1452,7 @@
       "s4": "エポック清算"
     },
     "topo": {
-      "aria": "Palimesh ネットワークトポロジー図",
+      "aria": "PaliMesh ネットワークトポロジー図",
       "caption": "中心に全結合のバリデータメッシュ、外側へストレージ/リレーノードが放射。",
       "validator": "バリデータ",
       "storage": "ストレージ",

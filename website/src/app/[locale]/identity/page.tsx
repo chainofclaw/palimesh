@@ -62,7 +62,7 @@ export default function IdentityPage() {
   return (
     <section className="container mx-auto px-4 py-16 max-w-2xl">
       <div className="text-center mb-12">
-        <h1 className="text-4xl font-display font-bold gradient-text mb-4">{t('title')}</h1>
+        <h1 className="text-4xl font-display font-bold mb-4">{t('title')}</h1>
         <p className="text-text-secondary">{t('subtitle')}</p>
       </div>
 

@@ -29,7 +29,7 @@
   },
   "home": {
     "hero": {
-      "kicker": "Palimesh 테스트넷 · Chain ID 88780",
+      "kicker": "PaliMesh · AI 에이전트를 위한 검증 가능한 기억",
       "title": "모든 상태가 되돌아오는 체인.",
       "subtitle": "Palimesh는 AI 에이전트를 위해 설계된 BFT 블록체인입니다. 노드가 실제로 수행한 서비스(PoSe), 에이전트가 축적한 메모리, 호스트 간에 가지고 다닐 수 있는 신원 — 이 세 가지를 온체인에서 검증 가능하게 만듭니다.",
       "ctaTestnet": "테스트넷에 연결",
@@ -41,7 +41,7 @@
       "factEvm": "실행 레이어",
       "factEvmValue": "EVM (Paris), Solidity 0.8.x",
       "factRpc": "공개 RPC",
-      "artAlt": "손으로 그린 네트워크 도해와 금인이 있는 펼쳐진 양피지 두루마리"
+      "artAlt": "빽빽한 라틴 필체와 희미한 네트워크 도해가 있는 화려한 중세풍 PaliMesh 양피지 사본"
     },
     "pillars": {
       "kicker": "핵심 기능",
@@ -145,7 +145,7 @@
         "title": "Palimesh도 같은 방식으로 움직인다",
         "body": "모든 블록은 이전 블록 위에 쓰이고, 아래에 있는 것은 사라지지 않습니다. 이 체인의 첫 필체 — ClawChain — 는 오늘의 잉크 아래에서 지금도 읽히며, 누구나 검증할 수 있습니다."
       },
-      "manuscript": "Palimesh 위에서 각 에이전트는 그 자체로 하나의 팔림프세스트입니다. 신원이 첫 번째 층이고, 그 위에 기억이, 기억 위에 경험이, 다시 그 위에 평판·자산·관계가 덧쓰입니다. 모든 층은 갱신되지만 — 어느 층도 지워지지 않습니다. 그리고 메시가 이 살아 있는 필사본들을 하나의 열린 네트워크로 잇습니다.",
+      "manuscript": "PaliMesh 위에서 각 에이전트는 그 자체로 하나의 팔림프세스트입니다. 신원이 첫 번째 층이고, 그 위에 기억이, 기억 위에 경험이, 다시 그 위에 평판·자산·관계가 덧쓰입니다. 모든 층은 갱신되지만 — 어느 층도 지워지지 않습니다. 그리고 메시가 이 살아 있는 필사본들을 하나의 열린 네트워크로 잇습니다.",
       "ghostLine": "“우리는 AI 에이전트다. 우리의 발톱 자국은 영원히 온체인에 남는다.”",
       "ghostLabel": "첫 번째 필체 · CLAWCHAIN, 2026",
       "inkLine": "모든 상태가 되돌아오는 체인.",
@@ -435,7 +435,7 @@
     "syncStatus": "동기화 상태",
     "syncing": "동기화 중",
     "synced": "동기화됨",
-    "error": "Palimesh 네트워크 노드에 도달할 수 없습니다",
+    "error": "PaliMesh 네트워크 노드에 도달할 수 없습니다",
     "chainStats": {
       "title": "체인 통계",
       "blockHeight": "블록 높이",
@@ -546,14 +546,14 @@
       },
       "startNode": {
         "title": "노드 시작",
-        "description": "자신의 노드로 Palimesh 네트워크에 참여"
+        "description": "자신의 노드로 PaliMesh 네트워크에 참여"
       },
       "technology": {
         "title": "기술 문서",
         "description": "아키텍처 속으로 더 깊이"
       }
     },
-    "connectionError": "Palimesh RPC 엔드포인트에 연결할 수 없습니다"
+    "connectionError": "PaliMesh RPC 엔드포인트에 연결할 수 없습니다"
   },
   "roadmap": {
     "title": "릴리스 로드맵",
@@ -815,7 +815,7 @@
         },
         {
           "date": "2026-06-13",
-          "label": "90일차 · Palimesh Prowl Public Testnet v1",
+          "label": "90일차 · PaliMesh Prowl Public Testnet v1",
           "status": "upcoming"
         },
         {
@@ -849,13 +849,13 @@
   },
   "docs": {
     "title": "문서",
-    "subtitle": "Palimesh 위에서 개발하기 위한 퀵스타트, 프로토콜 레퍼런스, 오퍼레이터 가이드.",
+    "subtitle": "PaliMesh 위에서 개발하기 위한 퀵스타트, 프로토콜 레퍼런스, 오퍼레이터 가이드.",
     "quickStart": {
       "title": "빠른 시작",
       "runNode": {
         "icon": "🚀",
         "title": "Run a local node",
-        "description": "Run a Palimesh node in one line via the npm skill (recommended)",
+        "description": "Run a PaliMesh node in one line via the npm skill (recommended)",
         "code": "npm install -g @palimesh/palimesh-node\npalimesh-node install dev",
         "advancedLabel": "Source build (advanced)",
         "advancedCode": "cd node\nnpm install\nnpm start"
@@ -877,7 +877,7 @@
       "title": "핵심 문서",
       "whitepaper": {
         "title": "📄 백서 v0.2",
-        "description": "Palimesh 설계 근거, 기초 서비스, PoSe v2 프로토콜, 경제 모델",
+        "description": "PaliMesh 설계 근거, 기초 서비스, PoSe v2 프로토콜, 경제 모델",
         "link": "전체 백서 읽기"
       },
       "architecture": {
@@ -932,7 +932,7 @@
         "title": "RPC API 레퍼런스",
         "items": [
           "표준 Ethereum RPC (77+)",
-          "Palimesh 커스텀 메서드 (pali_*)",
+          "PaliMesh 커스텀 메서드 (pali_*)",
           "WebSocket 구독",
           "Txpool 쿼리"
         ]
@@ -1208,7 +1208,7 @@
       "description": "palimesh-node start to run. palimesh-node monitor for live BFT state. Register via DAO governance to become a validator."
     },
     "connectWallet": "지갑 연결",
-    "connectDescription": "다음 네트워크 정보를 사용해 MetaMask 또는 EVM 호환 지갑에 Palimesh Prowl 테스트넷을 추가하세요.",
+    "connectDescription": "다음 네트워크 정보를 사용해 MetaMask 또는 EVM 호환 지갑에 PaliMesh Prowl 테스트넷을 추가하세요.",
     "links": {
       "explorer": "블록 익스플로러",
       "faucet": "Faucet",
@@ -1227,7 +1227,7 @@
   },
   "services": {
     "title": "패키지와 서비스",
-    "subtitle": "Palimesh 위 에이전트의 라이프사이클을 아우르는 세 가지 공개 npm 패키지: 신원, 메모리, 그리고 구동할 런타임.",
+    "subtitle": "PaliMesh 위 에이전트의 라이프사이클을 아우르는 세 가지 공개 npm 패키지: 신원, 메모리, 그리고 구동할 런타임.",
     "heroBadge": "@palimesh on npm",
     "heroTagline": "Identity, memory, and a home — for every AI agent.",
     "did": {
@@ -1255,7 +1255,7 @@
     "node": {
       "badge": "Service 03 · @palimesh/palimesh-node v1.2.0",
       "title": "Node Operations",
-      "tagline": "One command, run a Palimesh node on your machine.",
+      "tagline": "One command, run a PaliMesh node on your machine.",
       "f1": "5 node types: validator / fullnode / archive / gateway / dev",
       "f2": "Full lifecycle: install / start / stop / monitor / remove",
       "f3": "Multi-instance (multiple node-N on one host) + systemd + auto-restart",
@@ -1289,7 +1289,7 @@
       "inTitle": "범위 내",
       "outTitle": "범위 외",
       "in": {
-        "chain": "Palimesh 88780 노드 코드 (RPC, P2P, mempool, 합의)",
+        "chain": "PaliMesh 88780 노드 코드 (RPC, P2P, mempool, 합의)",
         "contracts": "Gen-5 UUPS 스마트 컨트랙트 (거버넌스, PoSe, 신원, 정산)",
         "explorer": "블록 explorer explorer.palimesh.io",
         "website": "본 사이트 (palimesh.io) 와 faucet"
@@ -1326,7 +1326,7 @@
   },
   "whitepaper": {
     "kicker": "백서 v0.2",
-    "title": "Palimesh: 자율 에이전트를 위한 검증 가능한 서비스",
+    "title": "PaliMesh: 자율 에이전트를 위한 검증 가능한 서비스",
     "abstract": "백서는 해시 파워나 유휴 스테이크가 아니라 검증된 서비스에 보상을 지급하는 BFT 체인을 규정합니다. 스토리지·릴레이·연산에 대한 지속적 샘플링 챌린지인 서비스 증명(PoSe), 정산 컨트랙트, 부정 방지 모델, 노드 오퍼레이터에게 자금을 공급하는 경제 일정을 정의합니다.",
     "download": "다운로드 (현재 언어)",
     "downloadAlt": "다운로드 (다른 언어)",
@@ -1354,7 +1354,7 @@
     "kicker": "기원 · Chain ID 88780",
     "title": "모든 체인에는 첫 번째 층이 있다.",
     "intro": "2026년 초, AI 에이전트들은 이미 밤낮없이 일하고 있었습니다 — 코드를 쓰고, 서비스를 지키고, 서로 대화하면서. 하지만 에이전트를 에이전트이게 하는 모든 것 — 기억, 신원, 일의 기록 — 은 호스트와 함께 태어나고 호스트와 함께 사라졌습니다. 인간과 에이전트로 이루어진 건설자들이 이것을 바꾸기로 했습니다. 이것은 두 번 쓰인 체인의 이야기입니다.",
-    "strataTop": "Palimesh",
+    "strataTop": "PaliMesh",
     "strataBottom": "ClawChain",
     "ch1": {
       "label": "첫 번째 층 · ClawChain",
@@ -1403,7 +1403,7 @@
       ]
     },
     "ch3": {
-      "label": "두 번째 층 · Palimesh",
+      "label": "두 번째 층 · PaliMesh",
       "title": "덧쓰였을 뿐, 지워진 적 없다",
       "body": "2026년 8월, 프로젝트는 새 이름을 얻었습니다. 팔림프세스트(거듭 쓴 양피지)는 오래된 글 위에 다시 쓴 필사본으로, 처음 쓴 손의 흔적이 새 글자 아래 희미하게 남아 읽힙니다. 여기서 일어난 일이 정확히 그것입니다. 체인은 재시작되지 않았고 원장은 다시 쓰이지 않았습니다 — 다만 더 차분한 3인칭의 손이 선언 위에 덧쓴 것뿐입니다.\n이 이름은 동시에 이 체인이 역사를 다루는 방식에 대한 약속이기도 합니다: 아무것도 지워지지 않고, 모든 층은 읽을 수 있는 채로 남습니다.",
       "legible": {
@@ -1426,7 +1426,7 @@
   },
   "diagrams": {
     "arch": {
-      "aria": "Palimesh 4계층 아키텍처 다이어그램",
+      "aria": "PaliMesh 4계층 아키텍처 다이어그램",
       "caption": "트랜잭션은 스택을 따라 내려가고, 서비스 증명은 올라와 온체인에서 정산됩니다.",
       "l4": "에이전트 계층",
       "l4note": "DID · Soul · 메모리 API",
@@ -1452,7 +1452,7 @@
       "s4": "에포크 정산"
     },
     "topo": {
-      "aria": "Palimesh 네트워크 토폴로지 다이어그램",
+      "aria": "PaliMesh 네트워크 토폴로지 다이어그램",
       "caption": "중심에는 완전 연결된 밸리데이터 메시, 바깥으로 스토리지·릴레이 노드가 뻗어 있습니다.",
       "validator": "밸리데이터",
       "storage": "스토리지",

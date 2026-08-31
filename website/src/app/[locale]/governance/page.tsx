@@ -30,13 +30,13 @@ export default function GovernancePage() {
     <section className="container mx-auto px-4 py-16">
       <div className="flex items-center justify-between mb-8">
         <div>
-          <h1 className="text-4xl font-display font-bold gradient-text">{t('title')}</h1>
+          <h1 className="text-4xl font-display font-bold">{t('title')}</h1>
           <p className="text-text-secondary mt-2">{t('subtitle')}</p>
         </div>
         {isConnected && (
           <Link
             href="/governance/create"
-            className="px-6 py-3 rounded-lg bg-gradient-cyber text-white font-display font-semibold hover:shadow-glow-md transition-all"
+            className="px-6 py-3 rounded-lg bg-text-primary text-bg-primary font-medium transition-all"
           >
             {t('newProposal')}
           </Link>
