@@ -21,6 +21,9 @@ function opts(over: Partial<CoreSetDriverOptions> = {}): CoreSetDriverOptions {
     weightBondBps: 2000,
     weightPerfBps: 3000,
     lagEpochs: 3,
+    // Most tests exercise pure selection/apply logic; the restart-safety
+    // deferral has its own dedicated tests below.
+    deferFirstApply: false,
     ...over,
   }
 }
@@ -182,5 +185,63 @@ describe("core-set-driver", () => {
     )
     await driver.tick()
     assert.equal(applied.length, 0)
+  })
+})
+
+describe("core-set-driver: restart safety (deferFirstApply)", () => {
+  // 2026-08-31 B2 enforce incident: after an atomic restart every node's BFT
+  // came up on the OLD static set and started round H (old-rotation proposer
+  // proposed + prepared, vote-ledger persisted). ~10s later each driver
+  // applied the NEW set → the proposer rotation changed → a SECOND legitimate
+  // proposer proposed a different block at the same height. The #780 vote
+  // ledger then pinned every node to whichever block it saw first
+  // ("refusing self-equivocation") — quorum could never form and the chain
+  // stalled until rollback. Deferring the first apply to the NEXT epoch
+  // boundary keeps the set change away from the restart's in-flight round
+  // and makes every node switch at the same on-chain instant.
+
+  it("enforce: defers the first target epoch, applies from the next boundary on", async () => {
+    const h = harness(opts({ deferFirstApply: true }), SIX)
+    await h.driver.tick() // first target epoch (10-3=7): must NOT apply
+    assert.equal(h.applied.length, 0, "first boundary after startup is observe-only")
+    await h.driver.tick() // same epoch again: still nothing
+    assert.equal(h.applied.length, 0)
+    h.setEpoch(11) // next epoch boundary (target 8)
+    await h.driver.tick()
+    assert.equal(h.applied.length, 1, "applies at the next boundary")
+    h.setEpoch(12)
+    await h.driver.tick()
+    assert.equal(h.applied.length, 2, "subsequent boundaries apply normally")
+  })
+
+  it("shadow: deferral does not change shadow behavior (never applies anyway)", async () => {
+    const h = harness(opts({ shadow: true, deferFirstApply: true }), SIX)
+    await h.driver.tick()
+    h.setEpoch(11)
+    await h.driver.tick()
+    assert.equal(h.applied.length, 0)
+  })
+
+  it("defer also covers the Phase-2 on-chain canonical path", async () => {
+    const applied: Array<Array<{ id: string; stake: bigint }>> = []
+    let epoch = 10
+    const deps: CoreSetDriverDeps = {
+      reader: { buildCandidates: async () => SIX() } as unknown as CoreSetReader,
+      applySet: (v) => applied.push(v),
+      currentEpoch: () => epoch,
+      log: { info: () => {}, warn: () => {} },
+      getCanonicalCoreSet: async () => [
+        { id: "0x" + "aa".repeat(20), stake: 100n },
+        { id: "0x" + "bb".repeat(20), stake: 90n },
+        { id: "0x" + "cc".repeat(20), stake: 80n },
+        { id: "0x" + "dd".repeat(20), stake: 70n },
+      ],
+    }
+    const driver = new CoreSetDriver(deps, opts({ deferFirstApply: true }))
+    await driver.tick() // first target: deferred
+    assert.equal(applied.length, 0, "on-chain path defers the first apply too")
+    epoch = 11
+    await driver.tick()
+    assert.equal(applied.length, 1, "on-chain path applies from the next boundary")
   })
 })

@@ -42,6 +42,18 @@ export interface CoreSetDriverOptions {
   scoreDenom?: bigint
   /** How often to check for a new epoch boundary (ms). Defaults to 15000. */
   pollIntervalMs?: number
+  /**
+   * Restart safety (2026-08-31 B2 incident, default TRUE): when enforcing,
+   * skip the first target epoch seen after startup and only apply from the
+   * NEXT epoch boundary on. An immediate post-restart apply races the BFT
+   * round already in flight on the pre-restart set: the rotation change
+   * mints a second legitimate proposer for the same height, the #780 vote
+   * ledger pins each node to whichever block it prepared first, and quorum
+   * never forms (observed chain stall, ~8 min, rolled back). Deferring makes
+   * every node switch at the same on-chain instant, minutes away from any
+   * restart turbulence. No effect in shadow mode (shadow never applies).
+   */
+  deferFirstApply?: boolean
 }
 
 export interface CoreSetDriverDeps {
@@ -66,6 +78,8 @@ export class CoreSetDriver {
   private readonly opts: CoreSetDriverOptions
   private readonly cfg: CoreSetConfig
   private lastHandledEpoch = -1
+  // First target epoch seen after startup (deferFirstApply); null = not yet seen.
+  private deferredStartupEpoch: number | null = null
   private timer: ReturnType<typeof setInterval> | null = null
   private ticking = false
 
@@ -118,6 +132,22 @@ export class CoreSetDriver {
     try {
       const targetEpoch = this.deps.currentEpoch() - this.opts.lagEpochs
       if (targetEpoch <= 0 || targetEpoch <= this.lastHandledEpoch) return
+
+      // Restart safety: in enforce mode, observe the first target epoch and
+      // only start applying from the next boundary (see deferFirstApply doc).
+      if (
+        this.opts.deferFirstApply !== false
+        && !this.opts.shadow
+        && this.deferredStartupEpoch === null
+      ) {
+        this.deferredStartupEpoch = targetEpoch
+        this.lastHandledEpoch = targetEpoch
+        this.deps.log.info(
+          "core-set: deferring first apply to the next epoch boundary (restart safety)",
+          { epoch: targetEpoch },
+        )
+        return
+      }
 
       // Phase 2 — on-chain canonical mode: read the finalized set, don't recompute.
       if (this.deps.getCanonicalCoreSet) {
