@@ -1,5 +1,5 @@
 import { join } from "node:path";
-import { Contract, JsonRpcProvider, Wallet } from "ethers";
+import { Contract, JsonRpcProvider, Wallet, keccak256, getBytes } from "ethers";
 import { loadConfig } from "./lib/config.ts";
 import { EvidenceStore } from "./lib/evidence-store.ts";
 import { PendingChallengeStore } from "./lib/pending-challenge-store.ts";
@@ -169,6 +169,17 @@ const coreSetRegistryReader = (coreSetManager && validatorRegistryAddressForBrid
     })
   : null;
 let lastCoreSetEpoch = 0;
+// Set once the reader's historical scan completes — gate against submitting
+// a mid-scan (zombie-bearing) candidate set.
+let coreSetReaderReady = false;
+// Read-only registry handle for the pre-submit isActive re-check.
+const coreSetRegistryContract = (coreSetManager && validatorRegistryAddressForBridge)
+  ? new Contract(
+      validatorRegistryAddressForBridge,
+      ["function isActive(bytes32) view returns (bool)"],
+      provider,
+    )
+  : null;
 
 const contractReader = useV2 ? new ContractReader({
   l2RpcUrl: config.l2RpcUrl ?? l1Rpc,
@@ -824,6 +835,12 @@ export function bridgeBftSlash(evidence: EquivocationEvidence): void {
 // Core-set finalization: submit the ranked candidate pool for the finalized epoch.
 async function tryFinalizeCoreSet(): Promise<void> {
   if (!coreSetManager || !coreSetRegistryReader) return;
+  // Never submit from a MID-SCAN activeSet: while the reader's historical
+  // scan is in flight, the set can contain zombie entries whose Registered
+  // event was scanned but whose later Deactivated event wasn't yet (2026-08-31:
+  // that submitted [v1-old, v2] and the contract rightly reverted
+  // CandidateNotActive). Wait for init() to complete.
+  if (!coreSetReaderReady) return;
   const candidate = resolveFinalizationCandidate(lastCoreSetEpoch);
   if (candidate === null) return;
   try {
@@ -834,29 +851,56 @@ async function tryFinalizeCoreSet(): Promise<void> {
   } catch {
     /* not finalized (or view reverted) — attempt below */
   }
-  // Candidate pool = active ValidatorRegistry members with a known 65-byte pubkey
-  // (the contract needs the pubkey to derive both the registry + PoSe nodeIds).
-  const pubkeys = selectCandidatePubkeys(coreSetRegistryReader.getActiveSet());
-  if (pubkeys.length === 0) {
-    // Do NOT advance lastCoreSetEpoch: an empty candidate list usually means
-    // the registry reader hasn't finished its historical event scan yet
-    // (state-seeded entries carry no pubkey). Retry this epoch next tick
-    // instead of silently skipping it for an hour.
-    log.info("core-set: no pubkey-bearing candidates yet; retrying next tick", {
+  try {
+    // Candidate pool = active ValidatorRegistry members with a known 65-byte
+    // pubkey (the contract derives both the registry + PoSe nodeIds from it).
+    let pubkeys = selectCandidatePubkeys(coreSetRegistryReader.getActiveSet());
+    // Defense-in-depth: re-check isActive on-chain per candidate. The contract
+    // is the authority — a stale reader entry must not turn into a revert.
+    // View failures keep the candidate (the contract still gets final say).
+    if (coreSetRegistryContract && pubkeys.length > 0) {
+      const checked: string[] = [];
+      for (const pk of pubkeys) {
+        const regNodeId = keccak256(getBytes(pk).slice(1));
+        try {
+          if (await coreSetRegistryContract.isActive(regNodeId)) checked.push(pk);
+        } catch {
+          checked.push(pk);
+        }
+      }
+      if (checked.length !== pubkeys.length) {
+        log.warn("core-set: dropped stale (inactive) candidates before submit", {
+          before: pubkeys.length,
+          after: checked.length,
+        });
+      }
+      pubkeys = checked;
+    }
+    if (pubkeys.length === 0) {
+      // Do NOT advance lastCoreSetEpoch — retry this epoch on the next tick.
+      log.info("core-set: no active pubkey-bearing candidates yet; retrying next tick", {
+        epoch: candidate,
+        activeSetSize: coreSetRegistryReader.getActiveSet().length,
+      });
+      return;
+    }
+    const manifest = readBestRewardManifest(rewardManifestDir, candidate);
+    const args = buildFinalizeArgs(candidate, pubkeys, manifest);
+    const sent = await submitFinalizeCoreSet(
+      coreSetManager as unknown as CoreSetManagerContract,
+      args,
+    );
+    lastCoreSetEpoch = candidate;
+    if (sent) {
+      log.info("core-set finalized on-chain", { epoch: candidate, candidates: pubkeys.length });
+    }
+  } catch (err) {
+    // A finalize failure must not abort the whole tick (it used to skip the
+    // equivocation/dispute steps). Log and retry the same epoch next tick.
+    log.error("core-set finalize attempt failed; will retry next tick", {
       epoch: candidate,
-      activeSetSize: coreSetRegistryReader.getActiveSet().length,
+      error: String(err),
     });
-    return;
-  }
-  const manifest = readBestRewardManifest(rewardManifestDir, candidate);
-  const args = buildFinalizeArgs(candidate, pubkeys, manifest);
-  const sent = await submitFinalizeCoreSet(
-    coreSetManager as unknown as CoreSetManagerContract,
-    args,
-  );
-  lastCoreSetEpoch = candidate;
-  if (sent) {
-    log.info("core-set finalized on-chain", { epoch: candidate, candidates: pubkeys.length });
   }
 }
 
@@ -866,12 +910,22 @@ if (coreSetRegistryReader) {
     try {
       await coreSetRegistryReader.init();
       coreSetRegistryReader.start();
+      coreSetReaderReady = true;
       log.info("core-set registry reader ready", {
         active: coreSetRegistryReader.getActiveSet().length,
       });
     } catch (e) {
-      log.warn("core-set registry reader init failed; poll loop self-heals", { error: String(e) });
+      log.warn("core-set registry reader init failed; retrying init in background", { error: String(e) });
       coreSetRegistryReader.start();
+      // Keep retrying init so coreSetReaderReady eventually flips; without
+      // this a transient RPC failure would disable core-set until restart.
+      const retry = setInterval(() => {
+        void coreSetRegistryReader!.init().then(() => {
+          coreSetReaderReady = true;
+          clearInterval(retry);
+          log.info("core-set registry reader ready (after retry)");
+        }).catch(() => {/* keep retrying */});
+      }, 60_000);
     }
   })();
 }
