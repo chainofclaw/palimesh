@@ -838,7 +838,14 @@ async function tryFinalizeCoreSet(): Promise<void> {
   // (the contract needs the pubkey to derive both the registry + PoSe nodeIds).
   const pubkeys = selectCandidatePubkeys(coreSetRegistryReader.getActiveSet());
   if (pubkeys.length === 0) {
-    lastCoreSetEpoch = candidate;
+    // Do NOT advance lastCoreSetEpoch: an empty candidate list usually means
+    // the registry reader hasn't finished its historical event scan yet
+    // (state-seeded entries carry no pubkey). Retry this epoch next tick
+    // instead of silently skipping it for an hour.
+    log.info("core-set: no pubkey-bearing candidates yet; retrying next tick", {
+      epoch: candidate,
+      activeSetSize: coreSetRegistryReader.getActiveSet().length,
+    });
     return;
   }
   const manifest = readBestRewardManifest(rewardManifestDir, candidate);
