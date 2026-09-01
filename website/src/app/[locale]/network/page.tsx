@@ -221,8 +221,8 @@ export default function NetworkPage() {
           <div className="max-w-4xl mx-auto text-center">
             {/* Pre-title */}
             <div className="inline-block mb-6 fade-in">
-              <div className="px-4 py-2 rounded-full border border-accent-cyan/30 bg-accent-cyan/5">
-                <span className="font-display text-sm text-accent-cyan tracking-wider">
+              <div className="">
+                <span className="kicker">
                   NETWORK_STATUS_MONITOR
                 </span>
               </div>

@@ -13,7 +13,7 @@ export default function WhitepaperPage() {
   return (
     <div>
       {/* Hero */}
-      <section className="vellum deckle-bottom">
+      <section className="manuscript-hero manuscript-hero--compact relative">
         <div className="container mx-auto px-4 py-16 md:py-20 max-w-3xl">
           <p className="kicker mb-4">{t('kicker')}</p>
           <h1 className="display-xl font-display font-bold mb-5">
@@ -24,14 +24,14 @@ export default function WhitepaperPage() {
             <a
               href={`/downloads/palimesh_whitepaper.${mdLang}.md`}
               download
-              className="px-5 py-2.5 rounded-lg bg-text-primary text-bg-primary text-sm font-medium hover:bg-accent-purple transition-colors"
+              className="seal-button text-sm"
             >
               {t('download')}
             </a>
             <a
               href={`/downloads/palimesh_whitepaper.${mdLang === 'zh' ? 'en' : 'zh'}.md`}
               download
-              className="px-5 py-2.5 rounded-lg border border-line bg-bg-elevated text-sm text-text-primary hover:border-accent-blue hover:text-accent-blue transition-colors"
+              className="ink-button text-sm"
             >
               {t('downloadAlt')}
             </a>
@@ -55,13 +55,13 @@ export default function WhitepaperPage() {
               <div className="flex flex-wrap justify-center gap-3">
                 <Link
                   href="/technology"
-                  className="px-5 py-2.5 rounded-lg border border-line bg-bg-elevated text-sm text-text-primary hover:border-accent-blue hover:text-accent-blue transition-colors"
+                  className="ink-button text-sm"
                 >
                   {t('moreTechnology')} →
                 </Link>
                 <Link
                   href="/roadmap"
-                  className="px-5 py-2.5 rounded-lg border border-line bg-bg-elevated text-sm text-text-primary hover:border-accent-blue hover:text-accent-blue transition-colors"
+                  className="ink-button text-sm"
                 >
                   {t('moreRoadmap')} →
                 </Link>

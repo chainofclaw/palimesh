@@ -882,3 +882,6 @@ table { border-color: var(--line); }
   .ink-armed svg *, .ink-draw svg * { stroke-dasharray: none !important; stroke-dashoffset: 0 !important; animation: none !important; }
   .vellum-card, .sheet-hover { transition: none; }
 }
+
+/* 子页 hero:与首页同语言,取消最小高度 */
+.manuscript-hero--compact { min-height: 0; }

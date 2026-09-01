@@ -18,8 +18,8 @@ export default function DocsPage() {
         <div className="container mx-auto px-4 relative z-10">
           <div className="max-w-4xl mx-auto text-center">
             <div className="inline-block mb-6 fade-in">
-              <div className="px-4 py-2 rounded-full border border-accent-cyan/30 bg-accent-cyan/5">
-                <span className="font-display text-sm text-accent-cyan tracking-wider">
+              <div className="">
+                <span className="kicker">
                   DOCUMENTATION_v2.0
                 </span>
               </div>

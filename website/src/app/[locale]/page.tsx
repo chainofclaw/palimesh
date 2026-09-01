@@ -153,7 +153,7 @@ export default function HomePage() {
             <div className="text-center mt-6">
               <Link
                 href="/story"
-                className="inline-block px-5 py-2.5 rounded-lg border border-line bg-bg-primary text-sm text-text-primary hover:border-accent-purple hover:text-accent-purple transition-colors"
+                className="inline-block ink-button text-sm"
               >
                 {t('parchment.cta')} →
               </Link>
@@ -195,7 +195,7 @@ export default function HomePage() {
             <div className="text-center mt-8">
               <Link
                 href="/network"
-                className="inline-block px-5 py-2.5 rounded-lg border border-line bg-bg-elevated text-sm text-text-primary hover:border-accent-cyan hover:text-accent-cyan transition-colors"
+                className="inline-block ink-button text-sm"
               >
                 {t('live.cta')} →
               </Link>
@@ -234,7 +234,7 @@ export default function HomePage() {
           <div className="text-center">
             <Link
               href="/testnet"
-              className="inline-block px-6 py-3 rounded-lg bg-text-primary text-bg-primary font-medium hover:bg-accent-purple transition-colors"
+              className="inline-block seal-button"
             >
               {t('node.cta')}
             </Link>
@@ -259,7 +259,7 @@ export default function HomePage() {
           <div className="text-center">
             <Link
               href="/services"
-              className="inline-block px-5 py-2.5 rounded-lg border border-line bg-bg-elevated text-sm text-text-primary hover:border-accent-blue hover:text-accent-blue transition-colors"
+              className="inline-block ink-button text-sm"
             >
               {t('products.cta')} →
             </Link>

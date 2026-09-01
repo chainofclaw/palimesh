@@ -11,7 +11,7 @@ export default function TestnetPage() {
   return (
     <div className="relative">
       {/* Hero Section */}
-      <section className="vellum deckle-bottom">
+      <section className="manuscript-hero manuscript-hero--compact relative">
         <div className="container mx-auto px-4 py-16 md:py-20">
           <div className="max-w-3xl mx-auto text-center">
             <p className="kicker mb-4">CANARY_TESTNET_88780_LIVE</p>
@@ -25,7 +25,7 @@ export default function TestnetPage() {
             <div className="flex flex-col sm:flex-row gap-4 justify-center fade-in-delay-2">
               <Link
                 href="/docs"
-                className="px-8 py-3 rounded-lg bg-text-primary text-bg-primary font-medium hover:bg-accent-purple transition-colors"
+                className="seal-button"
               >
                 {t('joinNow')}
               </Link>

@@ -19,8 +19,8 @@ export default function RoadmapPage() {
           <div className="max-w-5xl mx-auto">
             {/* Pre-title */}
             <div className="inline-block mb-6 fade-in">
-              <div className="px-4 py-2 rounded-full border border-accent-cyan/30 bg-accent-cyan/5">
-                <span className="font-display text-sm text-accent-cyan tracking-wider">
+              <div className="">
+                <span className="kicker">
                   DEVELOPMENT_ROADMAP
                 </span>
               </div>

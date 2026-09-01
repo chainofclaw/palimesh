@@ -20,7 +20,7 @@ export default function StoryPage() {
       <ReadingProgress />
 
       {/* ========== 引子 ========== */}
-      <section className="vellum deckle-bottom">
+      <section className="manuscript-hero manuscript-hero--compact relative">
         <div className="container mx-auto px-4 py-20 md:py-28 max-w-3xl relative">
           <Reveal>
             <p className="kicker mb-4">{t('kicker')}</p>
@@ -150,13 +150,13 @@ export default function StoryPage() {
                 href="https://explorer.palimesh.io"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="px-6 py-3 rounded-lg bg-text-primary text-bg-primary font-medium hover:bg-accent-purple transition-colors"
+                className="seal-button"
               >
                 {t('cta.explorer')}
               </a>
               <Link
                 href="/testnet"
-                className="px-6 py-3 rounded-lg border border-line bg-bg-elevated text-text-primary font-medium hover:border-accent-blue hover:text-accent-blue transition-colors"
+                className="ink-button"
               >
                 {t('cta.testnet')}
               </Link>

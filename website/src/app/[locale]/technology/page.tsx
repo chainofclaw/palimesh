@@ -11,7 +11,7 @@ export default function TechnologyPage() {
   return (
     <div className="relative">
       {/* Header - 羊皮纸 hero */}
-      <section className="vellum deckle-bottom">
+      <section className="manuscript-hero manuscript-hero--compact relative">
         <div className="container mx-auto px-4 py-16 md:py-20">
           <div className="max-w-3xl mx-auto text-center">
             <p className="kicker mb-4">TECHNICAL_ARCHITECTURE</p>
