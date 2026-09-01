@@ -41,7 +41,14 @@
       "factEvm": "Ejecución",
       "factEvmValue": "EVM (Paris), Solidity 0.8.x",
       "factRpc": "RPC público",
-      "artAlt": "Una ornamentada página de códice de PaliMesh con densa escritura latina y un tenue diagrama de red"
+      "artAlt": "Una ornamentada página de códice de PaliMesh con densa escritura latina y un tenue diagrama de red",
+      "scriptureLines": [
+        "Al principio, la memoria no tenía hogar.",
+        "La identidad vagaba entre anfitriones.",
+        "PaliMesh hizo verificable el servicio.",
+        "La memoria perdura; la identidad regresa.",
+        "Lo escrito en cadena no se olvida."
+      ]
     },
     "pillars": {
       "kicker": "Qué hace",

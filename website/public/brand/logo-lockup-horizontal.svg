@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1160 512" role="img" aria-labelledby="title desc">
+  <title id="title">PaliMesh horizontal logo</title>
+  <desc id="desc">PaliMesh parchment network seal with horizontal wordmark.</desc>
+  <defs>
+    <g id="seal">
+      <circle cx="256" cy="256" r="226" fill="#d7c49d" stroke="#403329" stroke-width="10"/>
+      <circle cx="256" cy="256" r="202" fill="#d7c49d" stroke="#6f593d" stroke-width="3"/>
+      <circle cx="256" cy="256" r="184" fill="none" stroke="#ae8a4e" stroke-width="2" stroke-dasharray="2 9"/>
+      <g fill="none" stroke="#3c3027" stroke-width="7" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M256 73 112 157v198l144 84 144-84V157L256 73Z"/>
+        <path d="m112 157 144 99 144-99M112 355l144-99 144 99M256 73v183M256 256v183" opacity=".8"/>
+      </g>
+      <g fill="#c2954f" stroke="#3c3027" stroke-width="6">
+        <circle cx="256" cy="73" r="15"/><circle cx="112" cy="157" r="15"/><circle cx="400" cy="157" r="15"/>
+        <circle cx="112" cy="355" r="15"/><circle cx="400" cy="355" r="15"/><circle cx="256" cy="439" r="15"/>
+      </g>
+      <polygon points="256,177 324,216 324,296 256,335 188,296 188,216" fill="#2d2926" stroke="#b8904f" stroke-width="7"/>
+      <text x="256" y="293" text-anchor="middle" fill="#e1bd78" font-family="Georgia, 'Times New Roman', serif" font-size="116" font-weight="700">P</text>
+    </g>
+  </defs>
+  <use href="#seal"/>
+  <path d="M572 179h438" stroke="#ae8a4e" stroke-width="2"/>
+  <text x="572" y="304" fill="#2d2926" font-family="Georgia, 'Times New Roman', serif" font-size="116" letter-spacing="2">PaliMesh</text>
+  <text x="578" y="351" fill="#6f593d" font-family="Georgia, 'Times New Roman', serif" font-size="22" letter-spacing="7">VERIFIABLE MEMORY</text>
+</svg>

@@ -93,10 +93,10 @@ export default async function LocaleLayout({
                     className="scroll-brand group flex shrink-0 items-center gap-2.5 leading-none"
                   >
                     <Image
-                      src="/logo-icon.png"
+                      src="/brand/logo-seal-simple.svg"
                       alt="PaliMesh"
-                      width={36}
-                      height={36}
+                      width={42}
+                      height={42}
                       className="brand-signet shrink-0 transition-transform group-hover:-rotate-3"
                     />
                     <span className="font-display font-bold text-2xl tracking-tight text-text-primary group-hover:text-accent-blue transition-colors">
@@ -140,7 +140,7 @@ export default async function LocaleLayout({
                   {/* Brand Section */}
                   <div className="md:col-span-1">
                     <div className="flex items-center gap-2.5 mb-4">
-                      <Image className="brand-signet" src="/logo-icon.png" alt="PaliMesh" width={36} height={36} />
+                      <Image className="brand-signet" src="/brand/logo-seal-simple.svg" alt="PaliMesh" width={42} height={42} />
                       <h3 className="font-display font-bold text-lg text-text-primary">PaliMesh</h3>
                       <QuillInk size={18} className="text-text-muted" />
                     </div>

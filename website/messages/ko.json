@@ -41,7 +41,14 @@
       "factEvm": "실행 레이어",
       "factEvmValue": "EVM (Paris), Solidity 0.8.x",
       "factRpc": "공개 RPC",
-      "artAlt": "빽빽한 라틴 필체와 희미한 네트워크 도해가 있는 화려한 중세풍 PaliMesh 양피지 사본"
+      "artAlt": "빽빽한 라틴 필체와 희미한 네트워크 도해가 있는 화려한 중세풍 PaliMesh 양피지 사본",
+      "scriptureLines": [
+        "태초에 기억은 머물 곳이 없었다.",
+        "신원은 호스트 사이를 떠돌았다.",
+        "PaliMesh는 서비스를 검증 가능하게 했다.",
+        "기억은 남고, 신원은 돌아온다.",
+        "체인에 기록된 것은 잊히지 않는다."
+      ]
     },
     "pillars": {
       "kicker": "핵심 기능",

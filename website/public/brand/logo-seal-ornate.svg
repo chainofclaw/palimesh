@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640" role="img" aria-labelledby="title desc">
+  <title id="title">PaliMesh ornate seal</title>
+  <desc id="desc">An ornate parchment network seal with a central P.</desc>
+  <defs>
+    <filter id="paper" x="-20%" y="-20%" width="140%" height="140%">
+      <feTurbulence type="fractalNoise" baseFrequency=".025" numOctaves="2" seed="8" result="grain"/>
+      <feColorMatrix in="grain" type="saturate" values="0" result="mono"/>
+      <feComponentTransfer in="mono" result="softgrain"><feFuncA type="table" tableValues="0 .14"/></feComponentTransfer>
+      <feBlend in="SourceGraphic" in2="softgrain" mode="multiply"/>
+    </filter>
+  </defs>
+  <circle cx="320" cy="320" r="286" fill="#cbb58a" stroke="#3c3027" stroke-width="12" filter="url(#paper)"/>
+  <circle cx="320" cy="320" r="262" fill="none" stroke="#705a3b" stroke-width="4" stroke-dasharray="3 12"/>
+  <circle cx="320" cy="320" r="238" fill="none" stroke="#a47c42" stroke-width="2"/>
+  <circle cx="320" cy="320" r="222" fill="none" stroke="#a47c42" stroke-width="2" stroke-dasharray="1 8"/>
+  <g fill="#6d573a" font-family="Georgia, 'Times New Roman', serif" font-size="17" letter-spacing="3" opacity=".72">
+    <text x="320" y="115" text-anchor="middle">MEMORIA · TESTIMONIUM · REDDITUS</text>
+    <text x="320" y="548" text-anchor="middle">PALIMESH · CATENA · PERENNIS</text>
+  </g>
+  <g fill="none" stroke="#332a24" stroke-width="8" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M320 73 134 180v280l186 107 186-107V180L320 73Z"/>
+    <path d="m134 180 186 140 186-140M134 460l186-140 186 140M320 73v247M320 320v247" opacity=".88"/>
+  </g>
+  <g fill="#bd8c43" stroke="#332a24" stroke-width="7">
+    <circle cx="320" cy="73" r="21"/><circle cx="134" cy="180" r="21"/><circle cx="506" cy="180" r="21"/>
+    <circle cx="134" cy="460" r="21"/><circle cx="506" cy="460" r="21"/><circle cx="320" cy="567" r="21"/>
+  </g>
+  <polygon points="320,220 404,269 404,371 320,420 236,371 236,269" fill="#292622" stroke="#c19855" stroke-width="9"/>
+  <text x="320" y="368" text-anchor="middle" fill="#dfbb76" font-family="Georgia, 'Times New Roman', serif" font-size="146" font-weight="700">P</text>
+  <g fill="#a47c42">
+    <circle cx="320" cy="35" r="4"/><circle cx="320" cy="605" r="4"/><circle cx="35" cy="320" r="4"/><circle cx="605" cy="320" r="4"/>
+  </g>
+</svg>

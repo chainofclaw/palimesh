@@ -12,6 +12,7 @@ import { Parallax, InkDraw } from '@/components/fx/Effects'
 export default function HomePage() {
   const t = useTranslations('home')
   const td = useTranslations('diagrams')
+  const scriptureLines = t.raw('hero.scriptureLines') as string[]
 
   return (
     <div className="site-canvas overflow-hidden">
@@ -57,6 +58,16 @@ export default function HomePage() {
                     sizes="(min-width: 768px) 46vw, 100vw"
                     className="w-full h-auto"
                   />
+                  <div className="scripture-ticker">
+                    <span className="sr-only">{scriptureLines.join(' ')}</span>
+                    <div className="scripture-ticker__track" aria-hidden="true">
+                      {[...scriptureLines, scriptureLines[0]].map((line, index) => (
+                        <span className="scripture-ticker__line" key={`${index}-${line}`}>
+                          {line}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
                 </div>
               </Parallax>
             </div>

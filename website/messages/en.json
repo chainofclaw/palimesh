@@ -41,7 +41,14 @@
       "factEvm": "Execution",
       "factEvmValue": "EVM (Paris), Solidity 0.8.x",
       "factRpc": "Public RPC",
-      "artAlt": "An ornate medieval-style PaliMesh codex page with dense Latin script and a faint network diagram"
+      "artAlt": "An ornate medieval-style PaliMesh codex page with dense Latin script and a faint network diagram",
+      "scriptureLines": [
+        "In the beginning, memory had no home.",
+        "Identity wandered between hosts.",
+        "PaliMesh made service verifiable.",
+        "Memory endures; identity returns.",
+        "What the chain records is not forgotten."
+      ]
     },
     "pillars": {
       "kicker": "What it does",

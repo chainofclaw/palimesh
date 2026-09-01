@@ -303,6 +303,7 @@ code, pre {
 .manuscript-header {
   background: transparent;
   pointer-events: none;
+  padding-top: 10px;
 }
 
 .scroll-banner {
@@ -525,9 +526,59 @@ code, pre {
 
 .hero-parchment {
   position: relative;
+  transform: rotate(0.15deg);
+}
+
+.hero-parchment > img {
   filter: contrast(0.88) saturate(0.76) sepia(0.06);
   opacity: 0.94;
-  transform: rotate(0.15deg);
+}
+
+.scripture-ticker {
+  --scripture-line-height: 3.15rem;
+  position: relative;
+  overflow: hidden;
+  width: 92%;
+  height: var(--scripture-line-height);
+  margin: 0.7rem auto 0;
+  color: #302318;
+  border: 0;
+  border-bottom: 1px solid rgba(94, 61, 28, 0.54);
+  font-family: var(--font-body);
+  font-size: clamp(0.875rem, 1.15vw, 0.98rem);
+  font-weight: 600;
+  line-height: 1.4;
+  letter-spacing: 0.01em;
+}
+
+.scripture-ticker__track {
+  display: flex;
+  flex-direction: column;
+  animation: scripture-scroll-y 18s infinite;
+  will-change: transform;
+}
+
+.scripture-ticker__line {
+  display: flex;
+  width: 100%;
+  height: var(--scripture-line-height);
+  flex: 0 0 var(--scripture-line-height);
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  padding-inline: 0.8rem;
+  text-align: center;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+@keyframes scripture-scroll-y {
+  0%, 14% { transform: translate3d(0, 0, 0); }
+  20%, 34% { transform: translate3d(0, calc(var(--scripture-line-height) * -1), 0); }
+  40%, 54% { transform: translate3d(0, calc(var(--scripture-line-height) * -2), 0); }
+  60%, 74% { transform: translate3d(0, calc(var(--scripture-line-height) * -3), 0); }
+  80%, 94% { transform: translate3d(0, calc(var(--scripture-line-height) * -4), 0); }
+  100% { transform: translate3d(0, calc(var(--scripture-line-height) * -5), 0); }
 }
 
 .seal-button,
@@ -820,6 +871,14 @@ table { border-color: var(--line); }
 @media (prefers-reduced-motion: reduce) {
   .float-slow, .hero-in, .gold-sheen, .fade-in, .fade-in-up,
   .fade-in-delay-1, .fade-in-delay-2, .fade-in-delay-3 { animation: none !important; }
+  .scripture-ticker {
+    height: var(--scripture-line-height);
+  }
+  .scripture-ticker__track {
+    animation: none !important;
+    transform: none !important;
+  }
+  .scripture-ticker__line + .scripture-ticker__line { display: none; }
   .ink-armed svg *, .ink-draw svg * { stroke-dasharray: none !important; stroke-dashoffset: 0 !important; animation: none !important; }
   .vellum-card, .sheet-hover { transition: none; }
 }

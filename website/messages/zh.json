@@ -41,7 +41,14 @@
       "factEvm": "执行层",
       "factEvmValue": "EVM(Paris),Solidity 0.8.x",
       "factRpc": "公共 RPC",
-      "artAlt": "繁复的中世纪风格 PaliMesh 羊皮纸抄本,密集拉丁经文下隐约可见网络图"
+      "artAlt": "繁复的中世纪风格 PaliMesh 羊皮纸抄本,密集拉丁经文下隐约可见网络图",
+      "scriptureLines": [
+        "起初，记忆无所归依。",
+        "身份在宿主之间漂泊。",
+        "PaliMesh 使服务可验证。",
+        "使记忆不消逝，身份可回返。",
+        "凡写入链上的，皆不被遗忘。"
+      ]
     },
     "pillars": {
       "kicker": "核心能力",
