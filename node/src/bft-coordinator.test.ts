@@ -1109,3 +1109,65 @@ describe("BftCoordinator.replayUnfinalizedVotes (restart liveness, 2026-08-05)",
     assert.equal(sent.length, 0)
   })
 })
+
+describe("Phase J1.1 follower fix: in-flight round is not a stall", () => {
+  // 2026-09-05 v3 recurrence: for the height currently UNDER consensus
+  // (tip+1) the local chain never has a block yet, so getLocalBlock()
+  // returns null and the earlier fix fell through to the "truly stuck"
+  // fire path. A slow-but-caught-up validator (v3, shared host) that
+  // misses casting its prepare before the peer quorum forms then fired
+  // forceSnapSync every cooldown window and ballooned leveldb-state
+  // again (64G). Being one in-flight round behind on VOTES is not a
+  // stall: only fire when the local TIP is genuinely behind the peer
+  // quorum height. A real J1.1 dead-zone (tip frozen while peers
+  // advance) still fires as soon as peers move one block ahead.
+  const peerRoot = ("0x" + "bb".repeat(32)) as Hex
+  const peerHash = ("0x" + "ab".repeat(32)) as Hex
+
+  it("suppresses fire when height is the in-flight round (tip+1)", async () => {
+    let fireCount = 0
+    const coord = new BftCoordinator({
+      localId: "v1",
+      validators,
+      broadcastMessage: async () => {},
+      onFinalized: async () => {},
+      onPeerQuorumDiverged: () => { fireCount++ },
+      getLocalBlock: async () => null,
+      getChainHeight: () => 0n, // tip=0 → height 1 is the in-flight round
+    })
+    await coord.handleMessage({ ...bftMsg("prepare", 1n, peerHash, "v2"), stateRoot: peerRoot })
+    await coord.handleMessage({ ...bftMsg("prepare", 1n, peerHash, "v3"), stateRoot: peerRoot })
+    assert.equal(fireCount, 0, "one in-flight round behind on votes is not a stall")
+  })
+
+  it("still fires when the local tip is genuinely behind (height > tip+1)", async () => {
+    let fireCount = 0
+    const coord = new BftCoordinator({
+      localId: "v1",
+      validators,
+      broadcastMessage: async () => {},
+      onFinalized: async () => {},
+      onPeerQuorumDiverged: () => { fireCount++ },
+      getLocalBlock: async () => null,
+      getChainHeight: () => 0n, // tip=0, peers at height 3 → genuinely behind
+    })
+    await coord.handleMessage({ ...bftMsg("prepare", 3n, peerHash, "v2"), stateRoot: peerRoot })
+    await coord.handleMessage({ ...bftMsg("prepare", 3n, peerHash, "v3"), stateRoot: peerRoot })
+    assert.equal(fireCount, 1, "tip frozen while peers advanced — must fire")
+  })
+
+  it("fires when getChainHeight is not provided (no silent behavior change)", async () => {
+    let fireCount = 0
+    const coord = new BftCoordinator({
+      localId: "v1",
+      validators,
+      broadcastMessage: async () => {},
+      onFinalized: async () => {},
+      onPeerQuorumDiverged: () => { fireCount++ },
+      getLocalBlock: async () => null,
+    })
+    await coord.handleMessage({ ...bftMsg("prepare", 1n, peerHash, "v2"), stateRoot: peerRoot })
+    await coord.handleMessage({ ...bftMsg("prepare", 1n, peerHash, "v3"), stateRoot: peerRoot })
+    assert.equal(fireCount, 1, "without a tip source, keep the fail-open fire")
+  })
+})

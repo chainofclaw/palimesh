@@ -963,6 +963,31 @@ export class BftCoordinator {
           })
           return
         }
+        // In-flight-round fix (2026-09-05 v3 recurrence): for the height
+        // currently under consensus (tip+1) the local chain NEVER has a
+        // block yet, so a missing block is not evidence of a stall — it just
+        // means our prepare hasn't landed before the peer quorum formed
+        // (routine for a slow-but-caught-up validator; firing forceSnapSync
+        // here re-imported already-correct state every cooldown window and
+        // ballooned leveldb-state). Only fire when the local TIP is
+        // genuinely behind (height > tip+1); a real J1.1 dead-zone still
+        // fires as soon as peers advance one block past our frozen tip.
+        // A genuinely wedged in-flight round remains covered by the round
+        // timeout (H4) and PR-1A proposer-unreachable paths.
+        if (!localBlock && this.cfg.getChainHeight) {
+          try {
+            const tip = await Promise.resolve(this.cfg.getChainHeight())
+            if (height <= tip + 1n) {
+              log.debug("Phase J1.1: quorum height is the in-flight round — not a stall", {
+                height: height.toString(),
+                tip: tip.toString(),
+              })
+              return
+            }
+          } catch {
+            /* tip lookup failed — fail open (fire) below */
+          }
+        }
       } catch (err) {
         log.debug("Phase J1.1: getLocalBlock failed during divergence confirm — failing open", {
           height: height.toString(),
