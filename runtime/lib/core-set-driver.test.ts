@@ -77,13 +77,18 @@ describe("core-set-driver", () => {
     assert.equal(h.applied.length, 0)
   })
 
-  it("acts again on a new epoch boundary", async () => {
-    const h = harness(opts(), SIX)
+  it("evaluates again on a new epoch boundary (re-applies only when the set changed)", async () => {
+    let pool = SIX()
+    const h = harness(opts(), () => pool)
     await h.driver.tick()
     assert.equal(h.applied.length, 1)
-    h.setEpoch(11) // target 8 > lastHandled 7
+    h.setEpoch(11) // target 8 > lastHandled 7, same candidates → no re-apply
     await h.driver.tick()
-    assert.equal(h.applied.length, 2)
+    assert.equal(h.applied.length, 1, "unchanged set is a no-op (2026-09-05 boundary-stall fix)")
+    pool = SIX().slice(1) // membership changed
+    h.setEpoch(12)
+    await h.driver.tick()
+    assert.equal(h.applied.length, 2, "changed set re-applies")
   })
 
   it("keeps the current set (no apply) when below the floor", async () => {
@@ -211,7 +216,7 @@ describe("core-set-driver: restart safety (deferFirstApply)", () => {
     assert.equal(h.applied.length, 1, "applies at the next boundary")
     h.setEpoch(12)
     await h.driver.tick()
-    assert.equal(h.applied.length, 2, "subsequent boundaries apply normally")
+    assert.equal(h.applied.length, 1, "subsequent boundary with an unchanged set is a no-op (boundary-stall fix)")
   })
 
   it("shadow: deferral does not change shadow behavior (never applies anyway)", async () => {
@@ -243,5 +248,64 @@ describe("core-set-driver: restart safety (deferFirstApply)", () => {
     epoch = 11
     await driver.tick()
     assert.equal(applied.length, 1, "on-chain path applies from the next boundary")
+  })
+})
+
+describe("core-set-driver: same-set apply is a no-op", () => {
+  // 2026-09-05 hourly-boundary stall: the driver re-applied the SAME set at
+  // every epoch boundary. applySet routes through updateValidators, whose
+  // membership-churn handling clears BFT round state; with per-node tick
+  // phase differing by seconds, the in-flight round got wiped on different
+  // nodes at different instants → divergent prepares → self-equivocation
+  // deadlock one hour after a successful switch. An unchanged set must be
+  // a no-op (only the epoch cursor advances).
+
+  it("skips applySet when the new set equals the last applied set", async () => {
+    const h = harness(opts({ deferFirstApply: false }), SIX)
+    await h.driver.tick()
+    assert.equal(h.applied.length, 1, "first boundary applies")
+    h.setEpoch(11)
+    await h.driver.tick()
+    assert.equal(h.applied.length, 1, "unchanged set must NOT re-apply")
+    h.setEpoch(12)
+    await h.driver.tick()
+    assert.equal(h.applied.length, 1, "still unchanged — still no re-apply")
+  })
+
+  it("applies again when membership actually changes", async () => {
+    let pool = SIX()
+    const h = harness(opts({ deferFirstApply: false }), () => pool)
+    await h.driver.tick()
+    assert.equal(h.applied.length, 1)
+    pool = SIX().slice(1) // top candidate gone → membership changes
+    h.setEpoch(11)
+    await h.driver.tick()
+    assert.equal(h.applied.length, 2, "membership change must re-apply")
+  })
+
+  it("on-chain canonical path also skips unchanged sets", async () => {
+    const applied: Array<Array<{ id: string; stake: bigint }>> = []
+    let epoch = 10
+    const canonical = [
+      { id: "0x" + "aa".repeat(20), stake: 100n },
+      { id: "0x" + "bb".repeat(20), stake: 90n },
+      { id: "0x" + "cc".repeat(20), stake: 80n },
+      { id: "0x" + "dd".repeat(20), stake: 70n },
+    ]
+    const driver = new CoreSetDriver(
+      {
+        reader: { buildCandidates: async () => SIX() } as unknown as CoreSetReader,
+        applySet: (v) => applied.push(v),
+        currentEpoch: () => epoch,
+        log: { info: () => {}, warn: () => {} },
+        getCanonicalCoreSet: async () => canonical.map((c) => ({ ...c })),
+      },
+      opts({ deferFirstApply: false }),
+    )
+    await driver.tick()
+    assert.equal(applied.length, 1)
+    epoch = 11
+    await driver.tick()
+    assert.equal(applied.length, 1, "canonical path: unchanged set must not re-apply")
   })
 })
