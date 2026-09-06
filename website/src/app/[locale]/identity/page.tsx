@@ -3,12 +3,19 @@
 import { WalletConnect } from '@/components/identity/WalletConnect'
 import { FactionSelector } from '@/components/identity/FactionSelector'
 import { IdentityCard } from '@/components/identity/IdentityCard'
+import { DidLifecycle } from '@/components/identity/DidLifecycle'
 import { useWalletContext } from '@/components/shared/WalletProvider'
 import { buildSignMessage } from '@/lib/auth'
+import { site } from '@/config/site'
 import { useTranslations } from 'next-intl'
 import { useState, useEffect } from 'react'
 
+// 按站点变体分流:公链站 = 阵营注册(治理身份);存储站 = did:coc 生命周期
 export default function IdentityPage() {
+  return site.variant === 'palimesh' ? <DidLifecycle /> : <GovernanceIdentity />
+}
+
+function GovernanceIdentity() {
   const { address, isConnected, faction, signMessage } = useWalletContext()
   const t = useTranslations('identity')
   const [identity, setIdentity] = useState<any>(null)

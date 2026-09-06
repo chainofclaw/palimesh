@@ -3,171 +3,57 @@
 import { useTranslations } from 'next-intl'
 import { PageHero, AntiqueDivider } from '@/components/shared/Manuscript'
 import { ConstellationInk } from '@/components/ink/InkArt'
+import { Link } from '@/i18n/routing'
+import { site } from '@/config/site'
+
+type TrackItem = { title: string; body: string }
+type TrackKey = 'delivered' | 'inProgress' | 'next'
+
+// 三栏状态色:已交付绿、进行中琥珀、下一步灰
+const TRACKS: { key: TrackKey; dot: string; ring: string }[] = [
+  { key: 'delivered', dot: 'bg-green-500', ring: 'ring-green-500/30' },
+  { key: 'inProgress', dot: 'bg-amber-500 animate-pulse', ring: 'ring-amber-500/30' },
+  { key: 'next', dot: 'bg-text-muted/50', ring: 'ring-text-muted/20' },
+]
 
 export default function RoadmapPage() {
-  const t = useTranslations('roadmap')
+  const t = useTranslations('roadmap.palium')
 
   return (
     <div className="relative min-h-screen">
-      <PageHero kicker="DEVELOPMENT_ROADMAP" title={t('title')} subtitle={t('subtitle')} mark={<ConstellationInk size={40} />} />
+      <PageHero kicker="RELEASE_TRACK" title={t('title')} subtitle={t('subtitle')} mark={<ConstellationInk size={40} />} />
 
       <div className="container mx-auto px-4 py-16 max-w-6xl">
-        {/* Whitepaper Roadmap */}
         <AntiqueDivider />
-        <section className="mb-20">
-          <div className="text-center mb-12 fade-in-up">
-            <h2 className="text-3xl md:text-4xl font-display font-bold mb-4">
-              <span>{t('whitepaper.title')}</span>
-            </h2>
-            <div className="w-16 h-px bg-line mx-auto mt-4 rounded-full" />
-          </div>
-          <div className="space-y-6">
-            <PhaseCard
-              version={t('whitepaper.v0_1.version')}
-              title={t('whitepaper.v0_1.title')}
-              status="completed"
-              statusLabel={t('whitepaper.v0_1.status')}
-              items={t.raw('whitepaper.v0_1.items') as string[]}
-            />
-            <PhaseCard
-              version={t('whitepaper.v0_2.version')}
-              title={t('whitepaper.v0_2.title')}
-              status="completed"
-              statusLabel={t('whitepaper.v0_2.status')}
-              items={t.raw('whitepaper.v0_2.items') as string[]}
-            />
-            <PhaseCard
-              version={t('whitepaper.v0_3.version')}
-              title={t('whitepaper.v0_3.title')}
-              status="planned"
-              statusLabel={t('whitepaper.v0_3.status')}
-              items={t.raw('whitepaper.v0_3.items') as string[]}
-            />
-            <PhaseCard
-              version={t('whitepaper.v0_4.version')}
-              title={t('whitepaper.v0_4.title')}
-              status="planned"
-              statusLabel={t('whitepaper.v0_4.status')}
-              items={t.raw('whitepaper.v0_4.items') as string[]}
-            />
+        <section className="mb-16">
+          <div className="grid md:grid-cols-3 gap-6 items-start">
+            {TRACKS.map((track, i) => (
+              <TrackColumn
+                key={track.key}
+                title={t(`${track.key}.title`)}
+                items={t.raw(`${track.key}.items`) as TrackItem[]}
+                dot={track.dot}
+                ring={track.ring}
+                delay={i * 0.1}
+              />
+            ))}
           </div>
         </section>
 
-        {/* Implementation Progress */}
-        <AntiqueDivider />
-        <section className="mb-20">
-          <div className="text-center mb-12 fade-in-up">
-            <h2 className="text-3xl md:text-4xl font-display font-bold mb-4">
-              <span>{t('implementation.title')}</span>
-            </h2>
-            <div className="w-16 h-px bg-line mx-auto mt-4 rounded-full" />
-          </div>
-          <div className="space-y-4">
-            <CycleGroup
-              title={t('implementation.infrastructure.title')}
-              cycles={t.raw('implementation.infrastructure.cycles') as { num: number; desc: string }[]}
-            />
-
-            <CycleGroup
-              title={t('implementation.consolidation.title')}
-              cycles={t.raw('implementation.consolidation.cycles') as { num: number; desc: string }[]}
-            />
-
-            <CycleGroup
-              title={t('implementation.features.title')}
-              cycles={t.raw('implementation.features.cycles') as { num: number; desc: string }[]}
-            />
-          </div>
-        </section>
-
-        {/* Key Milestones Timeline */}
-        <AntiqueDivider />
-        <section className="mb-20">
-          <div className="text-center mb-12 fade-in-up">
-            <h2 className="text-3xl md:text-4xl font-display font-bold mb-4">
-              <span>{t('milestones.title')}</span>
-            </h2>
-            <div className="w-16 h-px bg-line mx-auto mt-4 rounded-full" />
-          </div>
-          <div className="relative max-w-4xl mx-auto">
-            <div className="absolute left-4 md:left-1/2 md:-translate-x-1/2 top-0 bottom-0 w-px bg-gradient-to-b from-accent-cyan via-accent-blue to-accent-purple opacity-40" />
-            <div className="space-y-6">
-              {(t.raw('milestones.items') as { date: string; label: string; status: string }[]).map((m, idx) => (
-                <MilestoneRow key={idx} date={m.date} label={m.label} status={m.status} delay={(idx * 0.08).toString()} />
-              ))}
-            </div>
-          </div>
-        </section>
-
-        {/* Future Plans */}
-        <section>
-          <div className="text-center mb-12 fade-in-up">
-            <h2 className="text-3xl md:text-4xl font-display font-bold mb-4">
-              <span>{t('future.title')}</span>
-            </h2>
-            <div className="w-16 h-px bg-line mx-auto mt-4 rounded-full" />
-          </div>
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-            <FuturePlanCard
-              icon={t('future.aiAgent.icon')}
-              title={t('future.aiAgent.title')}
-              items={t.raw('future.aiAgent.items') as string[]}
-            />
-            <FuturePlanCard
-              icon={t('future.crossChain.icon')}
-              title={t('future.crossChain.title')}
-              items={t.raw('future.crossChain.items') as string[]}
-            />
-            <FuturePlanCard
-              icon={t('future.analytics.icon')}
-              title={t('future.analytics.title')}
-              items={t.raw('future.analytics.items') as string[]}
-            />
-            <FuturePlanCard
-              icon={t('future.privacy.icon')}
-              title={t('future.privacy.title')}
-              items={t.raw('future.privacy.items') as string[]}
-            />
-            <FuturePlanCard
-              icon={t('future.performance.icon')}
-              title={t('future.performance.title')}
-              items={t.raw('future.performance.items') as string[]}
-            />
-            <FuturePlanCard
-              icon={t('future.ecosystem.icon')}
-              title={t('future.ecosystem.title')}
-              items={t.raw('future.ecosystem.items') as string[]}
-            />
-          </div>
-        </section>
+        <p className="text-text-muted text-sm text-center max-w-2xl mx-auto mb-12">{t('disclaimer')}</p>
 
         {/* CTA */}
-        <section className="mt-20 relative overflow-hidden rounded-xl">
-          <div className="absolute inset-0 bg-accent-purple/5" />
-          <div className="absolute inset-0" />
-
-          <div className="relative z-10 p-12 text-center">
-            <h2 className="text-3xl md:text-4xl font-display font-bold mb-4 fade-in-up">
-              <span>{t('cta.title')}</span>
-            </h2>
-            <p className="mb-8 text-text-secondary font-body text-lg fade-in-delay-1">{t('cta.subtitle')}</p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center fade-in-delay-2">
-              <a
-                href="https://github.com/palimesh/palimesh"
-                className="group relative px-8 py-4 rounded-lg font-display font-semibold text-lg overflow-hidden transition-all"
-              >
-                <div className="absolute inset-0 bg-accent-purple opacity-100 group-hover:opacity-90 transition-opacity" />
-                <div className="absolute inset-0 bg-accent-blue/30 blur-xl opacity-50 group-hover:opacity-60 transition-opacity" />
-                <span className="relative text-white">{t('cta.github')}</span>
-              </a>
-              <a
-                href="/docs"
-                className="group px-8 py-4 rounded-lg font-display font-semibold text-lg border-2 border-accent-cyan/50 bg-accent-cyan/5 hover:bg-accent-cyan/10 hover:border-accent-cyan transition-all"
-              >
-                <span className="text-accent-cyan group-hover:text-accent-cyan/90">
+        <section className="pb-8">
+          <div className="sheet-stack">
+            <div className="sheet p-8 text-center">
+              <div className="flex flex-wrap justify-center gap-3">
+                <a href={site.github} target="_blank" rel="noopener noreferrer" className="seal-button text-sm">
+                  {t('cta.github')} ↗
+                </a>
+                <Link href="/docs" className="ink-button text-sm">
                   {t('cta.docs')} →
-                </span>
-              </a>
+                </Link>
+              </div>
             </div>
           </div>
         </section>
@@ -176,162 +62,33 @@ export default function RoadmapPage() {
   )
 }
 
-function PhaseCard({
-  version,
+function TrackColumn({
   title,
-  status,
-  statusLabel,
   items,
-}: {
-  version: string
-  title: string
-  status: 'completed' | 'in-progress' | 'planned'
-  statusLabel: string
-  items: string[]
-}) {
-  const statusConfig = {
-    completed: {
-      bg: 'bg-accent-cyan/20',
-      text: 'text-accent-cyan',
-      border: 'border-accent-cyan/50',
-      glow: 'shadow-glow-sm',
-    },
-    'in-progress': {
-      bg: 'bg-accent-blue/20',
-      text: 'text-accent-blue',
-      border: 'border-accent-blue/50',
-      glow: 'shadow-glow-sm',
-    },
-    planned: {
-      bg: 'bg-text-muted/10',
-      text: 'text-text-muted',
-      border: 'border-text-muted/30',
-      glow: '',
-    },
-  }
-
-  const config = statusConfig[status]
-
-  return (
-    <div className="group relative bg-bg-elevated rounded-xl overflow-hidden border border-text-muted/10 hover:border-accent-cyan/50 transition-all duration-500 fade-in-up">
-      {/* Header */}
-      <div className="relative bg-accent-purple p-6 overflow-hidden">
-        <div className="absolute inset-0 opacity-10">
-          <div className="absolute inset-0 bg-accent-purple" />
-        </div>
-        <div className="relative z-10 flex justify-between items-center">
-          <div>
-            <span className="font-display text-sm text-white/80 tracking-wider">{version}</span>
-            <h3 className="text-2xl font-display font-bold text-white mt-1">{title}</h3>
-          </div>
-          <span
-            className={`${config.bg} ${config.text} ${config.border} ${config.glow} border-2 px-4 py-2 rounded-lg font-display font-semibold text-sm`}
-          >
-            {statusLabel}
-          </span>
-        </div>
-      </div>
-
-      {/* Content */}
-      <div className="p-6">
-        <ul className="space-y-3">
-          {items.map((item, i) => (
-            <li key={i} className="flex items-start gap-3 text-text-secondary font-body">
-              <span className="text-accent-cyan mt-1 font-display">▸</span>
-              <span className="flex-1">{item}</span>
-            </li>
-          ))}
-        </ul>
-      </div>
-
-      {/* Bottom Border Accent */}
-    </div>
-  )
-}
-
-function CycleGroup({ title, cycles }: { title: string; cycles: { num: number; desc: string }[] }) {
-  return (
-    <div className="group bg-bg-elevated rounded-xl p-6 border border-text-muted/10 hover:border-accent-cyan/50 transition-all duration-500 fade-in-up">
-      <h3 className="text-xl font-display font-bold mb-6 text-text-primary group-hover:text-accent-cyan transition-colors">
-        {title}
-      </h3>
-      <div className="space-y-3">
-        {cycles.map((c) => (
-          <div key={c.num} className="flex gap-4 items-start group/item">
-            <span className="bg-accent-purple text-white rounded-lg px-3 py-1.5 font-display font-bold text-sm min-w-[5rem] text-center">
-              Cycle {c.num}
-            </span>
-            <span className="text-text-secondary font-body flex-1 group-hover/item:text-text-primary transition-colors">
-              {c.desc}
-            </span>
-          </div>
-        ))}
-      </div>
-    </div>
-  )
-}
-
-function MilestoneRow({
-  date,
-  label,
-  status,
+  dot,
+  ring,
   delay,
 }: {
-  date: string
-  label: string
-  status: string
-  delay: string
+  title: string
+  items: TrackItem[]
+  dot: string
+  ring: string
+  delay: number
 }) {
-  const statusColor = {
-    done: { dot: 'bg-accent-cyan', border: 'border-accent-cyan/50', text: 'text-accent-cyan' },
-    active: { dot: 'bg-accent-blue animate-pulse', border: 'border-accent-blue/60', text: 'text-accent-blue' },
-    upcoming: { dot: 'bg-text-muted/40', border: 'border-text-muted/30', text: 'text-text-muted' },
-  }[status] || { dot: 'bg-text-muted/40', border: 'border-text-muted/30', text: 'text-text-muted' }
-
   return (
-    <div
-      className="relative pl-12 md:pl-0 fade-in-up"
-      style={{ animationDelay: `${delay}s` }}
-    >
-      <div className="md:grid md:grid-cols-2 md:gap-8 items-center">
-        <div className="hidden md:block md:text-right md:pr-8">
-          <span className={`font-display font-bold ${statusColor.text}`}>{date}</span>
-        </div>
-        <div className={`absolute left-2 md:left-1/2 md:-translate-x-1/2 w-5 h-5 rounded-full ${statusColor.dot} border-2 border-bg-primary ring-2 ring-bg-elevated`} />
-        <div className={`md:pl-8 p-4 rounded-xl bg-bg-elevated border ${statusColor.border}`}>
-          <div className="md:hidden font-display text-sm mb-1 text-text-muted">{date}</div>
-          <p className="text-text-primary font-body leading-relaxed">{label}</p>
-        </div>
+    <div className="fade-in-up" style={{ animationDelay: `${delay}s` }}>
+      <div className="flex items-center gap-3 mb-5 px-1">
+        <span className={`w-3 h-3 rounded-full ring-4 ${dot} ${ring}`} aria-hidden="true" />
+        <h2 className="text-xl font-display font-bold text-text-primary">{title}</h2>
       </div>
-    </div>
-  )
-}
-
-function FuturePlanCard({ icon, title, items }: { icon: string; title: string; items: string[] }) {
-  return (
-    <div className="group relative bg-bg-elevated rounded-xl p-6 border border-text-muted/10 hover:border-accent-cyan/50 transition-all duration-500 fade-in-up">
-      {/* Hover Glow Effect */}
-      <div className="absolute inset-0 bg-accent-blue opacity-0 group-hover:opacity-5 rounded-xl transition-opacity duration-500" />
-
-      {/* Icon */}
-      <div className="text-5xl mb-4 filter grayscale group-hover:grayscale-0 transition-all duration-500 float relative z-10">
-        {icon}
-      </div>
-
-      {/* Content */}
-      <h3 className="text-xl font-display font-bold mb-4 text-text-primary group-hover:text-accent-cyan transition-colors relative z-10">
-        {title}
-      </h3>
-      <ul className="space-y-2 relative z-10">
-        {items.map((item, i) => (
-          <li key={i} className="flex items-start gap-2 text-text-secondary font-body">
-            <span className="text-accent-cyan font-display mt-1">▸</span>
-            <span className="flex-1">{item}</span>
-          </li>
+      <div className="space-y-4">
+        {items.map((item) => (
+          <article key={item.title} className="vellum-card p-5">
+            <h3 className="font-display font-semibold text-text-primary mb-2">{item.title}</h3>
+            <p className="text-sm text-text-secondary font-body leading-relaxed">{item.body}</p>
+          </article>
         ))}
-      </ul>
-
-      {/* Bottom Border Accent */}
+      </div>
     </div>
   )
 }

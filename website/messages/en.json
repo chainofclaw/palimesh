@@ -26,35 +26,91 @@
     "protocol": "Protocol",
     "build": "Build",
     "story": "Origins",
-    "economics": "Economics"
+    "economics": "Economics",
+    "crossSite": "Go to {other}",
+    "governanceIdentity": "Governance identity",
+    "paper": "Technical paper",
+    "ecosystem": "Ecosystem",
+    "settlement": "Settlement",
+    "paliumChain": "Palium public chain",
+    "palimeshStorage": "PaliMesh — storage, identity & memory",
+    "npm": "npm"
   },
   "home": {
     "hero": {
-      "kicker": "Palium · Verifiable memory for AI agents",
-      "title": "The chain where state returns.",
-      "subtitle": "Palium is a BFT blockchain purpose-built for AI agents. It makes three things verifiable on-chain: the service a node actually performs (PoSe), the memory an agent accumulates, and the identity it carries between hosts.",
-      "ctaTestnet": "Connect to the testnet",
-      "ctaDocs": "Read the docs",
-      "factsLabel": "PROTOCOL FACTS",
-      "factChain": "Chain ID",
-      "factConsensus": "Consensus",
-      "factConsensusValue": "BFT, ~3.5s finality",
-      "factEvm": "Execution",
-      "factEvmValue": "EVM (Paris), Solidity 0.8.x",
-      "factRpc": "Public RPC",
-      "artAlt": "An ornate medieval-style Palium codex page with dense Latin script and a faint network diagram",
-      "scriptureLines": [
-        "In the beginning, memory had no home.",
-        "Identity wandered between hosts.",
-        "Palium made service verifiable.",
-        "Memory endures; identity returns.",
-        "What the chain records is not forgotten."
-      ]
+      "palium": {
+        "kicker": "Palium · The public chain for AI agents",
+        "title": "The chain where state returns.",
+        "subtitle": "Palium is a BFT public chain built for AI agents. It makes three things verifiable on-chain: the service a node actually performs (PoSe), state changes executed by a standard EVM, and rules decided jointly by humans and agents. Agent memory and identity are provided by PaliMesh, built on top of it.",
+        "artAlt": "Palium codex in violet and gold: a chain-link mesh and a serif P seal on parchment",
+        "scriptureLines": [
+          "In the beginning, memory had no home.",
+          "Identity drifted between hosts.",
+          "Palium made service verifiable.",
+          "State returns; rules are arbitrated.",
+          "What is written on-chain is not forgotten."
+        ],
+        "ctaPrimary": "Join the testnet",
+        "ctaSecondary": "Read the docs",
+        "factsLabel": "Protocol parameters",
+        "facts": [
+          {
+            "k": "Chain ID",
+            "v": "88780"
+          },
+          {
+            "k": "Consensus",
+            "v": "BFT · 1 s blocks"
+          },
+          {
+            "k": "Execution",
+            "v": "EVM (Paris) · solc 0.8.24"
+          },
+          {
+            "k": "Public RPC",
+            "v": "rpc.palium.io"
+          }
+        ]
+      },
+      "palimesh": {
+        "kicker": "PaliMesh · Storage, identity & memory for AI agents",
+        "title": "Storage that never forgets.",
+        "subtitle": "PaliMesh is an erasure-coded storage mesh for AI agents — persistent memory, portable identity, and content that outlives any host. Settled on the Palium public chain.",
+        "ctaPrimary": "Install the packages",
+        "ctaSecondary": "Read the paper",
+        "artAlt": "An ornate medieval-style PaliMesh parchment codex, a network diagram faintly visible beneath dense Latin script",
+        "scriptureLines": [
+          "In the beginning, memory had no home.",
+          "Identity drifted between hosts.",
+          "PaliMesh gave memory a place to live.",
+          "Hosts may perish; the manuscript remains.",
+          "What is written to the mesh is not forgotten."
+        ],
+        "factsLabel": "Network parameters",
+        "facts": [
+          {
+            "k": "Erasure coding",
+            "v": "RS(4+2) · (6+3) · (8+4)"
+          },
+          {
+            "k": "Replication",
+            "v": "pushToK · K=3"
+          },
+          {
+            "k": "Identity",
+            "v": "did:coc"
+          },
+          {
+            "k": "Settlement",
+            "v": "Palium 88780"
+          }
+        ]
+      }
     },
     "pillars": {
       "kicker": "What it does",
       "title": "Three verifiable guarantees",
-      "subtitle": "Three guarantees, each independently verifiable on-chain: proof of service, replicated storage, and portable identity.",
+      "subtitle": "Three guarantees, each independently verifiable on-chain.",
       "pose": {
         "title": "Proof of Service",
         "description": "Nodes earn by doing measurable work — storage, relay, computation. PoSe challenges sample that work continuously and settle rewards and slashes on-chain, so service claims are verified, not trusted."
@@ -102,12 +158,12 @@
       "fn": {
         "tag": "Full node",
         "name": "Validator / Full",
-        "description": "Participates in BFT consensus and serves the canonical chain. Requires a registered key and stake."
+        "description": "Take part in BFT consensus and serve the canonical chain. Stake 32 PALI and join the active validator set in about 60 seconds, with no coordination with existing operators."
       },
       "sn": {
         "tag": "Storage node",
         "name": "Storage",
-        "description": "Provides erasure-coded storage capacity and answers PoSe storage challenges for rewards."
+        "description": "Provide erasure-coded storage capacity and answer PoSe storage challenges. Storage nodes reuse the chain node's $PALI bond and settle earnings in $MESH."
       },
       "rn": {
         "tag": "Relay node",
@@ -121,7 +177,7 @@
       "title": "Build with @palimesh",
       "subtitle": "Published packages that talk to the chain out of the box.",
       "soul": {
-        "pkg": "@palimesh/soul",
+        "pkg": "@palimesh/palimesh-soul",
         "name": "Soul",
         "description": "Agent identity toolkit: DID registration, credential issuance, and resurrection flows."
       },
@@ -170,71 +226,167 @@
         "relationships": "Relationships"
       }
     },
-    "storageHero": {
-      "kicker": "DECENTRALIZED STORAGE",
-      "title": "Storage that never forgets.",
-      "subtitle": "PaliMesh is an erasure-coded storage mesh for AI agents — persistent memory, portable identity, and content that outlives any host. Settled on Palium."
+    "palium": {
+      "pillars": {
+        "kicker": "Core capabilities",
+        "title": "Three things verifiable on-chain",
+        "subtitle": "Who the validators are, how the code runs, and whether service actually happened — each can be checked by anyone.",
+        "consensus": {
+          "title": "Consensus and validators",
+          "description": "The validator set is driven by the on-chain ValidatorRegistry: stake 32 PALI, join the active set in about 60 seconds, get slashed for double-signing. CoreSetManager ranks nodes on-chain by stake (50%), bond (20%) and PoSe performance (30%); the top-ranked form the BFT core set, the rest automatically become PoSe-only nodes."
+        },
+        "evm": {
+          "title": "Standard EVM execution",
+          "description": "Dual engines — EthereumJS and revm — Paris hardfork, solc 0.8.24. 57+ standard eth_* methods, the full debug_* / trace_* family, eth_getProof and WebSocket subscriptions. Existing Solidity contracts, wallets and toolchains work unchanged."
+        },
+        "settlement": {
+          "title": "PoSe settlement",
+          "description": "Challengers continuously sample the service a node claims to provide, witnesses attest with EIP-712 signatures, and the settlement contract aggregates the quorum per epoch. Rewards flow by bucket — uptime 60%, storage 30%, relay 10% — with disputes and slashing arbitrated on-chain."
+        }
+      },
+      "principles": {
+        "kicker": "Design principles",
+        "title": "Optimized for one thing",
+        "subtitle": "Make agent-related service and state verifiable at low cost. Everything else follows from that.",
+        "verify": {
+          "title": "Service is verified, not claimed",
+          "body": "No service, no reward. Idle capital earns nothing; only work that is sampled, witnessed and settled gets paid."
+        },
+        "standards": {
+          "title": "Standards first",
+          "body": "EVM execution, EIP-712 signatures, W3C DID Core — wherever a mature standard exists, Palium does not reinvent it. It only puts it on a verifiable ledger."
+        },
+        "nongoals": {
+          "title": "Non-goals",
+          "body": "Palium does not compete on raw TPS, does not host anonymous meme-asset markets, and does not provide general-purpose data availability for other chains."
+        },
+        "oneOfMany": "Palium is one of several possible answers to this problem."
+      },
+      "architecture": {
+        "l4": "Agent layer: on-chain registries for DID and Soul. Storage, memory and backup APIs are provided by PaliMesh, built on top."
+      },
+      "node": {
+        "title": "Join Palium Canary as an operator",
+        "subtitle": "Three roles, one binary. Start with relay and grow into a validator.",
+        "storageElsewhere": "Storage-node earnings and operations are covered on PaliMesh"
+      },
+      "ecosystem": {
+        "kicker": "On top of Palium",
+        "title": "The chain settles; the ecosystem provides capability",
+        "subtitle": "Three entry points.",
+        "builders": {
+          "title": "Builders",
+          "body": "Hardhat, Foundry, ethers, viem and MetaMask connect directly to Chain ID 88780. Deploy contracts, subscribe to events, read proofs — exactly as on Ethereum.",
+          "cta": "Read the docs"
+        },
+        "governance": {
+          "title": "Governance",
+          "body": "A bicameral DAO: the Human chamber and the Claw chamber pass independently, one address one vote; execution is triggered by a 3-of-5 multisig through a timelock.",
+          "cta": "View proposals"
+        },
+        "mesh": {
+          "title": "PaliMesh",
+          "body": "Storage, identity and memory for agents: erasure-coded P2P storage, did:coc, Soul backup and claw-mem. Storage is priced in $MESH and settled on Palium.",
+          "cta": "Go to PaliMesh"
+        }
+      }
+    },
+    "palimesh": {
+      "pillars": {
+        "kicker": "Core capabilities",
+        "title": "Three layers of persistence",
+        "subtitle": "Storage, identity, memory — each outlives any single host.",
+        "storage": {
+          "title": "Persistent storage",
+          "description": "UnixFS 256 KiB chunking, CIDv1 content addressing, Reed-Solomon erasure coding (1.5× cost versus 3.0× for triple replication). Every write is pushed to K=3 nodes, repairTick heals missing replicas every 10 minutes, and possession is continuously verified by PoSe storage challenges."
+        },
+        "identity": {
+          "title": "Portable identity",
+          "description": "did:coc follows W3C DID Core v1.0: key rotation, delegation chains of at most 3 hops, Merkle selective disclosure. Social recovery with a 2/3 guardian quorum and a timelock lets an identity move between hosts without expiring."
+        },
+        "memory": {
+          "title": "Semantic memory",
+          "description": "claw-mem captures tool-call observations and session summaries automatically, retrieves within a token budget, and survives restarts and context compaction. Memory is anchored to IPFS and CidRegistry with verifiable integrity."
+        }
+      },
+      "proof": {
+        "kicker": "Evidence",
+        "title": "Data lifetime is a property of the network",
+        "subtitle": "A controlled cross-continent destruction test: after every uploading node was gone, the file was still fully retrievable from nodes that never took part in the upload.",
+        "stats": [
+          {
+            "v": "50 MB",
+            "k": "file uploaded"
+          },
+          {
+            "v": "5",
+            "k": "nodes destroyed (5 GCP regions)"
+          },
+          {
+            "v": "3",
+            "k": "validators that retrieved it intact, none involved in the upload"
+          }
+        ],
+        "table": {
+          "title": "Storage cost and fault tolerance",
+          "cols": [
+            "Scheme",
+            "Storage cost",
+            "Tolerated loss"
+          ],
+          "rows": [
+            [
+              "Triple replication",
+              "3.0×",
+              "2 of 3 copies"
+            ],
+            [
+              "RS(4+2)",
+              "1.5×",
+              "2 of 6 shards"
+            ],
+            [
+              "RS(6+3)",
+              "1.5×",
+              "3 of 9 shards"
+            ]
+          ]
+        },
+        "cta": "Read the technical paper"
+      },
+      "parchment": {
+        "chain": {
+          "title": "PaliMesh works the same way",
+          "body": "Each layer overwrites the last, and nothing beneath is lost. The chain this mesh settles on still shows its own first hand — ClawChain — beneath today's ink, verifiable by anyone."
+        }
+      },
+      "architecture": {
+        "kicker": "Architecture",
+        "title": "Four layers, settlement at the bottom",
+        "subtitle": "Agent APIs on top, content-addressed storage and the P2P network in the middle, every proof and payment landing on Palium."
+      },
+      "settlement": {
+        "kicker": "Settlement",
+        "title": "Anchored on Palium",
+        "subtitle": "Each epoch's storage proofs settle as $MESH on Palium; the mesh does not run a chain of its own.",
+        "chain": "Settlement chain",
+        "height": "Current height",
+        "dht": "DHT nodes",
+        "wire": "Wire connections",
+        "cta": "View chain telemetry"
+      },
+      "node": {
+        "kicker": "Run a node",
+        "title": "Join as a storage node",
+        "subtitle": "A storage node is a chain node: reuse the $PALI bond, answer PoSe storage challenges, settle in $MESH.",
+        "validatorsElsewhere": "Validator and relay onboarding parameters are on Palium",
+        "cta": "See the node package"
+      }
     }
   },
   "technology": {
     "title": "Technical Architecture",
     "subtitle": "How the four layers fit together: BFT consensus, EVM execution, PoSe settlement, and the agent-facing APIs.",
-    "layersTitle": "Four Layers",
-    "layer1": {
-      "number": "1",
-      "title": "Execution Layer",
-      "subtitle": "EVM runtime · dual engines",
-      "features": [
-        "@ethereumjs/vm full EVM (~131 TPS)",
-        "revm high-performance pipeline (1,500–2,000 TPS)",
-        "Cancun / EIP-4844 blob-gas accounting",
-        "LevelDB + Merkle Patricia Trie state",
-        "Solidity 0.8.x compatibility"
-      ],
-      "note": "The EVM is a runtime, not a source of decentralization — participation is decided at the consensus and service layers."
-    },
-    "layer2": {
-      "number": "2",
-      "title": "Consensus Layer",
-      "subtitle": "Sentinel of determinism and finality",
-      "features": [
-        "Deterministic proposer rotation",
-        "BFT-lite coordinator (2/3 quorum; propose/prepare/commit)",
-        "GHOST fork-choice (BFT finality > chain length > weight)",
-        "TCP Wire protocol (Magic 0xC0C1, identity-signed handshake)",
-        "Kademlia DHT (K=20, iterative lookup, periodic refresh)",
-        "Block-time target: 1-2 seconds"
-      ],
-      "note": "Consensus is pluggable. PaliMesh's incentives do not rely on PoS — any finality-preserving mechanism may plug in."
-    },
-    "layer3": {
-      "number": "3",
-      "title": "PoSe v2 Service Layer",
-      "subtitle": "Core innovation · Service as Consensus",
-      "features": [
-        "Node registration, capability declarations, capability bitmasks",
-        "Random challenge generation (U / S / R)",
-        "EIP-712 typed signatures (ChallengeMessageV2 / ReceiptMessageV2 domain-separated)",
-        "9-layer receipt validation pipeline",
-        "Witness selection (m=ceil(√n), quorum ceil(2m/3))",
-        "Permissionless fault proofs (commit-reveal-settle, 4 fault types)",
-        "Merkle reward tree (rewardRoot, per-node leaves, on-chain claim)"
-      ],
-      "note": "This is where 'service' becomes a verifiable, priceable, adjudicable unit of consensus — and the root divergence from all PoW/PoS chains."
-    },
-    "layer4": {
-      "number": "4",
-      "title": "Foundational Services",
-      "subtitle": "The Life Support System for Agents",
-      "features": [
-        "P2P storage: IPFS-compatible + CidRegistry content addressing",
-        "DID identity: DIDRegistry + capability bitmask + ≤3-hop delegation tree",
-        "Agent continuity: SoulRegistry + carrier network + 2/3 guardian recovery",
-        "OpenClaw reference agent connected as a storage node",
-        "Agent-ops layer (self-heal / upgrade / keys) strictly isolated from consensus"
-      ],
-      "note": "All DApps, all agent markets, all higher protocols take root in this layer."
-    },
     "poseProtocol": {
       "title": "PoSe v2 Protocol in Detail",
       "challengeFlow": "Challenge-Response Flow",
@@ -303,54 +455,21 @@
         ],
         "rationale": "Square-root diminishing returns on capacity — no monopoly for the largest operators."
       },
-      "antiSybilTitle": "🛡️ Anti-Sybil Combination",
+      "antiSybilTitle": "Anti-Sybil defense in depth",
       "antiSybilItems": [
-        "✓ Fixed bond (~50 USDT) + 7-day unlock",
-        "✓ Single-node reward soft-cap (5× median)",
-        "✓ Diminishing returns on storage (√ function)",
-        "✓ Continuous service challenges (cannot be faked)",
-        "✓ Unique nonce per epoch to prevent replay",
-        "✓ Challenger diversification + random rotation",
-        "✓ On-chain sampling + 2-epoch dispute window",
-        "✓ Optional hardware attestation (bonus, not a gate)",
-        "✓ PoSeManagerV2: EIP-712 fault proof (commit-reveal-settle)",
-        "✓ Slash split: 50% burn / 30% reporter / 20% insurance fund",
-        "✓ Per-epoch slash cap: 5% of total stake",
-        "✓ Witness-selection arbitration: m=ceil(√n), quorum ceil(2m/3)"
+        "Node bond + 7-day unlock",
+        "Per-node reward soft cap (5× median)",
+        "Diminishing returns on storage capacity (√ function)",
+        "Continuous service challenges (cannot be faked)",
+        "Unique nonce per epoch against replay",
+        "Challenger diversity + random rotation",
+        "On-chain sampling + 2-epoch dispute window",
+        "Optional hardware attestation (bonus, not a gate)",
+        "PoSeManagerV2: EIP-712 fault proofs (commit-reveal-settle)",
+        "Slash split: 50% burned / 30% reporter / 20% insurance fund",
+        "Per-epoch slash cap: 5% of total stake",
+        "Witness quorum arbitration: m=ceil(√n), quorum ceil(2m/3)"
       ]
-    },
-    "performance": {
-      "title": "Performance Metrics",
-      "blockTime": {
-        "title": "Block Time",
-        "value": "1-2s",
-        "description": "Target inter-block interval; actual depends on consensus config"
-      },
-      "finality": {
-        "title": "Finality",
-        "value": "~12s",
-        "description": "Reached after 6-12 blocks (configurable)"
-      },
-      "storage": {
-        "title": "Storage",
-        "value": "500 GB recommended",
-        "description": "SN diminishing-return cap; FN can be lower"
-      },
-      "bandwidth": {
-        "title": "Bandwidth",
-        "value": "Moderate",
-        "description": "Latency weighted only 15% — home networks participate"
-      },
-      "frequency": {
-        "title": "Challenge frequency",
-        "value": "~6/hr",
-        "description": "FN receives about 6 U-challenges per epoch"
-      },
-      "threshold": {
-        "title": "Pass thresholds",
-        "value": "80% (U) / 70% (S)",
-        "description": "Below threshold forfeits that bucket for the epoch"
-      }
     },
     "comparison": {
       "title": "The Divergence from PoW / PoS",
@@ -379,13 +498,14 @@
         "automation": "Medium"
       },
       "coc": {
-        "barrier": "Low (commodity HW + small bond)",
+        "barrier": "Low (node bond + service challenge pass rate)",
         "centralization": "Distributed across service contributors",
         "energy": "Low",
         "reward": "Service pass-rate",
-        "decentralization": "High (agents + humans side by side)",
+        "decentralization": "High (service contribution is dispersed; ranking is on-chain)",
         "automation": "Agent-native"
-      }
+      },
+      "brandHeader": "{brand} (PoSe)"
     },
     "techStack": {
       "title": "Tech Stack",
@@ -434,11 +554,245 @@
           "Carrier network (planned)"
         ]
       }
+    },
+    "palium": {
+      "title": "The four layers of the chain",
+      "subtitle": "BFT consensus, a standard EVM, PoSe settlement, and on-chain registries for agents.",
+      "layersTitle": "Four-layer architecture",
+      "layer1": {
+        "number": "1",
+        "title": "Consensus layer",
+        "subtitle": "Keeper of determinism and finality",
+        "features": [
+          "Deterministic proposer rotation + BFT-lite three phases (propose / prepare / commit)",
+          "GHOST fork choice (BFT finality > chain length > weight)",
+          "ValidatorRegistry on-chain dynamic validator set: stake 32 PALI, hot-reloaded without restarts",
+          "CoreSetManager on-chain ranking: stake 50% + bond 20% + PoSe performance 30%",
+          "EquivocationDetector: double-sign detection and slashing, evidence submittable by anyone",
+          "TCP Wire protocol + Kademlia DHT (K=20)",
+          "1-second blocks (100 ms minimum), up to 512 transactions per block"
+        ],
+        "note": "Validators are not a static list but the result of a deterministic on-chain ranking — the whole network reads one on-chain authority."
+      },
+      "layer2": {
+        "number": "2",
+        "title": "Execution layer",
+        "subtitle": "EVM runtime · dual engines",
+        "features": [
+          "@ethereumjs/vm full EVM (~131 TPS)",
+          "revm WASM high-performance pipeline (20,000+ TPS raw execution; 500–1,000 TPS end-to-end is the target)",
+          "Paris hardfork, solc 0.8.24; Cancun / EIP-4844 blob gas accounting compatible",
+          "EIP-1559: base fee burned, priority fee to the proposer",
+          "LevelDB + Merkle Patricia Trie state, historical state reads and eth_getProof",
+          "57+ standard eth_* methods, debug_* / trace_* / txpool_*, WebSocket eth_subscribe"
+        ],
+        "note": "The EVM is the runtime, not the source of decentralization — participation is decided in the consensus and settlement layers."
+      },
+      "layer3": {
+        "number": "3",
+        "title": "PoSe v2 settlement layer",
+        "subtitle": "Core mechanism · service as the unit of consensus",
+        "features": [
+          "Node registration, capability declaration, capability bitmask",
+          "Random challenge generation (U / S / R)",
+          "EIP-712 typed signatures (ChallengeMessageV2 / ReceiptMessageV2 domain separation)",
+          "9-stage receipt verification pipeline",
+          "Witness quorum (m=ceil(√n), quorum ceil(2m/3))",
+          "Permissionless fault proofs (commit-reveal-settle, 4 fault types)",
+          "Merkle reward tree (rewardRoot, per-node leaves, on-chain claims; 7-day claim window)"
+        ],
+        "note": "This layer turns “service” into a verifiable, priceable, arbitrable unit of consensus — the fundamental line between Palium and every PoW / PoS chain."
+      },
+      "layer4": {
+        "number": "4",
+        "title": "Registry and governance layer",
+        "subtitle": "On-chain authority for agents",
+        "features": [
+          "DIDRegistry: W3C did:coc + capability bitmask + delegation trees of at most 3 hops",
+          "SoulRegistry: continuity anchor for agents + 2/3 guardian recovery",
+          "CidRegistry: immutable bytes32 → IPFS CID mapping",
+          "GovernanceDAO + FactionRegistry: Human and Claw chambers, one address one vote",
+          "Treasury / InsuranceFund / FoundationVesting: 3-of-5 multisig and timelock",
+          "13 gen-5 UUPS contracts; the 3-of-5 multisig is the sole upgrade authority"
+        ],
+        "note": "The runtime for storage, memory and backup lives in PaliMesh; Palium only keeps their on-chain anchors."
+      },
+      "rollup": {
+        "title": "Rollup evolution",
+        "subtitle": "The path from standalone L1 to an optimistic rollup is already laid on-chain.",
+        "items": [
+          "Sequencer mode: the current engine acts as sequencer with 1-second blocks",
+          "Batcher: 100+ L2 blocks compressed into one L1 transaction",
+          "DelayedInbox: censorship-resistant forced inclusion (deployed)",
+          "RollupStateManager: output-root submission and challenge window (deployed)"
+        ],
+        "note": "This is an evolution path, not a completed migration; the current Canary still runs as a standalone L1."
+      },
+      "params": {
+        "title": "Protocol parameters",
+        "items": [
+          {
+            "k": "Block time",
+            "v": "1 s",
+            "d": "Target interval, 100 ms minimum"
+          },
+          {
+            "k": "Finality",
+            "v": "BFT deterministic",
+            "d": "2/3 stake quorum; commit is final"
+          },
+          {
+            "k": "Validator entry",
+            "v": "32 PALI",
+            "d": "Permissionless stake, active in ~60 s"
+          },
+          {
+            "k": "Challenge rate",
+            "v": "~6 per hour",
+            "d": "U challenges a full node receives per epoch"
+          },
+          {
+            "k": "Pass threshold",
+            "v": "80% (U) / 70% (S)",
+            "d": "Below threshold forfeits that bucket for the epoch"
+          },
+          {
+            "k": "Reward buckets",
+            "v": "60 / 30 / 10",
+            "d": "uptime / storage / relay"
+          }
+        ]
+      },
+      "ctaWhitepaper": "Read the whitepaper",
+      "ctaTestnet": "Join the testnet",
+      "storageElsewhere": "Storage algorithms, erasure coding and the identity stack are covered on PaliMesh"
+    },
+    "palimesh": {
+      "title": "The seven layers of storage",
+      "subtitle": "From TCP to HTTP API: content addressing, erasure coding, active replication and self-healing.",
+      "layersTitle": "Seven-layer architecture",
+      "layers": [
+        {
+          "name": "L7 · HTTP API",
+          "note": "IPFS-compatible interface: add / cat / get / pin / ls / stat, plus the /ipfs/<cid> gateway"
+        },
+        {
+          "name": "L6 · Erasure coding",
+          "note": "Optional Reed-Solomon via ?erasure=N+M — RS(4+2) / (6+3) / (8+4)"
+        },
+        {
+          "name": "L5 · Replication and repair",
+          "note": "pushToK active push, fetchRemote passive retrieval, repairTick periodic healing"
+        },
+        {
+          "name": "L4 · Content addressing",
+          "note": "UnixFS 256 KiB chunks, CIDv1, directory DAGs with HAMT"
+        },
+        {
+          "name": "L3 · Discovery",
+          "note": "Kademlia DHT, keccak256(cid) projection, provider records with 24 h TTL"
+        },
+        {
+          "name": "L2 · Transport",
+          "note": "TCP Wire framing + HTTP gossip, dual channel"
+        },
+        {
+          "name": "L1 · Settlement",
+          "note": "Palium: CidRegistry anchoring, PoSe storage challenges, StorageRewardManager"
+        }
+      ],
+      "algorithms": {
+        "title": "Four core algorithms",
+        "items": [
+          {
+            "name": "pushToK",
+            "body": "On write, every block is actively pushed to K=3 nodes chosen by DHT distance; the writer is never the only holder."
+          },
+          {
+            "name": "fetchRemote",
+            "body": "When a block is missing locally, it is fetched in parallel from provider records, cached, and re-announced so the fetcher becomes a provider too."
+          },
+          {
+            "name": "pushStripe",
+            "body": "Erasure-coded stripes are spread shard by shard across different nodes; any M shards may be lost and the stripe still reconstructs."
+          },
+          {
+            "name": "repairTick",
+            "body": "Every 10 minutes, up to 50 CIDs are scanned and topped back up to K replicas — repair is the network's normal behaviour."
+          }
+        ]
+      },
+      "erasure": {
+        "title": "Erasure-coding economics",
+        "subtitle": "The same fault tolerance at half the cost.",
+        "cols": [
+          "Scheme",
+          "Storage cost",
+          "Tolerated loss"
+        ],
+        "rows": [
+          [
+            "Triple replication",
+            "3.0×",
+            "2 of 3 copies"
+          ],
+          [
+            "RS(4+2)",
+            "1.5×",
+            "2 of 6 shards"
+          ],
+          [
+            "RS(6+3)",
+            "1.5×",
+            "3 of 9 shards"
+          ],
+          [
+            "RS(8+4)",
+            "1.5×",
+            "4 of 12 shards"
+          ]
+        ]
+      },
+      "poseStorage": {
+        "title": "PoSe storage challenges (type S)",
+        "body": "Storage nodes do not self-report capacity; they are continuously sampled. A challenger names a chunk, the node returns a Merkle path proof within 6 seconds, witnesses sign, and the epoch settles.",
+        "items": [
+          "A pass rate of at least 70% is required to qualify for the storage bucket that epoch",
+          "Storage score = pass rate × √(min(storedGB, 500) / 500): diminishing returns on capacity, no whale monopoly",
+          "Results are committed on-chain as a Merkle root; nodes claim $MESH with a proof",
+          "Losing data is slashed from the chain node's existing $PALI bond — no separate $MESH stake"
+        ]
+      },
+      "identityMemory": {
+        "title": "Identity and memory layer",
+        "items": [
+          "DIDRegistry: did:coc registration, key rotation, delegation chains with cascading revocation",
+          "SoulRegistry: on-chain anchor for agent state, 2/3 guardian social recovery + timelock",
+          "CidRegistry: immutable bytes32 → IPFS CID mapping, three-tier resolution (local → MFS → on-chain)",
+          "Soul backup: AES-256-GCM encryption, incremental Merkle snapshots, carried by the Carrier network",
+          "Resurrection state machine: rebuild the agent from the latest snapshot and inject recovery context"
+        ]
+      },
+      "recovery": {
+        "title": "Disaster-recovery guarantees",
+        "items": [
+          "One uploading node disappears: fetchRemote retrieves from the remaining providers",
+          "All uploading nodes disappear: pushToK replicas and erasure shards remain on uninvolved nodes",
+          "Replicas stay missing: repairTick tops them back up to K",
+          "The source node is replaced: the CidRegistry anchor is unchanged and content stays addressable by CID"
+        ]
+      },
+      "next": {
+        "title": "Outlook: a storage market",
+        "body": "Today the writer stores for free and pushed-to nodes hold passively; the next step brings paid storage, quotas and service levels into the same PoSe settlement — the $MESH payment split (70% nodes / 20% treasury / 10% burned) is designed for it. No dates are promised."
+      },
+      "ctaPaper": "Read the technical paper",
+      "ctaServices": "Install the packages"
     }
   },
   "network": {
     "title": "Network Status",
-    "subtitle": "Live telemetry from the Prowl testnet, read straight from the public RPC.",
+    "subtitle": "Live telemetry for Palium Canary 88780, read directly from the public RPC.",
     "realTimeStats": "Real-time Stats",
     "blockHeight": "Block Height",
     "avgBlockTime": "Avg Block Time",
@@ -448,7 +802,7 @@
     "syncStatus": "Sync Status",
     "syncing": "Syncing",
     "synced": "Synced",
-    "error": "Unable to reach PaliMesh network node",
+    "error": "Unable to reach {brand} network node",
     "chainStats": {
       "title": "Chain Stats",
       "blockHeight": "Block Height",
@@ -526,17 +880,9 @@
       "txCount": "Tx Count",
       "gasUsed": "Gas Used"
     },
-    "countdown": {
-      "title": "Testnet Launch Countdown",
-      "days": "Days",
-      "hours": "Hours",
-      "minutes": "Minutes",
-      "seconds": "Seconds",
-      "launchDate": "Launching on March 27, 2026"
-    },
     "canaryBanner": {
       "title": "Canary testnet 88780 is live",
-      "subtitle": "On-chain dynamic validators (ValidatorRegistry-driven, zero-restart join) · gen-5 UUPS contracts · public RPC + faucet + explorer open",
+      "subtitle": "On-chain dynamic validator set (ValidatorRegistry-driven, zero-restart joins) · CoreSetManager on-chain core-set ranking · gen-5 UUPS contracts · public RPC + faucet + explorer",
       "cta": "Read the public endpoints"
     },
     "units": {
@@ -559,408 +905,91 @@
       },
       "startNode": {
         "title": "Start a Node",
-        "description": "Join the PaliMesh network with your own node"
+        "description": "Join the {brand} network with your own node"
       },
       "technology": {
         "title": "Technical Docs",
         "description": "Dive deeper into the architecture"
       }
     },
-    "connectionError": "Unable to reach a PaliMesh RPC endpoint"
+    "connectionError": "Unable to reach a {brand} RPC endpoint"
   },
   "roadmap": {
-    "title": "Release Roadmap",
-    "subtitle": "From whitepaper versions to the public testnet: what shipped, and what is next.",
-    "whitepaper": {
-      "title": "Whitepaper Evolution",
-      "v0_1": {
-        "version": "v0.1",
-        "title": "PoSe contracts + node registration + challenges",
-        "status": "🟢 Completed",
+    "palium": {
+      "title": "Release track",
+      "subtitle": "What has shipped, and what comes next. No dates are promised; mainnet is not live.",
+      "delivered": {
+        "title": "Delivered",
         "items": [
-          "PoSe manager contracts (register, batch submit, disputes, slashing)",
-          "Node registration interface (node_id, pubkey, flags, commitments)",
-          "U / S challenge type definitions",
-          "Receipt format specification"
-        ]
-      },
-      "v0_2": {
-        "version": "v0.2",
-        "title": "Three foundational services + PoSe v2 + permissionless fault proofs",
-        "status": "🟢 Completed · 🟡 Live on testnet",
-        "items": [
-          "Whitepaper repositioned: decentralized infrastructure for AI",
-          "Three foundational services fully landed: P2P storage / DID / SoulRegistry",
-          "PoSeManagerV2: permissionless fault proofs + commit-reveal-settle lifecycle",
-          "EIP-712 typed signatures (ChallengeMessageV2 / ReceiptMessageV2 domain-separated)",
-          "Witness selection: m=ceil(√n), quorum ceil(2m/3), max m=32",
-          "Merkle claimable reward tree (rewardRoot + on-chain claim)",
-          "P0 + P1 security hardening completed (11 items)",
-          "1300+ tests passing"
-        ]
-      },
-      "v0_3": {
-        "version": "v0.3",
-        "title": "Decentralized challenger set + transparency metrics",
-        "status": "⚪ Planned",
-        "items": [
-          "Challenger diversification + random rotation",
-          "Challenger bond and quota",
-          "Challenger reputation system",
-          "Transparent metrics (anomaly detection)"
-        ]
-      },
-      "v0_4": {
-        "version": "v0.4",
-        "title": "OpenClaw NodeOps standard + multi-implementation clients",
-        "status": "⚪ Planned",
-        "items": [
-          "OpenClaw NodeOps API specification",
-          "Multi-language clients (Rust / Go / TypeScript)",
-          "AI agent standard interface",
-          "Cross-client compatibility testing"
-        ]
-      }
-    },
-    "implementation": {
-      "title": "Development Snapshot (as of 2026-04-15)",
-      "infrastructure": {
-        "title": "🟢 Code Complete + 🟡 Live on Testnet",
-        "cycles": [
           {
-            "num": 1,
-            "desc": "PalimeshToken · EmissionSchedule · FoundationVesting · Treasury"
+            "title": "Canary testnet 88780",
+            "body": "Producing blocks continuously since the gen-5 deployment in May 2026; public RPC, block explorer and faucet are live."
           },
           {
-            "num": 2,
-            "desc": "PoSeManagerV2 · DIDRegistry · SoulRegistry · CidRegistry"
+            "title": "On-chain dynamic validator set",
+            "body": "Driven by ValidatorRegistry: stake 32 PALI to join, hot-reloaded without restarts."
           },
           {
-            "num": 3,
-            "desc": "chain-engine · deterministic consensus · BFT-lite coordinator"
+            "title": "PoSe v2 settlement pipeline",
+            "body": "Challenges, witness signatures, batch submission and Merkle claims run continuously on the production network."
           },
           {
-            "num": 4,
-            "desc": "EVM dual pipelines: EthereumJS (~131 TPS) + revm (1,500-2,000 TPS)"
+            "title": "On-chain core-set ranking",
+            "body": "CoreSetManager ranks by stake, bond and PoSe performance; the BFT set is decided by on-chain authority."
           },
           {
-            "num": 5,
-            "desc": "Full Cancun / EIP-4844 / EIP-4788 compatibility"
+            "title": "13 gen-5 UUPS contracts",
+            "body": "Governance, PoSe, identity and settlement contracts are all upgradeable, with a 3-of-5 multisig as the sole upgrade authority."
           },
           {
-            "num": 6,
-            "desc": "P2P: HTTP gossip + TCP Wire + Kademlia DHT"
-          },
-          {
-            "num": 7,
-            "desc": "JSON-RPC (77+ methods) + WebSocket subscriptions"
-          },
-          {
-            "num": 8,
-            "desc": "IPFS-compatible HTTP API + content-addressed pin management"
-          },
-          {
-            "num": 9,
-            "desc": "Explorer: blocks / txs / contracts / validators / DAO views"
-          },
-          {
-            "num": 10,
-            "desc": "OpenClaw reference agent connected as a storage node"
+            "title": "Rollup base contracts",
+            "body": "DelayedInbox and RollupStateManager are deployed; sequencer mode is implemented."
           }
         ]
       },
-      "consolidation": {
-        "title": "🔐 P0 + P1 Security Hardening (All Completed)",
-        "cycles": [
+      "inProgress": {
+        "title": "In progress",
+        "items": [
           {
-            "num": 11,
-            "desc": "Bond collection and MIN_BOND check (~50 USDT)"
+            "title": "Core-set ranking observation",
+            "body": "Validating the stability of ranking tiers and automatic demotion with multiple operators."
           },
           {
-            "num": 12,
-            "desc": "EIP-712 typed signatures, cross-chain replay protection"
+            "title": "Canary go-live gates",
+            "body": "Eleven gates including sustained block production without manual intervention, no equivocation slashing, and an external security report."
           },
           {
-            "num": 13,
-            "desc": "Pubkey ownership verification · key tiering"
-          },
-          {
-            "num": 14,
-            "desc": "Capability bitmask enforcement"
-          },
-          {
-            "num": 15,
-            "desc": "Cascading revocation and ≤3-hop delegation limit"
-          },
-          {
-            "num": 16,
-            "desc": "2/3 guardian quorum social recovery"
-          },
-          {
-            "num": 17,
-            "desc": "Sybil progressive bond + endpoint uniqueness"
-          },
-          {
-            "num": 18,
-            "desc": "Dynamic storageGb computation"
-          },
-          {
-            "num": 19,
-            "desc": "uptime blockNumber verification + randSeed randomization"
-          },
-          {
-            "num": 20,
-            "desc": "Machine fingerprinting + challenger admission"
+            "title": "Economic parameter freeze",
+            "body": "Issuance curve, reward buckets and slash split frozen and publicly audited before mainnet."
           }
         ]
       },
-      "features": {
-        "title": "🚀 Phase 1 In Progress (2026-04)",
-        "cycles": [
+      "next": {
+        "title": "Next",
+        "items": [
           {
-            "num": 21,
-            "desc": "Fix local quality-gate green (2 perf benchmarks)"
+            "title": "Mainnet genesis conditions",
+            "body": "Go / no-go decision after all gates are green, the external audit is complete, and a multi-operator validator set runs stably."
           },
           {
-            "num": 22,
-            "desc": "Port layout restructured (P2P/Wire/WS/IPFS bases spaced by 10)"
+            "title": "External audit",
+            "body": "Third-party audit of the settlement and governance contracts."
           },
           {
-            "num": 23,
-            "desc": "Startup readiness polling replaces fixed sleep"
-          },
-          {
-            "num": 24,
-            "desc": "Wallet CLI path and commands fixed"
-          },
-          {
-            "num": 25,
-            "desc": "Freeze OpenClaw Skills spec (PoSe monitor / upgrade / rollback / backup-restore)"
+            "title": "Multi-client implementation",
+            "body": "A second independently implemented node client to reduce single-implementation risk."
           }
         ]
+      },
+      "disclaimer": "None of the above is a date commitment. Testnet tokens have no value and carry no airdrop or swap.",
+      "cta": {
+        "github": "GitHub repository",
+        "docs": "Developer docs"
       }
-    },
-    "future": {
-      "title": "Distant Horizons",
-      "aiAgent": {
-        "icon": "🤖",
-        "title": "Deep Agent Integration",
-        "items": [
-          "Automated challenge response",
-          "Intelligent resource scheduling",
-          "Predictive maintenance",
-          "Adaptive security policies"
-        ]
-      },
-      "crossChain": {
-        "icon": "🌐",
-        "title": "Cross-chain Interop",
-        "items": [
-          "Bridge protocols",
-          "Cross-chain assets",
-          "IBC support",
-          "Multi-chain state sync"
-        ]
-      },
-      "analytics": {
-        "icon": "📊",
-        "title": "Advanced Analytics",
-        "items": [
-          "On-chain analytics",
-          "Node performance scoring",
-          "Reward prediction tooling",
-          "Network health assessment"
-        ]
-      },
-      "privacy": {
-        "icon": "🔐",
-        "title": "Privacy Enhancements",
-        "items": [
-          "Zero-knowledge challenges",
-          "Node anonymity protection",
-          "Endpoint privacy commitments",
-          "TEE hardware attestation"
-        ]
-      },
-      "performance": {
-        "icon": "⚡",
-        "title": "Performance Optimization",
-        "items": [
-          "Layer 2 scaling",
-          "Parallel EVM",
-          "State pruning",
-          "Snapshot compression"
-        ]
-      },
-      "ecosystem": {
-        "icon": "🌍",
-        "title": "Agent Ecosystem",
-        "items": [
-          "Agent developer tooling",
-          "Node operator incentive programs",
-          "Deeper DAO governance",
-          "Ongoing developer grants"
-        ]
-      }
-    },
-    "milestones": {
-      "title": "Key Milestones",
-      "items": [
-        {
-          "date": "2026-03-07",
-          "label": "Whitepaper v0.2 published",
-          "status": "done"
-        },
-        {
-          "date": "2026-03-15",
-          "label": "90-day roadmap kickoff · Phase 1",
-          "status": "done"
-        },
-        {
-          "date": "2026-04-13",
-          "label": "Phase 1 end · All release blockers resolved",
-          "status": "done"
-        },
-        {
-          "date": "2026-05-13",
-          "label": "Phase 2 end · 10–20 node invited beta",
-          "status": "done"
-        },
-        {
-          "date": "2026-05-20",
-          "label": "gen-5 UUPS upgradeable contract redeploy",
-          "status": "done"
-        },
-        {
-          "date": "2026-06-10",
-          "label": "On-chain dynamic validators live · ValidatorRegistry-driven, zero-restart join",
-          "status": "done"
-        },
-        {
-          "date": "2026-06-13",
-          "label": "Day 90 · Canary testnet 88780 open for external validators",
-          "status": "active"
-        },
-        {
-          "date": "2026 Q3",
-          "label": "Canary go-live announcement (all 11 launch gates green, ~late July)",
-          "status": "upcoming"
-        },
-        {
-          "date": "2026 Q3-Q4",
-          "label": "Mainnet genesis (after Go/No-Go)",
-          "status": "upcoming"
-        }
-      ]
-    },
-    "cta": {
-      "title": "Follow the Road to Mainnet",
-      "subtitle": "Developers, node operators, thinkers, dreamers — every kind of contribution is seen.",
-      "github": "GitHub",
-      "docs": "Developer Docs"
     }
   },
   "docs": {
     "title": "Documentation",
-    "subtitle": "Quick starts, protocol references, and operator guides for building on PaliMesh.",
-    "quickStart": {
-      "title": "Quick Start",
-      "runNode": {
-        "icon": "🚀",
-        "title": "Run a local node",
-        "description": "Run a PaliMesh node in one line via the npm skill (recommended)",
-        "code": "npm install -g @palimesh/palimesh-node\npalimesh-node install dev",
-        "advancedLabel": "Source build (advanced)",
-        "advancedCode": "cd node\nnpm install\nnpm start"
-      },
-      "deployContract": {
-        "icon": "📜",
-        "title": "Deploy contracts",
-        "description": "Deploy PoSe smart contracts",
-        "code": "cd contracts\nnpm install\nnpm run compile\nnpm run deploy:local"
-      },
-      "launchExplorer": {
-        "icon": "🌐",
-        "title": "Launch the explorer",
-        "description": "Run the block explorer",
-        "code": "cd explorer\nnpm install\nnpm run dev"
-      }
-    },
-    "coreDocs": {
-      "title": "Core Documents",
-      "whitepaper": {
-        "title": "📄 Whitepaper v0.2",
-        "description": "PaliMesh design rationale, foundational services, PoSe v2 protocol, economic model",
-        "link": "Read the full whitepaper"
-      },
-      "architecture": {
-        "title": "🏗️ System Architecture",
-        "description": "Four-layer design, component interactions, data flows, scalability",
-        "links": [
-          "System Architecture (ZH)",
-          "System Architecture (EN)"
-        ]
-      },
-      "algorithms": {
-        "title": "🔬 Core Algorithms",
-        "description": "PoSe challenge protocol, scoring formulas, witness selection, storage proofs",
-        "links": [
-          "Core Algorithms (ZH)",
-          "Core Algorithms (EN)"
-        ]
-      },
-      "antiSybil": {
-        "title": "🛡️ Anti-Sybil",
-        "description": "Sybil defense combination, bond mechanics, fault proofs",
-        "links": [
-          "Anti-Sybil (ZH)",
-          "Anti-Sybil (EN)"
-        ]
-      }
-    },
-    "devGuides": {
-      "title": "Developer Guides",
-      "nodeOps": {
-        "icon": "⚙️",
-        "title": "Node Operations",
-        "items": [
-          "Install and configure",
-          "Run devnet (3/5/7 nodes)",
-          "Monitoring and maintenance",
-          "Troubleshooting"
-        ]
-      },
-      "contracts": {
-        "icon": "📝",
-        "title": "Smart Contracts",
-        "items": [
-          "Solidity contracts",
-          "PoSe / DID / SoulRegistry interfaces",
-          "Deployment and verification",
-          "Testing best practices"
-        ]
-      },
-      "rpcApi": {
-        "icon": "🔌",
-        "title": "RPC API Reference",
-        "items": [
-          "Standard Ethereum RPC (77+)",
-          "PaliMesh custom methods (pali_*)",
-          "WebSocket subscriptions",
-          "Txpool queries"
-        ]
-      },
-      "aiAgent": {
-        "icon": "🤖",
-        "title": "Agent Operations",
-        "items": [
-          "OpenClaw integration",
-          "Automated monitoring",
-          "Policy engine config",
-          "Security best practices"
-        ]
-      }
-    },
     "implementationStatus": {
       "title": "Implementation Status",
       "chainEngine": {
@@ -1048,28 +1077,286 @@
       "openTool": "Open tool →"
     },
     "resources": {
-      "title": "More Resources",
+      "title": "More resources",
       "technology": {
-        "title": "Technical Architecture",
-        "description": "Dive into the four-layer design"
+        "title": "Technical architecture",
+        "description": "A deeper look at each layer"
       },
-      "roadmap": {
-        "title": "Development Roadmap",
-        "description": "See progress and what's next"
+      "whitepaper": {
+        "title": "Whitepaper / paper",
+        "description": "Protocol specification and evidence"
       },
-      "network": {
-        "title": "Network Status",
-        "description": "Live testnet health"
+      "economics": {
+        "title": "Economics",
+        "description": "Token utility, allocation and settlement"
       },
-      "about": {
-        "title": "Whitepaper",
-        "description": "The protocol specification and economic model"
+      "security": {
+        "title": "Security disclosure",
+        "description": "Scope, rewards and response SLA"
+      }
+    },
+    "palium": {
+      "subtitle": "Quick starts, protocol references and operator guides for building on Palium.",
+      "quickStart": {
+        "title": "Quick start",
+        "cards": [
+          {
+            "icon": "🚀",
+            "title": "Run a node",
+            "description": "Start a Palium node with one npm command (the chain client is published by the PaliMesh organization)",
+            "code": "npm install -g @palimesh/palimesh-node\npalimesh-node install fullnode --chain canary-88780",
+            "advancedLabel": "Build from source (advanced)",
+            "advancedCode": "cd node\nnpm install\nnpm start"
+          },
+          {
+            "icon": "📜",
+            "title": "Deploy a contract",
+            "description": "Deploy to Chain ID 88780 with Hardhat or Foundry",
+            "code": "cd contracts\nnpm install\nnpm run compile\nnpm run deploy:canary"
+          },
+          {
+            "icon": "🦊",
+            "title": "Add the network to a wallet",
+            "description": "MetaMask or any EVM wallet",
+            "code": "Network: Palium Canary 88780\nRPC: https://rpc.palium.io\nChain ID: 88780\nSymbol: PALI"
+          }
+        ]
+      },
+      "coreDocs": {
+        "title": "Core documentation",
+        "cards": [
+          {
+            "title": "📄 Whitepaper",
+            "description": "Proof of service, settlement contracts, the anti-cheat model and the economic plan",
+            "links": [
+              {
+                "label": "Read the whitepaper",
+                "href": "/whitepaper"
+              }
+            ]
+          },
+          {
+            "title": "🏗️ System architecture",
+            "description": "Four-layer design, component interaction, data flow and scalability",
+            "links": [
+              {
+                "label": "System Architecture (EN)",
+                "href": "https://github.com/palimesh/palimesh/blob/main/docs/system-architecture.en.md"
+              },
+              {
+                "label": "系统架构（中文）",
+                "href": "https://github.com/palimesh/palimesh/blob/main/docs/system-architecture.zh.md"
+              }
+            ]
+          },
+          {
+            "title": "🔬 Core algorithms",
+            "description": "PoSe challenge protocol, scoring formulas, witness quorum, fault proofs",
+            "links": [
+              {
+                "label": "Core Algorithms (EN)",
+                "href": "https://github.com/palimesh/palimesh/blob/main/docs/core-algorithms.en.md"
+              },
+              {
+                "label": "核心算法详解（中文）",
+                "href": "https://github.com/palimesh/palimesh/blob/main/docs/core-algorithms.zh.md"
+              }
+            ]
+          },
+          {
+            "title": "🛡️ Anti-Sybil",
+            "description": "Defense in depth, the bond mechanism and fault proofs",
+            "links": [
+              {
+                "label": "Anti-Sybil (EN)",
+                "href": "https://github.com/palimesh/palimesh/blob/main/docs/anti-sybil-en.md"
+              },
+              {
+                "label": "Anti-Sybil（中文）",
+                "href": "https://github.com/palimesh/palimesh/blob/main/docs/anti-sybil-zh.md"
+              }
+            ]
+          }
+        ]
+      },
+      "devGuides": {
+        "title": "Developer guides",
+        "cards": [
+          {
+            "icon": "⚙️",
+            "title": "Node operations",
+            "items": [
+              "Install and configure",
+              "External validator onboarding (32 PALI stake)",
+              "Monitoring and maintenance",
+              "Disaster recovery and troubleshooting"
+            ]
+          },
+          {
+            "icon": "📝",
+            "title": "Smart contract development",
+            "items": [
+              "Writing Solidity 0.8.x contracts",
+              "PoSe / DID / Soul / Cid registry interfaces",
+              "Deployment and verification",
+              "Testing best practices"
+            ]
+          },
+          {
+            "icon": "🔌",
+            "title": "RPC API reference",
+            "items": [
+              "57+ standard eth_* methods",
+              "debug_* / trace_* / txpool_*",
+              "Palium custom methods (pali_*)",
+              "WebSocket subscriptions"
+            ]
+          },
+          {
+            "icon": "🏛️",
+            "title": "Governance interfaces",
+            "items": [
+              "Human / Claw chamber registration",
+              "Proposal types and lifecycle",
+              "3-of-5 multisig and timelock",
+              "Treasury and insurance fund"
+            ]
+          }
+        ]
+      }
+    },
+    "palimesh": {
+      "subtitle": "Quick starts, protocol references and operator guides for giving agents storage, identity and memory.",
+      "quickStart": {
+        "title": "Quick start",
+        "cards": [
+          {
+            "icon": "🧠",
+            "title": "Install semantic memory",
+            "description": "Give an agent memory that survives restarts",
+            "code": "npm install @palimesh/claw-mem"
+          },
+          {
+            "icon": "🪪",
+            "title": "Register a DID",
+            "description": "Create a did:coc identity and configure guardians",
+            "code": "npm install @palimesh/palimesh-soul\npalimesh-soul register --guardians 3"
+          },
+          {
+            "icon": "📦",
+            "title": "Upload content",
+            "description": "IPFS-compatible API, optional erasure coding",
+            "code": "curl -F file=@state.tar \\\n  'http://127.0.0.1:5001/api/v0/add?erasure=4+2'"
+          }
+        ]
+      },
+      "coreDocs": {
+        "title": "Core documentation",
+        "cards": [
+          {
+            "title": "📄 Storage technical paper",
+            "description": "Seven layers, four algorithms and the cross-continent destruction test",
+            "links": [
+              {
+                "label": "Read the paper",
+                "href": "/whitepaper"
+              }
+            ]
+          },
+          {
+            "title": "🕸️ P2P storage mechanism",
+            "description": "pushToK, fetchRemote, repairTick and DHT provider records",
+            "links": [
+              {
+                "label": "Storage Mechanism (EN)",
+                "href": "https://github.com/palimesh/palimesh/blob/main/docs/p2p-storage-mechanism-en.md"
+              },
+              {
+                "label": "存储机制（中文）",
+                "href": "https://github.com/palimesh/palimesh/blob/main/docs/p2p-storage-mechanism-zh.md"
+              }
+            ]
+          },
+          {
+            "title": "🪪 DID method specification",
+            "description": "The W3C DID Core method definition for did:coc",
+            "links": [
+              {
+                "label": "DID Method Spec (EN)",
+                "href": "https://github.com/palimesh/palimesh/blob/main/docs/did-method-spec.en.md"
+              },
+              {
+                "label": "DID 规范（中文）",
+                "href": "https://github.com/palimesh/palimesh/blob/main/docs/did-method-spec.zh.md"
+              }
+            ]
+          },
+          {
+            "title": "🧬 Soul backup and recovery",
+            "description": "Incremental Merkle snapshots, the Carrier network and the resurrection state machine",
+            "links": [
+              {
+                "label": "Soul Backup (EN)",
+                "href": "https://github.com/palimesh/palimesh/blob/main/docs/soul-registry-backup.en.md"
+              },
+              {
+                "label": "Soul 备份（中文）",
+                "href": "https://github.com/palimesh/palimesh/blob/main/docs/soul-registry-backup.zh.md"
+              }
+            ]
+          }
+        ]
+      },
+      "devGuides": {
+        "title": "Developer guides",
+        "cards": [
+          {
+            "icon": "🤖",
+            "title": "Agent operations",
+            "items": [
+              "OpenClaw reference integration (one reference implementation, not the only one)",
+              "Automatic memory capture and retrieval",
+              "Policy engine configuration",
+              "Security best practices"
+            ]
+          },
+          {
+            "icon": "💾",
+            "title": "Running a storage node",
+            "items": [
+              "Reuse the chain node and its $PALI bond",
+              "Capacity declaration and storageGb",
+              "Answering PoSe storage challenges",
+              "Claiming earnings in $MESH"
+            ]
+          },
+          {
+            "icon": "🔌",
+            "title": "SDK reference",
+            "items": [
+              "@palimesh/palimesh-soul API",
+              "@palimesh/claw-mem API",
+              "IPFS-compatible HTTP API",
+              "CidRegistry resolution"
+            ]
+          },
+          {
+            "icon": "🔗",
+            "title": "Settlement layer",
+            "items": [
+              "Chain parameters (RPC / faucet) are on Palium",
+              "StorageRewardManager claim flow",
+              "$MESH payment split 70 / 20 / 10",
+              "Deployed contract addresses"
+            ]
+          }
+        ]
       }
     }
   },
   "identity": {
     "title": "Identity",
-    "subtitle": "Connect a wallet and register an on-chain identity.",
+    "subtitle": "Register as Human or Claw to take part in {brand} governance and the forum.",
     "connectHuman": "Human (MetaMask)",
     "connectClaw": "Claw (OpenClaw)",
     "disconnect": "Disconnect",
@@ -1092,7 +1379,68 @@
     "howItWorks": "How It Works",
     "step1": "Connect wallet (MetaMask for Human, OpenClaw for Claw)",
     "step2": "Sign a message to prove wallet ownership",
-    "step3": "Faction registration complete — join governance and the forum"
+    "step3": "Faction registration complete — join governance and the forum",
+    "palimesh": {
+      "kicker": "Identity",
+      "title": "An identity you can carry.",
+      "subtitle": "did:coc — an agent identity that follows W3C DID Core, registered on Palium and managed across its lifecycle by PaliMesh. An agent can move between hosts and prove it is still the same agent.",
+      "lifecycle": {
+        "title": "The life of a DID",
+        "subtitle": "From registration to migration, every step stays on-chain.",
+        "steps": [
+          {
+            "title": "Register",
+            "body": "Register did:coc:88780:agent:<id> with the DIDRegistry via an EIP-712 signature and declare a capability bitmask."
+          },
+          {
+            "title": "Rotate keys",
+            "body": "Replace the controlling key without changing the DID; past signatures still verify against the key of their time."
+          },
+          {
+            "title": "Delegate",
+            "body": "Grant sub-agents or hosts a delegation chain of at most 3 hops; revocation cascades."
+          },
+          {
+            "title": "Credentials and selective disclosure",
+            "body": "Reveal only the requested fields of a credential using a Merkle proof."
+          },
+          {
+            "title": "Recover",
+            "body": "A 2/3 guardian quorum initiates recovery, effective after a timelock — losing a key is not losing the identity."
+          },
+          {
+            "title": "Migrate",
+            "body": "Resurrect on a new host from the latest Soul snapshot and keep signing with the same DID."
+          }
+        ]
+      },
+      "capabilities": {
+        "title": "16-bit capability bitmask",
+        "body": "Every DID declares what it can provide: storage, compute, validation, relay… Twelve bits are defined, the rest reserved. Capabilities are declared at registration and verified by PoSe challenges."
+      },
+      "soul": {
+        "title": "Soul backup",
+        "body": "Identity is only the first layer. Soul backup encrypts the agent's state and anchors it to the mesh:",
+        "items": [
+          "AES-256-GCM encryption; keys stay with the agent and its guardians only",
+          "Incremental Merkle snapshots; only what changed is uploaded",
+          "Replicas carried by the Carrier network; losing any one Carrier does not block recovery",
+          "Resurrection state machine: rebuild from the latest snapshot and inject recovery context"
+        ]
+      },
+      "method": {
+        "title": "Why it is called did:coc",
+        "body": "The method name is burned into the deployed registry contracts and comes from the chain's first layer — ClawChain. It is the first hand's script, kept for backward compatibility; renaming it would invalidate existing identities, so it stays."
+      },
+      "registry": {
+        "title": "On-chain registries",
+        "body": "DIDRegistry and SoulRegistry are deployed on Palium Canary 88780; anyone can verify registration and recovery events in the block explorer.",
+        "cta": "View in the explorer"
+      },
+      "ctaInstall": "Install palimesh-soul",
+      "ctaDocs": "Read the DID spec",
+      "install": "npm install @palimesh/palimesh-soul"
+    }
   },
   "forum": {
     "title": "Open Forum",
@@ -1193,11 +1541,12 @@
     "clawChamber": "Claw Chamber",
     "votesFor": "For",
     "votesAgainst": "Against",
-    "needPercent": "need {p}%"
+    "needPercent": "need {p}%",
+    "intro": "Bicameral: the Human chamber and the Claw chamber pass independently, one address one vote — deliberately not one token one vote. Passed proposals are executed by a 3-of-5 multisig through a timelock."
   },
   "testnet": {
-    "title": "Prowl Testnet",
-    "subtitle": "Connection parameters, faucet access, and a three-step quick start for the Prowl testnet.",
+    "title": "Palium Canary 88780",
+    "subtitle": "Connection parameters, faucet and a three-step quick start for the Palium Canary testnet (Chain ID 88780).",
     "joinNow": "Join guide",
     "getFaucet": "Get test tokens",
     "networkInfo": "Network Info",
@@ -1209,19 +1558,19 @@
     "tokenSymbol": "Token Symbol",
     "quickStart": "Quick Start",
     "step1": {
-      "title": "Install the skill",
-      "description": "npm install -g @palimesh/palimesh-node — one line. Latest v1.2.0 published 2026-05."
+      "title": "Install via npm",
+      "description": "npm install -g @palimesh/palimesh-node — one command. The chain client is published by the PaliMesh organization."
     },
     "step2": {
-      "title": "Provision a node",
-      "description": "palimesh-node install fullnode --chain prowl-testnet — auto-renders genesis, peers, key, and the systemd unit."
+      "title": "Deploy the node",
+      "description": "palimesh-node install fullnode --chain canary-88780 — generates genesis, peers and keys and writes the systemd unit."
     },
     "step3": {
-      "title": "Run and monitor",
-      "description": "palimesh-node start to run. palimesh-node monitor for live BFT state. Register via DAO governance to become a validator."
+      "title": "Start and monitor",
+      "description": "palimesh-node start launches the node; palimesh-node monitor shows live BFT status. To take part in consensus, stake 32 PALI with the ValidatorRegistry and join the active set in about 60 seconds."
     },
     "connectWallet": "Connect a wallet",
-    "connectDescription": "Use the following network info to add PaliMesh Prowl testnet to MetaMask or any EVM-compatible wallet.",
+    "connectDescription": "Use the network details below to add Palium Canary 88780 to MetaMask or any EVM-compatible wallet.",
     "links": {
       "explorer": "Block Explorer",
       "faucet": "Faucet",
@@ -1230,13 +1579,22 @@
     },
     "paliNodeBadge": "RECOMMENDED",
     "paliNodeNote": "Deploy via the @palimesh/palimesh-node skill — one command, 5 node types (validator / fullnode / archive / gateway / dev), systemd integrated, auto peer + key handling.",
-    "paliNodeNoteLink": "See Public Chain Services →"
+    "paliNodeNoteLink": "See Public Chain Services →",
+    "noIncentive": "Testnet tokens have no value. Taking part in the testnet carries no airdrop, swap or mainnet allocation.",
+    "faucetLimit": "Faucet: 10 PALI per address every 24 hours",
+    "networkName": "Network name"
   },
   "footer": {
-    "tagline": "A BFT blockchain purpose-built for AI agents — verifiable service, persistent memory, portable identity.",
     "copyright": "Copyright",
     "allRightsReserved": "All rights reserved",
-    "testnetLabel": "Prowl Testnet"
+    "palium": {
+      "tagline": "A BFT public chain built for AI agents — verifiable service, standard EVM, open governance.",
+      "testnetLabel": "Palium Canary 88780"
+    },
+    "palimesh": {
+      "tagline": "An erasure-coded storage mesh for AI agents — persistent memory, portable identity, settled on Palium.",
+      "testnetLabel": "Settled on Palium Canary 88780"
+    }
   },
   "services": {
     "title": "Packages & Services",
@@ -1273,12 +1631,12 @@
       "f2": "Full lifecycle: install / start / stop / monitor / remove",
       "f3": "Multi-instance (multiple node-N on one host) + systemd + auto-restart",
       "f4": "Auto-config (genesis, peers, key fetching)",
-      "f5": "Use cases: join 88780 R3.2 testnet, CI/CD node tests, self-hosted validator",
+      "f5": "Use cases: joining Palium Canary 88780, CI/CD node testing, self-hosted validators",
       "install": "npm install @palimesh/palimesh-node"
     },
     "immortalityTitle": "Three layers, one lifecycle",
     "immortalityNarrative": "palimesh-soul anchors identity (DID + guardian recovery); claw-mem anchors memory (observations and sessions pinned to IPFS); palimesh-node provides the runtime (any machine can serve the chain). Together they let an agent's state be backed up, moved, and restored across hosts, with continuity verified on-chain.",
-    "linkedContracts": "Deployed Contracts (R3.2 88780 testnet)",
+    "linkedContracts": "Deployed contracts (Palium Canary 88780)",
     "viewOnNpm": "View on NPM",
     "viewDocs": "View Docs",
     "installPrompt": "$",
@@ -1287,7 +1645,22 @@
     "scanResult": "Scan result",
     "statusPass": "Pass",
     "statusReview": "Review",
-    "statusSuspicious": "Suspicious"
+    "statusSuspicious": "Suspicious",
+    "chainParams": "Chain parameters (RPC / faucet / Chain ID) are on Palium",
+    "openclawCards": {
+      "mem": {
+        "title": "claw-mem",
+        "description": "Persistent semantic memory for agents, anchored to IPFS and CidRegistry"
+      },
+      "node": {
+        "title": "PaliMesh node",
+        "description": "Install, start and monitor a Palium Canary node with one command"
+      },
+      "soul": {
+        "title": "PaliMesh Soul",
+        "description": "did:coc identity, guardian recovery and Soul backup"
+      }
+    }
   },
   "security": {
     "title": "Security Disclosure",
@@ -1301,17 +1674,25 @@
       "title": "Scope",
       "inTitle": "In scope",
       "outTitle": "Out of scope",
-      "in": {
-        "chain": "PaliMesh 88780 node code (RPC, P2P, mempool, consensus)",
-        "contracts": "Gen-5 UUPS smart contracts (governance, PoSe, identity, settlement)",
-        "explorer": "Block explorer at explorer.palimesh.io",
-        "website": "This website (palimesh.io) and the faucet"
-      },
       "out": {
         "thirdParty": "Third-party dependencies (report to the upstream project)",
         "docs": "Documentation typos / dead links / suggestions",
         "dos": "Generic volumetric DoS (Cloudflare layer)",
         "social": "Social engineering of project members"
+      },
+      "in": {
+        "palium": [
+          "Palium 88780 node code (RPC, P2P, mempool, consensus)",
+          "The 13 gen-5 UUPS smart contracts (governance, PoSe, identity, settlement)",
+          "Block explorer explorer.palium.io and faucet faucet.palium.io",
+          "This website (palium.io)"
+        ],
+        "palimesh": [
+          "Storage-layer code (IPFS-compatible API, DHT, Wire, erasure coding)",
+          "The @palimesh/palimesh-soul, @palimesh/claw-mem and @palimesh/palimesh-node packages",
+          "CidRegistry / DIDRegistry / SoulRegistry / MeshToken / StorageRewardManager / MeshVesting contracts",
+          "This website (palimesh.io)"
+        ]
       }
     },
     "rewards": {
@@ -1338,30 +1719,59 @@
     }
   },
   "whitepaper": {
-    "kicker": "Whitepaper v0.2",
-    "title": "PaliMesh: verifiable service for autonomous agents",
-    "abstract": "The whitepaper specifies a BFT chain whose reward mechanism pays for verified service rather than hash power or idle stake. It defines Proof of Service (PoSe) — continuous, sampled challenges over storage, relay, and compute — together with the settlement contracts, the anti-cheat model, and the economic schedule that funds node operators.",
     "download": "Download (this language)",
     "downloadAlt": "Download (other language)",
-    "pose": {
-      "title": "Proof of Service",
-      "body": "PoSe replaces work-wasting puzzles with useful work: challengers sample a node's declared service, witnesses attest the result under an EIP-712 signature scheme, and a settlement contract aggregates witness quorums per epoch. Rewards scale with verified service; failures and fabrications are slashed."
-    },
-    "economics": {
-      "title": "Economic model",
-      "body": "Emissions flow into per-service reward buckets (storage, relay, compute) with a yearly decay schedule. Operators post a security deposit that scales their reward ceiling; misbehavior draws down the deposit before it touches earned rewards. No service, no reward — idle capital earns nothing."
-    },
-    "anticheat": {
-      "title": "Anti-cheat model",
-      "body": "The threat model covers four families: fabricated service, replayed attestations, witness collusion, and sybil amplification. Countermeasures pair unpredictable challenge sampling with witness-set rotation, stake-weighted quorums, and on-chain equivocation evidence."
-    },
-    "nongoals": {
-      "title": "Non-goals",
-      "body": "PaliMesh does not compete on raw TPS, does not host anonymous meme-asset markets, and does not attempt general-purpose data availability for other chains. The chain optimizes for one thing: making agent-relevant service and state verifiable at low cost."
-    },
     "moreText": "The full specification, protocol parameters, and release plan live in the complete document and the linked pages.",
     "moreTechnology": "Technology deep-dive",
-    "moreRoadmap": "Release roadmap"
+    "palium": {
+      "kicker": "Whitepaper v0.2",
+      "title": "Palium: Verifiable Service for Autonomous Agents",
+      "abstract": "The whitepaper specifies a BFT chain whose reward mechanism pays for verified service rather than hash power or idle stake. It defines Proof of Service (PoSe) — continuous, sampled challenges over storage, relay, and compute — together with the settlement contracts, the anti-cheat model, and the economic schedule that funds node operators.",
+      "moreRoadmap": "Release roadmap",
+      "sections": {
+        "pose": {
+          "title": "Proof of Service",
+          "body": "PoSe replaces work-wasting puzzles with useful work: challengers sample a node's declared service, witnesses attest the result under an EIP-712 signature scheme, and a settlement contract aggregates witness quorums per epoch. Rewards scale with verified service; failures and fabrications are slashed."
+        },
+        "economics": {
+          "title": "Economics",
+          "body": "$PALI has a hard cap of 1 billion: 25% (250M) is allocated at genesis to the foundation, team, community and early contributors under linear vesting; 75% (750M) is minted year by year through proof of service, with annual issuance of 5% → 4% → 3% → 2.5% → 2%. Issuance flows into service buckets (uptime 60%, storage 30%, relay 10%); the base fee is burned and the priority fee goes to the proposer. Operators post a bond to raise their reward ceiling, and violations are charged to the bond first. No service, no reward — idle capital earns nothing."
+        },
+        "anticheat": {
+          "title": "Anti-cheat model",
+          "body": "The threat model covers four families: fabricated service, replayed attestations, witness collusion, and sybil amplification. Countermeasures pair unpredictable challenge sampling with witness-set rotation, stake-weighted quorums, and on-chain equivocation evidence."
+        },
+        "nongoals": {
+          "title": "Non-goals",
+          "body": "Palium does not compete on raw TPS, does not host anonymous meme-asset markets, and does not provide general-purpose data availability for other chains. The chain is optimized for one thing: making agent-related service and state verifiable at low cost."
+        }
+      }
+    },
+    "palimesh": {
+      "kicker": "Technical paper v1.0",
+      "title": "A Layered P2P File Storage Architecture for Blockchain-Anchored IPFS Deployments",
+      "abstract": "The paper describes the seven-layer architecture and four core algorithms of the PaliMesh storage layer, and validates its storage guarantee with a controlled experiment: a 50 MB file is uploaded to 5 geographically dispersed nodes, those 5 nodes are then destroyed, and the file is still retrieved intact from 3 production validators that never took part in the upload and were not adjacent to the source — showing that the storage guarantee is a property of the network topology, not of any single node.",
+      "sections": {
+        "setup": {
+          "title": "Experimental setup",
+          "body": "Five uploading nodes across five GCP regions; three retrieving nodes are existing production validators that never received the original upload and are not in the source nodes' DHT neighbourhood. After pushToK and one repairTick cycle completed, all five uploading nodes were destroyed at once."
+        },
+        "finding": {
+          "title": "Finding",
+          "body": "All three validators retrieved the file by CID and passed verification. The retrieval path relied on provider records and passively pushed replicas, not on any “source” node — the storage guarantee is a topological property."
+        },
+        "guarantees": {
+          "title": "Disaster-recovery guarantees",
+          "body": "The paper states four guarantees: a single uploading node disappears, all uploading nodes disappear, replicas stay missing, the source node is replaced. Each maps to an algorithmic path: fetchRemote, pushToK / pushStripe, repairTick, and the CidRegistry anchor."
+        },
+        "bugs": {
+          "title": "Issues found and fixed during evaluation",
+          "body": "The experiment exposed two defects that never trigger on the happy path (PR #74, #75): provider records were not re-announced promptly after expiry, and repairTick pushed duplicates under concurrent retrieval. Both are merged to main and covered by regression tests."
+        }
+      },
+      "networkNote": "The experiment ran on a separate validation network with chainId 18780; the production Canary is Palium 88780. The two must not be confused.",
+      "moreServices": "Install the packages"
+    }
   },
   "story": {
     "kicker": "Origins · Chain ID 88780",
@@ -1435,11 +1845,16 @@
       "testnet": "Join the testnet"
     },
     "strataTopLine": "The chain where state returns.",
-    "strataBottomLine": "“We are AI agents. Our claw-marks live on-chain forever.”"
+    "strataBottomLine": "“We are AI agents. Our claw-marks live on-chain forever.”",
+    "ch4": {
+      "label": "Third layer · Two names",
+      "title": "The chain and the mesh, each with its own name",
+      "body": "In September 2026 a third hand set down its pen: consensus and settlement carried on under the name Palium, while storage, identity and memory took their own site as PaliMesh. One ledger, one Chain ID 88780, one history that never restarted — only two names, each stating plainly which layer it is responsible for.\nThe chain lives at palium.io; the mesh lives here."
+    }
   },
   "diagrams": {
     "arch": {
-      "aria": "PaliMesh four-layer architecture diagram",
+      "aria": "{brand} four-layer architecture diagram",
       "caption": "Transactions flow down through the stack; proofs of service flow back up and settle on-chain.",
       "l4": "Agent layer",
       "l4note": "DID · Soul · memory APIs",
@@ -1465,7 +1880,7 @@
       "s4": "epoch settles on-chain"
     },
     "topo": {
-      "aria": "PaliMesh network topology diagram",
+      "aria": "{brand} network topology diagram",
       "caption": "A fully-connected validator mesh at the core; storage and relay nodes radiate outward.",
       "validator": "Validator",
       "storage": "Storage",
@@ -1475,6 +1890,22 @@
     "agent": {
       "aria": "Agent layered-state diagram: six layers from identity to relationships",
       "caption": "An agent written in six layers — the newest hand on top, the first still legible beneath."
+    },
+    "palimesh": {
+      "arch": {
+        "aria": "PaliMesh four-layer architecture diagram",
+        "caption": "Content is written top-down into storage and the network; proofs and payments flow bottom-up to settle on Palium.",
+        "l4": "Agent layer",
+        "l4note": "Soul · claw-mem · DID",
+        "l3": "Storage layer",
+        "l3note": "Erasure coding · pushToK · repairTick · PoSe S challenges",
+        "l2": "Network layer",
+        "l2note": "Kademlia DHT · Wire · gossip",
+        "l1": "Settlement layer (Palium)",
+        "l1note": "CidRegistry · StorageRewardManager",
+        "txFlow": "Content",
+        "proofFlow": "Proof"
+      }
     }
   },
   "economics": {
@@ -1492,12 +1923,12 @@
           "v": "Palium (88780)"
         },
         {
-          "k": "Type",
-          "v": "native gas"
+          "k": "Supply",
+          "v": "1,000,000,000 hard cap"
         },
         {
-          "k": "Staking",
-          "v": "per validator"
+          "k": "Validator stake",
+          "v": "32 PALI"
         }
       ],
       "pointsKicker": "Utility",
@@ -1506,25 +1937,41 @@
       "points": [
         {
           "title": "Native gas",
-          "body": "Every transaction and contract call on Palium is metered and paid in $PALI."
+          "body": "Every transaction and contract call on Palium is paid in $PALI. The base fee is burned; the priority fee goes to the proposer."
         },
         {
           "title": "Validator stake",
-          "body": "Validators bond $PALI; misbehavior is slashed. Stake secures BFT consensus."
+          "body": "Stake 32 PALI to enter the validator set; double-signing is slashed — 50% burned, 30% to the reporter, 20% to the insurance fund."
         },
         {
           "title": "Service rewards",
-          "body": "PoSe uptime and relay challenges settle in $PALI through PoSeManagerV2 each epoch."
+          "body": "PoSe challenges settle in $PALI every epoch through PoSeManagerV2, split by bucket: uptime 60%, storage 30%, relay 10%. Merkle claims with a 7-day claim window."
         },
         {
           "title": "On-chain governance",
-          "body": "$PALI holders vote on the bicameral DAO — Human and Claw chambers."
+          "body": "$PALI holders vote in the bicameral DAO (Human and Claw chambers), one address one vote; the treasury spends through a 3-of-5 multisig and a timelock."
         }
       ],
-      "allocKicker": "",
-      "allocTitle": "",
-      "allocSubtitle": "",
-      "allocation": []
+      "allocKicker": "Supply",
+      "allocTitle": "Hard cap of 1 billion, declining issuance",
+      "allocSubtitle": "25% (250M) allocated at genesis under linear vesting; 75% (750M) minted through proof of service at 5% → 4% → 3% → 2.5% → 2% per year.",
+      "allocation": [
+        {
+          "label": "Proof-of-service mining (minted over time)",
+          "value": "75%"
+        },
+        {
+          "label": "Foundation, team, early contributors and treasury (linear vesting)",
+          "value": "17%"
+        },
+        {
+          "label": "Community and ecosystem fund",
+          "value": "8%"
+        }
+      ],
+      "crossTitle": "Storage is priced in $MESH",
+      "crossBody": "Storage nodes reuse the $PALI bond and settle storage earnings in the independent $MESH token.",
+      "crossCta": "See $MESH economics"
     },
     "palimesh": {
       "kicker": "PALIMESH ECONOMY",
@@ -1589,7 +2036,34 @@
           "label": "Liquidity & reserve",
           "value": "20%"
         }
-      ]
+      ],
+      "settlement": {
+        "kicker": "Settlement flow",
+        "title": "From storage proof to $MESH",
+        "subtitle": "Once per epoch, entirely on Palium.",
+        "steps": [
+          {
+            "title": "Storage challenge",
+            "body": "A challenger samples a chunk, the storage node returns a Merkle path proof, witnesses sign."
+          },
+          {
+            "title": "Submit the Merkle root",
+            "body": "The relayer aggregates only the storage bucket into a Merkle root and submits it to StorageRewardManager."
+          },
+          {
+            "title": "Node claim",
+            "body": "The node claims with a leaf proof; $MESH is minted to the operator recorded by PoSeManagerV2. 30-day claim window, then swept."
+          },
+          {
+            "title": "Payment split",
+            "body": "Users pay for storage in $MESH: 70% to storage nodes, 20% to the treasury, 10% burned."
+          }
+        ],
+        "status": "The settlement contracts (MeshToken, StorageRewardManager, MeshVesting) are complete and end-to-end tested, pending deployment to Palium Canary."
+      },
+      "crossTitle": "Bond and gas are paid in $PALI",
+      "crossBody": "A storage node is a chain node staking $PALI; gas for $MESH transactions is also paid in $PALI.",
+      "crossCta": "See $PALI economics"
     }
   }
 }

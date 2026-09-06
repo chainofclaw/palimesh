@@ -32,6 +32,7 @@ export default function GovernancePage() {
         <div>
           <h1 className="text-4xl font-display font-bold">{t('title')}</h1>
           <p className="text-text-secondary mt-2">{t('subtitle')}</p>
+          <p className="text-text-secondary text-sm max-w-2xl mt-3">{t('intro')}</p>
         </div>
         {isConnected && (
           <Link

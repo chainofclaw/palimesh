@@ -5,6 +5,7 @@ import { rpcCall } from '@/lib/rpc'
 import Link from 'next/link'
 import { useLocale, useTranslations } from 'next-intl'
 import { PageHero, AntiqueDivider } from '@/components/shared/Manuscript'
+import { site } from '@/config/site'
 import { ConstellationInk } from '@/components/ink/InkArt'
 import { useEffect, useState } from 'react'
 
@@ -493,7 +494,7 @@ export default function NetworkPage() {
                 {t('recentBlocks.title')}
               </h2>
               <a
-                href="https://explorer.palium.io"
+                href={site.chain.explorer}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="group inline-flex items-center gap-2 font-display text-accent-cyan hover:text-accent-blue transition-colors"
@@ -533,7 +534,7 @@ export default function NetworkPage() {
                       <tr key={block.number} className="group hover:bg-accent-cyan/5 transition-colors duration-300">
                         <td className="px-6 py-4 font-display text-sm">
                           <a
-                            href={`https://explorer.palium.io/block/${block.number}`}
+                            href={`${site.chain.explorer}/block/${block.number}`}
                             target="_blank"
                             rel="noopener noreferrer"
                             className="text-accent-cyan hover:text-accent-blue transition-colors"
@@ -573,7 +574,7 @@ export default function NetworkPage() {
                 <QuickLink
                   title={t('quickLinks.explorer.title')}
                   description={t('quickLinks.explorer.description')}
-                  href="https://explorer.palium.io"
+                  href={site.chain.explorer}
                   external
                 />
                 <QuickLink

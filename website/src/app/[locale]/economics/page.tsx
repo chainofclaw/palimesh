@@ -1,19 +1,23 @@
 'use client'
 
-import { useTranslations } from 'next-intl'
-import { site } from '@/config/site'
+import { useLocale, useTranslations } from 'next-intl'
+import { site, crossSiteUrl } from '@/config/site'
 import { PageHero, AntiqueDivider, SectionHead } from '@/components/shared/Manuscript'
 import { SealInk } from '@/components/ink/InkArt'
 
 type Fact = { k: string; v: string }
 type Point = { title: string; body: string }
 type Alloc = { label: string; value: string }
+type SettlementStep = { title: string; body: string }
 
 export default function EconomicsPage() {
   const t = useTranslations(`economics.${site.variant}`)
   const facts = t.raw('facts') as Fact[]
   const points = t.raw('points') as Point[]
   const allocation = t.raw('allocation') as Alloc[]
+  const locale = useLocale()
+  const isPaliMesh = site.variant === 'palimesh'
+  const settlementSteps = isPaliMesh ? (t.raw('settlement.steps') as SettlementStep[]) : []
 
   return (
     <div className="relative">
@@ -77,6 +81,53 @@ export default function EconomicsPage() {
           </section>
         </>
       )}
+
+      {/* 结算流程(仅存储站) */}
+      {isPaliMesh && (
+        <>
+          <AntiqueDivider />
+          <section className="mb-16">
+            <div className="container mx-auto px-4 max-w-5xl">
+              <SectionHead
+                kicker={t('settlement.kicker')}
+                title={t('settlement.title')}
+                subtitle={t('settlement.subtitle')}
+              />
+              <ol className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+                {settlementSteps.map((s, i) => (
+                  <li key={i} className="vellum-card p-6 h-full">
+                    <div className="font-mono text-xs text-accent-purple/70 mb-2">
+                      {String(i + 1).padStart(2, '0')}
+                    </div>
+                    <h3 className="font-display font-semibold text-lg mb-2">{s.title}</h3>
+                    <p className="text-sm text-text-secondary leading-relaxed">{s.body}</p>
+                  </li>
+                ))}
+              </ol>
+              <p className="text-text-muted text-sm text-center mt-8">{t('settlement.status')}</p>
+            </div>
+          </section>
+        </>
+      )}
+
+      {/* 跨站经济卡 */}
+      <AntiqueDivider />
+      <section className="mb-20">
+        <div className="container mx-auto px-4 max-w-3xl">
+          <div className="sheet folio-card p-7 md:p-8">
+            <h3 className="font-display font-semibold text-xl mb-3">{t('crossTitle')}</h3>
+            <p className="text-sm text-text-secondary leading-relaxed mb-5">{t('crossBody')}</p>
+            <a
+              href={crossSiteUrl(locale, '/economics')}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="ink-button text-sm"
+            >
+              {t('crossCta')}
+            </a>
+          </div>
+        </div>
+      </section>
     </div>
   )
 }
