@@ -11,12 +11,14 @@
 #   PALI_WEBSITE_SSH_KEY default ~/.ssh/id_rsa
 #   PALI_WEBSITE_REMOTE_DIR default /opt/coc
 #   PALI_WEBSITE_REF    default origin/main
+#   PALI_WEBSITE_INSTALL=1  依赖有变化时才设(npm install 作用于 /opt/coc 根 node_modules,与验证者进程共用,默认跳过)
 set -euo pipefail
 
 HOST="${PALI_WEBSITE_HOST:-root@199.192.16.79}"
 KEY="${PALI_WEBSITE_SSH_KEY:-$HOME/.ssh/id_rsa}"
 REMOTE="${PALI_WEBSITE_REMOTE_DIR:-/opt/coc}"
 REF="${PALI_WEBSITE_REF:-origin/main}"
+INSTALL="${PALI_WEBSITE_INSTALL:-0}"
 
 if [[ ! -f "$KEY" ]]; then
   echo "SSH key not found: $KEY (set PALI_WEBSITE_SSH_KEY)" >&2
@@ -24,14 +26,15 @@ if [[ ! -f "$KEY" ]]; then
 fi
 
 echo "==> $HOST: checkout $REF -- website, build both variants, restart both units"
-ssh -i "$KEY" -o StrictHostKeyChecking=accept-new "$HOST" bash -s "$REMOTE" "$REF" <<'REMOTE'
+ssh -i "$KEY" -o StrictHostKeyChecking=accept-new "$HOST" bash -s "$REMOTE" "$REF" "$INSTALL" <<'REMOTE'
 set -euo pipefail
-REMOTE_DIR="$1"; REF="$2"
+REMOTE_DIR="$1"; REF="$2"; INSTALL="$3"
 cd "$REMOTE_DIR"
-git fetch origin --quiet
+# 服务器 origin 的 fetch refspec 只含 main;非 main 的 ref 先显式 fetch
+case "$REF" in origin/main) git fetch origin main --quiet ;; origin/*) git fetch origin "${REF#origin/}" --quiet; REF=FETCH_HEAD ;; esac
 git checkout "$REF" -- website            # 只动 website/,不动节点代码
 cd website
-npm install --no-audit --no-fund
+if [[ "$INSTALL" == "1" ]]; then npm install --no-audit --no-fund; else echo "(skip npm install; set PALI_WEBSITE_INSTALL=1 when deps change)"; fi
 npm run build                             # check:i18n → build:palium → build:palimesh
 for unit in palimesh-website palium-website; do
   if systemctl list-unit-files | grep -q "^${unit}.service"; then
