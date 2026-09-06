@@ -28,6 +28,8 @@ import { PersistentStateManager } from "./storage/persistent-state-manager.ts"
 import { ValidatorGovernance } from "./validator-governance.ts"
 import type { ValidatorInfo } from "./validator-governance.ts"
 import { createLogger } from "./logger.ts"
+import { ValidatorSetSchedule } from "./validator-set-schedule.ts"
+import { join } from "node:path"
 
 const log = createLogger("persistent-engine")
 
@@ -115,6 +117,11 @@ export class PersistentChainEngine {
     this.applyingBlock = false
   }
   private validatorAddressMap: Map<string, string> = new Map()
+  // Epoch-fencing (2026-09-06): height-segmented validator membership, so
+  // historical blocks are verified against the set of THEIR era rather than
+  // the current one. Loaded + seeded in init(); null until then (legacy
+  // current-set behaviour applies while null).
+  private setSchedule: ValidatorSetSchedule | null = null
 
   constructor(cfg: PersistentChainEngineConfig, evm: EvmChain) {
     this.cfg = cfg
@@ -189,6 +196,18 @@ export class PersistentChainEngine {
 
     // Load latest block first to decide whether this is a genesis boot or a restart.
     const latestBlock = await this.blockIndex.getLatestBlock()
+
+    // Epoch-fencing: load the persisted era schedule and seed the config set
+    // as the era starting at tip+1. record() no-ops when membership is
+    // unchanged, so restarts don't spam entries; on a genesis boot this seeds
+    // era 1 (full history covered). History below the first recorded era is
+    // an unknown era — verifyBlockChain skips the membership check there
+    // (hash + proposer signature still verified).
+    this.setSchedule = ValidatorSetSchedule.load(join(this.cfg.dataDir, "validator-set-schedule.json"))
+    if (this.cfg.validators.length > 0) {
+      const tipHeight = latestBlock ? BigInt(latestBlock.number) : 0n
+      this.setSchedule.record(tipHeight + 1n, this.cfg.validators)
+    }
 
     // Prefund accounts are a genesis-only concern. On a restart with a populated
     // LevelDB, writing genesis balances over a persisted trie corrupts internal
@@ -622,6 +641,13 @@ export class PersistentChainEngine {
    */
   updateProposerSet(ids: string[]): void {
     this.cfg.validators = [...ids]
+    // Epoch-fencing: record the new membership as an era starting at the
+    // next height. Async height read is fire-and-forget — a set change lands
+    // between BFT rounds (seconds before the next block), and record() is a
+    // no-op for unchanged membership anyway.
+    void this.getHeight()
+      .then((h) => this.setSchedule?.record(h + 1n, ids))
+      .catch(() => {/* schedule is best-effort; verification falls back safely */})
     // If governance drives proposer selection, keep it consistent too: deactivate
     // any active validator not in the new core set. (Promotion on the governance
     // path would additionally need reactivation — not required for the static
@@ -1191,11 +1217,32 @@ export class PersistentChainEngine {
     // including the H15 watchdog override path that elects a fallback proposer
     // when the round-robin slot is offline. Reject mismatched proposer only
     // for non-BFT (gossip-only) blocks.
+    // Epoch-fencing (2026-09-06): the exact rotation-slot match stays the fast
+    // path, but across validator-set changes the historic rotation cannot be
+    // recomputed from the current set (same wedge class as verifyBlockChain's
+    // membership check — a catch-up node re-applying peer history spanning a
+    // rotation would throw here forever). Fall back to era MEMBERSHIP from the
+    // set schedule: the proposer must have been a validator of that block's
+    // era (±1 neighbouring era for cross-node apply skew). Heights predating
+    // the first recorded era are unknown — tolerated, like snap-sync import.
+    // Signature verification below and BFT finality still gate acceptance;
+    // an in-era out-of-turn proposal can never gather quorum.
     if (
       !block.bftFinalized &&
       this.expectedProposer(block.number).toLowerCase() !== block.proposer.toLowerCase()
     ) {
-      throw new Error("invalid block proposer")
+      const era = this.setSchedule ? this.setSchedule.allowedAt(BigInt(block.number)) : undefined
+      if (era === undefined) {
+        throw new Error("invalid block proposer")
+      }
+      if (era !== null && !era.has(block.proposer.toLowerCase())) {
+        throw new Error("invalid block proposer")
+      }
+      log.info("applyBlock: rotation-slot mismatch tolerated via era membership", {
+        height: String(block.number),
+        proposer: block.proposer,
+        eraKnown: era !== null,
+      })
     }
 
     // Timestamp validation (skip for locally proposed blocks — we set them ourselves)
@@ -1874,16 +1921,37 @@ export class PersistentChainEngine {
       // Verify proposer is in validator set (skip for SnapSync — historical validators may differ).
       // Phase X1.6 (2026-05-08): case-insensitive — block.proposer arrives in mixed
       // case from remote signers but `validators` may be lowercased by config.
+      // Epoch-fencing (2026-09-06): membership is checked against the ERA of the
+      // block's height, not the current set — after a core-set rotation, a
+      // catch-up node validating history spanning the change would otherwise
+      // reject blocks legitimately proposed by since-demoted validators and
+      // wedge below the tip (observed: val6 stuck on v5-era segments). Heights
+      // predating the first recorded era are unknown (schedule adopted
+      // mid-chain / fresh node): the membership check is skipped there — hash
+      // and proposer signature above/below still apply, matching the snap-sync
+      // import trust model.
       if (!skipProposerCheck && validators.length > 0) {
         const proposerLc = block.proposer.toLowerCase()
-        const matched = validators.some((v) => v.toLowerCase() === proposerLc)
-        if (!matched) {
-          log.warn("verifyBlockChain failed: proposer not in validator set", {
+        const era = this.setSchedule ? this.setSchedule.allowedAt(BigInt(block.number)) : undefined
+        if (era === null) {
+          log.info("verifyBlockChain: pre-schedule era — proposer membership check skipped", {
             index: i,
             number: String(block.number),
             proposer: block.proposer,
           })
-          return false
+        } else {
+          const matched = era !== undefined
+            ? era.has(proposerLc)
+            : validators.some((v) => v.toLowerCase() === proposerLc)
+          if (!matched) {
+            log.warn("verifyBlockChain failed: proposer not in validator set", {
+              index: i,
+              number: String(block.number),
+              proposer: block.proposer,
+              eraChecked: era !== undefined,
+            })
+            return false
+          }
         }
       }
 
