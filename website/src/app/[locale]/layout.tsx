@@ -11,7 +11,7 @@ import { WalletConnect } from '@/components/identity/WalletConnect'
 import { MobileMenu } from '@/components/shared/MobileMenu'
 import { Link } from '@/i18n/routing'
 import { QuillInk } from '@/components/ink/InkArt'
-import { site } from '@/config/site'
+import { site, otherSite, crossSiteUrl, type FooterItem } from '@/config/site'
 import './globals.css'
 
 const cormorant = Cormorant_Garamond({
@@ -44,9 +44,18 @@ const jetbrains = JetBrains_Mono({
 })
 
 export const metadata: Metadata = {
-  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || site.apex),
+  metadataBase: new URL(site.apex),
   title: site.title,
   description: site.description,
+  icons: { icon: site.favicon },
+  openGraph: {
+    title: site.title,
+    description: site.description,
+    url: site.apex,
+    siteName: site.brand,
+    images: [{ url: site.ogImage, width: 1200, height: 630, alt: site.brand }],
+  },
+  twitter: { card: 'summary_large_image', title: site.title, description: site.description, images: [site.ogImage] },
 }
 
 export default async function LocaleLayout({
@@ -68,6 +77,18 @@ export default async function LocaleLayout({
   const tCommon = await getTranslations('common')
 
   const navItems = site.navKeys.map((k) => ({ href: `/${k}`, label: tCommon(k) }))
+  const mobileItems = [
+    { href: '/', label: tCommon('home') },
+    ...navItems,
+    ...site.mobileExtra.map((k) => ({ href: `/${k}`, label: tCommon(k) })),
+    { href: crossSiteUrl(locale), label: tCommon('crossSite', { other: otherSite.brand }), external: true },
+  ]
+
+  const footerHref = (item: FooterItem): { href: string; external: boolean; label: string } => {
+    if (item.kind === 'route') return { href: `/${item.key}`, external: false, label: tCommon(item.labelKey ?? item.key) }
+    if (item.kind === 'url') return { href: item.url, external: true, label: item.label ?? tCommon(item.key) }
+    return { href: crossSiteUrl(locale, item.path), external: true, label: tCommon(item.key) }
+  }
 
   return (
     <html lang={locale} className={`${cormorant.variable} ${literata.variable} ${notoSerifSc.variable} ${jetbrains.variable}`}>
@@ -109,14 +130,7 @@ export default async function LocaleLayout({
                       <WalletConnect />
                     </div>
                     <LanguageSwitcher />
-                    <MobileMenu items={[
-                      { href: '/', label: tCommon('home') },
-                      ...navItems,
-                      { href: '/roadmap', label: tCommon('roadmap') },
-                      { href: '/whitepaper', label: tCommon('whitepaper') },
-                      { href: '/forum', label: tCommon('forum') },
-                      { href: '/identity', label: tCommon('identity') },
-                    ]} />
+                    <MobileMenu items={mobileItems} />
                   </div>
                 </div>
               </div>
@@ -128,7 +142,7 @@ export default async function LocaleLayout({
             {/* Footer */}
             <footer className="codex-footer relative border-t border-line grain">
               <div className="container mx-auto px-4 py-12">
-                <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
+                <div className="grid grid-cols-1 md:grid-cols-5 gap-8 mb-8">
                   {/* Brand Section */}
                   <div className="md:col-span-1">
                     <div className="flex items-center gap-2.5 mb-4">
@@ -137,45 +151,25 @@ export default async function LocaleLayout({
                       <QuillInk size={18} className="text-text-muted" />
                     </div>
                     <p className="text-text-secondary text-sm leading-relaxed">
-                      {tFooter('tagline')}
+                      {tFooter(`${site.variant}.tagline`)}
                     </p>
                   </div>
 
-                  {/* Protocol */}
-                  <div>
-                    <h4 className="font-display font-semibold mb-4 text-text-primary">{tCommon('protocol')}</h4>
-                    <ul className="space-y-2">
-                      <FooterLink href="/story">{tCommon('story')}</FooterLink>
-                      <FooterLink href="/technology">{tCommon('technology')}</FooterLink>
-                      <FooterLink href="/network">{tCommon('network')}</FooterLink>
-                      <FooterLink href="/roadmap">{tCommon('roadmap')}</FooterLink>
-                      <FooterLink href="/whitepaper">{tCommon('whitepaper')}</FooterLink>
-                      <FooterLink href="/security">{tCommon('security')}</FooterLink>
-                    </ul>
-                  </div>
-
-                  {/* Build */}
-                  <div>
-                    <h4 className="font-display font-semibold mb-4 text-text-primary">{tCommon('build')}</h4>
-                    <ul className="space-y-2">
-                      <FooterLink href="/docs">{tCommon('docs')}</FooterLink>
-                      <FooterLink href="/testnet">{tCommon('testnet')}</FooterLink>
-                      <FooterLink href={site.chain.explorer} external>{tCommon('explorer')}</FooterLink>
-                      <FooterLink href={site.chain.faucet} external>{tCommon('faucet')}</FooterLink>
-                      <FooterLink href="https://github.com/palimesh/palimesh" external>{tCommon('github')}</FooterLink>
-                    </ul>
-                  </div>
-
-                  {/* Community */}
-                  <div>
-                    <h4 className="font-display font-semibold mb-4 text-text-primary">{tCommon('community')}</h4>
-                    <ul className="space-y-2">
-                      <FooterLink href="/governance">{tCommon('governance')}</FooterLink>
-                      <FooterLink href="/forum">{tCommon('forum')}</FooterLink>
-                      <FooterLink href="/identity">{tCommon('identity')}</FooterLink>
-                      <FooterLink href="https://x.com/parallelmeshes" external>X (Twitter)</FooterLink>
-                    </ul>
-                  </div>
+                  {site.footer.map((col) => (
+                    <div key={col.titleKey}>
+                      <h4 className="font-display font-semibold mb-4 text-text-primary">{tCommon(col.titleKey)}</h4>
+                      <ul className="space-y-2">
+                        {col.items.map((item) => {
+                          const { href, external, label } = footerHref(item)
+                          return (
+                            <FooterLink key={`${col.titleKey}-${item.key}`} href={href} external={external}>
+                              {label}
+                            </FooterLink>
+                          )
+                        })}
+                      </ul>
+                    </div>
+                  ))}
                 </div>
 
                 {/* Bottom Bar */}
@@ -184,9 +178,12 @@ export default async function LocaleLayout({
                     <p className="text-text-muted text-sm">
                       &copy; 2026 {site.brand}. {tFooter('allRightsReserved')}.
                     </p>
-                    <div className="flex items-center gap-3 text-text-muted text-sm font-mono">
+                    <div className="flex items-center gap-4 text-text-muted text-sm font-mono">
+                      <a href={crossSiteUrl(locale)} className="hover:text-accent-blue transition-colors">
+                        {tCommon('crossSite', { other: otherSite.brand })} ↗
+                      </a>
                       <div className="w-2 h-2 bg-accent-cyan rounded-full animate-pulse" />
-                      <span>{tFooter('testnetLabel')}</span>
+                      <span>{tFooter(`${site.variant}.testnetLabel`)}</span>
                     </div>
                   </div>
                 </div>

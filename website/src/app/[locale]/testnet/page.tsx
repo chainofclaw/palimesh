@@ -3,6 +3,7 @@
 import { useTranslations } from 'next-intl'
 import { AntiqueDivider } from '@/components/shared/Manuscript'
 import { Link } from '@/i18n/routing'
+import { site } from '@/config/site'
 import { TopologyDiagram } from '@/components/diagrams/TopologyDiagram'
 
 export default function TestnetPage() {
@@ -31,7 +32,7 @@ export default function TestnetPage() {
                 {t('joinNow')}
               </Link>
               <a
-                href="https://faucet.palium.io"
+                href={site.chain.faucet}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="px-8 py-3 rounded-lg border border-accent-cyan/30 text-accent-cyan font-display font-semibold hover:bg-accent-cyan/10 transition-all"
@@ -39,6 +40,10 @@ export default function TestnetPage() {
                 {t('getFaucet')}
               </a>
             </div>
+
+            <p className="mt-8 inline-block rounded-lg border border-text-muted/20 px-4 py-2 text-text-muted text-sm">
+              {t('noIncentive')}
+            </p>
           </div>
         </div>
 
@@ -56,13 +61,14 @@ export default function TestnetPage() {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            <InfoCard label={t('chainId')} value="88780 (0x15acc)" />
-            <InfoCard label={t('rpcEndpoint')} value="https://rpc.palium.io" mono />
-            <InfoCard label={t('wsEndpoint')} value="wss://rpc.palium.io/ws" mono />
-            <InfoCard label={t('blockTime')} value="~2.1s" />
+            <InfoCard label={t('chainId')} value={`${site.chain.id} (0x${site.chain.id.toString(16)})`} />
+            <InfoCard label={t('rpcEndpoint')} value={site.chain.rpc} mono />
+            <InfoCard label={t('wsEndpoint')} value={site.chain.ws} mono />
+            <InfoCard label={t('blockTime')} value="~1s" />
             <InfoCard label={t('consensus')} value="BFT + PoSe" />
-            <InfoCard label={t('tokenSymbol')} value="PALI" />
+            <InfoCard label={t('tokenSymbol')} value={site.chain.symbol} />
           </div>
+          <p className="text-text-muted text-sm text-center mt-6">{t('faucetLimit')}</p>
           <TopologyDiagram
             labels={{
               aria: td('topo.aria'), caption: td('topo.caption'),
@@ -130,11 +136,11 @@ export default function TestnetPage() {
               <p className="text-text-secondary font-body mb-8">{t('connectDescription')}</p>
 
               <div className="bg-bg-primary/50 rounded-lg p-6 text-left font-mono text-sm text-text-secondary space-y-2">
-                <p><span className="text-accent-cyan">Network Name:</span> PaliMesh Canary 88780</p>
-                <p><span className="text-accent-cyan">RPC URL:</span> https://rpc.palium.io</p>
-                <p><span className="text-accent-cyan">Chain ID:</span> 88780</p>
-                <p><span className="text-accent-cyan">Currency Symbol:</span> PALI</p>
-                <p><span className="text-accent-cyan">Explorer:</span> https://explorer.palium.io</p>
+                <p><span className="text-accent-cyan">Network Name:</span> {site.chain.networkName}</p>
+                <p><span className="text-accent-cyan">RPC URL:</span> {site.chain.rpc}</p>
+                <p><span className="text-accent-cyan">Chain ID:</span> {site.chain.id}</p>
+                <p><span className="text-accent-cyan">Currency Symbol:</span> {site.chain.symbol}</p>
+                <p><span className="text-accent-cyan">Explorer:</span> {site.chain.explorer}</p>
               </div>
             </div>
           </div>
@@ -145,13 +151,13 @@ export default function TestnetPage() {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             <QuickLink
               title={t('links.explorer')}
-              href="https://explorer.palium.io"
+              href={site.chain.explorer}
               external
               icon="search"
             />
             <QuickLink
               title={t('links.faucet')}
-              href="https://faucet.palium.io"
+              href={site.chain.faucet}
               external
               icon="droplet"
             />
@@ -162,7 +168,7 @@ export default function TestnetPage() {
             />
             <QuickLink
               title={t('links.github')}
-              href="https://github.com/palimesh/palimesh"
+              href={site.github}
               external
               icon="code"
             />

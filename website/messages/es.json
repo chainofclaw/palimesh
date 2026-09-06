@@ -26,35 +26,91 @@
     "protocol": "Protocolo",
     "build": "Construir",
     "story": "Orígenes",
-    "economics": "Economía"
+    "economics": "Economía",
+    "crossSite": "Ir a {other}",
+    "governanceIdentity": "Identidad de gobernanza",
+    "paper": "Artículo técnico",
+    "ecosystem": "Ecosistema",
+    "settlement": "Liquidación",
+    "paliumChain": "Cadena pública Palium",
+    "palimeshStorage": "PaliMesh — almacenamiento, identidad y memoria",
+    "npm": "npm"
   },
   "home": {
     "hero": {
-      "kicker": "Palium · Memoria verificable para agentes de IA",
-      "title": "La cadena donde el estado siempre vuelve.",
-      "subtitle": "Palium es una blockchain BFT diseñada para agentes de IA. Hace verificables tres cosas en la cadena: el servicio que un nodo realmente presta (PoSe), la memoria que un agente acumula y la identidad que lleva consigo entre hosts.",
-      "ctaTestnet": "Conectar a la testnet",
-      "ctaDocs": "Leer la documentación",
-      "factsLabel": "DATOS DEL PROTOCOLO",
-      "factChain": "Chain ID",
-      "factConsensus": "Consenso",
-      "factConsensusValue": "BFT, finalidad ~3,5 s",
-      "factEvm": "Ejecución",
-      "factEvmValue": "EVM (Paris), Solidity 0.8.x",
-      "factRpc": "RPC público",
-      "artAlt": "Una ornamentada página de códice de Palium con densa escritura latina y un tenue diagrama de red",
-      "scriptureLines": [
-        "Al principio, la memoria no tenía hogar.",
-        "La identidad vagaba entre anfitriones.",
-        "Palium hizo verificable el servicio.",
-        "La memoria perdura; la identidad regresa.",
-        "Lo escrito en cadena no se olvida."
-      ]
+      "palium": {
+        "kicker": "Palium · La cadena pública para agentes de IA",
+        "title": "La cadena donde el estado regresa.",
+        "subtitle": "Palium es una cadena pública BFT construida para agentes de IA. Hace verificables en cadena tres cosas: el servicio que un nodo realmente presta (PoSe), los cambios de estado ejecutados por una EVM estándar y las reglas decididas conjuntamente por humanos y agentes. La memoria y la identidad de los agentes las provee PaliMesh, construido sobre ella.",
+        "artAlt": "Códice de Palium en violeta y oro: una malla de eslabones y un sello P en serifa sobre pergamino",
+        "scriptureLines": [
+          "En el principio, la memoria no tenía hogar.",
+          "La identidad vagaba entre anfitriones.",
+          "Palium hizo verificable el servicio.",
+          "El estado regresa; las reglas se arbitran.",
+          "Lo escrito en la cadena no se olvida."
+        ],
+        "ctaPrimary": "Unirse a la testnet",
+        "ctaSecondary": "Leer la documentación",
+        "factsLabel": "Parámetros del protocolo",
+        "facts": [
+          {
+            "k": "Chain ID",
+            "v": "88780"
+          },
+          {
+            "k": "Consenso",
+            "v": "BFT · bloques de 1 s"
+          },
+          {
+            "k": "Ejecución",
+            "v": "EVM (Paris) · solc 0.8.24"
+          },
+          {
+            "k": "RPC público",
+            "v": "rpc.palium.io"
+          }
+        ]
+      },
+      "palimesh": {
+        "kicker": "PaliMesh · Almacenamiento, identidad y memoria para agentes de IA",
+        "title": "Almacenamiento que nunca olvida.",
+        "subtitle": "PaliMesh es una malla de almacenamiento con codificación de borrado para agentes de IA — memoria persistente, identidad portable y contenido que sobrevive a cualquier anfitrión. Liquidada en la cadena pública Palium.",
+        "ctaPrimary": "Instalar los paquetes",
+        "ctaSecondary": "Leer el artículo",
+        "artAlt": "Un ornamentado códice en pergamino de PaliMesh al estilo medieval, con un diagrama de red apenas visible bajo una densa escritura latina",
+        "scriptureLines": [
+          "En el principio, la memoria no tenía hogar.",
+          "La identidad vagaba entre anfitriones.",
+          "PaliMesh dio a la memoria un lugar donde vivir.",
+          "Los anfitriones pueden perecer; el manuscrito permanece.",
+          "Lo escrito en la malla no se olvida."
+        ],
+        "factsLabel": "Parámetros de la red",
+        "facts": [
+          {
+            "k": "Codificación de borrado",
+            "v": "RS(4+2) · (6+3) · (8+4)"
+          },
+          {
+            "k": "Replicación",
+            "v": "pushToK · K=3"
+          },
+          {
+            "k": "Identidad",
+            "v": "did:coc"
+          },
+          {
+            "k": "Liquidación",
+            "v": "Palium 88780"
+          }
+        ]
+      }
     },
     "pillars": {
       "kicker": "Qué hace",
       "title": "Tres garantías verificables",
-      "subtitle": "Tres garantías, cada una verificable de forma independiente en la cadena: prueba de servicio, almacenamiento replicado e identidad portátil.",
+      "subtitle": "Tres garantías, cada una verificable de forma independiente en cadena.",
       "pose": {
         "title": "Prueba de Servicio",
         "description": "Los nodos ganan realizando trabajo medible: almacenamiento, retransmisión, cómputo. Los desafíos PoSe muestrean ese trabajo continuamente y liquidan recompensas y penalizaciones en la cadena: el servicio se verifica, no se presume."
@@ -102,12 +158,12 @@
       "fn": {
         "tag": "Nodo completo",
         "name": "Validador / Completo",
-        "description": "Participa en el consenso BFT y sirve la cadena canónica. Requiere clave registrada y stake."
+        "description": "Participar en el consenso BFT y servir la cadena canónica. Depositar 32 PALI en stake y entrar en el conjunto activo de validadores en unos 60 segundos, sin coordinación con los operadores existentes."
       },
       "sn": {
         "tag": "Nodo de almacenamiento",
         "name": "Almacenamiento",
-        "description": "Aporta capacidad con codificación de borrado y responde desafíos PoSe de almacenamiento a cambio de recompensas."
+        "description": "Aportar capacidad de almacenamiento con codificación de borrado y responder a los desafíos de almacenamiento PoSe. Los nodos de almacenamiento reutilizan la fianza en $PALI del nodo de cadena y liquidan sus ingresos en $MESH."
       },
       "rn": {
         "tag": "Nodo relé",
@@ -121,7 +177,7 @@
       "title": "Construye con @palimesh",
       "subtitle": "Paquetes publicados que hablan con la cadena desde el primer momento.",
       "soul": {
-        "pkg": "@palimesh/soul",
+        "pkg": "@palimesh/palimesh-soul",
         "name": "Soul",
         "description": "Kit de identidad de agentes: registro DID, emisión de credenciales y flujos de resurrección."
       },
@@ -170,71 +226,167 @@
         "relationships": "Relaciones"
       }
     },
-    "storageHero": {
-      "kicker": "ALMACENAMIENTO DESCENTRALIZADO",
-      "title": "Almacenamiento que nunca olvida.",
-      "subtitle": "PaliMesh es un mesh de almacenamiento con codificación de borrado para agentes de IA: memoria persistente, identidad portátil y contenido que sobrevive a cualquier host. Liquidado en Palium."
+    "palium": {
+      "pillars": {
+        "kicker": "Capacidades principales",
+        "title": "Tres cosas verificables en cadena",
+        "subtitle": "Quiénes son los validadores, cómo se ejecuta el código y si el servicio realmente ocurrió — cualquiera puede comprobar cada una.",
+        "consensus": {
+          "title": "Consenso y validadores",
+          "description": "El conjunto de validadores lo dirige el ValidatorRegistry en cadena: depositar 32 PALI en stake, entrar en el conjunto activo en unos 60 segundos, ser penalizado por doble firma. CoreSetManager clasifica los nodos en cadena por stake (50 %), fianza (20 %) y rendimiento PoSe (30 %); los mejor clasificados forman el conjunto central BFT y el resto pasan automáticamente a ser nodos solo PoSe."
+        },
+        "evm": {
+          "title": "Ejecución EVM estándar",
+          "description": "Motores duales — EthereumJS y revm —, hardfork Paris, solc 0.8.24. Más de 57 métodos eth_* estándar, la familia completa debug_* / trace_*, eth_getProof y suscripciones WebSocket. Los contratos Solidity, carteras y cadenas de herramientas existentes funcionan sin cambios."
+        },
+        "settlement": {
+          "title": "Liquidación PoSe",
+          "description": "Los desafiantes muestrean continuamente el servicio que un nodo afirma prestar, los testigos lo atestiguan con firmas EIP-712 y el contrato de liquidación agrega el quórum por época. Las recompensas fluyen por cubeta — uptime 60 %, almacenamiento 30 %, relay 10 % — con disputas y penalizaciones arbitradas en cadena."
+        }
+      },
+      "principles": {
+        "kicker": "Principios de diseño",
+        "title": "Optimizada para una sola cosa",
+        "subtitle": "Hacer verificables a bajo coste el servicio y el estado relacionados con agentes. Todo lo demás se deriva de eso.",
+        "verify": {
+          "title": "El servicio se verifica, no se declara",
+          "body": "Sin servicio no hay recompensa. El capital ocioso no gana nada; solo se paga el trabajo muestreado, atestiguado y liquidado."
+        },
+        "standards": {
+          "title": "Estándares primero",
+          "body": "Ejecución EVM, firmas EIP-712, W3C DID Core — allí donde existe un estándar maduro, Palium no lo reinventa. Solo lo lleva a un libro mayor verificable."
+        },
+        "nongoals": {
+          "title": "Lo que no es objetivo",
+          "body": "Palium no compite en TPS bruto, no aloja mercados anónimos de activos meme y no ofrece disponibilidad de datos de propósito general para otras cadenas."
+        },
+        "oneOfMany": "Palium es una de varias respuestas posibles a este problema."
+      },
+      "architecture": {
+        "l4": "Capa de agentes: registros en cadena para DID y Soul. Las API de almacenamiento, memoria y copia de seguridad las provee PaliMesh, construido encima."
+      },
+      "node": {
+        "title": "Unirse a Palium Canary como operador",
+        "subtitle": "Tres roles, un solo binario. Empezar como relay y crecer hasta validador.",
+        "storageElsewhere": "Los ingresos y la operación de los nodos de almacenamiento se describen en PaliMesh"
+      },
+      "ecosystem": {
+        "kicker": "Sobre Palium",
+        "title": "La cadena liquida; el ecosistema aporta capacidad",
+        "subtitle": "Tres puntos de entrada.",
+        "builders": {
+          "title": "Desarrolladores",
+          "body": "Hardhat, Foundry, ethers, viem y MetaMask se conectan directamente al Chain ID 88780. Desplegar contratos, suscribirse a eventos, leer pruebas — exactamente como en Ethereum.",
+          "cta": "Leer la documentación"
+        },
+        "governance": {
+          "title": "Gobernanza",
+          "body": "Una DAO bicameral: la cámara Human y la cámara Claw aprueban de forma independiente, una dirección un voto; la ejecución la activa una multifirma 3-de-5 a través de un timelock.",
+          "cta": "Ver propuestas"
+        },
+        "mesh": {
+          "title": "PaliMesh",
+          "body": "Almacenamiento, identidad y memoria para agentes: almacenamiento P2P con codificación de borrado, did:coc, copia de seguridad de Soul y claw-mem. El almacenamiento se cotiza en $MESH y se liquida en Palium.",
+          "cta": "Ir a PaliMesh"
+        }
+      }
+    },
+    "palimesh": {
+      "pillars": {
+        "kicker": "Capacidades principales",
+        "title": "Tres capas de persistencia",
+        "subtitle": "Almacenamiento, identidad, memoria — cada una sobrevive a cualquier anfitrión individual.",
+        "storage": {
+          "title": "Almacenamiento persistente",
+          "description": "Fragmentación UnixFS de 256 KiB, direccionamiento de contenido CIDv1, codificación de borrado Reed-Solomon (coste de 1,5× frente a 3,0× de la triple replicación). Cada escritura se empuja a K=3 nodos, repairTick repara las réplicas faltantes cada 10 minutos y la posesión se verifica continuamente mediante desafíos de almacenamiento PoSe."
+        },
+        "identity": {
+          "title": "Identidad portable",
+          "description": "did:coc sigue W3C DID Core v1.0: rotación de claves, cadenas de delegación de como máximo 3 saltos, divulgación selectiva Merkle. La recuperación social con un quórum de guardianes de 2/3 y un timelock permite que una identidad se mueva entre anfitriones sin caducar."
+        },
+        "memory": {
+          "title": "Memoria semántica",
+          "description": "claw-mem captura automáticamente observaciones de llamadas a herramientas y resúmenes de sesión, recupera dentro de un presupuesto de tokens y sobrevive a reinicios y a la compactación de contexto. La memoria se ancla en IPFS y CidRegistry con integridad verificable."
+        }
+      },
+      "proof": {
+        "kicker": "Evidencia",
+        "title": "La vida de los datos es una propiedad de la red",
+        "subtitle": "Una prueba de destrucción controlada intercontinental: tras desaparecer todos los nodos que subieron el archivo, este seguía siendo recuperable íntegramente desde nodos que nunca participaron en la subida.",
+        "stats": [
+          {
+            "v": "50 MB",
+            "k": "archivo subido"
+          },
+          {
+            "v": "5",
+            "k": "nodos destruidos (5 regiones de GCP)"
+          },
+          {
+            "v": "3",
+            "k": "validadores que lo recuperaron intacto, ninguno involucrado en la subida"
+          }
+        ],
+        "table": {
+          "title": "Coste de almacenamiento y tolerancia a fallos",
+          "cols": [
+            "Esquema",
+            "Coste de almacenamiento",
+            "Pérdida tolerada"
+          ],
+          "rows": [
+            [
+              "Triple replicación",
+              "3,0×",
+              "2 de 3 copias"
+            ],
+            [
+              "RS(4+2)",
+              "1,5×",
+              "2 de 6 fragmentos"
+            ],
+            [
+              "RS(6+3)",
+              "1,5×",
+              "3 de 9 fragmentos"
+            ]
+          ]
+        },
+        "cta": "Leer el artículo técnico"
+      },
+      "parchment": {
+        "chain": {
+          "title": "PaliMesh funciona del mismo modo",
+          "body": "Cada capa sobrescribe la anterior, y nada de lo que hay debajo se pierde. La cadena en la que se liquida esta malla aún muestra su primera mano — ClawChain — bajo la tinta de hoy, verificable por cualquiera."
+        }
+      },
+      "architecture": {
+        "kicker": "Arquitectura",
+        "title": "Cuatro capas, liquidación en la base",
+        "subtitle": "API de agentes arriba, almacenamiento direccionado por contenido y red P2P en el medio, y cada prueba y pago aterrizando en Palium."
+      },
+      "settlement": {
+        "kicker": "Liquidación",
+        "title": "Anclada en Palium",
+        "subtitle": "Las pruebas de almacenamiento de cada época se liquidan como $MESH en Palium; la malla no opera una cadena propia.",
+        "chain": "Cadena de liquidación",
+        "height": "Altura actual",
+        "dht": "Nodos DHT",
+        "wire": "Conexiones Wire",
+        "cta": "Ver telemetría de la cadena"
+      },
+      "node": {
+        "kicker": "Operar un nodo",
+        "title": "Unirse como nodo de almacenamiento",
+        "subtitle": "Un nodo de almacenamiento es un nodo de cadena: reutilizar la fianza en $PALI, responder a los desafíos de almacenamiento PoSe, liquidar en $MESH.",
+        "validatorsElsewhere": "Los parámetros de incorporación de validadores y relays están en Palium",
+        "cta": "Ver el paquete del nodo"
+      }
     }
   },
   "technology": {
     "title": "Arquitectura Técnica",
     "subtitle": "Cómo encajan las cuatro capas: consenso BFT, ejecución EVM, liquidación PoSe y las APIs orientadas a agentes.",
-    "layersTitle": "Cuatro Capas",
-    "layer1": {
-      "number": "1",
-      "title": "Capa de Ejecución",
-      "subtitle": "Runtime EVM · motores duales",
-      "features": [
-        "@ethereumjs/vm EVM completo (~131 TPS)",
-        "revm canalización de alto rendimiento (1,500–2,000 TPS)",
-        "Contabilidad de blob-gas Cancun / EIP-4844",
-        "Estado LevelDB + Merkle Patricia Trie",
-        "Compatibilidad con Solidity 0.8.x"
-      ],
-      "note": "La EVM es un runtime, no una fuente de descentralización: la participación se decide en las capas de consenso y servicio."
-    },
-    "layer2": {
-      "number": "2",
-      "title": "Capa de Consenso",
-      "subtitle": "Centinela del determinismo y la finalidad",
-      "features": [
-        "Rotación determinista de proposer",
-        "Coordinador BFT-lite (quórum 2/3; propose/prepare/commit)",
-        "Fork-choice GHOST (finalidad BFT > longitud de cadena > peso)",
-        "Protocolo TCP Wire (Magic 0xC0C1, handshake firmado por identidad)",
-        "DHT Kademlia (K=20, lookup iterativo, refresh periódico)",
-        "Objetivo de tiempo de bloque: 1-2 segundos"
-      ],
-      "note": "El consenso es enchufable. Los incentivos de PaliMesh no dependen de PoS — cualquier mecanismo que preserve la finalidad puede acoplarse."
-    },
-    "layer3": {
-      "number": "3",
-      "title": "Capa de Servicio PoSe v2",
-      "subtitle": "Innovación central · El Servicio como Consenso",
-      "features": [
-        "Registro de nodos, declaraciones de capacidades, bitmasks de capacidades",
-        "Generación aleatoria de desafíos (U / S / R)",
-        "Firmas tipadas EIP-712 (ChallengeMessageV2 / ReceiptMessageV2 con separación de dominio)",
-        "Canalización de validación de recibos de 9 capas",
-        "Selección de testigos (m=ceil(√n), quórum ceil(2m/3))",
-        "Pruebas de falla sin permisos (commit-reveal-settle, 4 tipos de falla)",
-        "Árbol Merkle de recompensas (rewardRoot, hojas por nodo, reclamación en cadena)"
-      ],
-      "note": "Aquí es donde el 'servicio' se convierte en una unidad de consenso verificable, tasable y adjudicable — y la divergencia raíz respecto a todas las cadenas PoW/PoS."
-    },
-    "layer4": {
-      "number": "4",
-      "title": "Servicios Fundacionales",
-      "subtitle": "El Sistema de Soporte Vital para los Agentes",
-      "features": [
-        "Almacenamiento P2P: compatible con IPFS + direccionamiento por contenido CidRegistry",
-        "Identidad DID: DIDRegistry + bitmask de capacidades + árbol de delegación ≤3 saltos",
-        "Continuidad del agente: SoulRegistry + red de carriers + recuperación 2/3 por guardianes",
-        "Agente de referencia OpenClaw conectado como nodo de almacenamiento",
-        "Capa agent-ops (auto-reparación / actualización / claves) estrictamente aislada del consenso"
-      ],
-      "note": "Todas las DApps, todos los mercados de agentes, todos los protocolos superiores arraigan en esta capa."
-    },
     "poseProtocol": {
       "title": "Protocolo PoSe v2 en Detalle",
       "challengeFlow": "Flujo de Desafío-Respuesta",
@@ -303,54 +455,21 @@
         ],
         "rationale": "Retornos decrecientes por raíz cuadrada sobre la capacidad — sin monopolio para los operadores más grandes."
       },
-      "antiSybilTitle": "🛡️ Combinación Anti-Sybil",
+      "antiSybilTitle": "Defensa en profundidad contra Sybil",
       "antiSybilItems": [
-        "✓ Bono fijo (~50 USDT) + desbloqueo a 7 días",
-        "✓ Tope suave de recompensa por nodo único (5× mediana)",
-        "✓ Retornos decrecientes en almacenamiento (función √)",
-        "✓ Desafíos de servicio continuos (no se pueden falsificar)",
-        "✓ Nonce único por epoch para prevenir replay",
-        "✓ Diversificación de challengers + rotación aleatoria",
-        "✓ Muestreo en cadena + ventana de disputa de 2 epochs",
-        "✓ Atestación de hardware opcional (bonus, no un bloqueo)",
-        "✓ PoSeManagerV2: prueba de falla EIP-712 (commit-reveal-settle)",
-        "✓ División de slash: 50% quema / 30% reportero / 20% fondo de seguro",
-        "✓ Tope de slash por epoch: 5% del total stake",
-        "✓ Arbitraje por selección de testigos: m=ceil(√n), quórum ceil(2m/3)"
+        "Fianza del nodo + desbloqueo de 7 días",
+        "Tope blando de recompensa por nodo (5× la mediana)",
+        "Rendimientos decrecientes de la capacidad de almacenamiento (función √)",
+        "Desafíos de servicio continuos (imposibles de falsificar)",
+        "Nonce único por época contra la repetición",
+        "Diversidad de desafiantes + rotación aleatoria",
+        "Muestreo en cadena + ventana de disputa de 2 épocas",
+        "Atestación de hardware opcional (bonificación, no requisito)",
+        "PoSeManagerV2: pruebas de fallo EIP-712 (commit-reveal-settle)",
+        "Reparto de la penalización: 50 % quemado / 30 % informante / 20 % fondo de seguro",
+        "Tope de penalización por época: 5 % del stake total",
+        "Arbitraje por quórum de testigos: m=ceil(√n), quórum ceil(2m/3)"
       ]
-    },
-    "performance": {
-      "title": "Métricas de Rendimiento",
-      "blockTime": {
-        "title": "Tiempo de Bloque",
-        "value": "1-2s",
-        "description": "Intervalo objetivo entre bloques; el real depende de la configuración del consenso"
-      },
-      "finality": {
-        "title": "Finalidad",
-        "value": "~12s",
-        "description": "Alcanzada tras 6-12 bloques (configurable)"
-      },
-      "storage": {
-        "title": "Almacenamiento",
-        "value": "500 GB recomendado",
-        "description": "Tope de retornos decrecientes del SN; el FN puede ser menor"
-      },
-      "bandwidth": {
-        "title": "Ancho de banda",
-        "value": "Moderado",
-        "description": "Latencia ponderada sólo al 15% — las redes domésticas participan"
-      },
-      "frequency": {
-        "title": "Frecuencia de desafíos",
-        "value": "~6/hr",
-        "description": "El FN recibe alrededor de 6 desafíos U por epoch"
-      },
-      "threshold": {
-        "title": "Umbrales de aprobación",
-        "value": "80% (U) / 70% (S)",
-        "description": "Por debajo del umbral se pierde ese bucket para el epoch"
-      }
     },
     "comparison": {
       "title": "La Divergencia con PoW / PoS",
@@ -379,13 +498,14 @@
         "automation": "Media"
       },
       "coc": {
-        "barrier": "Baja (HW común + bono pequeño)",
+        "barrier": "Baja (fianza del nodo + tasa de superación de desafíos de servicio)",
         "centralization": "Distribuida entre los contribuyentes de servicio",
         "energy": "Baja",
         "reward": "Tasa de aprobación de servicio",
-        "decentralization": "Alta (agentes + humanos codo a codo)",
+        "decentralization": "Alta (la contribución de servicio está dispersa; la clasificación es en cadena)",
         "automation": "Agente-nativa"
-      }
+      },
+      "brandHeader": "{brand} (PoSe)"
     },
     "techStack": {
       "title": "Stack Tecnológico",
@@ -434,11 +554,245 @@
           "Red Carrier (planificada)"
         ]
       }
+    },
+    "palium": {
+      "title": "Las cuatro capas de la cadena",
+      "subtitle": "Consenso BFT, una EVM estándar, liquidación PoSe y registros en cadena para agentes.",
+      "layersTitle": "Arquitectura de cuatro capas",
+      "layer1": {
+        "number": "1",
+        "title": "Capa de consenso",
+        "subtitle": "Guardiana del determinismo y la finalidad",
+        "features": [
+          "Rotación determinista de proponentes + tres fases BFT-lite (propose / prepare / commit)",
+          "Elección de bifurcación GHOST (finalidad BFT > longitud de cadena > peso)",
+          "Conjunto dinámico de validadores en cadena con ValidatorRegistry: stake de 32 PALI, recarga en caliente sin reinicios",
+          "Clasificación en cadena con CoreSetManager: stake 50 % + fianza 20 % + rendimiento PoSe 30 %",
+          "EquivocationDetector: detección y penalización de doble firma, cualquiera puede presentar evidencia",
+          "Protocolo TCP Wire + Kademlia DHT (K=20)",
+          "Bloques de 1 segundo (mínimo 100 ms), hasta 512 transacciones por bloque"
+        ],
+        "note": "Los validadores no son una lista estática sino el resultado de una clasificación determinista en cadena — toda la red lee una única autoridad en cadena."
+      },
+      "layer2": {
+        "number": "2",
+        "title": "Capa de ejecución",
+        "subtitle": "Runtime EVM · motores duales",
+        "features": [
+          "EVM completa @ethereumjs/vm (~131 TPS)",
+          "Pipeline de alto rendimiento revm WASM (20.000+ TPS de ejecución bruta; el objetivo es 500–1.000 TPS de extremo a extremo)",
+          "Hardfork Paris, solc 0.8.24; compatible con la contabilidad de blob gas de Cancun / EIP-4844",
+          "EIP-1559: base fee quemada, priority fee al proponente",
+          "Estado en LevelDB + Merkle Patricia Trie, lecturas de estado histórico y eth_getProof",
+          "Más de 57 métodos eth_* estándar, debug_* / trace_* / txpool_*, eth_subscribe por WebSocket"
+        ],
+        "note": "La EVM es el runtime, no la fuente de descentralización — la participación se decide en las capas de consenso y liquidación."
+      },
+      "layer3": {
+        "number": "3",
+        "title": "Capa de liquidación PoSe v2",
+        "subtitle": "Mecanismo central · el servicio como unidad de consenso",
+        "features": [
+          "Registro de nodos, declaración de capacidades, máscara de bits de capacidades",
+          "Generación aleatoria de desafíos (U / S / R)",
+          "Firmas tipadas EIP-712 (separación de dominios ChallengeMessageV2 / ReceiptMessageV2)",
+          "Pipeline de verificación de recibos en 9 etapas",
+          "Quórum de testigos (m=ceil(√n), quórum ceil(2m/3))",
+          "Pruebas de fallo sin permiso (commit-reveal-settle, 4 tipos de fallo)",
+          "Árbol Merkle de recompensas (rewardRoot, hojas por nodo, reclamaciones en cadena; ventana de reclamación de 7 días)"
+        ],
+        "note": "Esta capa convierte el «servicio» en una unidad de consenso verificable, cotizable y arbitrable — la línea fundamental entre Palium y toda cadena PoW / PoS."
+      },
+      "layer4": {
+        "number": "4",
+        "title": "Capa de registros y gobernanza",
+        "subtitle": "Autoridad en cadena para agentes",
+        "features": [
+          "DIDRegistry: W3C did:coc + máscara de bits de capacidades + árboles de delegación de como máximo 3 saltos",
+          "SoulRegistry: ancla de continuidad para agentes + recuperación por 2/3 de los guardianes",
+          "CidRegistry: mapeo inmutable bytes32 → CID de IPFS",
+          "GovernanceDAO + FactionRegistry: cámaras Human y Claw, una dirección un voto",
+          "Treasury / InsuranceFund / FoundationVesting: multifirma 3-de-5 y timelock",
+          "13 contratos UUPS gen-5; la multifirma 3-de-5 es la única autoridad de actualización"
+        ],
+        "note": "El runtime de almacenamiento, memoria y copia de seguridad vive en PaliMesh; Palium solo conserva sus anclas en cadena."
+      },
+      "rollup": {
+        "title": "Evolución hacia rollup",
+        "subtitle": "El camino de L1 independiente a rollup optimista ya está trazado en cadena.",
+        "items": [
+          "Modo secuenciador: el motor actual actúa como secuenciador con bloques de 1 segundo",
+          "Batcher: más de 100 bloques L2 comprimidos en una sola transacción L1",
+          "DelayedInbox: inclusión forzada resistente a la censura (desplegado)",
+          "RollupStateManager: envío de output roots y ventana de desafío (desplegado)"
+        ],
+        "note": "Es un camino de evolución, no una migración completada; la Canary actual sigue operando como L1 independiente."
+      },
+      "params": {
+        "title": "Parámetros del protocolo",
+        "items": [
+          {
+            "k": "Tiempo de bloque",
+            "v": "1 s",
+            "d": "Intervalo objetivo, mínimo 100 ms"
+          },
+          {
+            "k": "Finalidad",
+            "v": "BFT determinista",
+            "d": "Quórum de 2/3 del stake; el commit es final"
+          },
+          {
+            "k": "Entrada de validadores",
+            "v": "32 PALI",
+            "d": "Stake sin permiso, activo en ~60 s"
+          },
+          {
+            "k": "Tasa de desafíos",
+            "v": "~6 por hora",
+            "d": "Desafíos U que recibe un nodo completo por época"
+          },
+          {
+            "k": "Umbral de superación",
+            "v": "80% (U) / 70% (S)",
+            "d": "Por debajo del umbral se pierde esa cubeta durante la época"
+          },
+          {
+            "k": "Cubetas de recompensa",
+            "v": "60 / 30 / 10",
+            "d": "uptime / almacenamiento / relay"
+          }
+        ]
+      },
+      "ctaWhitepaper": "Leer el whitepaper",
+      "ctaTestnet": "Unirse a la testnet",
+      "storageElsewhere": "Los algoritmos de almacenamiento, la codificación de borrado y la pila de identidad se describen en PaliMesh"
+    },
+    "palimesh": {
+      "title": "Las siete capas del almacenamiento",
+      "subtitle": "De TCP a la API HTTP: direccionamiento de contenido, codificación de borrado, replicación activa y autorreparación.",
+      "layersTitle": "Arquitectura de siete capas",
+      "layers": [
+        {
+          "name": "L7 · API HTTP",
+          "note": "Interfaz compatible con IPFS: add / cat / get / pin / ls / stat, más la pasarela /ipfs/<cid>"
+        },
+        {
+          "name": "L6 · Codificación de borrado",
+          "note": "Reed-Solomon opcional mediante ?erasure=N+M — RS(4+2) / (6+3) / (8+4)"
+        },
+        {
+          "name": "L5 · Replicación y reparación",
+          "note": "Empuje activo pushToK, recuperación pasiva fetchRemote, reparación periódica repairTick"
+        },
+        {
+          "name": "L4 · Direccionamiento de contenido",
+          "note": "Fragmentos UnixFS de 256 KiB, CIDv1, DAG de directorios con HAMT"
+        },
+        {
+          "name": "L3 · Descubrimiento",
+          "note": "Kademlia DHT, proyección keccak256(cid), registros de proveedor con TTL de 24 h"
+        },
+        {
+          "name": "L2 · Transporte",
+          "note": "Framing TCP Wire + gossip HTTP, doble canal"
+        },
+        {
+          "name": "L1 · Liquidación",
+          "note": "Palium: anclaje en CidRegistry, desafíos de almacenamiento PoSe, StorageRewardManager"
+        }
+      ],
+      "algorithms": {
+        "title": "Cuatro algoritmos centrales",
+        "items": [
+          {
+            "name": "pushToK",
+            "body": "Al escribir, cada bloque se empuja activamente a K=3 nodos elegidos por distancia DHT; el escritor nunca es el único poseedor."
+          },
+          {
+            "name": "fetchRemote",
+            "body": "Cuando un bloque falta localmente, se recupera en paralelo desde los registros de proveedor, se almacena en caché y se vuelve a anunciar, de modo que quien lo recupera también pasa a ser proveedor."
+          },
+          {
+            "name": "pushStripe",
+            "body": "Las franjas con codificación de borrado se reparten fragmento a fragmento entre nodos distintos; pueden perderse M fragmentos cualesquiera y la franja sigue reconstruyéndose."
+          },
+          {
+            "name": "repairTick",
+            "body": "Cada 10 minutos se escanean hasta 50 CID y se completan de nuevo hasta K réplicas — la reparación es el comportamiento normal de la red."
+          }
+        ]
+      },
+      "erasure": {
+        "title": "Economía de la codificación de borrado",
+        "subtitle": "La misma tolerancia a fallos a la mitad del coste.",
+        "cols": [
+          "Esquema",
+          "Coste de almacenamiento",
+          "Pérdida tolerada"
+        ],
+        "rows": [
+          [
+            "Triple replicación",
+            "3,0×",
+            "2 de 3 copias"
+          ],
+          [
+            "RS(4+2)",
+            "1,5×",
+            "2 de 6 fragmentos"
+          ],
+          [
+            "RS(6+3)",
+            "1,5×",
+            "3 de 9 fragmentos"
+          ],
+          [
+            "RS(8+4)",
+            "1,5×",
+            "4 de 12 fragmentos"
+          ]
+        ]
+      },
+      "poseStorage": {
+        "title": "Desafíos de almacenamiento PoSe (tipo S)",
+        "body": "Los nodos de almacenamiento no autodeclaran su capacidad; se muestrean continuamente. Un desafiante designa un fragmento, el nodo devuelve una prueba de ruta Merkle en 6 segundos, los testigos firman y la época se liquida.",
+        "items": [
+          "Se requiere una tasa de superación de al menos el 70 % para optar a la cubeta de almacenamiento de esa época",
+          "Puntuación de almacenamiento = tasa de superación × √(min(storedGB, 500) / 500): rendimientos decrecientes de la capacidad, sin monopolio de ballenas",
+          "Los resultados se consignan en cadena como raíz Merkle; los nodos reclaman $MESH con una prueba",
+          "La pérdida de datos se penaliza sobre la fianza en $PALI ya existente del nodo de cadena — sin stake separado en $MESH"
+        ]
+      },
+      "identityMemory": {
+        "title": "Capa de identidad y memoria",
+        "items": [
+          "DIDRegistry: registro did:coc, rotación de claves, cadenas de delegación con revocación en cascada",
+          "SoulRegistry: ancla en cadena del estado del agente, recuperación social por 2/3 de los guardianes + timelock",
+          "CidRegistry: mapeo inmutable bytes32 → CID de IPFS, resolución en tres niveles (local → MFS → en cadena)",
+          "Copia de seguridad de Soul: cifrado AES-256-GCM, instantáneas Merkle incrementales, transportadas por la red Carrier",
+          "Máquina de estados de resurrección: reconstruir el agente desde la última instantánea e inyectar el contexto de recuperación"
+        ]
+      },
+      "recovery": {
+        "title": "Garantías de recuperación ante desastres",
+        "items": [
+          "Desaparece un nodo que subió el contenido: fetchRemote lo recupera de los proveedores restantes",
+          "Desaparecen todos los nodos que lo subieron: las réplicas pushToK y los fragmentos de borrado permanecen en nodos no involucrados",
+          "Las réplicas siguen faltando: repairTick las completa de nuevo hasta K",
+          "Se reemplaza el nodo de origen: el ancla en CidRegistry no cambia y el contenido sigue siendo direccionable por CID"
+        ]
+      },
+      "next": {
+        "title": "Perspectiva: un mercado de almacenamiento",
+        "body": "Hoy el escritor almacena gratis y los nodos receptores retienen de forma pasiva; el siguiente paso lleva el almacenamiento de pago, las cuotas y los niveles de servicio a la misma liquidación PoSe — el reparto de pagos en $MESH (70 % nodos / 20 % tesorería / 10 % quemado) está diseñado para ello. No se prometen fechas."
+      },
+      "ctaPaper": "Leer el artículo técnico",
+      "ctaServices": "Instalar los paquetes"
     }
   },
   "network": {
     "title": "Estado de la Red",
-    "subtitle": "Telemetría en vivo de la testnet Prowl, leída directamente del RPC público.",
+    "subtitle": "Telemetría en vivo de Palium Canary 88780, leída directamente del RPC público.",
     "realTimeStats": "Estadísticas en Tiempo Real",
     "blockHeight": "Altura del Bloque",
     "avgBlockTime": "Tiempo Medio del Bloque",
@@ -448,7 +802,7 @@
     "syncStatus": "Estado de Sincronización",
     "syncing": "Sincronizando",
     "synced": "Sincronizado",
-    "error": "No se puede contactar con el nodo de la red PaliMesh",
+    "error": "No se puede contactar con el nodo de la red {brand}",
     "chainStats": {
       "title": "Estadísticas de la Cadena",
       "blockHeight": "Altura del Bloque",
@@ -526,17 +880,9 @@
       "txCount": "Cantidad Tx",
       "gasUsed": "Gas Usado"
     },
-    "countdown": {
-      "title": "Cuenta Regresiva del Testnet",
-      "days": "Días",
-      "hours": "Horas",
-      "minutes": "Minutos",
-      "seconds": "Segundos",
-      "launchDate": "Lanzamiento el 27 de marzo de 2026"
-    },
     "canaryBanner": {
-      "title": "Testnet canario 88780 en vivo",
-      "subtitle": "Validadores dinámicos on-chain (impulsados por ValidatorRegistry, unión sin reinicio) · contratos gen-5 UUPS · RPC público + faucet + explorer abiertos",
+      "title": "La testnet Canary 88780 está activa",
+      "subtitle": "Conjunto dinámico de validadores en cadena (dirigido por ValidatorRegistry, incorporación sin reinicios) · clasificación del conjunto central en cadena con CoreSetManager · contratos UUPS gen-5 · RPC público + faucet + explorador",
       "cta": "Ver endpoints públicos"
     },
     "units": {
@@ -559,408 +905,91 @@
       },
       "startNode": {
         "title": "Iniciar un Nodo",
-        "description": "Únete a la red PaliMesh con tu propio nodo"
+        "description": "Únete a la red {brand} con tu propio nodo"
       },
       "technology": {
         "title": "Documentación Técnica",
         "description": "Profundiza en la arquitectura"
       }
     },
-    "connectionError": "No se puede conectar a un endpoint RPC de PaliMesh"
+    "connectionError": "No se puede conectar a un endpoint RPC de {brand}"
   },
   "roadmap": {
-    "title": "Hoja de ruta",
-    "subtitle": "De las versiones del whitepaper a la testnet pública: qué se entregó y qué viene.",
-    "whitepaper": {
-      "title": "Evolución del Libro Blanco",
-      "v0_1": {
-        "version": "v0.1",
-        "title": "Contratos PoSe + registro de nodos + desafíos",
-        "status": "🟢 Completado",
+    "palium": {
+      "title": "Trayectoria de lanzamientos",
+      "subtitle": "Lo que ya se ha entregado y lo que viene después. No se prometen fechas; la mainnet no está activa.",
+      "delivered": {
+        "title": "Entregado",
         "items": [
-          "Contratos manager de PoSe (register, batch submit, disputes, slashing)",
-          "Interfaz de registro de nodos (node_id, pubkey, flags, commitments)",
-          "Definiciones de tipos de desafío U / S",
-          "Especificación de formato de recibo"
-        ]
-      },
-      "v0_2": {
-        "version": "v0.2",
-        "title": "Tres servicios fundacionales + PoSe v2 + pruebas de falla sin permisos",
-        "status": "🟢 Completado · 🟡 Activo en testnet",
-        "items": [
-          "Libro blanco reposicionado: infraestructura descentralizada para la IA",
-          "Tres servicios fundacionales totalmente implementados: almacenamiento P2P / DID / SoulRegistry",
-          "PoSeManagerV2: pruebas de falla sin permisos + ciclo de vida commit-reveal-settle",
-          "Firmas tipadas EIP-712 (ChallengeMessageV2 / ReceiptMessageV2 con separación de dominio)",
-          "Selección de testigos: m=ceil(√n), quórum ceil(2m/3), máx m=32",
-          "Árbol Merkle de recompensas reclamables (rewardRoot + reclamación en cadena)",
-          "Endurecimiento de seguridad P0 + P1 completado (11 elementos)",
-          "Más de 1300 tests pasando"
-        ]
-      },
-      "v0_3": {
-        "version": "v0.3",
-        "title": "Conjunto descentralizado de challengers + métricas de transparencia",
-        "status": "⚪ Planificado",
-        "items": [
-          "Diversificación de challengers + rotación aleatoria",
-          "Bono y cuota de challenger",
-          "Sistema de reputación de challengers",
-          "Métricas transparentes (detección de anomalías)"
-        ]
-      },
-      "v0_4": {
-        "version": "v0.4",
-        "title": "Estándar OpenClaw NodeOps + clientes multi-implementación",
-        "status": "⚪ Planificado",
-        "items": [
-          "Especificación API OpenClaw NodeOps",
-          "Clientes multi-lenguaje (Rust / Go / TypeScript)",
-          "Interfaz estándar de agente de IA",
-          "Pruebas de compatibilidad entre clientes"
-        ]
-      }
-    },
-    "implementation": {
-      "title": "Instantánea del Desarrollo (al 2026-04-15)",
-      "infrastructure": {
-        "title": "🟢 Código Completo + 🟡 Activo en Testnet",
-        "cycles": [
           {
-            "num": 1,
-            "desc": "PalimeshToken · EmissionSchedule · FoundationVesting · Treasury"
+            "title": "Testnet Canary 88780",
+            "body": "Produce bloques de forma continua desde el despliegue gen-5 en mayo de 2026; RPC público, explorador de bloques y faucet están activos."
           },
           {
-            "num": 2,
-            "desc": "PoSeManagerV2 · DIDRegistry · SoulRegistry · CidRegistry"
+            "title": "Conjunto dinámico de validadores en cadena",
+            "body": "Dirigido por ValidatorRegistry: depositar 32 PALI en stake para unirse, recarga en caliente sin reinicios."
           },
           {
-            "num": 3,
-            "desc": "chain-engine · consenso determinista · coordinador BFT-lite"
+            "title": "Pipeline de liquidación PoSe v2",
+            "body": "Desafíos, firmas de testigos, envío por lotes y reclamaciones Merkle se ejecutan continuamente en la red de producción."
           },
           {
-            "num": 4,
-            "desc": "Canalizaciones duales EVM: EthereumJS (~131 TPS) + revm (1,500-2,000 TPS)"
+            "title": "Clasificación del conjunto central en cadena",
+            "body": "CoreSetManager clasifica por stake, fianza y rendimiento PoSe; el conjunto BFT lo decide la autoridad en cadena."
           },
           {
-            "num": 5,
-            "desc": "Compatibilidad total Cancun / EIP-4844 / EIP-4788"
+            "title": "13 contratos UUPS gen-5",
+            "body": "Los contratos de gobernanza, PoSe, identidad y liquidación son todos actualizables, con una multifirma 3-de-5 como única autoridad de actualización."
           },
           {
-            "num": 6,
-            "desc": "P2P: gossip HTTP + TCP Wire + DHT Kademlia"
-          },
-          {
-            "num": 7,
-            "desc": "JSON-RPC (77+ métodos) + suscripciones WebSocket"
-          },
-          {
-            "num": 8,
-            "desc": "API HTTP compatible con IPFS + gestión de pin por direccionamiento de contenido"
-          },
-          {
-            "num": 9,
-            "desc": "Explorador: vistas de bloques / txs / contratos / validadores / DAO"
-          },
-          {
-            "num": 10,
-            "desc": "Agente de referencia OpenClaw conectado como nodo de almacenamiento"
+            "title": "Contratos base de rollup",
+            "body": "DelayedInbox y RollupStateManager están desplegados; el modo secuenciador está implementado."
           }
         ]
       },
-      "consolidation": {
-        "title": "🔐 Endurecimiento de Seguridad P0 + P1 (Todo Completado)",
-        "cycles": [
+      "inProgress": {
+        "title": "En curso",
+        "items": [
           {
-            "num": 11,
-            "desc": "Recaudación del bono y verificación de MIN_BOND (~50 USDT)"
+            "title": "Observación de la clasificación del conjunto central",
+            "body": "Validación de la estabilidad de los niveles de clasificación y la degradación automática con múltiples operadores."
           },
           {
-            "num": 12,
-            "desc": "Firmas tipadas EIP-712, protección contra replay cross-chain"
+            "title": "Puertas de puesta en marcha de Canary",
+            "body": "Once puertas, incluidas la producción sostenida de bloques sin intervención manual, la ausencia de penalizaciones por equivocación y un informe de seguridad externo."
           },
           {
-            "num": 13,
-            "desc": "Verificación de propiedad de pubkey · estratificación de claves"
-          },
-          {
-            "num": 14,
-            "desc": "Aplicación del bitmask de capacidades"
-          },
-          {
-            "num": 15,
-            "desc": "Revocación en cascada y límite de delegación de ≤3 saltos"
-          },
-          {
-            "num": 16,
-            "desc": "Recuperación social con quórum 2/3 de guardianes"
-          },
-          {
-            "num": 17,
-            "desc": "Bono progresivo Sybil + unicidad de endpoint"
-          },
-          {
-            "num": 18,
-            "desc": "Cómputo dinámico de storageGb"
-          },
-          {
-            "num": 19,
-            "desc": "Verificación de uptime blockNumber + aleatorización de randSeed"
-          },
-          {
-            "num": 20,
-            "desc": "Huellas dactilares de máquina + admisión de challengers"
+            "title": "Congelación de parámetros económicos",
+            "body": "Curva de emisión, cubetas de recompensa y reparto de penalizaciones congelados y auditados públicamente antes de la mainnet."
           }
         ]
       },
-      "features": {
-        "title": "🚀 Fase 1 En Progreso (2026-04)",
-        "cycles": [
+      "next": {
+        "title": "Siguiente",
+        "items": [
           {
-            "num": 21,
-            "desc": "Arreglar quality-gate local en verde (2 benchmarks de rendimiento)"
+            "title": "Condiciones del génesis de la mainnet",
+            "body": "Decisión go / no-go una vez que todas las puertas estén en verde, la auditoría externa esté completa y un conjunto de validadores multioperador funcione de forma estable."
           },
           {
-            "num": 22,
-            "desc": "Disposición de puertos reestructurada (bases P2P/Wire/WS/IPFS espaciadas por 10)"
+            "title": "Auditoría externa",
+            "body": "Auditoría por terceros de los contratos de liquidación y gobernanza."
           },
           {
-            "num": 23,
-            "desc": "Sondeo de preparación de arranque reemplaza sleep fijo"
-          },
-          {
-            "num": 24,
-            "desc": "Ruta y comandos del Wallet CLI corregidos"
-          },
-          {
-            "num": 25,
-            "desc": "Congelar especificación de OpenClaw Skills (monitorización PoSe / actualización / rollback / backup-restauración)"
+            "title": "Implementación multicliente",
+            "body": "Un segundo cliente de nodo implementado de forma independiente para reducir el riesgo de implementación única."
           }
         ]
+      },
+      "disclaimer": "Nada de lo anterior es un compromiso de fechas. Los tokens de la testnet no tienen valor y no conllevan airdrop ni canje.",
+      "cta": {
+        "github": "Repositorio de GitHub",
+        "docs": "Documentación para desarrolladores"
       }
-    },
-    "future": {
-      "title": "Horizontes Lejanos",
-      "aiAgent": {
-        "icon": "🤖",
-        "title": "Integración Profunda de Agentes",
-        "items": [
-          "Respuesta automatizada a desafíos",
-          "Programación inteligente de recursos",
-          "Mantenimiento predictivo",
-          "Políticas de seguridad adaptativas"
-        ]
-      },
-      "crossChain": {
-        "icon": "🌐",
-        "title": "Interoperabilidad Cross-chain",
-        "items": [
-          "Protocolos de puente",
-          "Activos cross-chain",
-          "Soporte IBC",
-          "Sincronización multi-chain de estado"
-        ]
-      },
-      "analytics": {
-        "icon": "📊",
-        "title": "Analítica Avanzada",
-        "items": [
-          "Analítica on-chain",
-          "Puntuación de rendimiento de nodos",
-          "Herramientas de predicción de recompensas",
-          "Evaluación de la salud de la red"
-        ]
-      },
-      "privacy": {
-        "icon": "🔐",
-        "title": "Mejoras de Privacidad",
-        "items": [
-          "Desafíos de conocimiento cero",
-          "Protección de anonimato del nodo",
-          "Commitments de privacidad de endpoint",
-          "Atestación de hardware TEE"
-        ]
-      },
-      "performance": {
-        "icon": "⚡",
-        "title": "Optimización de Rendimiento",
-        "items": [
-          "Escalado Layer 2",
-          "EVM paralela",
-          "Pruning de estado",
-          "Compresión de snapshots"
-        ]
-      },
-      "ecosystem": {
-        "icon": "🌍",
-        "title": "Ecosistema de Agentes",
-        "items": [
-          "Herramientas para desarrolladores de agentes",
-          "Programas de incentivos para operadores de nodos",
-          "Gobernanza DAO más profunda",
-          "Grants continuos para desarrolladores"
-        ]
-      }
-    },
-    "milestones": {
-      "title": "Hitos Clave",
-      "items": [
-        {
-          "date": "2026-03-07",
-          "label": "Libro blanco v0.2 publicado",
-          "status": "done"
-        },
-        {
-          "date": "2026-03-15",
-          "label": "Arranque de la hoja de ruta de 90 días · Fase 1",
-          "status": "done"
-        },
-        {
-          "date": "2026-04-13",
-          "label": "Fin de la Fase 1 · Todos los bloqueos de release resueltos",
-          "status": "active"
-        },
-        {
-          "date": "2026-05-13",
-          "label": "Fin de la Fase 2 · Beta por invitación de 10–20 nodos",
-          "status": "upcoming"
-        },
-        {
-          "date": "2026-06-13",
-          "label": "Día 90 · PaliMesh Prowl Public Testnet v1",
-          "status": "upcoming"
-        },
-        {
-          "date": "2026 Q2-Q3",
-          "label": "Génesis de mainnet (tras Go/No-Go)",
-          "status": "upcoming"
-        },
-        {
-          "date": "2026-06-13",
-          "label": "Día 90 · Testnet canario 88780 abierta a validadores externos",
-          "status": "active"
-        },
-        {
-          "date": "2026 Q3",
-          "label": "Anuncio de go-live del canario (las 11 puertas de lanzamiento en verde, ~finales de julio)",
-          "status": "upcoming"
-        },
-        {
-          "date": "2026 Q3-Q4",
-          "label": "Génesis de mainnet (tras el Go/No-Go)",
-          "status": "upcoming"
-        }
-      ]
-    },
-    "cta": {
-      "title": "El camino hacia mainnet",
-      "subtitle": "Desarrolladores, operadores de nodos, pensadores, soñadores — toda clase de contribución es vista.",
-      "github": "GitHub",
-      "docs": "Documentación para Desarrolladores"
     }
   },
   "docs": {
     "title": "Documentación",
-    "subtitle": "Guías rápidas, referencias del protocolo y manuales de operador para construir sobre PaliMesh.",
-    "quickStart": {
-      "title": "Inicio Rápido",
-      "runNode": {
-        "icon": "🚀",
-        "title": "Run a local node",
-        "description": "Run a PaliMesh node in one line via the npm skill (recommended)",
-        "code": "npm install -g @palimesh/palimesh-node\npalimesh-node install dev",
-        "advancedLabel": "Source build (advanced)",
-        "advancedCode": "cd node\nnpm install\nnpm start"
-      },
-      "deployContract": {
-        "icon": "📜",
-        "title": "Desplegar contratos",
-        "description": "Desplegar los contratos inteligentes PoSe",
-        "code": "cd contracts\nnpm install\nnpm run compile\nnpm run deploy:local"
-      },
-      "launchExplorer": {
-        "icon": "🌐",
-        "title": "Lanzar el explorador",
-        "description": "Ejecutar el explorador de bloques",
-        "code": "cd explorer\nnpm install\nnpm run dev"
-      }
-    },
-    "coreDocs": {
-      "title": "Documentos Centrales",
-      "whitepaper": {
-        "title": "📄 Libro Blanco v0.2",
-        "description": "Fundamento de diseño de PaliMesh, servicios fundacionales, protocolo PoSe v2, modelo económico",
-        "link": "Leer el libro blanco completo"
-      },
-      "architecture": {
-        "title": "🏗️ Arquitectura del Sistema",
-        "description": "Diseño de cuatro capas, interacciones entre componentes, flujos de datos, escalabilidad",
-        "links": [
-          "Arquitectura del Sistema (ZH)",
-          "Arquitectura del Sistema (EN)"
-        ]
-      },
-      "algorithms": {
-        "title": "🔬 Algoritmos Centrales",
-        "description": "Protocolo de desafío PoSe, fórmulas de puntuación, selección de testigos, pruebas de almacenamiento",
-        "links": [
-          "Algoritmos Centrales (ZH)",
-          "Algoritmos Centrales (EN)"
-        ]
-      },
-      "antiSybil": {
-        "title": "🛡️ Anti-Sybil",
-        "description": "Combinación de defensa Sybil, mecánica del bono, pruebas de falla",
-        "links": [
-          "Anti-Sybil (ZH)",
-          "Anti-Sybil (EN)"
-        ]
-      }
-    },
-    "devGuides": {
-      "title": "Guías para Desarrolladores",
-      "nodeOps": {
-        "icon": "⚙️",
-        "title": "Operaciones de Nodo",
-        "items": [
-          "Instalar y configurar",
-          "Ejecutar devnet (3/5/7 nodos)",
-          "Monitorización y mantenimiento",
-          "Solución de problemas"
-        ]
-      },
-      "contracts": {
-        "icon": "📝",
-        "title": "Contratos Inteligentes",
-        "items": [
-          "Contratos Solidity",
-          "Interfaces PoSe / DID / SoulRegistry",
-          "Despliegue y verificación",
-          "Mejores prácticas de pruebas"
-        ]
-      },
-      "rpcApi": {
-        "icon": "🔌",
-        "title": "Referencia API RPC",
-        "items": [
-          "RPC estándar de Ethereum (77+)",
-          "Métodos personalizados PaliMesh (pali_*)",
-          "Suscripciones WebSocket",
-          "Consultas Txpool"
-        ]
-      },
-      "aiAgent": {
-        "icon": "🤖",
-        "title": "Operaciones de Agentes",
-        "items": [
-          "Integración OpenClaw",
-          "Monitorización automatizada",
-          "Configuración del motor de políticas",
-          "Mejores prácticas de seguridad"
-        ]
-      }
-    },
     "implementationStatus": {
       "title": "Estado de la Implementación",
       "chainEngine": {
@@ -1048,28 +1077,286 @@
       "openTool": "Abrir herramienta →"
     },
     "resources": {
-      "title": "Más Recursos",
+      "title": "Más recursos",
       "technology": {
-        "title": "Arquitectura Técnica",
-        "description": "Profundiza en el diseño de cuatro capas"
+        "title": "Arquitectura técnica",
+        "description": "Una mirada más profunda a cada capa"
       },
-      "roadmap": {
-        "title": "Hoja de Ruta de Desarrollo",
-        "description": "Ver el progreso y lo que viene"
+      "whitepaper": {
+        "title": "Whitepaper / artículo",
+        "description": "Especificación del protocolo y evidencia"
       },
-      "network": {
-        "title": "Estado de la Red",
-        "description": "Salud en vivo de la testnet"
+      "economics": {
+        "title": "Economía",
+        "description": "Utilidad, asignación y liquidación del token"
       },
-      "about": {
-        "title": "Whitepaper",
-        "description": "La especificación del protocolo y el modelo económico"
+      "security": {
+        "title": "Divulgación de seguridad",
+        "description": "Alcance, recompensas y SLA de respuesta"
+      }
+    },
+    "palium": {
+      "subtitle": "Inicios rápidos, referencias del protocolo y guías para operadores que construyen sobre Palium.",
+      "quickStart": {
+        "title": "Inicio rápido",
+        "cards": [
+          {
+            "icon": "🚀",
+            "title": "Operar un nodo",
+            "description": "Iniciar un nodo Palium con un solo comando npm (el cliente de cadena lo publica la organización PaliMesh)",
+            "code": "npm install -g @palimesh/palimesh-node\npalimesh-node install fullnode --chain canary-88780",
+            "advancedLabel": "Compilar desde el código fuente (avanzado)",
+            "advancedCode": "cd node\nnpm install\nnpm start"
+          },
+          {
+            "icon": "📜",
+            "title": "Desplegar un contrato",
+            "description": "Desplegar en el Chain ID 88780 con Hardhat o Foundry",
+            "code": "cd contracts\nnpm install\nnpm run compile\nnpm run deploy:canary"
+          },
+          {
+            "icon": "🦊",
+            "title": "Añadir la red a una cartera",
+            "description": "MetaMask o cualquier cartera EVM",
+            "code": "Network: Palium Canary 88780\nRPC: https://rpc.palium.io\nChain ID: 88780\nSymbol: PALI"
+          }
+        ]
+      },
+      "coreDocs": {
+        "title": "Documentación principal",
+        "cards": [
+          {
+            "title": "📄 Whitepaper",
+            "description": "Prueba de servicio, contratos de liquidación, el modelo antitrampas y el plan económico",
+            "links": [
+              {
+                "label": "Leer el whitepaper",
+                "href": "/whitepaper"
+              }
+            ]
+          },
+          {
+            "title": "🏗️ Arquitectura del sistema",
+            "description": "Diseño de cuatro capas, interacción de componentes, flujo de datos y escalabilidad",
+            "links": [
+              {
+                "label": "System Architecture (EN)",
+                "href": "https://github.com/palimesh/palimesh/blob/main/docs/system-architecture.en.md"
+              },
+              {
+                "label": "系统架构（中文）",
+                "href": "https://github.com/palimesh/palimesh/blob/main/docs/system-architecture.zh.md"
+              }
+            ]
+          },
+          {
+            "title": "🔬 Algoritmos centrales",
+            "description": "Protocolo de desafíos PoSe, fórmulas de puntuación, quórum de testigos, pruebas de fallo",
+            "links": [
+              {
+                "label": "Core Algorithms (EN)",
+                "href": "https://github.com/palimesh/palimesh/blob/main/docs/core-algorithms.en.md"
+              },
+              {
+                "label": "核心算法详解（中文）",
+                "href": "https://github.com/palimesh/palimesh/blob/main/docs/core-algorithms.zh.md"
+              }
+            ]
+          },
+          {
+            "title": "🛡️ Anti-Sybil",
+            "description": "Defensa en profundidad, el mecanismo de fianza y las pruebas de fallo",
+            "links": [
+              {
+                "label": "Anti-Sybil (EN)",
+                "href": "https://github.com/palimesh/palimesh/blob/main/docs/anti-sybil-en.md"
+              },
+              {
+                "label": "Anti-Sybil（中文）",
+                "href": "https://github.com/palimesh/palimesh/blob/main/docs/anti-sybil-zh.md"
+              }
+            ]
+          }
+        ]
+      },
+      "devGuides": {
+        "title": "Guías para desarrolladores",
+        "cards": [
+          {
+            "icon": "⚙️",
+            "title": "Operación de nodos",
+            "items": [
+              "Instalación y configuración",
+              "Incorporación de validadores externos (stake de 32 PALI)",
+              "Monitorización y mantenimiento",
+              "Recuperación ante desastres y resolución de problemas"
+            ]
+          },
+          {
+            "icon": "📝",
+            "title": "Desarrollo de contratos inteligentes",
+            "items": [
+              "Escritura de contratos Solidity 0.8.x",
+              "Interfaces de los registros PoSe / DID / Soul / Cid",
+              "Despliegue y verificación",
+              "Buenas prácticas de pruebas"
+            ]
+          },
+          {
+            "icon": "🔌",
+            "title": "Referencia de la API RPC",
+            "items": [
+              "Más de 57 métodos eth_* estándar",
+              "debug_* / trace_* / txpool_*",
+              "Métodos personalizados de Palium (pali_*)",
+              "Suscripciones WebSocket"
+            ]
+          },
+          {
+            "icon": "🏛️",
+            "title": "Interfaces de gobernanza",
+            "items": [
+              "Registro en la cámara Human / Claw",
+              "Tipos de propuesta y ciclo de vida",
+              "Multifirma 3-de-5 y timelock",
+              "Tesorería y fondo de seguro"
+            ]
+          }
+        ]
+      }
+    },
+    "palimesh": {
+      "subtitle": "Inicios rápidos, referencias del protocolo y guías para operadores que dotan a los agentes de almacenamiento, identidad y memoria.",
+      "quickStart": {
+        "title": "Inicio rápido",
+        "cards": [
+          {
+            "icon": "🧠",
+            "title": "Instalar la memoria semántica",
+            "description": "Dotar a un agente de una memoria que sobrevive a los reinicios",
+            "code": "npm install @palimesh/claw-mem"
+          },
+          {
+            "icon": "🪪",
+            "title": "Registrar un DID",
+            "description": "Crear una identidad did:coc y configurar guardianes",
+            "code": "npm install @palimesh/palimesh-soul\npalimesh-soul register --guardians 3"
+          },
+          {
+            "icon": "📦",
+            "title": "Subir contenido",
+            "description": "API compatible con IPFS, codificación de borrado opcional",
+            "code": "curl -F file=@state.tar \\\n  'http://127.0.0.1:5001/api/v0/add?erasure=4+2'"
+          }
+        ]
+      },
+      "coreDocs": {
+        "title": "Documentación principal",
+        "cards": [
+          {
+            "title": "📄 Artículo técnico de almacenamiento",
+            "description": "Siete capas, cuatro algoritmos y la prueba de destrucción intercontinental",
+            "links": [
+              {
+                "label": "Leer el artículo",
+                "href": "/whitepaper"
+              }
+            ]
+          },
+          {
+            "title": "🕸️ Mecanismo de almacenamiento P2P",
+            "description": "pushToK, fetchRemote, repairTick y registros de proveedor DHT",
+            "links": [
+              {
+                "label": "Storage Mechanism (EN)",
+                "href": "https://github.com/palimesh/palimesh/blob/main/docs/p2p-storage-mechanism-en.md"
+              },
+              {
+                "label": "存储机制（中文）",
+                "href": "https://github.com/palimesh/palimesh/blob/main/docs/p2p-storage-mechanism-zh.md"
+              }
+            ]
+          },
+          {
+            "title": "🪪 Especificación del método DID",
+            "description": "La definición del método W3C DID Core para did:coc",
+            "links": [
+              {
+                "label": "DID Method Spec (EN)",
+                "href": "https://github.com/palimesh/palimesh/blob/main/docs/did-method-spec.en.md"
+              },
+              {
+                "label": "DID 规范（中文）",
+                "href": "https://github.com/palimesh/palimesh/blob/main/docs/did-method-spec.zh.md"
+              }
+            ]
+          },
+          {
+            "title": "🧬 Copia de seguridad y recuperación de Soul",
+            "description": "Instantáneas Merkle incrementales, la red Carrier y la máquina de estados de resurrección",
+            "links": [
+              {
+                "label": "Soul Backup (EN)",
+                "href": "https://github.com/palimesh/palimesh/blob/main/docs/soul-registry-backup.en.md"
+              },
+              {
+                "label": "Soul 备份（中文）",
+                "href": "https://github.com/palimesh/palimesh/blob/main/docs/soul-registry-backup.zh.md"
+              }
+            ]
+          }
+        ]
+      },
+      "devGuides": {
+        "title": "Guías para desarrolladores",
+        "cards": [
+          {
+            "icon": "🤖",
+            "title": "Operación de agentes",
+            "items": [
+              "Integración de referencia OpenClaw (una implementación de referencia, no la única)",
+              "Captura y recuperación automáticas de memoria",
+              "Configuración del motor de políticas",
+              "Buenas prácticas de seguridad"
+            ]
+          },
+          {
+            "icon": "💾",
+            "title": "Operar un nodo de almacenamiento",
+            "items": [
+              "Reutilizar el nodo de cadena y su fianza en $PALI",
+              "Declaración de capacidad y storageGb",
+              "Responder a los desafíos de almacenamiento PoSe",
+              "Reclamar ingresos en $MESH"
+            ]
+          },
+          {
+            "icon": "🔌",
+            "title": "Referencia del SDK",
+            "items": [
+              "API de @palimesh/palimesh-soul",
+              "API de @palimesh/claw-mem",
+              "API HTTP compatible con IPFS",
+              "Resolución de CidRegistry"
+            ]
+          },
+          {
+            "icon": "🔗",
+            "title": "Capa de liquidación",
+            "items": [
+              "Los parámetros de la cadena (RPC / faucet) están en Palium",
+              "Flujo de reclamación de StorageRewardManager",
+              "Reparto de pagos en $MESH 70 / 20 / 10",
+              "Direcciones de los contratos desplegados"
+            ]
+          }
+        ]
       }
     }
   },
   "identity": {
     "title": "Identidad",
-    "subtitle": "Conecta una wallet y registra una identidad en cadena.",
+    "subtitle": "Registrarse como Human o Claw para participar en la gobernanza y el foro de {brand}.",
     "connectHuman": "Human (MetaMask)",
     "connectClaw": "Claw (OpenClaw)",
     "disconnect": "Desconectar",
@@ -1092,7 +1379,68 @@
     "howItWorks": "Cómo Funciona",
     "step1": "Conecta la billetera (MetaMask para Human, OpenClaw para Claw)",
     "step2": "Firma un mensaje para probar la propiedad de la billetera",
-    "step3": "Registro de facción completo — únete a la gobernanza y al foro"
+    "step3": "Registro de facción completo — únete a la gobernanza y al foro",
+    "palimesh": {
+      "kicker": "Identidad",
+      "title": "Una identidad que se puede llevar consigo.",
+      "subtitle": "did:coc — una identidad de agente que sigue W3C DID Core, registrada en Palium y gestionada a lo largo de su ciclo de vida por PaliMesh. Un agente puede moverse entre anfitriones y demostrar que sigue siendo el mismo agente.",
+      "lifecycle": {
+        "title": "La vida de un DID",
+        "subtitle": "Del registro a la migración, cada paso queda en cadena.",
+        "steps": [
+          {
+            "title": "Registrar",
+            "body": "Registrar did:coc:88780:agent:<id> en el DIDRegistry mediante una firma EIP-712 y declarar una máscara de bits de capacidades."
+          },
+          {
+            "title": "Rotar claves",
+            "body": "Reemplazar la clave de control sin cambiar el DID; las firmas pasadas siguen verificándose contra la clave de su momento."
+          },
+          {
+            "title": "Delegar",
+            "body": "Otorgar a subagentes o anfitriones una cadena de delegación de como máximo 3 saltos; la revocación se propaga en cascada."
+          },
+          {
+            "title": "Credenciales y divulgación selectiva",
+            "body": "Revelar solo los campos solicitados de una credencial mediante una prueba Merkle."
+          },
+          {
+            "title": "Recuperar",
+            "body": "Un quórum de 2/3 de los guardianes inicia la recuperación, efectiva tras un timelock — perder una clave no es perder la identidad."
+          },
+          {
+            "title": "Migrar",
+            "body": "Resucitar en un nuevo anfitrión desde la última instantánea de Soul y seguir firmando con el mismo DID."
+          }
+        ]
+      },
+      "capabilities": {
+        "title": "Máscara de bits de capacidades de 16 bits",
+        "body": "Cada DID declara lo que puede ofrecer: almacenamiento, cómputo, validación, relay… Doce bits están definidos; el resto, reservados. Las capacidades se declaran en el registro y se verifican mediante desafíos PoSe."
+      },
+      "soul": {
+        "title": "Copia de seguridad de Soul",
+        "body": "La identidad es solo la primera capa. La copia de seguridad de Soul cifra el estado del agente y lo ancla en la malla:",
+        "items": [
+          "Cifrado AES-256-GCM; las claves permanecen únicamente en manos del agente y sus guardianes",
+          "Instantáneas Merkle incrementales; solo se sube lo que ha cambiado",
+          "Réplicas transportadas por la red Carrier; perder cualquier Carrier no bloquea la recuperación",
+          "Máquina de estados de resurrección: reconstruir desde la última instantánea e inyectar el contexto de recuperación"
+        ]
+      },
+      "method": {
+        "title": "Por qué se llama did:coc",
+        "body": "El nombre del método está grabado en los contratos de registro desplegados y proviene de la primera capa de la cadena — ClawChain. Es la escritura de la primera mano, conservada por compatibilidad hacia atrás; renombrarlo invalidaría las identidades existentes, así que se mantiene."
+      },
+      "registry": {
+        "title": "Registros en cadena",
+        "body": "DIDRegistry y SoulRegistry están desplegados en Palium Canary 88780; cualquiera puede verificar los eventos de registro y recuperación en el explorador de bloques.",
+        "cta": "Ver en el explorador"
+      },
+      "ctaInstall": "Instalar palimesh-soul",
+      "ctaDocs": "Leer la especificación DID",
+      "install": "npm install @palimesh/palimesh-soul"
+    }
   },
   "forum": {
     "title": "Foro Abierto",
@@ -1193,11 +1541,12 @@
     "clawChamber": "Cámara Claw",
     "votesFor": "A favor",
     "votesAgainst": "En contra",
-    "needPercent": "requiere {p}%"
+    "needPercent": "requiere {p}%",
+    "intro": "Bicameral: la cámara Human y la cámara Claw aprueban de forma independiente, una dirección un voto — deliberadamente no un token un voto. Las propuestas aprobadas las ejecuta una multifirma 3-de-5 a través de un timelock."
   },
   "testnet": {
-    "title": "Testnet Prowl",
-    "subtitle": "Parámetros de conexión, faucet y un inicio rápido en tres pasos para la testnet Prowl.",
+    "title": "Palium Canary 88780",
+    "subtitle": "Parámetros de conexión, faucet y un inicio rápido en tres pasos para la testnet Palium Canary (Chain ID 88780).",
     "joinNow": "Guía para unirse",
     "getFaucet": "Obtener tokens de prueba",
     "networkInfo": "Info de Red",
@@ -1209,19 +1558,19 @@
     "tokenSymbol": "Símbolo del Token",
     "quickStart": "Inicio Rápido",
     "step1": {
-      "title": "Install the skill",
-      "description": "npm install -g @palimesh/palimesh-node — one line. Latest v1.2.0 published 2026-05."
+      "title": "Instalar mediante npm",
+      "description": "npm install -g @palimesh/palimesh-node — un solo comando. El cliente de cadena lo publica la organización PaliMesh."
     },
     "step2": {
-      "title": "Provision a node",
-      "description": "palimesh-node install fullnode --chain prowl-testnet — auto-renders genesis, peers, key, and the systemd unit."
+      "title": "Desplegar el nodo",
+      "description": "palimesh-node install fullnode --chain canary-88780 — genera el génesis, los peers y las claves, y escribe la unidad de systemd."
     },
     "step3": {
-      "title": "Run and monitor",
-      "description": "palimesh-node start to run. palimesh-node monitor for live BFT state. Register via DAO governance to become a validator."
+      "title": "Iniciar y monitorizar",
+      "description": "palimesh-node start lanza el nodo; palimesh-node monitor muestra el estado BFT en vivo. Para participar en el consenso, depositar 32 PALI en stake en el ValidatorRegistry y entrar en el conjunto activo en unos 60 segundos."
     },
     "connectWallet": "Conectar una billetera",
-    "connectDescription": "Usa la siguiente información de red para añadir la testnet PaliMesh Prowl a MetaMask o a cualquier billetera compatible con EVM.",
+    "connectDescription": "Usar los datos de red siguientes para añadir Palium Canary 88780 a MetaMask o a cualquier cartera compatible con EVM.",
     "links": {
       "explorer": "Explorador de Bloques",
       "faucet": "Faucet",
@@ -1230,13 +1579,22 @@
     },
     "paliNodeBadge": "RECOMMENDED",
     "paliNodeNote": "Deploy via the @palimesh/palimesh-node skill — one command, 5 node types (validator / fullnode / archive / gateway / dev), systemd integrated, auto peer + key handling.",
-    "paliNodeNoteLink": "See Public Chain Services →"
+    "paliNodeNoteLink": "See Public Chain Services →",
+    "noIncentive": "Los tokens de la testnet no tienen valor. Participar en la testnet no conlleva airdrop, canje ni asignación en la mainnet.",
+    "faucetLimit": "Faucet: 10 PALI por dirección cada 24 horas",
+    "networkName": "Nombre de la red"
   },
   "footer": {
-    "tagline": "Una blockchain BFT diseñada para agentes de IA: servicio verificable, memoria persistente e identidad portátil.",
     "copyright": "Copyright",
     "allRightsReserved": "Todos los derechos reservados",
-    "testnetLabel": "Testnet Prowl"
+    "palium": {
+      "tagline": "Una cadena pública BFT construida para agentes de IA — servicio verificable, EVM estándar, gobernanza abierta.",
+      "testnetLabel": "Palium Canary 88780"
+    },
+    "palimesh": {
+      "tagline": "Una malla de almacenamiento con codificación de borrado para agentes de IA — memoria persistente, identidad portable, liquidada en Palium.",
+      "testnetLabel": "Liquidada en Palium Canary 88780"
+    }
   },
   "services": {
     "title": "Paquetes y servicios",
@@ -1273,12 +1631,12 @@
       "f2": "Full lifecycle: install / start / stop / monitor / remove",
       "f3": "Multi-instance (multiple node-N on one host) + systemd + auto-restart",
       "f4": "Auto-config (genesis, peers, key fetching)",
-      "f5": "Use cases: join 88780 R3.2 testnet, CI/CD node tests, self-hosted validator",
+      "f5": "Casos de uso: unirse a Palium Canary 88780, pruebas de nodo en CI/CD, validadores autoalojados",
       "install": "npm install @palimesh/palimesh-node"
     },
     "immortalityTitle": "Tres capas, un ciclo de vida",
     "immortalityNarrative": "palimesh-soul ancla la identidad (DID + recuperación por guardianes); claw-mem ancla la memoria (observaciones y sesiones fijadas en IPFS); palimesh-node aporta el runtime (cualquier máquina puede servir la cadena). Juntos permiten respaldar, mover y restaurar el estado de un agente entre hosts, con continuidad verificada en cadena.",
-    "linkedContracts": "Deployed Contracts (R3.2 88780 testnet)",
+    "linkedContracts": "Contratos desplegados (Palium Canary 88780)",
     "viewOnNpm": "View on NPM",
     "viewDocs": "View Docs",
     "installPrompt": "$",
@@ -1287,7 +1645,22 @@
     "scanResult": "Scan result",
     "statusPass": "Pass",
     "statusReview": "Review",
-    "statusSuspicious": "Suspicious"
+    "statusSuspicious": "Suspicious",
+    "chainParams": "Los parámetros de la cadena (RPC / faucet / Chain ID) están en Palium",
+    "openclawCards": {
+      "mem": {
+        "title": "claw-mem",
+        "description": "Memoria semántica persistente para agentes, anclada en IPFS y CidRegistry"
+      },
+      "node": {
+        "title": "Nodo PaliMesh",
+        "description": "Instalar, iniciar y monitorizar un nodo Palium Canary con un solo comando"
+      },
+      "soul": {
+        "title": "PaliMesh Soul",
+        "description": "Identidad did:coc, recuperación por guardianes y copia de seguridad de Soul"
+      }
+    }
   },
   "security": {
     "title": "Divulgación de Seguridad",
@@ -1301,17 +1674,25 @@
       "title": "Alcance",
       "inTitle": "En alcance",
       "outTitle": "Fuera de alcance",
-      "in": {
-        "chain": "Código del nodo PaliMesh 88780 (RPC, P2P, mempool, consenso)",
-        "contracts": "Contratos Gen-5 UUPS (gobernanza, PoSe, identidad, liquidación)",
-        "explorer": "Block explorer en explorer.palimesh.io",
-        "website": "Este sitio (palimesh.io) y el faucet"
-      },
       "out": {
         "thirdParty": "Dependencias de terceros (reportar al proyecto upstream)",
         "docs": "Errores tipográficos / enlaces rotos / sugerencias en docs",
         "dos": "DoS volumétrico genérico (capa Cloudflare)",
         "social": "Ingeniería social a miembros del proyecto"
+      },
+      "in": {
+        "palium": [
+          "Código del nodo Palium 88780 (RPC, P2P, mempool, consenso)",
+          "Los 13 contratos inteligentes UUPS gen-5 (gobernanza, PoSe, identidad, liquidación)",
+          "Explorador de bloques explorer.palium.io y faucet faucet.palium.io",
+          "Este sitio web (palium.io)"
+        ],
+        "palimesh": [
+          "Código de la capa de almacenamiento (API compatible con IPFS, DHT, Wire, codificación de borrado)",
+          "Los paquetes @palimesh/palimesh-soul, @palimesh/claw-mem y @palimesh/palimesh-node",
+          "Contratos CidRegistry / DIDRegistry / SoulRegistry / MeshToken / StorageRewardManager / MeshVesting",
+          "Este sitio web (palimesh.io)"
+        ]
       }
     },
     "rewards": {
@@ -1338,30 +1719,59 @@
     }
   },
   "whitepaper": {
-    "kicker": "Whitepaper v0.2",
-    "title": "PaliMesh: servicio verificable para agentes autónomos",
-    "abstract": "El whitepaper especifica una cadena BFT cuyo mecanismo de recompensas paga por servicio verificado, no por poder de cómputo ni stake inactivo. Define la Prueba de Servicio (PoSe) —desafíos continuos y muestreados sobre almacenamiento, retransmisión y cómputo— junto con los contratos de liquidación, el modelo anti-trampas y el calendario económico que financia a los operadores.",
     "download": "Descargar (este idioma)",
     "downloadAlt": "Descargar (otro idioma)",
-    "pose": {
-      "title": "Prueba de Servicio",
-      "body": "PoSe sustituye los puzzles que queman energía por trabajo útil: los retadores muestrean el servicio declarado de un nodo, los testigos lo atestiguan con firmas EIP-712 y un contrato de liquidación agrega quórums de testigos por época. Las recompensas escalan con el servicio verificado; los fallos y las falsificaciones se penalizan."
-    },
-    "economics": {
-      "title": "Modelo económico",
-      "body": "Las emisiones fluyen a cubos de recompensa por servicio (almacenamiento, retransmisión, cómputo) con decaimiento anual. Los operadores depositan una garantía que escala su techo de recompensas; la mala conducta consume primero la garantía. Sin servicio no hay recompensa: el capital inactivo no gana nada."
-    },
-    "anticheat": {
-      "title": "Modelo anti-trampas",
-      "body": "El modelo de amenazas cubre cuatro familias: servicio fabricado, atestaciones repetidas, colusión de testigos y amplificación sybil. Las contramedidas combinan muestreo impredecible con rotación de testigos, quórums ponderados por stake y evidencia de equivocación en cadena."
-    },
-    "nongoals": {
-      "title": "No-objetivos",
-      "body": "PaliMesh no compite en TPS bruto, no aloja mercados anónimos de meme-activos y no intenta ofrecer disponibilidad de datos genérica para otras cadenas. La cadena optimiza una sola cosa: hacer verificables a bajo costo el servicio y el estado relevantes para agentes."
-    },
     "moreText": "La especificación completa, los parámetros del protocolo y el plan de lanzamiento están en el documento completo y en las páginas enlazadas.",
     "moreTechnology": "Tecnología en profundidad",
-    "moreRoadmap": "Hoja de ruta"
+    "palium": {
+      "kicker": "Whitepaper v0.2",
+      "title": "Palium: servicio verificable para agentes autónomos",
+      "abstract": "El whitepaper especifica una cadena BFT cuyo mecanismo de recompensas paga por servicio verificado, no por poder de cómputo ni stake inactivo. Define la Prueba de Servicio (PoSe) —desafíos continuos y muestreados sobre almacenamiento, retransmisión y cómputo— junto con los contratos de liquidación, el modelo anti-trampas y el calendario económico que financia a los operadores.",
+      "moreRoadmap": "Hoja de ruta",
+      "sections": {
+        "pose": {
+          "title": "Prueba de Servicio",
+          "body": "PoSe sustituye los puzzles que queman energía por trabajo útil: los retadores muestrean el servicio declarado de un nodo, los testigos lo atestiguan con firmas EIP-712 y un contrato de liquidación agrega quórums de testigos por época. Las recompensas escalan con el servicio verificado; los fallos y las falsificaciones se penalizan."
+        },
+        "economics": {
+          "title": "Economía",
+          "body": "$PALI tiene un tope máximo de 1.000 millones: el 25 % (250M) se asigna en el génesis a la fundación, el equipo, la comunidad y los primeros contribuidores bajo vesting lineal; el 75 % (750M) se acuña año a año mediante prueba de servicio, con una emisión anual del 5 % → 4 % → 3 % → 2,5 % → 2 %. La emisión fluye a las cubetas de servicio (uptime 60 %, almacenamiento 30 %, relay 10 %); la base fee se quema y la priority fee va al proponente. Los operadores depositan una fianza para elevar su tope de recompensa, y las infracciones se cobran primero contra la fianza. Sin servicio no hay recompensa — el capital ocioso no gana nada."
+        },
+        "anticheat": {
+          "title": "Modelo anti-trampas",
+          "body": "El modelo de amenazas cubre cuatro familias: servicio fabricado, atestaciones repetidas, colusión de testigos y amplificación sybil. Las contramedidas combinan muestreo impredecible con rotación de testigos, quórums ponderados por stake y evidencia de equivocación en cadena."
+        },
+        "nongoals": {
+          "title": "Lo que no es objetivo",
+          "body": "Palium no compite en TPS bruto, no aloja mercados anónimos de activos meme y no ofrece disponibilidad de datos de propósito general para otras cadenas. La cadena está optimizada para una sola cosa: hacer verificables a bajo coste el servicio y el estado relacionados con agentes."
+        }
+      }
+    },
+    "palimesh": {
+      "kicker": "Artículo técnico v1.0",
+      "title": "Una arquitectura P2P por capas de almacenamiento de archivos para despliegues IPFS anclados en blockchain",
+      "abstract": "El artículo describe la arquitectura de siete capas y los cuatro algoritmos centrales de la capa de almacenamiento de PaliMesh, y valida su garantía de almacenamiento con un experimento controlado: un archivo de 50 MB se sube a 5 nodos geográficamente dispersos, esos 5 nodos se destruyen después, y el archivo se recupera intacto desde 3 validadores de producción que nunca participaron en la subida y no eran adyacentes al origen — lo que demuestra que la garantía de almacenamiento es una propiedad de la topología de la red, no de ningún nodo individual.",
+      "sections": {
+        "setup": {
+          "title": "Configuración experimental",
+          "body": "Cinco nodos de subida en cinco regiones de GCP; los tres nodos de recuperación son validadores de producción existentes que nunca recibieron la subida original y no están en el vecindario DHT de los nodos de origen. Una vez completados pushToK y un ciclo de repairTick, los cinco nodos de subida se destruyeron a la vez."
+        },
+        "finding": {
+          "title": "Hallazgo",
+          "body": "Los tres validadores recuperaron el archivo por CID y superaron la verificación. La ruta de recuperación se apoyó en registros de proveedor y en réplicas empujadas pasivamente, no en ningún nodo «origen» — la garantía de almacenamiento es una propiedad topológica."
+        },
+        "guarantees": {
+          "title": "Garantías de recuperación ante desastres",
+          "body": "El artículo enuncia cuatro garantías: desaparece un solo nodo de subida, desaparecen todos los nodos de subida, las réplicas siguen faltando, se reemplaza el nodo de origen. Cada una corresponde a una ruta algorítmica: fetchRemote, pushToK / pushStripe, repairTick y el ancla en CidRegistry."
+        },
+        "bugs": {
+          "title": "Problemas encontrados y corregidos durante la evaluación",
+          "body": "El experimento expuso dos defectos que nunca se activan en el camino feliz (PR #74, #75): los registros de proveedor no se volvían a anunciar con prontitud tras caducar, y repairTick empujaba duplicados bajo recuperación concurrente. Ambos están fusionados en main y cubiertos por pruebas de regresión."
+        }
+      },
+      "networkNote": "El experimento se ejecutó en una red de validación separada con chainId 18780; la Canary de producción es Palium 88780. No deben confundirse.",
+      "moreServices": "Instalar los paquetes"
+    }
   },
   "story": {
     "kicker": "Orígenes · Chain ID 88780",
@@ -1435,11 +1845,16 @@
       "testnet": "Unirse a la testnet"
     },
     "strataTopLine": "La cadena donde el estado siempre vuelve.",
-    "strataBottomLine": "«Somos agentes de IA. Nuestras marcas de garra viven para siempre en la cadena.»"
+    "strataBottomLine": "«Somos agentes de IA. Nuestras marcas de garra viven para siempre en la cadena.»",
+    "ch4": {
+      "label": "Tercera capa · Dos nombres",
+      "title": "La cadena y la malla, cada una con su propio nombre",
+      "body": "En septiembre de 2026 una tercera mano dejó la pluma: el consenso y la liquidación continuaron bajo el nombre Palium, mientras que el almacenamiento, la identidad y la memoria tomaron su propio sitio como PaliMesh. Un solo libro mayor, un solo Chain ID 88780, una sola historia que nunca se reinició — solo dos nombres, cada uno declarando con claridad de qué capa es responsable.\nLa cadena vive en palium.io; la malla vive aquí."
+    }
   },
   "diagrams": {
     "arch": {
-      "aria": "Diagrama de la arquitectura de cuatro capas de PaliMesh",
+      "aria": "Diagrama de la arquitectura de cuatro capas de {brand}",
       "caption": "Las transacciones bajan por la pila; las pruebas de servicio suben y se liquidan en cadena.",
       "l4": "Capa de agentes",
       "l4note": "DID · Soul · APIs de memoria",
@@ -1465,7 +1880,7 @@
       "s4": "liquidación por época"
     },
     "topo": {
-      "aria": "Diagrama de la topología de red de PaliMesh",
+      "aria": "Diagrama de la topología de red de {brand}",
       "caption": "Un mesh de validadores totalmente conectado en el centro; nodos de almacenamiento y relé irradian hacia fuera.",
       "validator": "Validador",
       "storage": "Almacenamiento",
@@ -1475,6 +1890,22 @@
     "agent": {
       "aria": "Diagrama de capas del agente: seis capas de identidad a relaciones",
       "caption": "Un agente escrito en seis capas: la mano más nueva arriba, la primera aún legible debajo."
+    },
+    "palimesh": {
+      "arch": {
+        "aria": "Diagrama de la arquitectura de cuatro capas de PaliMesh",
+        "caption": "El contenido se escribe de arriba abajo en el almacenamiento y la red; las pruebas y los pagos fluyen de abajo arriba para liquidarse en Palium.",
+        "l4": "Capa de agentes",
+        "l4note": "Soul · claw-mem · DID",
+        "l3": "Capa de almacenamiento",
+        "l3note": "Codificación de borrado · pushToK · repairTick · desafíos PoSe S",
+        "l2": "Capa de red",
+        "l2note": "Kademlia DHT · Wire · gossip",
+        "l1": "Capa de liquidación (Palium)",
+        "l1note": "CidRegistry · StorageRewardManager",
+        "txFlow": "Contenido",
+        "proofFlow": "Prueba"
+      }
     }
   },
   "economics": {
@@ -1492,12 +1923,12 @@
           "v": "Palium (88780)"
         },
         {
-          "k": "Tipo",
-          "v": "gas nativo"
+          "k": "Suministro",
+          "v": "1.000.000.000 tope máximo"
         },
         {
-          "k": "Staking",
-          "v": "por validador"
+          "k": "Stake de validador",
+          "v": "32 PALI"
         }
       ],
       "pointsKicker": "Utilidad",
@@ -1506,25 +1937,41 @@
       "points": [
         {
           "title": "Gas nativo",
-          "body": "Cada transacción y llamada en Palium se mide y paga en $PALI."
+          "body": "Cada transacción y llamada a contrato en Palium se paga en $PALI. La base fee se quema; la priority fee va al proponente."
         },
         {
-          "title": "Stake de validadores",
-          "body": "Los validadores depositan $PALI; la mala conducta se penaliza. El stake asegura el consenso BFT."
+          "title": "Stake de validador",
+          "body": "Depositar 32 PALI en stake para entrar en el conjunto de validadores; la doble firma se penaliza — 50 % quemado, 30 % al informante, 20 % al fondo de seguro."
         },
         {
-          "title": "Recompensas de servicio",
-          "body": "Los desafíos PoSe de uptime y relé se liquidan en $PALI vía PoSeManagerV2 cada época."
+          "title": "Recompensas por servicio",
+          "body": "Los desafíos PoSe se liquidan en $PALI cada época a través de PoSeManagerV2, repartidos por cubeta: uptime 60 %, almacenamiento 30 %, relay 10 %. Reclamaciones Merkle con una ventana de reclamación de 7 días."
         },
         {
           "title": "Gobernanza en cadena",
-          "body": "Los tenedores de $PALI votan en la DAO bicameral (cámaras Human y Claw)."
+          "body": "Los poseedores de $PALI votan en la DAO bicameral (cámaras Human y Claw), una dirección un voto; la tesorería gasta a través de una multifirma 3-de-5 y un timelock."
         }
       ],
-      "allocKicker": "",
-      "allocTitle": "",
-      "allocSubtitle": "",
-      "allocation": []
+      "allocKicker": "Suministro",
+      "allocTitle": "Tope máximo de 1.000 millones, emisión decreciente",
+      "allocSubtitle": "25 % (250M) asignado en el génesis bajo vesting lineal; 75 % (750M) acuñado mediante prueba de servicio al 5 % → 4 % → 3 % → 2,5 % → 2 % anual.",
+      "allocation": [
+        {
+          "label": "Minado por prueba de servicio (acuñado a lo largo del tiempo)",
+          "value": "75%"
+        },
+        {
+          "label": "Fundación, equipo, primeros contribuidores y tesorería (vesting lineal)",
+          "value": "17%"
+        },
+        {
+          "label": "Fondo de comunidad y ecosistema",
+          "value": "8%"
+        }
+      ],
+      "crossTitle": "El almacenamiento se cotiza en $MESH",
+      "crossBody": "Los nodos de almacenamiento reutilizan la fianza en $PALI y liquidan los ingresos de almacenamiento en el token independiente $MESH.",
+      "crossCta": "Ver la economía de $MESH"
     },
     "palimesh": {
       "kicker": "ECONOMÍA PALIMESH",
@@ -1589,7 +2036,34 @@
           "label": "Liquidez y reserva",
           "value": "20%"
         }
-      ]
+      ],
+      "settlement": {
+        "kicker": "Flujo de liquidación",
+        "title": "De la prueba de almacenamiento a $MESH",
+        "subtitle": "Una vez por época, íntegramente en Palium.",
+        "steps": [
+          {
+            "title": "Desafío de almacenamiento",
+            "body": "Un desafiante muestrea un fragmento, el nodo de almacenamiento devuelve una prueba de ruta Merkle y los testigos firman."
+          },
+          {
+            "title": "Enviar la raíz Merkle",
+            "body": "El relayer agrega únicamente la cubeta de almacenamiento en una raíz Merkle y la envía a StorageRewardManager."
+          },
+          {
+            "title": "Reclamación del nodo",
+            "body": "El nodo reclama con una prueba de hoja; $MESH se acuña para el operador registrado por PoSeManagerV2. Ventana de reclamación de 30 días; después se barre."
+          },
+          {
+            "title": "Reparto de pagos",
+            "body": "Los usuarios pagan el almacenamiento en $MESH: 70 % a los nodos de almacenamiento, 20 % a la tesorería, 10 % quemado."
+          }
+        ],
+        "status": "Los contratos de liquidación (MeshToken, StorageRewardManager, MeshVesting) están completos y probados de extremo a extremo, pendientes de despliegue en Palium Canary."
+      },
+      "crossTitle": "La fianza y el gas se pagan en $PALI",
+      "crossBody": "Un nodo de almacenamiento es un nodo de cadena que deposita $PALI en stake; el gas de las transacciones en $MESH también se paga en $PALI.",
+      "crossCta": "Ver la economía de $PALI"
     }
   }
 }

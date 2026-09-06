@@ -3,10 +3,12 @@
 import { useState } from 'react'
 import { Link } from '@/i18n/routing'
 
-type MenuItem = { href: string; label: string }
+export type MobileMenuItem = { href: string; label: string; external?: boolean }
 
-export function MobileMenu({ items }: { items: MenuItem[] }) {
+export function MobileMenu({ items }: { items: MobileMenuItem[] }) {
   const [open, setOpen] = useState(false)
+  const itemClass =
+    'block min-h-11 px-4 py-3 rounded-md text-text-secondary hover:text-accent-blue hover:bg-accent-blue/5 font-body text-base transition-colors'
 
   return (
     <div className="lg:hidden">
@@ -34,16 +36,17 @@ export function MobileMenu({ items }: { items: MenuItem[] }) {
             className="mobile-scroll-menu fixed top-[68px] left-3 right-3 z-50 py-4 px-4 space-y-1 shadow-xl"
             aria-label="Mobile navigation"
           >
-            {items.map((item) => (
-              <Link
-                key={item.href}
-                href={item.href}
-                onClick={() => setOpen(false)}
-                className="block min-h-11 px-4 py-3 rounded-md text-text-secondary hover:text-accent-blue hover:bg-accent-blue/5 font-body text-base transition-colors"
-              >
-                {item.label}
-              </Link>
-            ))}
+            {items.map((item) =>
+              item.external ? (
+                <a key={item.href} href={item.href} className={itemClass} onClick={() => setOpen(false)}>
+                  {item.label} ↗
+                </a>
+              ) : (
+                <Link key={item.href} href={item.href} onClick={() => setOpen(false)} className={itemClass}>
+                  {item.label}
+                </Link>
+              ),
+            )}
           </nav>
         </>
       )}

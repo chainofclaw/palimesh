@@ -3,7 +3,7 @@
 @tailwind utilities;
 
 /* ============================================================
-   Palimesh design system — palimpsest paper theme (light)
+   Palium / PaliMesh shared design system — palimpsest paper theme (light)
    Token names are stable; legacy utilities are redefined so
    pages not yet redesigned inherit the new look automatically.
    ============================================================ */
@@ -91,7 +91,7 @@ body::before {
   isolation: isolate;
   background:
     linear-gradient(rgba(255, 248, 224, 0.13), rgba(107, 70, 31, 0.035)),
-    url('/art/palimesh-parchment-bg.webp') center top / 1440px 960px repeat;
+    url('/art/parchment-bg.webp') center top / 1440px 960px repeat;
   background-attachment: fixed, fixed;
 }
 

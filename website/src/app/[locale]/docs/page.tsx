@@ -4,12 +4,42 @@ import { useTranslations } from 'next-intl'
 import { PageHero, AntiqueDivider } from '@/components/shared/Manuscript'
 import { ScrollInk } from '@/components/ink/InkArt'
 import { Link } from '@/i18n/routing'
+import { site } from '@/config/site'
+
+type QuickStartCardData = {
+  icon: string
+  title: string
+  description: string
+  code: string
+  advancedLabel?: string
+  advancedCode?: string
+}
+type DocLink = { label: string; href: string }
+type DocCardData = { title: string; description: string; links: DocLink[] }
+type GuideCardData = { icon: string; title: string; items: string[] }
+
+const RESOURCES = [
+  { key: 'technology', href: '/technology' },
+  { key: 'whitepaper', href: '/whitepaper' },
+  { key: 'economics', href: '/economics' },
+  { key: 'security', href: '/security' },
+] as const
+
+const STATUS_KEYS = [
+  'chainEngine', 'p2pNetwork', 'evmExecution', 'jsonRpc', 'wsRpc',
+  'poseProtocol', 'didRegistry', 'storage', 'runtime', 'tests',
+] as const
 
 export default function DocsPage() {
   const t = useTranslations('docs')
+  const tv = useTranslations(`docs.${site.variant}`)
+  const quickStart = tv.raw('quickStart.cards') as QuickStartCardData[]
+  const coreDocs = tv.raw('coreDocs.cards') as DocCardData[]
+  const devGuides = tv.raw('devGuides.cards') as GuideCardData[]
+
   return (
     <div className="relative min-h-screen">
-      <PageHero kicker="DOCUMENTATION_v2.0" title={t('title')} subtitle={t('subtitle')} mark={<ScrollInk size={40} />} />
+      <PageHero kicker="DOCUMENTATION_v2.0" title={t('title')} subtitle={tv('subtitle')} mark={<ScrollInk size={40} />} />
 
       <div className="container mx-auto px-4 py-16 max-w-6xl">
         {/* Quick Start */}
@@ -17,34 +47,14 @@ export default function DocsPage() {
         <section className="mb-20">
           <div className="text-center mb-12 fade-in-up">
             <h2 className="text-3xl md:text-4xl font-display font-bold mb-2">
-              <span>{t('quickStart.title')}</span>
+              <span>{tv('quickStart.title')}</span>
             </h2>
             <div className="w-16 h-px bg-line mx-auto mt-4 rounded-full" />
           </div>
           <div className="grid md:grid-cols-3 gap-6">
-            <QuickStartCard
-              icon={t('quickStart.runNode.icon')}
-              title={t('quickStart.runNode.title')}
-              description={t('quickStart.runNode.description')}
-              code={t('quickStart.runNode.code')}
-              advancedLabel={t('quickStart.runNode.advancedLabel')}
-              advancedCode={t('quickStart.runNode.advancedCode')}
-              delay="0"
-            />
-            <QuickStartCard
-              icon={t('quickStart.deployContract.icon')}
-              title={t('quickStart.deployContract.title')}
-              description={t('quickStart.deployContract.description')}
-              code={t('quickStart.deployContract.code')}
-              delay="0.1"
-            />
-            <QuickStartCard
-              icon={t('quickStart.launchExplorer.icon')}
-              title={t('quickStart.launchExplorer.title')}
-              description={t('quickStart.launchExplorer.description')}
-              code={t('quickStart.launchExplorer.code')}
-              delay="0.2"
-            />
+            {quickStart.map((card, i) => (
+              <QuickStartCard key={card.title} {...card} delay={(i * 0.1).toFixed(1)} />
+            ))}
           </div>
         </section>
 
@@ -53,46 +63,14 @@ export default function DocsPage() {
         <section className="mb-20">
           <div className="text-center mb-12 fade-in-up">
             <h2 className="text-3xl md:text-4xl font-display font-bold mb-2">
-              {t('coreDocs.title')}
+              {tv('coreDocs.title')}
             </h2>
             <div className="w-16 h-px bg-line mx-auto mt-4 rounded-full" />
           </div>
           <div className="grid md:grid-cols-2 gap-6">
-            <DocCard
-              title={t('coreDocs.whitepaper.title')}
-              description={t('coreDocs.whitepaper.description')}
-              links={[
-                { label: t('coreDocs.whitepaper.link'), href: '/plan' },
-              ]}
-              delay="0"
-            />
-            <DocCard
-              title={t('coreDocs.architecture.title')}
-              description={t('coreDocs.architecture.description')}
-              links={(t.raw('coreDocs.architecture.links') as string[]).map((label, i) => ({
-                label,
-                href: '#',
-              }))}
-              delay="0.1"
-            />
-            <DocCard
-              title={t('coreDocs.algorithms.title')}
-              description={t('coreDocs.algorithms.description')}
-              links={(t.raw('coreDocs.algorithms.links') as string[]).map((label, i) => ({
-                label,
-                href: '#',
-              }))}
-              delay="0.2"
-            />
-            <DocCard
-              title={t('coreDocs.antiSybil.title')}
-              description={t('coreDocs.antiSybil.description')}
-              links={(t.raw('coreDocs.antiSybil.links') as string[]).map((label, i) => ({
-                label,
-                href: '#',
-              }))}
-              delay="0.3"
-            />
+            {coreDocs.map((card, i) => (
+              <DocCard key={card.title} {...card} delay={(i * 0.1).toFixed(1)} />
+            ))}
           </div>
         </section>
 
@@ -101,35 +79,14 @@ export default function DocsPage() {
         <section className="mb-20">
           <div className="text-center mb-12 fade-in-up">
             <h2 className="text-3xl md:text-4xl font-display font-bold mb-2">
-              {t('devGuides.title')}
+              {tv('devGuides.title')}
             </h2>
             <div className="w-16 h-px bg-line mx-auto mt-4 rounded-full" />
           </div>
           <div className="grid md:grid-cols-2 gap-6">
-            <GuideCard
-              icon={t('devGuides.nodeOps.icon')}
-              title={t('devGuides.nodeOps.title')}
-              items={t.raw('devGuides.nodeOps.items') as string[]}
-              delay="0"
-            />
-            <GuideCard
-              icon={t('devGuides.contracts.icon')}
-              title={t('devGuides.contracts.title')}
-              items={t.raw('devGuides.contracts.items') as string[]}
-              delay="0.1"
-            />
-            <GuideCard
-              icon={t('devGuides.rpcApi.icon')}
-              title={t('devGuides.rpcApi.title')}
-              items={t.raw('devGuides.rpcApi.items') as string[]}
-              delay="0.2"
-            />
-            <GuideCard
-              icon={t('devGuides.aiAgent.icon')}
-              title={t('devGuides.aiAgent.title')}
-              items={t.raw('devGuides.aiAgent.items') as string[]}
-              delay="0.3"
-            />
+            {devGuides.map((card, i) => (
+              <GuideCard key={card.title} {...card} delay={(i * 0.1).toFixed(1)} />
+            ))}
           </div>
         </section>
 
@@ -144,58 +101,21 @@ export default function DocsPage() {
           </div>
           <div className="bg-bg-elevated rounded-xl p-8 border border-text-muted/10 fade-in-delay-1">
             <div className="grid md:grid-cols-3 gap-6 mb-6">
-              <StatusItem
-                label={t('implementationStatus.chainEngine.label')}
-                status={t('implementationStatus.chainEngine.status')}
-                details={t('implementationStatus.chainEngine.details')}
-              />
-              <StatusItem
-                label={t('implementationStatus.p2pNetwork.label')}
-                status={t('implementationStatus.p2pNetwork.status')}
-                details={t('implementationStatus.p2pNetwork.details')}
-              />
-              <StatusItem
-                label={t('implementationStatus.evmExecution.label')}
-                status={t('implementationStatus.evmExecution.status')}
-                details={t('implementationStatus.evmExecution.details')}
-              />
-              <StatusItem
-                label={t('implementationStatus.jsonRpc.label')}
-                status={t('implementationStatus.jsonRpc.status')}
-                details={t('implementationStatus.jsonRpc.details')}
-              />
-              <StatusItem
-                label={t('implementationStatus.wsRpc.label')}
-                status={t('implementationStatus.wsRpc.status')}
-                details={t('implementationStatus.wsRpc.details')}
-              />
-              <StatusItem
-                label={t('implementationStatus.poseProtocol.label')}
-                status={t('implementationStatus.poseProtocol.status')}
-                details={t('implementationStatus.poseProtocol.details')}
-              />
-              <StatusItem
-                label={t('implementationStatus.storage.label')}
-                status={t('implementationStatus.storage.status')}
-                details={t('implementationStatus.storage.details')}
-              />
-              <StatusItem
-                label={t('implementationStatus.runtime.label')}
-                status={t('implementationStatus.runtime.status')}
-                details={t('implementationStatus.runtime.details')}
-              />
-              <StatusItem
-                label={t('implementationStatus.tests.label')}
-                status={t('implementationStatus.tests.status')}
-                details={t('implementationStatus.tests.details')}
-              />
+              {STATUS_KEYS.map((k) => (
+                <StatusItem
+                  key={k}
+                  label={t(`implementationStatus.${k}.label`)}
+                  status={t(`implementationStatus.${k}.status`)}
+                  details={t(`implementationStatus.${k}.details`)}
+                />
+              ))}
             </div>
             <div className="text-center pt-6 border-t border-text-muted/10">
               <p className="text-sm text-text-secondary mb-6 font-body">
                 {t('implementationStatus.detailsNote')}
               </p>
               <a
-                href="https://github.com/palimesh/palimesh"
+                href={site.github}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="group inline-flex items-center gap-3 px-8 py-4 rounded-lg font-display font-semibold border-2 border-accent-cyan/50 bg-accent-cyan/5 hover:bg-accent-cyan/10 hover:border-accent-cyan transition-all"
@@ -232,7 +152,7 @@ export default function DocsPage() {
               title={t('tools.explorer.title')}
               description={t('tools.explorer.description')}
               features={t.raw('tools.explorer.features') as string[]}
-              link="https://explorer.palium.io"
+              link={site.chain.explorer}
               openToolText={t('tools.openTool')}
               delay="0.1"
             />
@@ -256,26 +176,14 @@ export default function DocsPage() {
                 <span>{t('resources.title')}</span>
               </h2>
               <div className="grid md:grid-cols-2 gap-6">
-                <ResourceLink
-                  title={t('resources.technology.title')}
-                  href="/technology"
-                  description={t('resources.technology.description')}
-                />
-                <ResourceLink
-                  title={t('resources.roadmap.title')}
-                  href="/roadmap"
-                  description={t('resources.roadmap.description')}
-                />
-                <ResourceLink
-                  title={t('resources.network.title')}
-                  href="/network"
-                  description={t('resources.network.description')}
-                />
-                <ResourceLink
-                  title={t('resources.about.title')}
-                  href="/plan"
-                  description={t('resources.about.description')}
-                />
+                {RESOURCES.map((r) => (
+                  <ResourceLink
+                    key={r.key}
+                    title={t(`resources.${r.key}.title`)}
+                    href={r.href}
+                    description={t(`resources.${r.key}.description`)}
+                  />
+                ))}
               </div>
             </div>
           </div>
@@ -344,7 +252,7 @@ function DocCard({
 }: {
   title: string
   description: string
-  links: { label: string; href: string }[]
+  links: DocLink[]
   delay: string
 }) {
   return (
@@ -361,16 +269,20 @@ function DocCard({
         {description}
       </p>
       <div className="space-y-2">
-        {links.map((link, i) => (
-          <a
-            key={i}
-            href={link.href}
-            className="group/link flex items-center gap-2 text-accent-cyan hover:text-accent-blue font-display font-medium text-sm transition-colors"
-          >
-            <span className="inline-block group-hover/link:translate-x-1 transition-transform">→</span>
-            <span>{link.label}</span>
-          </a>
-        ))}
+        {links.map((link) => {
+          const cls = 'group/link flex items-center gap-2 text-accent-cyan hover:text-accent-blue font-display font-medium text-sm transition-colors'
+          const inner = (
+            <>
+              <span className="inline-block group-hover/link:translate-x-1 transition-transform">→</span>
+              <span>{link.label}</span>
+            </>
+          )
+          return link.href.startsWith('/') ? (
+            <Link key={link.href} href={link.href} className={cls}>{inner}</Link>
+          ) : (
+            <a key={link.href} href={link.href} target="_blank" rel="noopener noreferrer" className={cls}>{inner}</a>
+          )
+        })}
       </div>
     </div>
   )

@@ -1,13 +1,32 @@
 'use client'
 
-import { useTranslations } from 'next-intl'
+import { useLocale, useTranslations } from 'next-intl'
 import { AntiqueDivider } from '@/components/shared/Manuscript'
 import { ArchitectureDiagram } from '@/components/diagrams/ArchitectureDiagram'
 import { PoseFlowDiagram } from '@/components/diagrams/PoseFlowDiagram'
+import { Link } from '@/i18n/routing'
+import { site, crossSiteUrl } from '@/config/site'
+
+const PALIUM_LAYERS = [
+  { key: 'layer1', color: 'blue' },
+  { key: 'layer2', color: 'indigo' },
+  { key: 'layer3', color: 'purple' },
+  { key: 'layer4', color: 'pink' },
+] as const
+
+const POSE_STEPS = ['step1', 'step2', 'step3', 'step4', 'step5'] as const
+const COMPARISON_ROWS = [
+  { key: 'barrier', better: true },
+  { key: 'centralization', better: true },
+  { key: 'energy', better: false },
+  { key: 'reward', better: true },
+  { key: 'decentralization', better: true },
+  { key: 'automation', better: true },
+] as const
+const TECH_STACK_GROUPS = ['execution', 'consensus', 'pose', 'storage'] as const
 
 export default function TechnologyPage() {
   const t = useTranslations('technology')
-  const td = useTranslations('diagrams')
 
   return (
     <div className="relative">
@@ -17,309 +36,395 @@ export default function TechnologyPage() {
           <div className="max-w-3xl mx-auto text-center">
             <p className="kicker mb-4">TECHNICAL_ARCHITECTURE</p>
             <h1 className="display-xl font-display font-bold mb-5">
-              <span className="ink-underline">{t('title')}</span>
+              <span className="ink-underline">{t(`${site.variant}.title`)}</span>
             </h1>
-            <p className="text-lg text-text-secondary leading-relaxed">{t('subtitle')}</p>
+            <p className="text-lg text-text-secondary leading-relaxed">{t(`${site.variant}.subtitle`)}</p>
           </div>
         </div>
       </section>
 
       <div className="container mx-auto px-4 py-16 max-w-6xl">
-        {/* Architecture Layers */}
-        <AntiqueDivider />
-        <section className="mb-20">
-          <div className="text-center mb-12 fade-in-up">
-            <h2 className="text-3xl md:text-4xl font-display font-bold mb-2">
-              <span>{t('layersTitle')}</span>
-            </h2>
-            <div className="w-16 h-px bg-line mx-auto mt-4 rounded-full" />
-          </div>
-          <ArchitectureDiagram
-            labels={{
-              aria: td('arch.aria'), caption: td('arch.caption'),
-              l4: td('arch.l4'), l4note: td('arch.l4note'),
-              l3: td('arch.l3'), l3note: td('arch.l3note'),
-              l2: td('arch.l2'), l2note: td('arch.l2note'),
-              l1: td('arch.l1'), l1note: td('arch.l1note'),
-              txFlow: td('arch.txFlow'), proofFlow: td('arch.proofFlow'),
-            }}
-          />
-          <div className="space-y-6">
+        {site.variant === 'palium' ? <ChainBody /> : <StorageBody />}
+      </div>
+    </div>
+  )
+}
+
+// ─── Palium(公链站)────────────────────────────────────────────
+
+function ChainBody() {
+  const t = useTranslations('technology')
+  const tp = useTranslations('technology.palium')
+  const td = useTranslations('diagrams')
+  const locale = useLocale()
+
+  return (
+    <>
+      {/* Architecture Layers */}
+      <AntiqueDivider />
+      <section className="mb-20">
+        <SectionTitle>{tp('layersTitle')}</SectionTitle>
+        <ArchitectureDiagram
+          labels={{
+            aria: td('arch.aria'), caption: td('arch.caption'),
+            l4: td('arch.l4'), l4note: td('arch.l4note'),
+            l3: td('arch.l3'), l3note: td('arch.l3note'),
+            l2: td('arch.l2'), l2note: td('arch.l2note'),
+            l1: td('arch.l1'), l1note: td('arch.l1note'),
+            txFlow: td('arch.txFlow'), proofFlow: td('arch.proofFlow'),
+          }}
+        />
+        <div className="space-y-6">
+          {PALIUM_LAYERS.map(({ key, color }) => (
             <LayerCard
-              number={t('layer1.number')}
-              title={t('layer1.title')}
-              subtitle={t('layer1.subtitle')}
-              color="blue"
-              features={t.raw('layer1.features') as string[]}
-              note={t('layer1.note')}
+              key={key}
+              number={tp(`${key}.number`)}
+              title={tp(`${key}.title`)}
+              subtitle={tp(`${key}.subtitle`)}
+              color={color}
+              features={tp.raw(`${key}.features`) as string[]}
+              note={tp(`${key}.note`)}
             />
+          ))}
+        </div>
+      </section>
 
-            <LayerCard
-              number={t('layer2.number')}
-              title={t('layer2.title')}
-              subtitle={t('layer2.subtitle')}
-              color="indigo"
-              features={t.raw('layer2.features') as string[]}
-              note={t('layer2.note')}
-            />
+      {/* PoSe Protocol Deep Dive */}
+      <AntiqueDivider />
+      <section className="mb-20">
+        <SectionTitle>{t('poseProtocol.title')}</SectionTitle>
 
-            <LayerCard
-              number={t('layer3.number')}
-              title={t('layer3.title')}
-              subtitle={t('layer3.subtitle')}
-              color="purple"
-              features={t.raw('layer3.features') as string[]}
-              note={t('layer3.note')}
-            />
+        <PoseFlowDiagram
+          labels={{
+            aria: td('pose.aria'), caption: td('pose.caption'),
+            challenger: td('pose.challenger'), node: td('pose.node'),
+            witness: td('pose.witness'), contract: td('pose.contract'),
+            s1: td('pose.s1'), s2: td('pose.s2'), s3: td('pose.s3'), s4: td('pose.s4'),
+          }}
+        />
 
-            <LayerCard
-              number={t('layer4.number')}
-              title={t('layer4.title')}
-              subtitle={t('layer4.subtitle')}
-              color="pink"
-              features={t.raw('layer4.features') as string[]}
-              note={t('layer4.note')}
-            />
-          </div>
-        </section>
-
-        {/* PoSe Protocol Deep Dive */}
-        <AntiqueDivider />
-        <section className="mb-20">
-          <div className="text-center mb-12 fade-in-up">
-            <h2 className="text-3xl md:text-4xl font-display font-bold mb-2">
-              <span>{t('poseProtocol.title')}</span>
-            </h2>
-            <div className="w-16 h-px bg-line mx-auto mt-4 rounded-full" />
-          </div>
-
-          <PoseFlowDiagram
-            labels={{
-              aria: td('pose.aria'), caption: td('pose.caption'),
-              challenger: td('pose.challenger'), node: td('pose.node'),
-              witness: td('pose.witness'), contract: td('pose.contract'),
-              s1: td('pose.s1'), s2: td('pose.s2'), s3: td('pose.s3'), s4: td('pose.s4'),
-            }}
-          />
-
-          <div className="space-y-8">
-            {/* Challenge Flow */}
-            <div className="relative bg-bg-elevated p-8 rounded-xl border border-accent-blue/30 hover:border-accent-blue/50 transition-all duration-500 fade-in-delay-1">
-              <h3 className="text-2xl font-display font-semibold mb-6 text-accent-blue">{t('poseProtocol.challengeFlow')}</h3>
-              <div className="space-y-4">
+        <div className="space-y-8">
+          {/* Challenge Flow */}
+          <div className="relative bg-bg-elevated p-8 rounded-xl border border-accent-blue/30 hover:border-accent-blue/50 transition-all duration-500 fade-in-delay-1">
+            <h3 className="text-2xl font-display font-semibold mb-6 text-accent-blue">{t('poseProtocol.challengeFlow')}</h3>
+            <div className="space-y-4">
+              {POSE_STEPS.map((s, i) => (
                 <FlowStep
-                  step="1"
-                  title={t('poseProtocol.step1.title')}
-                  description={t('poseProtocol.step1.description')}
-                  details={t.raw('poseProtocol.step1.details') as string[]}
+                  key={s}
+                  step={String(i + 1)}
+                  title={t(`poseProtocol.${s}.title`)}
+                  description={t(`poseProtocol.${s}.description`)}
+                  details={t.raw(`poseProtocol.${s}.details`) as string[]}
                 />
-                <FlowStep
-                  step="2"
-                  title={t('poseProtocol.step2.title')}
-                  description={t('poseProtocol.step2.description')}
-                  details={t.raw('poseProtocol.step2.details') as string[]}
-                />
-                <FlowStep
-                  step="3"
-                  title={t('poseProtocol.step3.title')}
-                  description={t('poseProtocol.step3.description')}
-                  details={t.raw('poseProtocol.step3.details') as string[]}
-                />
-                <FlowStep
-                  step="4"
-                  title={t('poseProtocol.step4.title')}
-                  description={t('poseProtocol.step4.description')}
-                  details={t.raw('poseProtocol.step4.details') as string[]}
-                />
-                <FlowStep
-                  step="5"
-                  title={t('poseProtocol.step5.title')}
-                  description={t('poseProtocol.step5.description')}
-                  details={t.raw('poseProtocol.step5.details') as string[]}
-                />
-              </div>
+              ))}
             </div>
+          </div>
 
-            {/* Scoring Formulas */}
-            <div className="fade-in-delay-2">
-              <h3 className="text-2xl font-display font-semibold mb-6 text-text-primary">{t('poseProtocol.scoringTitle')}</h3>
-              <div className="grid md:grid-cols-2 gap-6">
-                <FormulaCard
-                  title={t('poseProtocol.uptimeScore.title')}
-                  formula={t('poseProtocol.uptimeScore.formula')}
-                  variables={t.raw('poseProtocol.uptimeScore.variables') as string[]}
-                  rationale={t('poseProtocol.uptimeScore.rationale')}
-                />
-                <FormulaCard
-                  title={t('poseProtocol.storageScore.title')}
-                  formula={t('poseProtocol.storageScore.formula')}
-                  variables={t.raw('poseProtocol.storageScore.variables') as string[]}
-                  rationale={t('poseProtocol.storageScore.rationale')}
-                />
-              </div>
+          {/* Scoring Formulas */}
+          <div className="fade-in-delay-2">
+            <h3 className="text-2xl font-display font-semibold mb-6 text-text-primary">{t('poseProtocol.scoringTitle')}</h3>
+            <div className="grid md:grid-cols-2 gap-6">
+              <FormulaCard
+                title={t('poseProtocol.uptimeScore.title')}
+                formula={t('poseProtocol.uptimeScore.formula')}
+                variables={t.raw('poseProtocol.uptimeScore.variables') as string[]}
+                rationale={t('poseProtocol.uptimeScore.rationale')}
+              />
+              <FormulaCard
+                title={t('poseProtocol.storageScore.title')}
+                formula={t('poseProtocol.storageScore.formula')}
+                variables={t.raw('poseProtocol.storageScore.variables') as string[]}
+                rationale={t('poseProtocol.storageScore.rationale')}
+              />
             </div>
+          </div>
 
-            {/* Anti-Sybil */}
-            <div className="relative bg-bg-elevated p-6 rounded-lg border border-accent-cyan/30 hover:border-accent-cyan/50 transition-all duration-500 fade-in-delay-3">
-              <h3 className="text-xl font-display font-semibold mb-4 text-accent-cyan">{t('poseProtocol.antiSybilTitle')}</h3>
-              <div className="grid md:grid-cols-2 gap-4">
-                <ul className="space-y-2 text-text-secondary font-body">
-                  {(t.raw('poseProtocol.antiSybilItems') as string[]).slice(0, 4).map((item, i) => (
-                    <li key={i} className="flex items-start gap-2">
-                      <span className="text-accent-cyan mt-1">▸</span>
-                      <span>{item}</span>
-                    </li>
+          {/* Anti-Sybil */}
+          <AntiSybilCard title={t('poseProtocol.antiSybilTitle')} items={t.raw('poseProtocol.antiSybilItems') as string[]} />
+        </div>
+      </section>
+
+      {/* Rollup Evolution */}
+      <AntiqueDivider />
+      <section className="mb-20">
+        <SectionTitle subtitle={tp('rollup.subtitle')}>{tp('rollup.title')}</SectionTitle>
+        <div className="vellum-card p-8 fade-in-up">
+          <ul className="grid md:grid-cols-2 gap-4 mb-6">
+            {(tp.raw('rollup.items') as string[]).map((item, i) => (
+              <li key={i} className="flex items-start gap-3 text-text-secondary font-body">
+                <span className="text-accent-cyan mt-1 font-bold">✓</span>
+                <span>{item}</span>
+              </li>
+            ))}
+          </ul>
+          <div className="relative bg-bg-secondary/50 p-4 rounded-lg border-l-4 border-accent-purple/50">
+            <p className="text-sm text-text-muted italic font-body">{tp('rollup.note')}</p>
+          </div>
+        </div>
+      </section>
+
+      {/* Protocol Parameters */}
+      <AntiqueDivider />
+      <section className="mb-20">
+        <SectionTitle>{tp('params.title')}</SectionTitle>
+        <div className="grid md:grid-cols-3 gap-6">
+          {(tp.raw('params.items') as { k: string; v: string; d: string }[]).map((p) => (
+            <MetricCard key={p.k} title={p.k} value={p.v} description={p.d} />
+          ))}
+        </div>
+      </section>
+
+      {/* Comparison */}
+      <AntiqueDivider />
+      <section className="mb-20">
+        <SectionTitle>{t('comparison.title')}</SectionTitle>
+        <div className="overflow-x-auto fade-in-delay-1">
+          <table className="min-w-full bg-bg-elevated border border-text-muted/20 rounded-lg overflow-hidden">
+            <thead className="bg-bg-secondary/50">
+              <tr>
+                <th className="px-6 py-4 text-left text-sm font-display font-semibold text-text-primary">{t('comparison.dimensions.barrier')}</th>
+                <th className="px-6 py-4 text-left text-sm font-display font-semibold text-text-primary">PoW</th>
+                <th className="px-6 py-4 text-left text-sm font-display font-semibold text-text-primary">PoS</th>
+                <th className="px-6 py-4 text-left text-sm font-display font-semibold text-accent-cyan border-l-2 border-accent-cyan/30">{t('comparison.brandHeader')}</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-text-muted/10">
+              {COMPARISON_ROWS.map(({ key, better }) => (
+                <ComparisonRow
+                  key={key}
+                  dimension={t(`comparison.dimensions.${key}`)}
+                  pow={t(`comparison.pow.${key}`)}
+                  pos={t(`comparison.pos.${key}`)}
+                  coc={t(`comparison.coc.${key}`)}
+                  paliBetter={better}
+                />
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      {/* Tech Stack */}
+      <section className="mb-20">
+        <SectionTitle>{t('techStack.title')}</SectionTitle>
+        <div className="grid md:grid-cols-2 gap-6">
+          {TECH_STACK_GROUPS.map((g) => (
+            <TechStackCard key={g} title={t(`techStack.${g}.title`)} items={t.raw(`techStack.${g}.items`) as string[]} />
+          ))}
+        </div>
+      </section>
+
+      {/* CTA */}
+      <section className="pb-8">
+        <div className="sheet-stack">
+          <div className="sheet p-8 text-center">
+            <div className="flex flex-wrap justify-center gap-3 mb-5">
+              <Link href="/whitepaper" className="seal-button text-sm">{tp('ctaWhitepaper')}</Link>
+              <Link href="/testnet" className="ink-button text-sm">{tp('ctaTestnet')} →</Link>
+            </div>
+            <a
+              href={crossSiteUrl(locale, '/technology')}
+              className="text-sm text-text-muted hover:text-accent-blue transition-colors"
+            >
+              {tp('storageElsewhere')} ↗
+            </a>
+          </div>
+        </div>
+      </section>
+    </>
+  )
+}
+
+// ─── PaliMesh(存储站)──────────────────────────────────────────
+
+function StorageBody() {
+  const tm = useTranslations('technology.palimesh')
+  const td = useTranslations('diagrams.palimesh')
+  const layers = tm.raw('layers') as { name: string; note: string }[]
+  const algorithms = tm.raw('algorithms.items') as { name: string; body: string }[]
+  const erasureCols = tm.raw('erasure.cols') as string[]
+  const erasureRows = tm.raw('erasure.rows') as string[][]
+
+  return (
+    <>
+      {/* Seven Layers */}
+      <AntiqueDivider />
+      <section className="mb-20">
+        <SectionTitle>{tm('layersTitle')}</SectionTitle>
+        <ArchitectureDiagram
+          labels={{
+            aria: td('arch.aria'), caption: td('arch.caption'),
+            l4: td('arch.l4'), l4note: td('arch.l4note'),
+            l3: td('arch.l3'), l3note: td('arch.l3note'),
+            l2: td('arch.l2'), l2note: td('arch.l2note'),
+            l1: td('arch.l1'), l1note: td('arch.l1note'),
+            txFlow: td('arch.txFlow'), proofFlow: td('arch.proofFlow'),
+          }}
+        />
+        <div className="space-y-3">
+          {layers.map((layer, i) => (
+            <StackLayer key={layer.name} name={layer.name} note={layer.note} depth={i} total={layers.length} />
+          ))}
+        </div>
+      </section>
+
+      {/* Core Algorithms */}
+      <AntiqueDivider />
+      <section className="mb-20">
+        <SectionTitle>{tm('algorithms.title')}</SectionTitle>
+        <div className="grid md:grid-cols-2 gap-6">
+          {algorithms.map((a) => (
+            <div key={a.name} className="group bg-bg-elevated p-6 rounded-lg border border-text-muted/10 hover:border-accent-cyan/50 transition-all duration-500 fade-in-up">
+              <h3 className="font-mono text-lg font-bold text-accent-cyan mb-3 group-hover:text-accent-blue transition-colors">{a.name}</h3>
+              <p className="text-text-secondary font-body leading-relaxed">{a.body}</p>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* Erasure Coding Economics */}
+      <AntiqueDivider />
+      <section className="mb-20">
+        <SectionTitle subtitle={tm('erasure.subtitle')}>{tm('erasure.title')}</SectionTitle>
+        <div className="overflow-x-auto fade-in-delay-1">
+          <table className="min-w-full bg-bg-elevated border border-text-muted/20 rounded-lg overflow-hidden">
+            <thead className="bg-bg-secondary/50">
+              <tr>
+                {erasureCols.map((c) => (
+                  <th key={c} className="px-6 py-4 text-left text-sm font-display font-semibold text-text-primary">{c}</th>
+                ))}
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-text-muted/10">
+              {erasureRows.map((row, i) => (
+                <tr key={i} className={`transition-colors ${i === 0 ? 'text-text-muted' : 'hover:bg-bg-secondary/30'}`}>
+                  {row.map((cell, j) => (
+                    <td
+                      key={j}
+                      className={`px-6 py-4 ${j === 0 ? 'font-mono font-semibold text-text-primary' : 'font-body text-text-secondary'} ${j === 1 && i > 0 ? 'text-accent-cyan font-semibold' : ''}`}
+                    >
+                      {cell}
+                    </td>
                   ))}
-                </ul>
-                <ul className="space-y-2 text-text-secondary font-body">
-                  {(t.raw('poseProtocol.antiSybilItems') as string[]).slice(4).map((item, i) => (
-                    <li key={i} className="flex items-start gap-2">
-                      <span className="text-accent-cyan mt-1">▸</span>
-                      <span>{item}</span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* Performance Metrics */}
-        <AntiqueDivider />
-        <section className="mb-20">
-          <div className="text-center mb-12 fade-in-up">
-            <h2 className="text-3xl md:text-4xl font-display font-bold mb-2">
-              <span>{t('performance.title')}</span>
-            </h2>
-            <div className="w-16 h-px bg-line mx-auto mt-4 rounded-full" />
-          </div>
-          <div className="grid md:grid-cols-3 gap-6">
-            <MetricCard
-              title={t('performance.blockTime.title')}
-              value={t('performance.blockTime.value')}
-              description={t('performance.blockTime.description')}
-            />
-            <MetricCard
-              title={t('performance.finality.title')}
-              value={t('performance.finality.value')}
-              description={t('performance.finality.description')}
-            />
-            <MetricCard
-              title={t('performance.storage.title')}
-              value={t('performance.storage.value')}
-              description={t('performance.storage.description')}
-            />
-            <MetricCard
-              title={t('performance.bandwidth.title')}
-              value={t('performance.bandwidth.value')}
-              description={t('performance.bandwidth.description')}
-            />
-            <MetricCard
-              title={t('performance.frequency.title')}
-              value={t('performance.frequency.value')}
-              description={t('performance.frequency.description')}
-            />
-            <MetricCard
-              title={t('performance.threshold.title')}
-              value={t('performance.threshold.value')}
-              description={t('performance.threshold.description')}
-            />
-          </div>
-        </section>
-
-        {/* Comparison */}
-        <AntiqueDivider />
-        <section className="mb-20">
-          <div className="text-center mb-12 fade-in-up">
-            <h2 className="text-3xl md:text-4xl font-display font-bold mb-2">
-              <span>{t('comparison.title')}</span>
-            </h2>
-            <div className="w-16 h-px bg-line mx-auto mt-4 rounded-full" />
-          </div>
-          <div className="overflow-x-auto fade-in-delay-1">
-            <table className="min-w-full bg-bg-elevated border border-text-muted/20 rounded-lg overflow-hidden">
-              <thead className="bg-bg-secondary/50">
-                <tr>
-                  <th className="px-6 py-4 text-left text-sm font-display font-semibold text-text-primary">{t('comparison.dimensions.barrier')}</th>
-                  <th className="px-6 py-4 text-left text-sm font-display font-semibold text-text-primary">PoW</th>
-                  <th className="px-6 py-4 text-left text-sm font-display font-semibold text-text-primary">PoS</th>
-                  <th className="px-6 py-4 text-left text-sm font-display font-semibold text-accent-cyan border-l-2 border-accent-cyan/30">PaliMesh (PoSe)</th>
                 </tr>
-              </thead>
-              <tbody className="divide-y divide-text-muted/10">
-                <ComparisonRow
-                  dimension={t('comparison.dimensions.barrier')}
-                  pow={t('comparison.pow.barrier')}
-                  pos={t('comparison.pos.barrier')}
-                  coc={t('comparison.coc.barrier')}
-                  paliBetter
-                />
-                <ComparisonRow
-                  dimension={t('comparison.dimensions.centralization')}
-                  pow={t('comparison.pow.centralization')}
-                  pos={t('comparison.pos.centralization')}
-                  coc={t('comparison.coc.centralization')}
-                  paliBetter
-                />
-                <ComparisonRow
-                  dimension={t('comparison.dimensions.energy')}
-                  pow={t('comparison.pow.energy')}
-                  pos={t('comparison.pos.energy')}
-                  coc={t('comparison.coc.energy')}
-                />
-                <ComparisonRow
-                  dimension={t('comparison.dimensions.reward')}
-                  pow={t('comparison.pow.reward')}
-                  pos={t('comparison.pos.reward')}
-                  coc={t('comparison.coc.reward')}
-                  paliBetter
-                />
-                <ComparisonRow
-                  dimension={t('comparison.dimensions.decentralization')}
-                  pow={t('comparison.pow.decentralization')}
-                  pos={t('comparison.pos.decentralization')}
-                  coc={t('comparison.coc.decentralization')}
-                  paliBetter
-                />
-                <ComparisonRow
-                  dimension={t('comparison.dimensions.automation')}
-                  pow={t('comparison.pow.automation')}
-                  pos={t('comparison.pos.automation')}
-                  coc={t('comparison.coc.automation')}
-                  paliBetter
-                />
-              </tbody>
-            </table>
-          </div>
-        </section>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </section>
 
-        {/* Tech Stack */}
-        <section className="pb-8">
-          <div className="text-center mb-12 fade-in-up">
-            <h2 className="text-3xl md:text-4xl font-display font-bold mb-2">
-              <span>{t('techStack.title')}</span>
-            </h2>
-            <div className="w-16 h-px bg-line mx-auto mt-4 rounded-full" />
+      {/* PoSe Storage Challenge */}
+      <AntiqueDivider />
+      <section className="mb-20">
+        <SectionTitle>{tm('poseStorage.title')}</SectionTitle>
+        <div className="vellum-card p-8 fade-in-up">
+          <p className="dropcap text-text-secondary font-body leading-relaxed mb-6">{tm('poseStorage.body')}</p>
+          <BulletList items={tm.raw('poseStorage.items') as string[]} />
+        </div>
+      </section>
+
+      {/* Identity & Memory / Recovery */}
+      <AntiqueDivider />
+      <section className="mb-20">
+        <div className="grid md:grid-cols-2 gap-6">
+          <div className="bg-bg-elevated p-6 rounded-lg border border-text-muted/10 hover:border-accent-purple/50 transition-all duration-500 fade-in-up">
+            <h3 className="text-xl font-display font-bold text-text-primary mb-4">{tm('identityMemory.title')}</h3>
+            <BulletList items={tm.raw('identityMemory.items') as string[]} />
           </div>
-          <div className="grid md:grid-cols-2 gap-6">
-            <TechStackCard
-              title={t('techStack.execution.title')}
-              items={t.raw('techStack.execution.items') as string[]}
-            />
-            <TechStackCard
-              title={t('techStack.consensus.title')}
-              items={t.raw('techStack.consensus.items') as string[]}
-            />
-            <TechStackCard
-              title={t('techStack.pose.title')}
-              items={t.raw('techStack.pose.items') as string[]}
-            />
-            <TechStackCard
-              title={t('techStack.storage.title')}
-              items={t.raw('techStack.storage.items') as string[]}
-            />
+          <div className="bg-bg-elevated p-6 rounded-lg border border-text-muted/10 hover:border-accent-cyan/50 transition-all duration-500 fade-in-up">
+            <h3 className="text-xl font-display font-bold text-text-primary mb-4">{tm('recovery.title')}</h3>
+            <BulletList items={tm.raw('recovery.items') as string[]} />
           </div>
-        </section>
+        </div>
+      </section>
+
+      {/* Next: Storage Market */}
+      <AntiqueDivider />
+      <section id="next" className="mb-20 scroll-mt-24">
+        <SectionTitle>{tm('next.title')}</SectionTitle>
+        <div className="vellum-card p-8 max-w-3xl mx-auto fade-in-up">
+          <p className="text-text-secondary font-body leading-relaxed">{tm('next.body')}</p>
+        </div>
+      </section>
+
+      {/* CTA */}
+      <section className="pb-8">
+        <div className="sheet-stack">
+          <div className="sheet p-8 text-center">
+            <div className="flex flex-wrap justify-center gap-3">
+              <Link href="/whitepaper" className="seal-button text-sm">{tm('ctaPaper')}</Link>
+              <Link href="/services" className="ink-button text-sm">{tm('ctaServices')} →</Link>
+            </div>
+          </div>
+        </div>
+      </section>
+    </>
+  )
+}
+
+// ─── 共用小件 ──────────────────────────────────────────────────
+
+function SectionTitle({ children, subtitle }: { children: string; subtitle?: string }) {
+  return (
+    <div className="text-center mb-12 fade-in-up">
+      <h2 className="text-3xl md:text-4xl font-display font-bold mb-2">
+        <span>{children}</span>
+      </h2>
+      <div className="w-16 h-px bg-line mx-auto mt-4 rounded-full" />
+      {subtitle && <p className="text-text-secondary mt-4 max-w-2xl mx-auto">{subtitle}</p>}
+    </div>
+  )
+}
+
+function BulletList({ items }: { items: string[] }) {
+  return (
+    <ul className="space-y-3">
+      {items.map((item, i) => (
+        <li key={i} className="flex items-start gap-3 text-text-secondary font-body">
+          <span className="text-accent-cyan mt-1">▸</span>
+          <span className="leading-relaxed">{item}</span>
+        </li>
+      ))}
+    </ul>
+  )
+}
+
+// 七层堆叠:自上而下 L7→L1,逐层加宽,底部结算层高亮
+function StackLayer({ name, note, depth, total }: { name: string; note: string; depth: number; total: number }) {
+  const isBase = depth === total - 1
+  const inset = (total - 1 - depth) * 2.5
+  return (
+    <div
+      className={`rounded-lg border p-4 md:px-6 transition-all duration-500 fade-in-up flex flex-col md:flex-row md:items-center gap-1 md:gap-6 ${
+        isBase
+          ? 'bg-accent-cyan/10 border-accent-cyan shadow-glow-sm'
+          : 'bg-bg-elevated border-text-muted/10 hover:border-accent-cyan/40'
+      }`}
+      style={{ marginLeft: `${inset}%`, marginRight: `${inset}%`, animationDelay: `${depth * 0.06}s` }}
+    >
+      <span className={`font-mono font-semibold shrink-0 md:w-40 ${isBase ? 'text-accent-cyan' : 'text-text-primary'}`}>{name}</span>
+      <span className="text-sm text-text-secondary font-body leading-relaxed">{note}</span>
+    </div>
+  )
+}
+
+function AntiSybilCard({ title, items }: { title: string; items: string[] }) {
+  const half = Math.ceil(items.length / 2)
+  const columns = [items.slice(0, half), items.slice(half)]
+  return (
+    <div className="relative bg-bg-elevated p-6 rounded-lg border border-accent-cyan/30 hover:border-accent-cyan/50 transition-all duration-500 fade-in-delay-3">
+      <h3 className="text-xl font-display font-semibold mb-4 text-accent-cyan">{title}</h3>
+      <div className="grid md:grid-cols-2 gap-4">
+        {columns.map((col, c) => (
+          <ul key={c} className="space-y-2 text-text-secondary font-body">
+            {col.map((item, i) => (
+              <li key={i} className="flex items-start gap-2">
+                <span className="text-accent-cyan mt-1">▸</span>
+                <span>{item}</span>
+              </li>
+            ))}
+          </ul>
+        ))}
       </div>
     </div>
   )
@@ -453,10 +558,10 @@ function MetricCard({
   description: string
 }) {
   return (
-    <div className="group bg-bg-elevated p-6 rounded-lg border border-text-muted/10 hover:border-accent-cyan/50 transition-all duration-500 text-center fade-in-up">
+    <div className="group relative bg-bg-elevated p-6 rounded-lg border border-text-muted/10 hover:border-accent-cyan/50 transition-all duration-500 text-center fade-in-up">
       <div className="absolute inset-0 bg-accent-blue opacity-0 group-hover:opacity-5 rounded-lg transition-opacity duration-500" />
       <h4 className="text-xs font-display font-medium text-text-muted uppercase tracking-wider mb-3">{title}</h4>
-      <p className="text-4xl font-display font-bold mb-3 transition-all">
+      <p className="text-3xl md:text-4xl font-display font-bold mb-3 transition-all">
         {value}
       </p>
       <p className="text-sm text-text-secondary font-body">{description}</p>
@@ -496,7 +601,7 @@ function ComparisonRow({
 
 function TechStackCard({ title, items }: { title: string; items: string[] }) {
   return (
-    <div className="group bg-bg-elevated p-6 rounded-lg border border-text-muted/10 hover:border-accent-blue/50 transition-all duration-500 fade-in-up">
+    <div className="group relative bg-bg-elevated p-6 rounded-lg border border-text-muted/10 hover:border-accent-blue/50 transition-all duration-500 fade-in-up">
       <div className="absolute inset-0 bg-accent-blue opacity-0 group-hover:opacity-5 rounded-lg transition-opacity duration-500" />
       <h3 className="text-lg font-display font-bold mb-4 text-text-primary group-hover:text-accent-blue transition-colors">
         {title}

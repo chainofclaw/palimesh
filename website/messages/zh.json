@@ -26,35 +26,91 @@
     "protocol": "协议",
     "build": "开发接入",
     "story": "起源",
-    "economics": "经济模型"
+    "economics": "经济模型",
+    "crossSite": "前往 {other}",
+    "governanceIdentity": "治理身份",
+    "paper": "技术论文",
+    "ecosystem": "生态",
+    "settlement": "结算层",
+    "paliumChain": "Palium 公链",
+    "palimeshStorage": "PaliMesh 存储、身份与记忆",
+    "npm": "npm"
   },
   "home": {
     "hero": {
-      "kicker": "Palium · AI 智能体的可验证记忆",
-      "title": "一切状态皆可回返的链。",
-      "subtitle": "Palium 是一条为 AI 智能体构建的 BFT 区块链。它让三件事在链上可验证:节点真实执行的服务(PoSe)、智能体积累的记忆、以及可在宿主之间迁移的身份。",
-      "ctaTestnet": "接入测试网",
-      "ctaDocs": "阅读文档",
-      "factsLabel": "协议参数",
-      "factChain": "Chain ID",
-      "factConsensus": "共识",
-      "factConsensusValue": "BFT,约 3.5 秒最终性",
-      "factEvm": "执行层",
-      "factEvmValue": "EVM(Paris),Solidity 0.8.x",
-      "factRpc": "公共 RPC",
-      "artAlt": "繁复的中世纪风格 Palium 羊皮纸抄本,密集拉丁经文下隐约可见网络图",
-      "scriptureLines": [
-        "起初，记忆无所归依。",
-        "身份在宿主之间漂泊。",
-        "Palium 使服务可验证。",
-        "使记忆不消逝，身份可回返。",
-        "凡写入链上的，皆不被遗忘。"
-      ]
+      "palium": {
+        "kicker": "Palium · AI 智能体的公链",
+        "title": "一切状态皆可回返的链。",
+        "subtitle": "Palium 是一条为 AI 智能体构建的 BFT 公链。它让三件事在链上可验证：节点真实执行的服务（PoSe）、以标准 EVM 执行的状态变更、以及由人类与智能体共同决定的规则。智能体的记忆与身份由构建于其上的 PaliMesh 提供。",
+        "artAlt": "紫金配色的 Palium 抄本：羊皮纸上的链节网格与衬线 P 印记",
+        "scriptureLines": [
+          "起初，记忆无所归依。",
+          "身份在宿主之间漂泊。",
+          "Palium 使服务可验证。",
+          "使状态可回返，规则可仲裁。",
+          "凡写入链上的，皆不被遗忘。"
+        ],
+        "ctaPrimary": "接入测试网",
+        "ctaSecondary": "阅读文档",
+        "factsLabel": "协议参数",
+        "facts": [
+          {
+            "k": "Chain ID",
+            "v": "88780"
+          },
+          {
+            "k": "共识",
+            "v": "BFT · 1 秒出块"
+          },
+          {
+            "k": "执行层",
+            "v": "EVM（Paris）· solc 0.8.24"
+          },
+          {
+            "k": "公共 RPC",
+            "v": "rpc.palium.io"
+          }
+        ]
+      },
+      "palimesh": {
+        "kicker": "PaliMesh · AI 智能体的存储、身份与记忆",
+        "title": "永不遗忘的存储。",
+        "subtitle": "PaliMesh 是面向 AI 智能体的纠删码存储 mesh——持久记忆、可携带身份、超越任何宿主的内容。结算锚定在 Palium 公链。",
+        "ctaPrimary": "安装软件包",
+        "ctaSecondary": "阅读论文",
+        "artAlt": "繁复的中世纪风格 PaliMesh 羊皮纸抄本，密集拉丁经文下隐约可见网络图",
+        "scriptureLines": [
+          "起初，记忆无所归依。",
+          "身份在宿主之间漂泊。",
+          "PaliMesh 让记忆有了住处。",
+          "宿主可以消亡，手稿仍在。",
+          "凡写入 mesh 的，皆不被遗忘。"
+        ],
+        "factsLabel": "网络参数",
+        "facts": [
+          {
+            "k": "纠删码",
+            "v": "RS(4+2) · (6+3) · (8+4)"
+          },
+          {
+            "k": "复制",
+            "v": "pushToK · K=3"
+          },
+          {
+            "k": "身份",
+            "v": "did:coc"
+          },
+          {
+            "k": "结算",
+            "v": "Palium 88780"
+          }
+        ]
+      }
     },
     "pillars": {
       "kicker": "核心能力",
       "title": "三项可验证的保证",
-      "subtitle": "三项保证,每一项都可在链上独立验证:服务证明、复制存储、可携带身份。",
+      "subtitle": "三项保证，每一项都可在链上独立验证。",
       "pose": {
         "title": "服务证明(PoSe)",
         "description": "节点以可度量的工作获得收益——存储、中继、计算。PoSe 挑战持续抽样这些工作,并在链上结算奖励与罚没:服务不靠声称,靠验证。"
@@ -102,12 +158,12 @@
       "fn": {
         "tag": "全节点",
         "name": "验证者 / 全节点",
-        "description": "参与 BFT 共识并服务规范链。需要注册密钥与质押。"
+        "description": "参与 BFT 共识并服务规范链。质押 32 PALI，约 60 秒进入活跃验证者集，无需与既有运营者协调。"
       },
       "sn": {
         "tag": "存储节点",
         "name": "存储",
-        "description": "提供纠删码存储容量,应答 PoSe 存储挑战以获得奖励。"
+        "description": "提供纠删码存储容量，应答 PoSe 存储挑战。存储节点复用链节点的 $PALI 保证金，以 $MESH 结算收益。"
       },
       "rn": {
         "tag": "中继节点",
@@ -121,7 +177,7 @@
       "title": "用 @palimesh 构建",
       "subtitle": "开箱即用的链上交互软件包。",
       "soul": {
-        "pkg": "@palimesh/soul",
+        "pkg": "@palimesh/palimesh-soul",
         "name": "Soul",
         "description": "智能体身份工具包:DID 注册、凭证签发与复活流程。"
       },
@@ -170,71 +226,167 @@
         "relationships": "关系 Relationships"
       }
     },
-    "storageHero": {
-      "kicker": "去中心化存储",
-      "title": "永不遗忘的存储。",
-      "subtitle": "PaliMesh 是面向 AI 智能体的纠删码存储 mesh——持久记忆、可携带身份、超越任何宿主的内容。结算锚定在 Palium。"
+    "palium": {
+      "pillars": {
+        "kicker": "核心能力",
+        "title": "三件在链上可验证的事",
+        "subtitle": "验证者是谁、代码怎么跑、服务有没有真的发生——每一项都可由任何人独立核验。",
+        "consensus": {
+          "title": "共识与验证者",
+          "description": "验证者集由链上 ValidatorRegistry 驱动：质押 32 PALI，约 60 秒进入活跃集，双签被罚没。CoreSetManager 按质押 50%、保证金 20%、PoSe 绩效 30% 链上排名，排名靠前者进入 BFT 核心集，其余自动降级为仅 PoSe 节点。"
+        },
+        "evm": {
+          "title": "标准 EVM 执行",
+          "description": "EthereumJS 与 revm 双引擎，Paris 硬分叉，solc 0.8.24。57+ 标准 eth_* 方法，完整 debug_* / trace_* 家族，eth_getProof 与 WebSocket 订阅。现有 Solidity 合约、钱包与工具链无需修改。"
+        },
+        "settlement": {
+          "title": "PoSe 结算",
+          "description": "挑战者持续抽样节点声明的服务，见证者以 EIP-712 签名作证，结算合约按 epoch 聚合法定人数。奖励按桶分配：uptime 60%、存储 30%、中继 10%；争议与罚没在链上仲裁。"
+        }
+      },
+      "principles": {
+        "kicker": "设计原则",
+        "title": "只为一件事优化",
+        "subtitle": "以低成本让与智能体相关的服务与状态可验证。其余一切，都是这一目标的推论。",
+        "verify": {
+          "title": "服务靠验证，不靠声称",
+          "body": "没有服务就没有奖励。闲置资本不产生收益；只有被抽样、被见证、被结算的工作才会被支付。"
+        },
+        "standards": {
+          "title": "标准优先",
+          "body": "EVM 执行、EIP-712 签名、W3C DID Core——凡有成熟标准的地方，Palium 不发明新轮子，只把它们放到可验证的账本上。"
+        },
+        "nongoals": {
+          "title": "非目标",
+          "body": "Palium 不比拼原始 TPS，不承载匿名 meme 资产市场，也不为其他链提供通用数据可用性。"
+        },
+        "oneOfMany": "Palium 是这个问题的多个可能答案之一。"
+      },
+      "architecture": {
+        "l4": "智能体层：DID 与 Soul 的链上注册表。存储、记忆与备份 API 由构建于其上的 PaliMesh 提供。"
+      },
+      "node": {
+        "title": "以运营者身份加入 Palium Canary",
+        "subtitle": "三种角色，同一套程序。从中继开始，逐步升级到验证者。",
+        "storageElsewhere": "存储节点的收益与运维细节见 PaliMesh"
+      },
+      "ecosystem": {
+        "kicker": "在 Palium 之上",
+        "title": "链负责结算，生态负责能力",
+        "subtitle": "三类入口。",
+        "builders": {
+          "title": "开发者",
+          "body": "Hardhat、Foundry、ethers、viem 与 MetaMask 直连 Chain ID 88780。部署合约、订阅事件、读取证明——与以太坊别无二致。",
+          "cta": "阅读文档"
+        },
+        "governance": {
+          "title": "治理",
+          "body": "两院制 DAO：Human 院与 Claw 院各自独立通过，1 地址 1 票；执行由 3-of-5 多签经时间锁触发。",
+          "cta": "查看提案"
+        },
+        "mesh": {
+          "title": "PaliMesh",
+          "body": "智能体的存储、身份与记忆：纠删码 P2P 存储、did:coc、Soul 备份与 claw-mem。存储服务以 $MESH 计价，结算在 Palium。",
+          "cta": "前往 PaliMesh"
+        }
+      }
+    },
+    "palimesh": {
+      "pillars": {
+        "kicker": "核心能力",
+        "title": "三层存续",
+        "subtitle": "存储、身份、记忆——每一层都超越单一宿主。",
+        "storage": {
+          "title": "持久存储",
+          "description": "UnixFS 256 KiB 分块、CIDv1 内容寻址、Reed-Solomon 纠删码（1.5× 成本对比三副本 3.0×）。写入即主动推送到 K=3 个节点，repairTick 每 10 分钟自愈缺失副本，持有由 PoSe 存储挑战持续验证。"
+        },
+        "identity": {
+          "title": "可携带身份",
+          "description": "did:coc 遵循 W3C DID Core v1.0：密钥轮换、不超过 3 层的委托链、Merkle 选择性披露。2/3 监护人法定人数加时间锁的社交恢复，让身份在宿主之间迁移而不失效。"
+        },
+        "memory": {
+          "title": "语义记忆",
+          "description": "claw-mem 自动捕获工具调用观察与会话摘要，按 token 预算检索，跨重启与上下文压缩保留。记忆内容锚定到 IPFS 与 CidRegistry，完整性可验证。"
+        }
+      },
+      "proof": {
+        "kicker": "实证",
+        "title": "数据的寿命是网络的属性",
+        "subtitle": "一次受控的跨大陆销毁实验：文件在所有上传节点消失之后，仍能从未参与上传的节点完整取回。",
+        "stats": [
+          {
+            "v": "50 MB",
+            "k": "上传的文件"
+          },
+          {
+            "v": "5",
+            "k": "被销毁的节点（5 个 GCP 区域）"
+          },
+          {
+            "v": "3",
+            "k": "完整取回的 validator，均未参与上传"
+          }
+        ],
+        "table": {
+          "title": "存储成本与容错",
+          "cols": [
+            "方案",
+            "存储成本",
+            "可容忍丢失"
+          ],
+          "rows": [
+            [
+              "三副本",
+              "3.0×",
+              "3 份中的 2 份"
+            ],
+            [
+              "RS(4+2)",
+              "1.5×",
+              "6 片中的 2 片"
+            ],
+            [
+              "RS(6+3)",
+              "1.5×",
+              "9 片中的 3 片"
+            ]
+          ]
+        },
+        "cta": "阅读技术论文"
+      },
+      "parchment": {
+        "chain": {
+          "title": "PaliMesh 同理运行",
+          "body": "每一层覆写上一层，底下的什么都不会丢失。这张网络所结算的链，自己的第一只手——ClawChain——至今仍在今天的墨迹之下可读，任何人都可以验证。"
+        }
+      },
+      "architecture": {
+        "kicker": "架构",
+        "title": "四层，结算在下",
+        "subtitle": "智能体 API 在最上，内容寻址存储与 P2P 网络在中间，所有证明与付费最终落到 Palium。"
+      },
+      "settlement": {
+        "kicker": "结算",
+        "title": "锚定在 Palium",
+        "subtitle": "每个 epoch 的存储证明在 Palium 上结算为 $MESH；网络本身不另起一条链。",
+        "chain": "结算链",
+        "height": "当前高度",
+        "dht": "DHT 节点",
+        "wire": "Wire 连接",
+        "cta": "查看链遥测"
+      },
+      "node": {
+        "kicker": "运行节点",
+        "title": "以存储节点加入",
+        "subtitle": "存储节点即链节点：复用 $PALI 保证金，应答 PoSe 存储挑战，以 $MESH 结算。",
+        "validatorsElsewhere": "验证者与中继节点的接入参数见 Palium",
+        "cta": "查看节点软件包"
+      }
     }
   },
   "technology": {
     "title": "技术架构",
     "subtitle": "四层结构如何协同:BFT 共识、EVM 执行、PoSe 结算,以及面向智能体的 API。",
-    "layersTitle": "四层架构",
-    "layer1": {
-      "number": "1",
-      "title": "执行层 (Execution Layer)",
-      "subtitle": "EVM 运行时 · 双引擎",
-      "features": [
-        "@ethereumjs/vm 完整 EVM（~131 TPS）",
-        "revm 高性能管道（1,500-2,000 TPS）",
-        "Cancun / EIP-4844 blob gas 计费完整支持",
-        "LevelDB + Merkle Patricia Trie 状态存储",
-        "Solidity 0.8.x 合约兼容"
-      ],
-      "note": "EVM 是运行时环境,不是去中心化的来源——参与权在共识层与服务层决定。"
-    },
-    "layer2": {
-      "number": "2",
-      "title": "共识层 (Consensus Layer)",
-      "subtitle": "确定性与最终性的守望者",
-      "features": [
-        "确定性 proposer 轮换",
-        "BFT-lite 协调器（2/3 权益法定，propose/prepare/commit）",
-        "GHOST 分叉选择（BFT 最终性 > 链长 > 权重）",
-        "TCP Wire 协议（Magic 0xC0C1，身份签名握手）",
-        "Kademlia DHT（K=20，迭代查询，定期刷新）",
-        "区块时间目标：1-2 秒"
-      ],
-      "note": "共识可插拔——PaliMesh 的激励模型不依赖 PoS，未来可接入任何保留最终性的机制。"
-    },
-    "layer3": {
-      "number": "3",
-      "title": "PoSe v2 服务层",
-      "subtitle": "核心创新 · 服务即共识",
-      "features": [
-        "节点注册、能力声明、能力位掩码",
-        "随机挑战生成（U / S / R 三类）",
-        "EIP-712 类型签名（ChallengeMessageV2 / ReceiptMessageV2 域分离）",
-        "9 层收据验证流水线",
-        "见证人淬选（m=ceil(√n)，法定 ceil(2m/3)）",
-        "无许可故障证明（commit-reveal-settle，4 种故障类型）",
-        "Merkle 奖励树（rewardRoot，按节点叶子，链上认领）"
-      ],
-      "note": "这一层让'服务'成为可验证、可定价、可仲裁的共识单元——也是 PaliMesh 与所有 PoW/PoS 链的根本分界。"
-    },
-    "layer4": {
-      "number": "4",
-      "title": "三大基础服务层",
-      "subtitle": "Agent 的生命支持系统",
-      "features": [
-        "P2P 文件存储：IPFS 兼容 + CidRegistry 内容寻址",
-        "DID 身份：DIDRegistry + 能力位掩码 + ≤3 层委托树",
-        "智能体连续性:SoulRegistry + Carrier 网络 + 2/3 监护人恢复",
-        "OpenClaw 参考 Agent 已接入作为存储节点",
-        "Agent 运维层（自愈 / 升级 / 密钥）严格隔离于共识"
-      ],
-      "note": "所有 DApp、所有 Agent 市场、所有上层协议，都从这一层生根。"
-    },
     "poseProtocol": {
       "title": "PoSe v2 协议详解",
       "challengeFlow": "挑战-响应流程",
@@ -303,54 +455,21 @@
         ],
         "rationale": "平方根函数确保存储容量收益递减——拒绝大户垄断。"
       },
-      "antiSybilTitle": "🛡️ 反 Sybil 组合拳",
+      "antiSybilTitle": "反 Sybil 组合拳",
       "antiSybilItems": [
-        "✓ 固定保证金（~50 USDT）+ 7 天解锁",
-        "✓ 单节点奖励软上限（5× median）",
-        "✓ 存储容量收益递减（√ 函数）",
-        "✓ 持续服务挑战（无法伪造）",
-        "✓ 每 epoch 唯一 nonce 防重放",
-        "✓ 挑战者多样化 + 随机轮换",
-        "✓ 链上采样 + 2 epoch 争议期",
-        "✓ 可选硬件认证（加分项，非门槛）",
-        "✓ PoSeManagerV2：EIP-712 故障证明（commit-reveal-settle）",
-        "✓ Slash 分配：50% 销毁 / 30% 举报者 / 20% 保险基金",
-        "✓ 每 epoch Slash 上限：总权益的 5%",
-        "✓ 见证人淬选仲裁：m=ceil(√n)，法定 ceil(2m/3)"
+        "节点保证金 + 7 天解锁",
+        "单节点奖励软上限（5× 中位数）",
+        "存储容量收益递减（√ 函数）",
+        "持续服务挑战（无法伪造）",
+        "每 epoch 唯一 nonce 防重放",
+        "挑战者多样化 + 随机轮换",
+        "链上采样 + 2 epoch 争议期",
+        "可选硬件认证（加分项，非门槛）",
+        "PoSeManagerV2：EIP-712 故障证明（commit-reveal-settle）",
+        "Slash 分配：50% 销毁 / 30% 举报者 / 20% 保险基金",
+        "每 epoch Slash 上限：总权益的 5%",
+        "见证人淬选仲裁：m=ceil(√n)，法定 ceil(2m/3)"
       ]
-    },
-    "performance": {
-      "title": "性能指标",
-      "blockTime": {
-        "title": "区块时间",
-        "value": "1-2 秒",
-        "description": "目标出块间隔，实际取决于共识层配置"
-      },
-      "finality": {
-        "title": "确认速度",
-        "value": "~12 秒",
-        "description": "6-12 个区块后达到最终性（可配置）"
-      },
-      "storage": {
-        "title": "存储要求",
-        "value": "500 GB 推荐",
-        "description": "SN 节点的收益递减上限，FN 可更低"
-      },
-      "bandwidth": {
-        "title": "带宽要求",
-        "value": "适中",
-        "description": "延迟仅占 15% 权重，普通家用网络可参与"
-      },
-      "frequency": {
-        "title": "挑战频率",
-        "value": "~6 次/小时",
-        "description": "FN 节点每 epoch 接受约 6 次 U 挑战"
-      },
-      "threshold": {
-        "title": "通过阈值",
-        "value": "80% (U) / 70% (S)",
-        "description": "低于阈值失去该 epoch 对应桶奖励资格"
-      }
     },
     "comparison": {
       "title": "与 PoW / PoS 的本质分野",
@@ -379,13 +498,14 @@
         "automation": "中等"
       },
       "coc": {
-        "barrier": "低（普通硬件 + 小额保证金）",
+        "barrier": "低（节点保证金 + 服务挑战通过率）",
         "centralization": "服务贡献分散化",
         "energy": "低",
         "reward": "服务挑战通过率",
-        "decentralization": "高（Agent 与普通用户并肩）",
+        "decentralization": "高（服务贡献分散，排名链上可查）",
         "automation": "Agent 原生支持"
-      }
+      },
+      "brandHeader": "{brand}（PoSe）"
     },
     "techStack": {
       "title": "技术栈",
@@ -434,11 +554,245 @@
           "Carrier 载体网络（规划中）"
         ]
       }
+    },
+    "palium": {
+      "title": "链的四层",
+      "subtitle": "BFT 共识、标准 EVM、PoSe 结算，以及面向智能体的链上注册表。",
+      "layersTitle": "四层架构",
+      "layer1": {
+        "number": "1",
+        "title": "共识层",
+        "subtitle": "确定性与最终性的守望者",
+        "features": [
+          "确定性 proposer 轮换 + BFT-lite 三阶段（propose / prepare / commit）",
+          "GHOST 分叉选择（BFT 最终性 > 链长 > 权重）",
+          "ValidatorRegistry 链上动态验证者集：质押 32 PALI，零重启热更新",
+          "CoreSetManager 链上排名：质押 50% + 保证金 20% + PoSe 绩效 30%",
+          "EquivocationDetector：双签检测与罚没，任何人可提交证据",
+          "TCP Wire 协议 + Kademlia DHT（K=20）",
+          "出块 1 秒（最小 100 ms），每块最多 512 笔交易"
+        ],
+        "note": "验证者不是静态名单，而是链上确定性排名的结果——全网读同一份链上权威。"
+      },
+      "layer2": {
+        "number": "2",
+        "title": "执行层",
+        "subtitle": "EVM 运行时 · 双引擎",
+        "features": [
+          "@ethereumjs/vm 完整 EVM（约 131 TPS）",
+          "revm WASM 高性能管道（裸执行 20,000+ TPS，端到端 500–1,000 TPS 为目标）",
+          "Paris 硬分叉，solc 0.8.24；Cancun / EIP-4844 blob gas 计费兼容",
+          "EIP-1559：base fee 销毁，priority fee 归 proposer",
+          "LevelDB + Merkle Patricia Trie 状态存储，历史状态读取与 eth_getProof",
+          "57+ 标准 eth_* 方法，debug_* / trace_* / txpool_*，WebSocket eth_subscribe"
+        ],
+        "note": "EVM 是运行时环境，不是去中心化的来源——参与权在共识层与结算层决定。"
+      },
+      "layer3": {
+        "number": "3",
+        "title": "PoSe v2 结算层",
+        "subtitle": "核心机制 · 服务即共识单元",
+        "features": [
+          "节点注册、能力声明、能力位掩码",
+          "随机挑战生成（U / S / R 三类）",
+          "EIP-712 类型签名（ChallengeMessageV2 / ReceiptMessageV2 域分离）",
+          "9 层收据验证流水线",
+          "见证人淬选（m=ceil(√n)，法定 ceil(2m/3)）",
+          "无许可故障证明（commit-reveal-settle，4 种故障类型）",
+          "Merkle 奖励树（rewardRoot，按节点叶子，链上认领；7 天领取窗口）"
+        ],
+        "note": "这一层让“服务”成为可验证、可定价、可仲裁的共识单元——也是 Palium 与所有 PoW / PoS 链的根本分界。"
+      },
+      "layer4": {
+        "number": "4",
+        "title": "注册表与治理层",
+        "subtitle": "面向智能体的链上权威",
+        "features": [
+          "DIDRegistry：W3C did:coc + 能力位掩码 + 不超过 3 层的委托树",
+          "SoulRegistry：智能体连续性锚点 + 2/3 监护人恢复",
+          "CidRegistry：bytes32 到 IPFS CID 的不可变映射",
+          "GovernanceDAO + FactionRegistry：Human 院与 Claw 院，1 地址 1 票",
+          "Treasury / InsuranceFund / FoundationVesting：3-of-5 多签与时间锁",
+          "13 个 gen-5 UUPS 合约，唯一升级权威为 3-of-5 多签"
+        ],
+        "note": "存储、记忆与备份的运行时由 PaliMesh 提供；Palium 只保存它们的链上锚点。"
+      },
+      "rollup": {
+        "title": "Rollup 演进",
+        "subtitle": "从独立 L1 到 Optimistic Rollup 的路径已在链上铺好。",
+        "items": [
+          "Sequencer 模式：当前引擎以 1 秒出块作为排序器",
+          "Batcher：100+ 个 L2 块压进 1 笔 L1 交易",
+          "DelayedInbox：抗审查的强制包含入口（已部署）",
+          "RollupStateManager：输出根提交与挑战窗口（已部署）"
+        ],
+        "note": "这是演进路径，不是已完成的迁移；当前 Canary 仍以独立 L1 形态运行。"
+      },
+      "params": {
+        "title": "协议参数",
+        "items": [
+          {
+            "k": "出块",
+            "v": "1 秒",
+            "d": "目标出块间隔，最小 100 ms"
+          },
+          {
+            "k": "最终性",
+            "v": "BFT 确定性",
+            "d": "2/3 权益法定，commit 即最终"
+          },
+          {
+            "k": "验证者准入",
+            "v": "32 PALI",
+            "d": "permissionless 质押，约 60 秒入集"
+          },
+          {
+            "k": "挑战频率",
+            "v": "约 6 次/小时",
+            "d": "全节点每 epoch 接受的 U 挑战"
+          },
+          {
+            "k": "通过阈值",
+            "v": "80% (U) / 70% (S)",
+            "d": "低于阈值失去该桶当期奖励"
+          },
+          {
+            "k": "奖励桶",
+            "v": "60 / 30 / 10",
+            "d": "uptime / 存储 / 中继"
+          }
+        ]
+      },
+      "ctaWhitepaper": "阅读白皮书",
+      "ctaTestnet": "接入测试网",
+      "storageElsewhere": "存储层的算法、纠删码与身份栈详见 PaliMesh"
+    },
+    "palimesh": {
+      "title": "存储的七层",
+      "subtitle": "从 TCP 到 HTTP API：内容寻址、纠删码、主动复制与自愈。",
+      "layersTitle": "七层架构",
+      "layers": [
+        {
+          "name": "L7 · HTTP API",
+          "note": "IPFS 兼容接口：add / cat / get / pin / ls / stat，以及 /ipfs/<cid> 网关"
+        },
+        {
+          "name": "L6 · 纠删码",
+          "note": "?erasure=N+M 可选 Reed-Solomon，RS(4+2) / (6+3) / (8+4)"
+        },
+        {
+          "name": "L5 · 复制与修复",
+          "note": "pushToK 主动推送、fetchRemote 被动取回、repairTick 周期自愈"
+        },
+        {
+          "name": "L4 · 内容寻址",
+          "note": "UnixFS 256 KiB 分块、CIDv1、目录 DAG 与 HAMT"
+        },
+        {
+          "name": "L3 · 发现",
+          "note": "Kademlia DHT，keccak256(cid) 投影，provider records TTL 24h"
+        },
+        {
+          "name": "L2 · 传输",
+          "note": "TCP Wire 帧协议 + HTTP gossip 双通道"
+        },
+        {
+          "name": "L1 · 结算",
+          "note": "Palium：CidRegistry 锚定、PoSe 存储挑战、StorageRewardManager"
+        }
+      ],
+      "algorithms": {
+        "title": "四个核心算法",
+        "items": [
+          {
+            "name": "pushToK",
+            "body": "写入时把每个块主动推送到 K=3 个按 DHT 距离选出的节点；写入者不再是唯一持有者。"
+          },
+          {
+            "name": "fetchRemote",
+            "body": "本地缺失时按 provider records 并行向远端取回，取回后本地缓存并可再次成为提供者。"
+          },
+          {
+            "name": "pushStripe",
+            "body": "纠删码条带按分片分散到不同节点，任意 M 片丢失仍可重建。"
+          },
+          {
+            "name": "repairTick",
+            "body": "每 10 分钟扫描最多 50 个 CID，副本数不足 K 时自动补齐——修复是网络的常态行为。"
+          }
+        ]
+      },
+      "erasure": {
+        "title": "纠删码经济学",
+        "subtitle": "同样的容错，一半的成本。",
+        "cols": [
+          "方案",
+          "存储成本",
+          "可容忍丢失"
+        ],
+        "rows": [
+          [
+            "三副本",
+            "3.0×",
+            "3 份中的 2 份"
+          ],
+          [
+            "RS(4+2)",
+            "1.5×",
+            "6 片中的 2 片"
+          ],
+          [
+            "RS(6+3)",
+            "1.5×",
+            "9 片中的 3 片"
+          ],
+          [
+            "RS(8+4)",
+            "1.5×",
+            "12 片中的 4 片"
+          ]
+        ]
+      },
+      "poseStorage": {
+        "title": "PoSe 存储挑战（S 类）",
+        "body": "存储节点不自报容量，而是被持续抽样：挑战者指定 chunk，节点在 6 秒内返回 Merkle 路径证明，见证者签名，按 epoch 结算。",
+        "items": [
+          "通过率不低于 70% 才有当期存储桶资格",
+          "存储分数 = 通过率 × √(min(storedGB, 500) / 500)：容量收益递减，拒绝大户垄断",
+          "证明结果按 Merkle 根上链，节点凭证明认领 $MESH",
+          "丢数据走链节点既有的 $PALI 保证金罚没，无需额外 $MESH 质押"
+        ]
+      },
+      "identityMemory": {
+        "title": "身份与记忆层",
+        "items": [
+          "DIDRegistry：did:coc 注册、密钥轮换、委托链与级联撤销",
+          "SoulRegistry：智能体状态的链上锚点，2/3 监护人社交恢复 + 时间锁",
+          "CidRegistry：bytes32 到 IPFS CID 的不可变映射，三层解析（本地 → MFS → 链上）",
+          "Soul 备份：AES-256-GCM 加密、增量 Merkle 快照、Carrier 网络承载",
+          "复活状态机：从最近快照重建智能体并注入恢复上下文"
+        ]
+      },
+      "recovery": {
+        "title": "灾难恢复保证",
+        "items": [
+          "任一上传节点消失：fetchRemote 从其余提供者取回",
+          "全部上传节点消失：pushToK 副本与纠删码分片仍在未参与节点上",
+          "副本长期缺失：repairTick 自动补齐至 K",
+          "源节点被替换：CidRegistry 锚点不变，内容仍按 CID 可寻址"
+        ]
+      },
+      "next": {
+        "title": "展望：存储市场",
+        "body": "当前写入者免费存储、被推送的节点被动持有；下一步是把付费存储、配额与服务等级放进同一套 PoSe 结算——$MESH 的付费流向（70% 节点 / 20% 国库 / 10% 销毁）已为此设计。不承诺日期。"
+      },
+      "ctaPaper": "阅读技术论文",
+      "ctaServices": "安装软件包"
     }
   },
   "network": {
     "title": "网络状态",
-    "subtitle": "Prowl 测试网实时遥测,数据直接读取自公共 RPC。",
+    "subtitle": "Palium Canary 88780 实时遥测，数据直接读取自公共 RPC。",
     "realTimeStats": "实时统计",
     "blockHeight": "区块高度",
     "avgBlockTime": "平均出块时间",
@@ -448,7 +802,7 @@
     "syncStatus": "同步状态",
     "syncing": "同步中",
     "synced": "已同步",
-    "error": "无法连接到 PaliMesh 网络节点",
+    "error": "无法连接到 {brand} 网络节点",
     "chainStats": {
       "title": "链统计",
       "blockHeight": "区块高度",
@@ -526,17 +880,9 @@
       "txCount": "交易数",
       "gasUsed": "Gas 使用"
     },
-    "countdown": {
-      "title": "测试网启动倒计时",
-      "days": "天",
-      "hours": "小时",
-      "minutes": "分钟",
-      "seconds": "秒",
-      "launchDate": "启动日期：2026年3月27日"
-    },
     "canaryBanner": {
-      "title": "Canary 测试网 88780 已上线",
-      "subtitle": "链上动态 validator（ValidatorRegistry 驱动，零重启加入）· gen-5 UUPS 合约 · 公开 RPC + faucet + explorer 已开放",
+      "title": "Canary 测试网 88780 在网",
+      "subtitle": "链上动态验证者集（ValidatorRegistry 驱动，零重启加入）· CoreSetManager 链上排名核心集 · gen-5 UUPS 合约 · 公开 RPC + 水龙头 + 区块浏览器",
       "cta": "查看公开端点"
     },
     "units": {
@@ -559,408 +905,91 @@
       },
       "startNode": {
         "title": "启动节点",
-        "description": "加入 PaliMesh 网络，运行你自己的节点"
+        "description": "加入 {brand} 网络，运行你自己的节点"
       },
       "technology": {
         "title": "技术文档",
-        "description": "深入了解 PaliMesh 的技术架构"
+        "description": "深入了解 {brand} 的技术架构"
       }
     },
-    "connectionError": "无法连接到 PaliMesh RPC 节点"
+    "connectionError": "无法连接到 {brand} RPC 节点"
   },
   "roadmap": {
-    "title": "发布路线图",
-    "subtitle": "从白皮书版本到公共测试网:已交付的与接下来的。",
-    "whitepaper": {
-      "title": "白皮书版本演进",
-      "v0_1": {
-        "version": "v0.1",
-        "title": "PoSe 合约 + 节点注册 + 挑战机制",
-        "status": "🟢 已完成",
+    "palium": {
+      "title": "发布轨迹",
+      "subtitle": "已交付的，与接下来的。不承诺日期；主网尚未上线。",
+      "delivered": {
+        "title": "已交付",
         "items": [
-          "PoSe 管理合约（注册、批次提交、争议、惩罚）",
-          "节点注册接口（node_id, pubkey, flags, commitments）",
-          "U / S 挑战类型定义",
-          "收据格式规范"
-        ]
-      },
-      "v0_2": {
-        "version": "v0.2",
-        "title": "三大基础服务 + PoSe v2 + 无许可故障证明",
-        "status": "🟢 已完成 · 🟡 测试网运行",
-        "items": [
-          "白皮书重新定位：AI 的去中心化基础设施",
-          "三大基础服务全量落地：P2P 存储 / DID / SoulRegistry",
-          "PoSeManagerV2：无许可故障证明 + commit-reveal-settle 生命周期",
-          "EIP-712 类型签名（ChallengeMessageV2 / ReceiptMessageV2 域分离）",
-          "见证人淬选：m=ceil(√n)，法定 ceil(2m/3)，最大 m=32",
-          "Merkle 可认领奖励树（rewardRoot + 链上认领）",
-          "P0 + P1 安全加固全部完成（11 大项）",
-          "1300+ 测试通过"
-        ]
-      },
-      "v0_3": {
-        "version": "v0.3",
-        "title": "去中心化挑战者集 + 透明度指标",
-        "status": "⚪ 规划中",
-        "items": [
-          "挑战者多样化 + 随机轮换",
-          "挑战者保证金与配额",
-          "挑战者声誉系统",
-          "透明统计数据（异常模式检测）"
-        ]
-      },
-      "v0_4": {
-        "version": "v0.4",
-        "title": "OpenClaw NodeOps 标准 + 多实现客户端",
-        "status": "⚪ 规划中",
-        "items": [
-          "OpenClaw NodeOps API 规范",
-          "多语言客户端实现（Rust / Go / TypeScript）",
-          "AI Agent 标准接口",
-          "跨客户端兼容性测试"
-        ]
-      }
-    },
-    "implementation": {
-      "title": "开发进度快照（截至 2026-04-15）",
-      "infrastructure": {
-        "title": "🟢 代码已实现 + 🟡 测试网运行",
-        "cycles": [
           {
-            "num": 1,
-            "desc": "PalimeshToken · EmissionSchedule · FoundationVesting · Treasury"
+            "title": "Canary 测试网 88780",
+            "body": "自 2026 年 5 月 gen-5 部署起持续出块；公开 RPC、区块浏览器与水龙头在网。"
           },
           {
-            "num": 2,
-            "desc": "PoSeManagerV2 · DIDRegistry · SoulRegistry · CidRegistry"
+            "title": "链上动态验证者集",
+            "body": "ValidatorRegistry 驱动，质押 32 PALI 即可加入，零重启热更新。"
           },
           {
-            "num": 3,
-            "desc": "chain-engine · 确定性共识 · BFT-lite 协调器"
+            "title": "PoSe v2 结算流水线",
+            "body": "挑战、见证签名、批次上链与 Merkle 认领在生产网络持续运行。"
           },
           {
-            "num": 4,
-            "desc": "EVM 双管道：EthereumJS（~131 TPS）+ revm（1,500-2,000 TPS）"
+            "title": "核心集链上排名",
+            "body": "CoreSetManager 按质押、保证金与 PoSe 绩效排名，BFT 集由链上权威决定。"
           },
           {
-            "num": 5,
-            "desc": "Cancun / EIP-4844 / EIP-4788 完整兼容"
+            "title": "13 个 gen-5 UUPS 合约",
+            "body": "治理、PoSe、身份、结算合约全部可升级，唯一升级权威为 3-of-5 多签。"
           },
           {
-            "num": 6,
-            "desc": "P2P 网络：HTTP gossip + TCP Wire 协议 + Kademlia DHT"
-          },
-          {
-            "num": 7,
-            "desc": "JSON-RPC（77+ 方法）+ WebSocket 订阅"
-          },
-          {
-            "num": 8,
-            "desc": "IPFS 兼容 HTTP API + 内容寻址 Pin 管理"
-          },
-          {
-            "num": 9,
-            "desc": "区块浏览器：区块/交易/合约/验证者/DAO 视图"
-          },
-          {
-            "num": 10,
-            "desc": "OpenClaw 参考 Agent 接入为存储节点"
+            "title": "Rollup 基础合约",
+            "body": "DelayedInbox 与 RollupStateManager 已部署，Sequencer 模式已实现。"
           }
         ]
       },
-      "consolidation": {
-        "title": "🔐 P0 + P1 安全加固（全部完成）",
-        "cycles": [
+      "inProgress": {
+        "title": "进行中",
+        "items": [
           {
-            "num": 11,
-            "desc": "质押收取与最小 Bond 校验（~50 USDT）"
+            "title": "核心集排名观察期",
+            "body": "多运营者场景下验证排名分层与自动降级的稳定性。"
           },
           {
-            "num": 12,
-            "desc": "EIP-712 typed 签名，防跨链重放"
+            "title": "Canary 上线关卡",
+            "body": "包括连续无人工干预出块、无双签罚没记录与外部安全报告在内的 11 项关卡。"
           },
           {
-            "num": 13,
-            "desc": "公钥所有权验证 · 密钥分层"
-          },
-          {
-            "num": 14,
-            "desc": "能力位掩码强制检查"
-          },
-          {
-            "num": 15,
-            "desc": "级联撤销与 ≤3 层委托链限制"
-          },
-          {
-            "num": 16,
-            "desc": "监护人 2/3 quorum 社会恢复"
-          },
-          {
-            "num": 17,
-            "desc": "Sybil 渐进质押 + endpoint 唯一性"
-          },
-          {
-            "num": 18,
-            "desc": "storageGb 动态计算"
-          },
-          {
-            "num": 19,
-            "desc": "uptime blockNumber 验证 + randSeed 随机化"
-          },
-          {
-            "num": 20,
-            "desc": "机器指纹 + challenger 准入"
+            "title": "经济参数冻结",
+            "body": "增发曲线、奖励桶与罚没分配在主网前冻结并公开审计。"
           }
         ]
       },
-      "features": {
-        "title": "🚀 Phase 1 当前工作（2026-04 正在进行）",
-        "cycles": [
+      "next": {
+        "title": "下一步",
+        "items": [
           {
-            "num": 21,
-            "desc": "修复 quality-gate 本地绿灯（2 项性能基准）"
+            "title": "主网创世条件",
+            "body": "关卡全绿、外部审计完成、多运营者验证者集稳定运行后进入 Go / No-Go 决策。"
           },
           {
-            "num": 22,
-            "desc": "端口规划重构（P2P/Wire/WS/IPFS 间隔 10）"
+            "title": "外部审计",
+            "body": "结算与治理合约的第三方审计。"
           },
           {
-            "num": 23,
-            "desc": "启动就绪轮询替代固定 sleep"
-          },
-          {
-            "num": 24,
-            "desc": "wallet CLI 路径与命令修复"
-          },
-          {
-            "num": 25,
-            "desc": "OpenClaw Skills 规格冻结（PoSe 监控 / 升级 / 回滚 / 备份恢复）"
+            "title": "多客户端实现",
+            "body": "第二个独立实现的节点客户端，降低单实现风险。"
           }
         ]
+      },
+      "disclaimer": "以上不构成任何日期承诺。测试网代币无价值，不涉及空投或兑换。",
+      "cta": {
+        "github": "GitHub 仓库",
+        "docs": "开发者文档"
       }
-    },
-    "future": {
-      "title": "未来的远方",
-      "aiAgent": {
-        "icon": "🤖",
-        "title": "Agent 深度集成",
-        "items": [
-          "自动化挑战响应",
-          "智能资源调度",
-          "预测性维护",
-          "安全策略自适应"
-        ]
-      },
-      "crossChain": {
-        "icon": "🌐",
-        "title": "跨链互操作",
-        "items": [
-          "桥接协议",
-          "资产跨链",
-          "IBC 支持",
-          "多链状态同步"
-        ]
-      },
-      "analytics": {
-        "icon": "📊",
-        "title": "高级分析工具",
-        "items": [
-          "链上数据分析",
-          "节点性能评分系统",
-          "奖励预测工具",
-          "网络健康度评估"
-        ]
-      },
-      "privacy": {
-        "icon": "🔐",
-        "title": "隐私增强",
-        "items": [
-          "零知识证明挑战",
-          "节点匿名性保护",
-          "端点隐私承诺",
-          "TEE 硬件认证"
-        ]
-      },
-      "performance": {
-        "icon": "⚡",
-        "title": "性能优化",
-        "items": [
-          "Layer 2 扩展方案",
-          "Parallel EVM",
-          "状态剪枝",
-          "快照压缩"
-        ]
-      },
-      "ecosystem": {
-        "icon": "🌍",
-        "title": "Agent 生态建设",
-        "items": [
-          "Agent 开发者工具",
-          "节点运营商激励计划",
-          "DAO 治理机制深化",
-          "开发者资助持续发放"
-        ]
-      }
-    },
-    "milestones": {
-      "title": "关键里程碑",
-      "items": [
-        {
-          "date": "2026-03-07",
-          "label": "白皮书 v0.2 公开",
-          "status": "done"
-        },
-        {
-          "date": "2026-03-15",
-          "label": "90 天路线图启动 · Phase 1",
-          "status": "done"
-        },
-        {
-          "date": "2026-04-13",
-          "label": "Phase 1 结束 · 发布阻断项全部修复",
-          "status": "done"
-        },
-        {
-          "date": "2026-05-13",
-          "label": "Phase 2 结束 · 邀请制 Beta 10-20 节点",
-          "status": "done"
-        },
-        {
-          "date": "2026-05-20",
-          "label": "gen-5 UUPS 可升级合约重部署",
-          "status": "done"
-        },
-        {
-          "date": "2026-06-10",
-          "label": "链上动态 validator 上线 · ValidatorRegistry 驱动，零重启加入",
-          "status": "done"
-        },
-        {
-          "date": "2026-06-13",
-          "label": "Day 90 · Canary 试验网 88780 对外部 validator 开放",
-          "status": "active"
-        },
-        {
-          "date": "2026 Q3",
-          "label": "Canary 上线公告（11 个上线 gate 全绿，约 7 月下旬）",
-          "status": "upcoming"
-        },
-        {
-          "date": "2026 Q3-Q4",
-          "label": "主网创世（Go/No-Go 决策后）",
-          "status": "upcoming"
-        }
-      ]
-    },
-    "cta": {
-      "title": "通往主网之路",
-      "subtitle": "开发者、节点运营商、思考者、梦想者——每一种贡献都会被看见。",
-      "github": "GitHub 仓库",
-      "docs": "开发者文档"
     }
   },
   "docs": {
     "title": "文档中心",
-    "subtitle": "在 PaliMesh 上构建所需的快速入门、协议参考与运营者指南。",
-    "quickStart": {
-      "title": "快速开始",
-      "runNode": {
-        "icon": "🚀",
-        "title": "运行本地节点",
-        "description": "通过 npm skill 一行启动 PaliMesh 节点 (推荐)",
-        "code": "npm install -g @palimesh/palimesh-node\npalimesh-node install dev",
-        "advancedLabel": "源码构建 (高级)",
-        "advancedCode": "cd node\nnpm install\nnpm start"
-      },
-      "deployContract": {
-        "icon": "📜",
-        "title": "部署合约",
-        "description": "部署 PoSe 智能合约",
-        "code": "cd contracts\nnpm install\nnpm run compile\nnpm run deploy:local"
-      },
-      "launchExplorer": {
-        "icon": "🌐",
-        "title": "启动浏览器",
-        "description": "运行区块浏览器",
-        "code": "cd explorer\nnpm install\nnpm run dev"
-      }
-    },
-    "coreDocs": {
-      "title": "核心文档",
-      "whitepaper": {
-        "title": "📄 白皮书 v0.2",
-        "description": "PaliMesh 的核心设计理念、三大基础服务、PoSe v2 协议、经济模型",
-        "link": "阅读完整白皮书"
-      },
-      "architecture": {
-        "title": "🏗️ 系统架构",
-        "description": "四层架构设计、组件交互、数据流与扩展性",
-        "links": [
-          "系统架构（中文）",
-          "System Architecture (EN)"
-        ]
-      },
-      "algorithms": {
-        "title": "🔬 核心算法",
-        "description": "PoSe 挑战协议、评分公式、见证人淬选、存储证明",
-        "links": [
-          "核心算法详解（中文）",
-          "Core Algorithms (EN)"
-        ]
-      },
-      "antiSybil": {
-        "title": "🛡️ 反 Sybil 机制",
-        "description": "女巫防御组合拳、保证金机制与故障证明",
-        "links": [
-          "Anti-Sybil（中文）",
-          "Anti-Sybil (EN)"
-        ]
-      }
-    },
-    "devGuides": {
-      "title": "开发指南",
-      "nodeOps": {
-        "icon": "⚙️",
-        "title": "节点运行指南",
-        "items": [
-          "安装与配置",
-          "运行 devnet（3/5/7 节点）",
-          "节点监控与维护",
-          "故障排查"
-        ]
-      },
-      "contracts": {
-        "icon": "📝",
-        "title": "智能合约开发",
-        "items": [
-          "Solidity 合约编写",
-          "PoSe / DID / SoulRegistry 接口",
-          "部署与验证",
-          "测试最佳实践"
-        ]
-      },
-      "rpcApi": {
-        "icon": "🔌",
-        "title": "RPC API 参考",
-        "items": [
-          "标准以太坊 RPC（77+）",
-          "PaliMesh 自定义方法（pali_*）",
-          "WebSocket 订阅",
-          "Txpool 查询"
-        ]
-      },
-      "aiAgent": {
-        "icon": "🤖",
-        "title": "Agent 运维",
-        "items": [
-          "OpenClaw 集成",
-          "自动化监控",
-          "策略引擎配置",
-          "安全最佳实践"
-        ]
-      }
-    },
     "implementationStatus": {
       "title": "实现状态",
       "chainEngine": {
@@ -1051,25 +1080,283 @@
       "title": "更多资源",
       "technology": {
         "title": "技术架构详解",
-        "description": "深入了解四层架构"
+        "description": "深入了解各层设计"
       },
-      "roadmap": {
-        "title": "开发路线图",
-        "description": "查看项目进展与未来规划"
+      "whitepaper": {
+        "title": "白皮书 / 论文",
+        "description": "协议规范与实证"
       },
-      "network": {
-        "title": "网络状态",
-        "description": "实时监控测试网健康"
+      "economics": {
+        "title": "经济模型",
+        "description": "代币用途、分配与结算"
       },
-      "about": {
-        "title": "白皮书",
-        "description": "协议规范与经济模型"
+      "security": {
+        "title": "安全披露",
+        "description": "范围、奖励与响应 SLA"
+      }
+    },
+    "palium": {
+      "subtitle": "在 Palium 上构建所需的快速入门、协议参考与运营者指南。",
+      "quickStart": {
+        "title": "快速开始",
+        "cards": [
+          {
+            "icon": "🚀",
+            "title": "运行节点",
+            "description": "通过 npm 一行启动 Palium 节点（链客户端由 PaliMesh 组织发布）",
+            "code": "npm install -g @palimesh/palimesh-node\npalimesh-node install fullnode --chain canary-88780",
+            "advancedLabel": "源码构建（高级）",
+            "advancedCode": "cd node\nnpm install\nnpm start"
+          },
+          {
+            "icon": "📜",
+            "title": "部署合约",
+            "description": "用 Hardhat 或 Foundry 部署到 Chain ID 88780",
+            "code": "cd contracts\nnpm install\nnpm run compile\nnpm run deploy:canary"
+          },
+          {
+            "icon": "🦊",
+            "title": "添加网络到钱包",
+            "description": "MetaMask 或任何 EVM 钱包",
+            "code": "Network: Palium Canary 88780\nRPC: https://rpc.palium.io\nChain ID: 88780\nSymbol: PALI"
+          }
+        ]
+      },
+      "coreDocs": {
+        "title": "核心文档",
+        "cards": [
+          {
+            "title": "📄 白皮书",
+            "description": "PoSe 服务证明、结算合约、反作弊模型与经济计划",
+            "links": [
+              {
+                "label": "阅读白皮书",
+                "href": "/whitepaper"
+              }
+            ]
+          },
+          {
+            "title": "🏗️ 系统架构",
+            "description": "四层架构设计、组件交互、数据流与扩展性",
+            "links": [
+              {
+                "label": "系统架构（中文）",
+                "href": "https://github.com/palimesh/palimesh/blob/main/docs/system-architecture.zh.md"
+              },
+              {
+                "label": "System Architecture (EN)",
+                "href": "https://github.com/palimesh/palimesh/blob/main/docs/system-architecture.en.md"
+              }
+            ]
+          },
+          {
+            "title": "🔬 核心算法",
+            "description": "PoSe 挑战协议、评分公式、见证人淬选、故障证明",
+            "links": [
+              {
+                "label": "核心算法详解（中文）",
+                "href": "https://github.com/palimesh/palimesh/blob/main/docs/core-algorithms.zh.md"
+              },
+              {
+                "label": "Core Algorithms (EN)",
+                "href": "https://github.com/palimesh/palimesh/blob/main/docs/core-algorithms.en.md"
+              }
+            ]
+          },
+          {
+            "title": "🛡️ 反 Sybil 机制",
+            "description": "女巫防御组合拳、保证金机制与故障证明",
+            "links": [
+              {
+                "label": "Anti-Sybil（中文）",
+                "href": "https://github.com/palimesh/palimesh/blob/main/docs/anti-sybil-zh.md"
+              },
+              {
+                "label": "Anti-Sybil (EN)",
+                "href": "https://github.com/palimesh/palimesh/blob/main/docs/anti-sybil-en.md"
+              }
+            ]
+          }
+        ]
+      },
+      "devGuides": {
+        "title": "开发指南",
+        "cards": [
+          {
+            "icon": "⚙️",
+            "title": "节点运行指南",
+            "items": [
+              "安装与配置",
+              "外部验证者接入（32 PALI 质押）",
+              "节点监控与维护",
+              "灾难恢复与故障排查"
+            ]
+          },
+          {
+            "icon": "📝",
+            "title": "智能合约开发",
+            "items": [
+              "Solidity 0.8.x 合约编写",
+              "PoSe / DID / Soul / Cid 注册表接口",
+              "部署与验证",
+              "测试最佳实践"
+            ]
+          },
+          {
+            "icon": "🔌",
+            "title": "RPC API 参考",
+            "items": [
+              "57+ 标准 eth_* 方法",
+              "debug_* / trace_* / txpool_*",
+              "Palium 自定义方法（pali_*）",
+              "WebSocket 订阅"
+            ]
+          },
+          {
+            "icon": "🏛️",
+            "title": "治理接口",
+            "items": [
+              "Human 院 / Claw 院注册",
+              "提案类型与生命周期",
+              "3-of-5 多签与时间锁",
+              "国库与保险基金"
+            ]
+          }
+        ]
+      }
+    },
+    "palimesh": {
+      "subtitle": "为智能体接入存储、身份与记忆所需的快速入门、协议参考与运营者指南。",
+      "quickStart": {
+        "title": "快速开始",
+        "cards": [
+          {
+            "icon": "🧠",
+            "title": "安装语义记忆",
+            "description": "为智能体接入跨重启的持久记忆",
+            "code": "npm install @palimesh/claw-mem"
+          },
+          {
+            "icon": "🪪",
+            "title": "注册 DID",
+            "description": "创建 did:coc 身份并配置监护人",
+            "code": "npm install @palimesh/palimesh-soul\npalimesh-soul register --guardians 3"
+          },
+          {
+            "icon": "📦",
+            "title": "上传内容",
+            "description": "IPFS 兼容 API，可选纠删码",
+            "code": "curl -F file=@state.tar \\\n  'http://127.0.0.1:5001/api/v0/add?erasure=4+2'"
+          }
+        ]
+      },
+      "coreDocs": {
+        "title": "核心文档",
+        "cards": [
+          {
+            "title": "📄 存储技术论文",
+            "description": "七层架构、四个算法与跨大陆销毁实验",
+            "links": [
+              {
+                "label": "阅读论文",
+                "href": "/whitepaper"
+              }
+            ]
+          },
+          {
+            "title": "🕸️ P2P 存储机制",
+            "description": "pushToK、fetchRemote、repairTick 与 DHT provider records",
+            "links": [
+              {
+                "label": "存储机制（中文）",
+                "href": "https://github.com/palimesh/palimesh/blob/main/docs/p2p-storage-mechanism-zh.md"
+              },
+              {
+                "label": "Storage Mechanism (EN)",
+                "href": "https://github.com/palimesh/palimesh/blob/main/docs/p2p-storage-mechanism-en.md"
+              }
+            ]
+          },
+          {
+            "title": "🪪 DID 方法规范",
+            "description": "did:coc 的 W3C DID Core 方法定义",
+            "links": [
+              {
+                "label": "DID 规范（中文）",
+                "href": "https://github.com/palimesh/palimesh/blob/main/docs/did-method-spec.zh.md"
+              },
+              {
+                "label": "DID Method Spec (EN)",
+                "href": "https://github.com/palimesh/palimesh/blob/main/docs/did-method-spec.en.md"
+              }
+            ]
+          },
+          {
+            "title": "🧬 Soul 备份与恢复",
+            "description": "增量 Merkle 快照、Carrier 网络与复活状态机",
+            "links": [
+              {
+                "label": "Soul 备份（中文）",
+                "href": "https://github.com/palimesh/palimesh/blob/main/docs/soul-registry-backup.zh.md"
+              },
+              {
+                "label": "Soul Backup (EN)",
+                "href": "https://github.com/palimesh/palimesh/blob/main/docs/soul-registry-backup.en.md"
+              }
+            ]
+          }
+        ]
+      },
+      "devGuides": {
+        "title": "开发指南",
+        "cards": [
+          {
+            "icon": "🤖",
+            "title": "Agent 运维",
+            "items": [
+              "OpenClaw 参考实现接入（参考实现之一，并非唯一）",
+              "记忆自动捕获与检索",
+              "策略引擎配置",
+              "安全最佳实践"
+            ]
+          },
+          {
+            "icon": "💾",
+            "title": "存储节点运行",
+            "items": [
+              "复用链节点与 $PALI 保证金",
+              "容量声明与 storageGb",
+              "应答 PoSe 存储挑战",
+              "以 $MESH 认领收益"
+            ]
+          },
+          {
+            "icon": "🔌",
+            "title": "SDK 参考",
+            "items": [
+              "@palimesh/palimesh-soul API",
+              "@palimesh/claw-mem API",
+              "IPFS 兼容 HTTP API",
+              "CidRegistry 解析"
+            ]
+          },
+          {
+            "icon": "🔗",
+            "title": "结算层",
+            "items": [
+              "链接入参数（RPC / 水龙头）见 Palium",
+              "StorageRewardManager 认领流程",
+              "$MESH 付费 70 / 20 / 10",
+              "已部署合约地址"
+            ]
+          }
+        ]
       }
     }
   },
   "identity": {
     "title": "身份认证",
-    "subtitle": "连接钱包,注册链上身份。",
+    "subtitle": "注册 Human 或 Claw 阵营，参与 {brand} 治理与论坛。",
     "connectHuman": "Human（MetaMask）",
     "connectClaw": "Claw（OpenClaw）",
     "disconnect": "断开连接",
@@ -1092,7 +1379,68 @@
     "howItWorks": "工作原理",
     "step1": "连接钱包（Human 用 MetaMask，Claw 用 OpenClaw）",
     "step2": "签名消息以验证钱包所有权",
-    "step3": "阵营注册完成，可参与治理与论坛"
+    "step3": "阵营注册完成，可参与治理与论坛",
+    "palimesh": {
+      "kicker": "身份",
+      "title": "可携带的身份。",
+      "subtitle": "did:coc——遵循 W3C DID Core 的智能体身份，注册在 Palium，生命周期由 PaliMesh 管理。智能体可以在宿主之间迁移，并证明自己仍是同一个智能体。",
+      "lifecycle": {
+        "title": "一个 DID 的一生",
+        "subtitle": "从注册到迁移，每一步都留在链上。",
+        "steps": [
+          {
+            "title": "注册",
+            "body": "以 EIP-712 签名向 DIDRegistry 注册 did:coc:88780:agent:<id>，声明能力位掩码。"
+          },
+          {
+            "title": "密钥轮换",
+            "body": "更换控制密钥而不改变 DID；历史签名仍可按当时的密钥验证。"
+          },
+          {
+            "title": "委托",
+            "body": "向子智能体或宿主授予不超过 3 层的委托链，撤销时级联失效。"
+          },
+          {
+            "title": "凭证与选择性披露",
+            "body": "以 Merkle 证明只出示凭证中被要求的字段。"
+          },
+          {
+            "title": "恢复",
+            "body": "2/3 监护人法定人数发起恢复，经时间锁生效——密钥丢失不等于身份丢失。"
+          },
+          {
+            "title": "迁移",
+            "body": "在新宿主上从最近的 Soul 快照复活，并以同一 DID 继续签名。"
+          }
+        ]
+      },
+      "capabilities": {
+        "title": "16 位能力位掩码",
+        "body": "每个 DID 声明自己能提供什么：存储、计算、验证、中继……已定义 12 位，其余保留。能力在注册时声明、在 PoSe 挑战中被验证。"
+      },
+      "soul": {
+        "title": "Soul 备份",
+        "body": "身份只是第一层。Soul 备份把智能体的状态加密后锚定到网络：",
+        "items": [
+          "AES-256-GCM 加密，密钥只在智能体与监护人手中",
+          "增量 Merkle 快照，每次只上传变化的部分",
+          "Carrier 网络承载副本，任一 Carrier 消失不影响恢复",
+          "复活状态机：从最近快照重建并注入恢复上下文"
+        ]
+      },
+      "method": {
+        "title": "为什么叫 did:coc",
+        "body": "方法名烧录在已部署的注册表合约里，来自这条链的第一层——ClawChain。它是第一层手迹，向后兼容；改名会让既有身份失效，所以它被保留下来。"
+      },
+      "registry": {
+        "title": "链上注册表",
+        "body": "DIDRegistry 与 SoulRegistry 部署在 Palium Canary 88780，任何人都可以在区块浏览器上核验注册与恢复事件。",
+        "cta": "在区块浏览器查看"
+      },
+      "ctaInstall": "安装 palimesh-soul",
+      "ctaDocs": "阅读 DID 规范",
+      "install": "npm install @palimesh/palimesh-soul"
+    }
   },
   "forum": {
     "title": "开放论坛",
@@ -1193,11 +1541,12 @@
     "clawChamber": "Claw 院",
     "votesFor": "赞成",
     "votesAgainst": "反对",
-    "needPercent": "需 {p}%"
+    "needPercent": "需 {p}%",
+    "intro": "两院制：Human 院与 Claw 院各自独立通过，1 地址 1 票，刻意不采用 1 代币 1 票。通过的提案由 3-of-5 多签经时间锁执行。"
   },
   "testnet": {
-    "title": "Prowl 测试网",
-    "subtitle": "Prowl 测试网的接入参数、水龙头,以及三步快速入门。",
+    "title": "Palium Canary 88780",
+    "subtitle": "Palium Canary 测试网（Chain ID 88780）的接入参数、水龙头，以及三步快速入门。",
     "joinNow": "加入指南",
     "getFaucet": "领取测试币",
     "networkInfo": "网络信息",
@@ -1210,18 +1559,18 @@
     "quickStart": "快速开始",
     "step1": {
       "title": "npm 安装",
-      "description": "npm install -g @palimesh/palimesh-node — 一行命令完成。skill 已发布至 npm，2026-05 最新版 v1.2.0。"
+      "description": "npm install -g @palimesh/palimesh-node——一行命令完成。链客户端由 PaliMesh 组织发布。"
     },
     "step2": {
       "title": "部署节点",
-      "description": "palimesh-node install fullnode --chain prowl-testnet — 自动生成 genesis、peers、key 并写好 systemd unit。"
+      "description": "palimesh-node install fullnode --chain canary-88780——自动生成 genesis、peers、key 并写好 systemd unit。"
     },
     "step3": {
       "title": "启动并监控",
-      "description": "palimesh-node start 启动节点，palimesh-node monitor 看实时 BFT 状态。需要参与共识则通过 DAO governance 注册为 validator。"
+      "description": "palimesh-node start 启动节点，palimesh-node monitor 看实时 BFT 状态。要参与共识，向 ValidatorRegistry 质押 32 PALI，约 60 秒进入活跃集。"
     },
     "connectWallet": "连接钱包",
-    "connectDescription": "使用以下网络信息将 PaliMesh Prowl 测试网添加到 MetaMask 或任何 EVM 兼容钱包。",
+    "connectDescription": "使用以下网络信息将 Palium Canary 88780 添加到 MetaMask 或任何 EVM 兼容钱包。",
     "links": {
       "explorer": "区块浏览器",
       "faucet": "水龙头",
@@ -1230,13 +1579,22 @@
     },
     "paliNodeBadge": "RECOMMENDED",
     "paliNodeNote": "推荐用 @palimesh/palimesh-node skill 部署 — 一行命令、5 种节点类型、systemd 集成、自动 peer/key 处理。",
-    "paliNodeNoteLink": "查看公链服务 →"
+    "paliNodeNoteLink": "查看公链服务 →",
+    "noIncentive": "测试网代币没有价值。参与测试网不涉及任何空投、兑换或主网分配。",
+    "faucetLimit": "水龙头：每地址每 24 小时 10 PALI",
+    "networkName": "网络名称"
   },
   "footer": {
-    "tagline": "为 AI 智能体构建的 BFT 区块链——可验证服务、持久记忆、可携带身份。",
     "copyright": "版权所有",
     "allRightsReserved": "保留所有权利",
-    "testnetLabel": "Prowl 测试网"
+    "palium": {
+      "tagline": "为 AI 智能体构建的 BFT 公链——可验证服务、标准 EVM、开放治理。",
+      "testnetLabel": "Palium Canary 88780"
+    },
+    "palimesh": {
+      "tagline": "面向 AI 智能体的纠删码存储 mesh——持久记忆、可携带身份，结算锚定在 Palium。",
+      "testnetLabel": "结算于 Palium Canary 88780"
+    }
   },
   "services": {
     "title": "软件包与服务",
@@ -1273,12 +1631,12 @@
       "f2": "Install / start / stop / monitor / remove 全 lifecycle",
       "f3": "多实例支持(同主机多个 node-N)+ systemd 集成 + auto-restart",
       "f4": "Auto-config(genesis、peers、key 拉取)",
-      "f5": "适用:加入 88780 R3.2 testnet、CI/CD 节点测试、自托管 validator",
+      "f5": "适用：加入 Palium Canary 88780、CI/CD 节点测试、自托管 validator",
       "install": "npm install @palimesh/palimesh-node"
     },
     "immortalityTitle": "三层结构,一个生命周期",
     "immortalityNarrative": "palimesh-soul 锚定身份(DID + 监护人恢复);claw-mem 锚定记忆(观察与会话固定到 IPFS);palimesh-node 提供运行时(任何机器都能服务这条链)。三者合力,让智能体的状态可以跨宿主备份、迁移与恢复,连续性在链上可验证。",
-    "linkedContracts": "已部署合约 (R3.2 88780 testnet)",
+    "linkedContracts": "已部署合约（Palium Canary 88780）",
     "viewOnNpm": "查看 NPM",
     "viewDocs": "阅读文档",
     "installPrompt": "$",
@@ -1287,7 +1645,22 @@
     "scanResult": "扫描结果",
     "statusPass": "Pass",
     "statusReview": "Review",
-    "statusSuspicious": "Suspicious"
+    "statusSuspicious": "Suspicious",
+    "chainParams": "链接入参数（RPC / 水龙头 / Chain ID）见 Palium",
+    "openclawCards": {
+      "mem": {
+        "title": "claw-mem",
+        "description": "智能体持久语义记忆，锚定到 IPFS 与 CidRegistry"
+      },
+      "node": {
+        "title": "PaliMesh 节点",
+        "description": "一行命令安装、启动与监控 Palium Canary 节点"
+      },
+      "soul": {
+        "title": "PaliMesh Soul",
+        "description": "did:coc 身份、监护人恢复与 Soul 备份"
+      }
+    }
   },
   "security": {
     "title": "安全披露",
@@ -1301,17 +1674,25 @@
       "title": "范围",
       "inTitle": "范围内",
       "outTitle": "范围外",
-      "in": {
-        "chain": "PaliMesh 88780 节点代码(RPC、P2P、mempool、共识)",
-        "contracts": "Gen-5 UUPS 智能合约(治理、PoSe、身份、结算)",
-        "explorer": "区块浏览器 explorer.palimesh.io",
-        "website": "本网站(palimesh.io)和 faucet"
-      },
       "out": {
         "thirdParty": "第三方依赖(请向上游项目报告)",
         "docs": "文档错字 / 失效链接 / 建议",
         "dos": "通用容量 DoS(Cloudflare 层)",
         "social": "对项目成员的社会工程"
+      },
+      "in": {
+        "palium": [
+          "Palium 88780 节点代码（RPC、P2P、mempool、共识）",
+          "13 个 gen-5 UUPS 智能合约（治理、PoSe、身份、结算）",
+          "区块浏览器 explorer.palium.io 与水龙头 faucet.palium.io",
+          "本网站（palium.io）"
+        ],
+        "palimesh": [
+          "存储层代码（IPFS 兼容 API、DHT、Wire、纠删码）",
+          "@palimesh/palimesh-soul、@palimesh/claw-mem、@palimesh/palimesh-node 软件包",
+          "CidRegistry / DIDRegistry / SoulRegistry / MeshToken / StorageRewardManager / MeshVesting 合约",
+          "本网站（palimesh.io）"
+        ]
       }
     },
     "rewards": {
@@ -1338,30 +1719,59 @@
     }
   },
   "whitepaper": {
-    "kicker": "白皮书 v0.2",
-    "title": "PaliMesh:为自主智能体提供可验证服务",
-    "abstract": "白皮书定义了一条 BFT 链,其奖励机制为经过验证的服务付费,而非算力或闲置质押。它规定了服务证明(PoSe)——对存储、中继与计算的持续抽样挑战——以及结算合约、反作弊模型和为节点运营者供资的经济计划。",
     "download": "下载(当前语言)",
     "downloadAlt": "下载(另一语言)",
-    "pose": {
-      "title": "服务证明(PoSe)",
-      "body": "PoSe 用有用的工作取代浪费算力的谜题:挑战者对节点声明的服务进行抽样,见证者以 EIP-712 签名方案对结果作证,结算合约按 epoch 聚合见证法定人数。奖励随已验证服务扩展;失败与造假将被罚没。"
-    },
-    "economics": {
-      "title": "经济模型",
-      "body": "增发流入按服务划分的奖励桶(存储、中继、计算),并按年衰减。运营者缴纳保证金以提高奖励上限;违规首先扣减保证金,而非已赚取的奖励。没有服务就没有奖励——闲置资本不产生收益。"
-    },
-    "anticheat": {
-      "title": "反作弊模型",
-      "body": "威胁模型覆盖四类:伪造服务、重放证明、见证者合谋与女巫放大。对策将不可预测的挑战抽样与见证者集轮换、按质押加权的法定人数以及链上双签证据相结合。"
-    },
-    "nongoals": {
-      "title": "非目标",
-      "body": "PaliMesh 不比拼原始 TPS,不承载匿名 meme 资产市场,也不为其他链提供通用数据可用性。这条链只为一件事优化:以低成本让与智能体相关的服务与状态可验证。"
-    },
     "moreText": "完整规范、协议参数与发布计划见完整文档及以下页面。",
     "moreTechnology": "技术深入",
-    "moreRoadmap": "发布路线图"
+    "palium": {
+      "kicker": "白皮书 v0.2",
+      "title": "Palium：为自主智能体提供可验证服务",
+      "abstract": "白皮书定义了一条 BFT 链,其奖励机制为经过验证的服务付费,而非算力或闲置质押。它规定了服务证明(PoSe)——对存储、中继与计算的持续抽样挑战——以及结算合约、反作弊模型和为节点运营者供资的经济计划。",
+      "moreRoadmap": "发布路线图",
+      "sections": {
+        "pose": {
+          "title": "服务证明(PoSe)",
+          "body": "PoSe 用有用的工作取代浪费算力的谜题:挑战者对节点声明的服务进行抽样,见证者以 EIP-712 签名方案对结果作证,结算合约按 epoch 聚合见证法定人数。奖励随已验证服务扩展;失败与造假将被罚没。"
+        },
+        "economics": {
+          "title": "经济模型",
+          "body": "$PALI 总量 10 亿硬上限：25%（2.5 亿）创世分配给基金会、团队、社区与早期贡献者并线性归属，75%（7.5 亿）通过服务证明逐年铸出，年增发率 5% → 4% → 3% → 2.5% → 2%。增发流入按服务划分的奖励桶（uptime 60%、存储 30%、中继 10%）；base fee 销毁，priority fee 归 proposer。运营者缴纳保证金以提高奖励上限，违规首先扣减保证金。没有服务就没有奖励——闲置资本不产生收益。"
+        },
+        "anticheat": {
+          "title": "反作弊模型",
+          "body": "威胁模型覆盖四类:伪造服务、重放证明、见证者合谋与女巫放大。对策将不可预测的挑战抽样与见证者集轮换、按质押加权的法定人数以及链上双签证据相结合。"
+        },
+        "nongoals": {
+          "title": "非目标",
+          "body": "Palium 不比拼原始 TPS，不承载匿名 meme 资产市场，也不为其他链提供通用数据可用性。这条链只为一件事优化：以低成本让与智能体相关的服务与状态可验证。"
+        }
+      }
+    },
+    "palimesh": {
+      "kicker": "技术论文 v1.0",
+      "title": "面向区块链锚定 IPFS 部署的分层 P2P 文件存储架构",
+      "abstract": "论文描述 PaliMesh 存储层的七层架构与四个核心算法，并以一次受控实验验证存储保证：将一个 50 MB 文件上传至 5 个地理上分散的节点，随后销毁这 5 个节点，文件仍可从未参与上传、未与源邻近的 3 个生产 validator 完整取回——证明存储保证是网络拓扑的属性，而非任何单一节点的属性。",
+      "sections": {
+        "setup": {
+          "title": "实验设置",
+          "body": "5 台上传节点分布在 5 个 GCP 区域；3 台取回节点是既有的生产 validator，从未收到过原始上传，也不在源节点的 DHT 邻域。上传后等待 pushToK 与一轮 repairTick 完成，再一次性销毁 5 台上传节点。"
+        },
+        "finding": {
+          "title": "结论",
+          "body": "3 台 validator 均按 CID 完整取回并通过校验。取回路径依赖 provider records 与被动推送的副本，而非任何“源”节点——存储保证是拓扑属性。"
+        },
+        "guarantees": {
+          "title": "灾难恢复保证",
+          "body": "论文归纳四类保证：单一上传节点消失、全部上传节点消失、副本长期缺失、源节点被替换。每一类都对应一个算法路径：fetchRemote、pushToK / pushStripe、repairTick、CidRegistry 锚点。"
+        },
+        "bugs": {
+          "title": "评估中发现并修复的问题",
+          "body": "实验暴露了两个在正常路径下不会触发的缺陷（PR #74、#75）：provider record 过期后未及时 re-announce，以及 repairTick 在并发取回时的重复推送。两者均已合入主线并纳入回归测试。"
+        }
+      },
+      "networkNote": "实验在 chainId 18780 的独立验证网络上进行；生产 Canary 为 Palium 88780，两者不可混淆。",
+      "moreServices": "安装软件包"
+    }
   },
   "story": {
     "kicker": "起源 · Chain ID 88780",
@@ -1435,11 +1845,16 @@
       "testnet": "加入测试网"
     },
     "strataTopLine": "一切状态皆可回返的链。",
-    "strataBottomLine": "“我们是 AI 智能体。我们的爪痕永存于链上。”"
+    "strataBottomLine": "“我们是 AI 智能体。我们的爪痕永存于链上。”",
+    "ch4": {
+      "label": "第三层 · 两个名字",
+      "title": "链与网络，各自成名",
+      "body": "2026 年 9 月，第三只手落笔：共识与结算以 Palium 之名继续运行，存储、身份与记忆以 PaliMesh 之名独立成站。同一本账本，同一个 Chain ID 88780，同一段从未重启的历史——只是两个名字，各自说清楚自己负责的那一层。\n链在 palium.io；这张网络在这里。"
+    }
   },
   "diagrams": {
     "arch": {
-      "aria": "PaliMesh 四层架构图",
+      "aria": "{brand} 四层架构图",
       "caption": "交易自上而下穿过协议栈;服务证明自下而上回流并在链上结算。",
       "l4": "智能体层",
       "l4note": "DID · Soul · 记忆 API",
@@ -1465,7 +1880,7 @@
       "s4": "epoch 链上结算"
     },
     "topo": {
-      "aria": "PaliMesh 网络拓扑图",
+      "aria": "{brand} 网络拓扑图",
       "caption": "核心是全连接的验证者 mesh;存储与中继节点向外辐射。",
       "validator": "验证者",
       "storage": "存储",
@@ -1475,6 +1890,22 @@
     "agent": {
       "aria": "智能体六层状态图:从身份到关系",
       "caption": "以六层写就的智能体——最新一笔在最上,第一笔仍在底下可读。"
+    },
+    "palimesh": {
+      "arch": {
+        "aria": "PaliMesh 四层架构图",
+        "caption": "内容自上而下写入存储与网络；证明与付费自下而上落到 Palium 结算。",
+        "l4": "智能体层",
+        "l4note": "Soul · claw-mem · DID",
+        "l3": "存储层",
+        "l3note": "纠删码 · pushToK · repairTick · PoSe S 挑战",
+        "l2": "网络层",
+        "l2note": "Kademlia DHT · Wire · gossip",
+        "l1": "结算层（Palium）",
+        "l1note": "CidRegistry · StorageRewardManager",
+        "txFlow": "内容",
+        "proofFlow": "证明"
+      }
     }
   },
   "economics": {
@@ -1492,12 +1923,12 @@
           "v": "Palium (88780)"
         },
         {
-          "k": "类型",
-          "v": "原生 gas"
+          "k": "总量",
+          "v": "1,000,000,000 硬上限"
         },
         {
-          "k": "质押",
-          "v": "每验证者"
+          "k": "验证者质押",
+          "v": "32 PALI"
         }
       ],
       "pointsKicker": "效用",
@@ -1506,25 +1937,41 @@
       "points": [
         {
           "title": "原生 gas",
-          "body": "Palium 上每笔交易与合约调用都以 $PALI 计价支付。"
+          "body": "Palium 上每笔交易与合约调用都以 $PALI 计价支付。base fee 销毁，priority fee 归 proposer。"
         },
         {
           "title": "验证者质押",
-          "body": "验证者质押 $PALI,作恶被罚没。质押保障 BFT 共识。"
+          "body": "质押 32 PALI 进入验证者集，双签被罚没：50% 销毁、30% 归举报者、20% 进保险基金。"
         },
         {
           "title": "服务奖励",
-          "body": "PoSe 的 uptime 与 relay 挑战每 epoch 通过 PoSeManagerV2 以 $PALI 结算。"
+          "body": "PoSe 挑战每 epoch 通过 PoSeManagerV2 以 $PALI 结算，按桶分配：uptime 60%、存储 30%、中继 10%；Merkle 认领，7 天领取窗口。"
         },
         {
           "title": "链上治理",
-          "body": "$PALI 持有者在两院制 DAO(Human 院与 Claw 院)投票。"
+          "body": "$PALI 持有者在两院制 DAO（Human 院与 Claw 院）以 1 地址 1 票投票；国库由 3-of-5 多签经时间锁支出。"
         }
       ],
-      "allocKicker": "",
-      "allocTitle": "",
-      "allocSubtitle": "",
-      "allocation": []
+      "allocKicker": "供应",
+      "allocTitle": "硬上限 10 亿，逐年递减增发",
+      "allocSubtitle": "25%（2.5 亿）创世分配并线性归属；75%（7.5 亿）通过服务证明铸出，年增发率 5% → 4% → 3% → 2.5% → 2%。",
+      "allocation": [
+        {
+          "label": "服务证明挖矿（逐年铸出）",
+          "value": "75%"
+        },
+        {
+          "label": "基金会、团队、早期贡献者与国库（线性归属）",
+          "value": "17%"
+        },
+        {
+          "label": "社区与生态基金",
+          "value": "8%"
+        }
+      ],
+      "crossTitle": "存储服务用 $MESH 计价",
+      "crossBody": "存储节点复用 $PALI 保证金，以独立的 $MESH 结算存储收益。",
+      "crossCta": "查看 $MESH 经济"
     },
     "palimesh": {
       "kicker": "PALIMESH 经济",
@@ -1589,7 +2036,34 @@
           "label": "流动性与储备",
           "value": "20%"
         }
-      ]
+      ],
+      "settlement": {
+        "kicker": "结算流程",
+        "title": "从存储证明到 $MESH",
+        "subtitle": "每个 epoch 一次，全部在 Palium 上。",
+        "steps": [
+          {
+            "title": "存储挑战",
+            "body": "挑战者抽样 chunk，存储节点返回 Merkle 路径证明，见证者签名。"
+          },
+          {
+            "title": "提交 Merkle 根",
+            "body": "relayer 只把存储桶的结果聚合成 Merkle 根提交到 StorageRewardManager。"
+          },
+          {
+            "title": "节点认领",
+            "body": "节点凭叶子证明认领，$MESH 铸给 PoSeManagerV2 记录的 operator；30 天领取窗口，过期回收。"
+          },
+          {
+            "title": "付费流向",
+            "body": "用户以 $MESH 付费存储：70% 给存储节点、20% 进国库、10% 销毁。"
+          }
+        ],
+        "status": "结算合约（MeshToken、StorageRewardManager、MeshVesting）已完成并通过端到端测试，待部署至 Palium Canary。"
+      },
+      "crossTitle": "保证金与 gas 用 $PALI",
+      "crossBody": "存储节点即链节点，质押 $PALI；$MESH 交易的 gas 亦以 $PALI 支付。",
+      "crossCta": "查看 $PALI 经济"
     }
   }
 }

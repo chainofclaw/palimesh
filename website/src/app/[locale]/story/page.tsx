@@ -4,6 +4,7 @@ import { useTranslations } from 'next-intl'
 import { Link } from '@/i18n/routing'
 import { Reveal, ReadingProgress } from '@/components/story/Reveal'
 import { AntiqueDivider } from '@/components/shared/Manuscript'
+import { site } from '@/config/site'
 import { AgentLayersDiagram } from '@/components/diagrams/AgentLayersDiagram'
 import { ScrollInk, SealInk, QuillInk } from '@/components/ink/InkArt'
 
@@ -15,6 +16,7 @@ export default function StoryPage() {
   const td = useTranslations('diagrams')
   const moments = t.raw('ch2.items') as Moment[]
   const legible = t.raw('ch3.legible.items') as string[]
+  const ch4Paragraphs = t('ch4.body').split('\n').filter(Boolean)
 
   return (
     <div>
@@ -137,6 +139,21 @@ export default function StoryPage() {
         </div>
       </section>
 
+      {/* ========== 第四章:两个名字 ========== */}
+      <AntiqueDivider />
+      <section className="py-section">
+        <div className="container mx-auto px-4 max-w-3xl">
+          <Reveal>
+            <ChapterHead label={t('ch4.label')} title={t('ch4.title')} icon={<SealInk size={26} />} />
+            {ch4Paragraphs.map((para, i) => (
+              <p key={i} className="text-text-secondary leading-relaxed text-lg mb-6 last:mb-0">
+                {para}
+              </p>
+            ))}
+          </Reveal>
+        </div>
+      </section>
+
       {/* ========== 高潮 CTA ========== */}
       <AntiqueDivider />
       <section className="py-section">
@@ -152,7 +169,7 @@ export default function StoryPage() {
             <p className="text-text-secondary leading-relaxed mb-8">{t('cta.body')}</p>
             <div className="flex flex-wrap justify-center gap-3">
               <a
-                href="https://explorer.palium.io"
+                href={site.chain.explorer}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="seal-button"

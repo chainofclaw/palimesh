@@ -4,9 +4,11 @@ import { useTranslations } from 'next-intl'
 import { PageHero, AntiqueDivider } from '@/components/shared/Manuscript'
 import { SealInk } from '@/components/ink/InkArt'
 import { Link } from '@/i18n/routing'
+import { site } from '@/config/site'
 
 export default function SecurityPage() {
   const t = useTranslations('security')
+  const scopeIn = t.raw(`scope.in.${site.variant}`) as string[]
 
   return (
     <div className="relative min-h-screen">
@@ -26,13 +28,13 @@ export default function SecurityPage() {
             </p>
             <div className="flex flex-col sm:flex-row gap-4">
               <a
-                href="mailto:security@palimesh.io"
+                href={`mailto:${site.securityEmail}`}
                 className="px-6 py-3 rounded-lg bg-text-primary text-bg-primary font-medium transition-all text-center"
               >
-                security@palimesh.io
+                {site.securityEmail}
               </a>
               <a
-                href="https://github.com/palimesh/palimesh/security/advisories/new"
+                href={`${site.github}/security/advisories/new`}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="px-6 py-3 rounded-lg border border-accent-cyan/30 text-accent-cyan font-display font-semibold hover:bg-accent-cyan/10 transition-all text-center"
@@ -53,10 +55,9 @@ export default function SecurityPage() {
             <div className="bg-bg-elevated rounded-xl p-6 border border-green-500/20">
               <h3 className="font-display font-bold text-green-400 mb-3">{t('scope.inTitle')}</h3>
               <ul className="space-y-2 text-text-secondary font-body text-sm">
-                <li>• {t('scope.in.chain')}</li>
-                <li>• {t('scope.in.contracts')}</li>
-                <li>• {t('scope.in.explorer')}</li>
-                <li>• {t('scope.in.website')}</li>
+                {scopeIn.map((item, i) => (
+                  <li key={i}>• {item}</li>
+                ))}
               </ul>
             </div>
             <div className="bg-bg-elevated rounded-xl p-6 border border-red-500/20">
@@ -125,7 +126,7 @@ export default function SecurityPage() {
             </p>
             <div className="flex flex-wrap gap-3">
               <a
-                href="https://github.com/palimesh/palimesh/blob/main/SECURITY.md"
+                href={`${site.github}/blob/main/SECURITY.md`}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="px-5 py-2 rounded-lg border border-accent-cyan/30 text-accent-cyan font-display text-sm hover:bg-accent-cyan/10 transition-all"

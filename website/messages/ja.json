@@ -26,35 +26,91 @@
     "protocol": "プロトコル",
     "build": "開発",
     "story": "起源",
-    "economics": "経済モデル"
+    "economics": "経済モデル",
+    "crossSite": "{other} へ移動",
+    "governanceIdentity": "ガバナンス ID",
+    "paper": "技術論文",
+    "ecosystem": "エコシステム",
+    "settlement": "決済層",
+    "paliumChain": "Palium パブリックチェーン",
+    "palimeshStorage": "PaliMesh — ストレージ・ID・メモリ",
+    "npm": "npm"
   },
   "home": {
     "hero": {
-      "kicker": "Palium · AIエージェントのための検証可能な記憶",
-      "title": "あらゆる状態が回帰するチェーン。",
-      "subtitle": "PalimeshはAIエージェントのために設計されたBFTブロックチェーンです。ノードが実際に行ったサービス(PoSe)、エージェントが蓄積するメモリ、ホスト間で持ち運べるアイデンティティ——この3つをオンチェーンで検証可能にします。",
-      "ctaTestnet": "テストネットに接続",
-      "ctaDocs": "ドキュメントを読む",
-      "factsLabel": "プロトコル情報",
-      "factChain": "Chain ID",
-      "factConsensus": "コンセンサス",
-      "factConsensusValue": "BFT、約3.5秒のファイナリティ",
-      "factEvm": "実行レイヤー",
-      "factEvmValue": "EVM(Paris)、Solidity 0.8.x",
-      "factRpc": "公開RPC",
-      "artAlt": "密集したラテン文字と淡いネットワーク図を重ねた装飾的な中世風Palimesh羊皮紙写本",
-      "scriptureLines": [
-        "はじめに、記憶には帰る場所がなかった。",
-        "アイデンティティはホスト間をさまよった。",
-        "Palium はサービスを検証可能にした。",
-        "記憶は残り、アイデンティティは帰還する。",
-        "チェーンに記されたものは忘れられない。"
-      ]
+      "palium": {
+        "kicker": "Palium · AI エージェントのためのパブリックチェーン",
+        "title": "状態が還るチェーン。",
+        "subtitle": "Palium は AI エージェントのために構築された BFT パブリックチェーンです。ノードが実際に提供したサービス（PoSe）、標準 EVM で実行された状態変更、人間とエージェントが共同で決めるルール — この三つをオンチェーンで検証可能にします。エージェントのメモリと ID は、その上に構築された PaliMesh が提供します。",
+        "artAlt": "紫と金の Palium 写本：羊皮紙に描かれた鎖のメッシュとセリフ体の P の印章",
+        "scriptureLines": [
+          "はじめ、記憶に住処はなかった。",
+          "アイデンティティはホストの間を漂った。",
+          "Palium はサービスを検証可能にした。",
+          "状態は還り、ルールは裁定される。",
+          "チェーンに記されたものは、忘れられない。"
+        ],
+        "ctaPrimary": "テストネットに参加",
+        "ctaSecondary": "ドキュメントを読む",
+        "factsLabel": "プロトコルパラメータ",
+        "facts": [
+          {
+            "k": "Chain ID",
+            "v": "88780"
+          },
+          {
+            "k": "コンセンサス",
+            "v": "BFT · 1 秒ブロック"
+          },
+          {
+            "k": "実行",
+            "v": "EVM (Paris) · solc 0.8.24"
+          },
+          {
+            "k": "公開 RPC",
+            "v": "rpc.palium.io"
+          }
+        ]
+      },
+      "palimesh": {
+        "kicker": "PaliMesh · AI エージェントのためのストレージ・ID・メモリ",
+        "title": "決して忘れないストレージ。",
+        "subtitle": "PaliMesh は AI エージェントのための消失訂正符号ストレージメッシュです — 永続メモリ、持ち運べる ID、そしてどのホストよりも長く生き残るコンテンツ。決済は Palium パブリックチェーン上で行われます。",
+        "ctaPrimary": "パッケージをインストール",
+        "ctaSecondary": "論文を読む",
+        "artAlt": "装飾豊かな中世風の PaliMesh 羊皮紙写本。密なラテン語の文字の下にネットワーク図がかすかに見える",
+        "scriptureLines": [
+          "はじめ、記憶に住処はなかった。",
+          "アイデンティティはホストの間を漂った。",
+          "PaliMesh は記憶に住処を与えた。",
+          "ホストは滅びても、写本は残る。",
+          "メッシュに記されたものは、忘れられない。"
+        ],
+        "factsLabel": "ネットワークパラメータ",
+        "facts": [
+          {
+            "k": "消失訂正符号",
+            "v": "RS(4+2) · (6+3) · (8+4)"
+          },
+          {
+            "k": "レプリケーション",
+            "v": "pushToK · K=3"
+          },
+          {
+            "k": "ID",
+            "v": "did:coc"
+          },
+          {
+            "k": "決済",
+            "v": "Palium 88780"
+          }
+        ]
+      }
     },
     "pillars": {
       "kicker": "できること",
-      "title": "3つの検証可能な保証",
-      "subtitle": "3つの保証。いずれもオンチェーンで独立に検証できます:サービス証明、複製ストレージ、持ち運べるアイデンティティ。",
+      "title": "三つの検証可能な保証",
+      "subtitle": "三つの保証。それぞれがオンチェーンで独立に検証できます。",
       "pose": {
         "title": "Proof of Service",
         "description": "ノードは計測可能な仕事——ストレージ、リレー、計算——で報酬を得ます。PoSeチャレンジがその仕事を継続的にサンプリングし、報酬とスラッシュをオンチェーンで清算。サービスは信用ではなく検証されます。"
@@ -102,12 +158,12 @@
       "fn": {
         "tag": "フルノード",
         "name": "バリデータ / フル",
-        "description": "BFTコンセンサスに参加し、正規チェーンを提供。登録鍵とステークが必要です。"
+        "description": "BFT コンセンサスに参加し、正規チェーンを提供します。32 PALI をステークすれば約 60 秒でアクティブなバリデータ集合に加わり、既存オペレータとの調整は不要です。"
       },
       "sn": {
         "tag": "ストレージノード",
         "name": "ストレージ",
-        "description": "消失訂正符号化ストレージ容量を提供し、PoSeストレージチャレンジに応答して報酬を獲得。"
+        "description": "消失訂正符号化されたストレージ容量を提供し、PoSe ストレージチャレンジに応答します。ストレージノードはチェーンノードの $PALI ボンドを再利用し、収益を $MESH で決済します。"
       },
       "rn": {
         "tag": "リレーノード",
@@ -121,7 +177,7 @@
       "title": "@palimesh で構築する",
       "subtitle": "そのままチェーンと対話できる公開パッケージ。",
       "soul": {
-        "pkg": "@palimesh/soul",
+        "pkg": "@palimesh/palimesh-soul",
         "name": "Soul",
         "description": "エージェント・アイデンティティのツールキット:DID登録、クレデンシャル発行、復活フロー。"
       },
@@ -170,71 +226,167 @@
         "relationships": "関係"
       }
     },
-    "storageHero": {
-      "kicker": "分散型ストレージ",
-      "title": "決して忘れないストレージ。",
-      "subtitle": "PaliMesh は AI エージェントのための消失訂正符号化ストレージメッシュ——永続するメモリ、持ち運べるアイデンティティ、どのホストより長生きするコンテンツ。Palium で決済。"
+    "palium": {
+      "pillars": {
+        "kicker": "コア機能",
+        "title": "オンチェーンで検証できる三つのこと",
+        "subtitle": "バリデータは誰か、コードはどう実行されるか、サービスは本当に行われたか — それぞれを誰でも確認できます。",
+        "consensus": {
+          "title": "コンセンサスとバリデータ",
+          "description": "バリデータ集合はオンチェーンの ValidatorRegistry が駆動します。32 PALI をステークし、約 60 秒でアクティブ集合に加わり、二重署名はスラッシュされます。CoreSetManager はステーク（50%）、ボンド（20%）、PoSe 実績（30%）でノードをオンチェーンにランク付けし、上位が BFT コア集合を構成し、残りは自動的に PoSe 専用ノードになります。"
+        },
+        "evm": {
+          "title": "標準 EVM 実行",
+          "description": "EthereumJS と revm のデュアルエンジン、Paris ハードフォーク、solc 0.8.24。57 以上の標準 eth_* メソッド、debug_* / trace_* ファミリー一式、eth_getProof、WebSocket サブスクリプション。既存の Solidity コントラクト、ウォレット、ツールチェーンがそのまま動作します。"
+        },
+        "settlement": {
+          "title": "PoSe 決済",
+          "description": "チャレンジャーがノードの申告するサービスを継続的にサンプリングし、ウィットネスが EIP-712 署名で証言し、決済コントラクトがエポックごとに定足数を集計します。報酬はバケット別 — uptime 60%、ストレージ 30%、リレー 10% — に配分され、紛争とスラッシュはオンチェーンで裁定されます。"
+        }
+      },
+      "principles": {
+        "kicker": "設計原則",
+        "title": "ただ一つのことに最適化",
+        "subtitle": "エージェントに関わるサービスと状態を低コストで検証可能にすること。それ以外はすべて、この目標からの帰結です。",
+        "verify": {
+          "title": "サービスは検証されるもので、申告するものではない",
+          "body": "サービスなくして報酬なし。遊休資本は何も生みません。サンプリングされ、証言され、決済された仕事だけが支払われます。"
+        },
+        "standards": {
+          "title": "標準を優先",
+          "body": "EVM 実行、EIP-712 署名、W3C DID Core — 成熟した標準がある領域で、Palium は車輪を再発明しません。それらを検証可能な台帳に載せるだけです。"
+        },
+        "nongoals": {
+          "title": "非目標",
+          "body": "Palium は生の TPS を競わず、匿名のミーム資産市場をホストせず、他チェーン向けの汎用データ可用性も提供しません。"
+        },
+        "oneOfMany": "Palium は、この問題に対するいくつかの可能な答えの一つです。"
+      },
+      "architecture": {
+        "l4": "エージェント層：DID と Soul のオンチェーンレジストリ。ストレージ、メモリ、バックアップの API は、その上に構築された PaliMesh が提供します。"
+      },
+      "node": {
+        "title": "オペレータとして Palium Canary に参加",
+        "subtitle": "三つの役割、一つのバイナリ。リレーから始めてバリデータへ育てます。",
+        "storageElsewhere": "ストレージノードの収益と運用については PaliMesh を参照"
+      },
+      "ecosystem": {
+        "kicker": "Palium の上に",
+        "title": "チェーンが決済し、エコシステムが能力を提供する",
+        "subtitle": "三つの入口。",
+        "builders": {
+          "title": "ビルダー",
+          "body": "Hardhat、Foundry、ethers、viem、MetaMask が Chain ID 88780 に直接接続します。コントラクトのデプロイ、イベントの購読、証明の読み取り — Ethereum とまったく同じです。",
+          "cta": "ドキュメントを読む"
+        },
+        "governance": {
+          "title": "ガバナンス",
+          "body": "二院制 DAO：Human 院と Claw 院がそれぞれ独立に可決し、1 アドレス 1 票。実行は 3-of-5 マルチシグがタイムロックを経てトリガーします。",
+          "cta": "提案を見る"
+        },
+        "mesh": {
+          "title": "PaliMesh",
+          "body": "エージェントのためのストレージ・ID・メモリ：消失訂正符号 P2P ストレージ、did:coc、Soul バックアップ、claw-mem。ストレージは $MESH で価格付けされ、Palium 上で決済されます。",
+          "cta": "PaliMesh へ移動"
+        }
+      }
+    },
+    "palimesh": {
+      "pillars": {
+        "kicker": "コア機能",
+        "title": "三層の永続性",
+        "subtitle": "ストレージ、ID、メモリ — それぞれが単一のホストよりも長く生き残ります。",
+        "storage": {
+          "title": "永続ストレージ",
+          "description": "UnixFS 256 KiB チャンク化、CIDv1 コンテンツアドレッシング、Reed-Solomon 消失訂正符号（三重複製の 3.0× に対して 1.5× のコスト）。すべての書き込みは K=3 ノードにプッシュされ、repairTick が 10 分ごとに欠損レプリカを修復し、保持は PoSe ストレージチャレンジで継続的に検証されます。"
+        },
+        "identity": {
+          "title": "持ち運べる ID",
+          "description": "did:coc は W3C DID Core v1.0 に準拠します：鍵ローテーション、最大 3 ホップの委任チェーン、Merkle 選択的開示。2/3 のガーディアン定足数とタイムロックによるソーシャルリカバリにより、ID は失効することなくホスト間を移動できます。"
+        },
+        "memory": {
+          "title": "セマンティックメモリ",
+          "description": "claw-mem はツール呼び出しの観測とセッション要約を自動的に取り込み、トークン予算内で検索し、再起動やコンテキスト圧縮を越えて保持します。メモリは IPFS と CidRegistry にアンカーされ、完全性を検証できます。"
+        }
+      },
+      "proof": {
+        "kicker": "実証",
+        "title": "データの寿命はネットワークの性質",
+        "subtitle": "制御された大陸横断の破壊テスト：アップロードしたノードがすべて消えた後も、アップロードに一切関与しなかったノードからファイルを完全に取り出せました。",
+        "stats": [
+          {
+            "v": "50 MB",
+            "k": "アップロードしたファイル"
+          },
+          {
+            "v": "5",
+            "k": "破壊したノード（5 つの GCP リージョン）"
+          },
+          {
+            "v": "3",
+            "k": "完全に取り出したバリデータ。いずれもアップロードに未関与"
+          }
+        ],
+        "table": {
+          "title": "ストレージコストと耐障害性",
+          "cols": [
+            "方式",
+            "ストレージコスト",
+            "許容される損失"
+          ],
+          "rows": [
+            [
+              "三重複製",
+              "3.0×",
+              "3 コピー中 2"
+            ],
+            [
+              "RS(4+2)",
+              "1.5×",
+              "6 シャード中 2"
+            ],
+            [
+              "RS(6+3)",
+              "1.5×",
+              "9 シャード中 3"
+            ]
+          ]
+        },
+        "cta": "技術論文を読む"
+      },
+      "parchment": {
+        "chain": {
+          "title": "PaliMesh も同じ仕組みで動く",
+          "body": "各層は前の層を上書きし、下にあるものは何も失われません。このメッシュが決済するチェーンにも、今日のインクの下に最初の筆跡 — ClawChain — が今も見え、誰でも検証できます。"
+        }
+      },
+      "architecture": {
+        "kicker": "アーキテクチャ",
+        "title": "四層、最下層に決済",
+        "subtitle": "最上位にエージェント API、中間にコンテンツアドレス型ストレージと P2P ネットワーク、すべての証明と支払いは Palium に着地します。"
+      },
+      "settlement": {
+        "kicker": "決済",
+        "title": "Palium にアンカー",
+        "subtitle": "各エポックのストレージ証明は Palium 上で $MESH として決済されます。メッシュは独自のチェーンを持ちません。",
+        "chain": "決済チェーン",
+        "height": "現在の高さ",
+        "dht": "DHT ノード",
+        "wire": "Wire 接続",
+        "cta": "チェーンのテレメトリを見る"
+      },
+      "node": {
+        "kicker": "ノードを運用",
+        "title": "ストレージノードとして参加",
+        "subtitle": "ストレージノードはチェーンノードです：$PALI ボンドを再利用し、PoSe ストレージチャレンジに応答し、$MESH で決済します。",
+        "validatorsElsewhere": "バリデータとリレーのオンボーディングパラメータは Palium にあります",
+        "cta": "ノードパッケージを見る"
+      }
     }
   },
   "technology": {
     "title": "技術アーキテクチャ",
     "subtitle": "4つのレイヤーの噛み合い方:BFTコンセンサス、EVM実行、PoSe決済、エージェント向けAPI。",
-    "layersTitle": "四つの層",
-    "layer1": {
-      "number": "1",
-      "title": "実行層",
-      "subtitle": "EVM ランタイム · デュアルエンジン",
-      "features": [
-        "@ethereumjs/vm フル EVM (~131 TPS)",
-        "revm 高性能パイプライン（1,500–2,000 TPS）",
-        "Cancun / EIP-4844 blob-gas 会計",
-        "LevelDB + Merkle Patricia Trie 状態",
-        "Solidity 0.8.x 互換"
-      ],
-      "note": "EVMはランタイムであり、分散性の源ではありません——参加資格はコンセンサス層とサービス層で決まります。"
-    },
-    "layer2": {
-      "number": "2",
-      "title": "合意層",
-      "subtitle": "決定性と最終性の番人",
-      "features": [
-        "決定論的プロポーザーローテーション",
-        "BFT-lite コーディネーター（2/3 定足数；propose/prepare/commit）",
-        "GHOST フォーク選択（BFT 最終性 > チェーン長 > 重み）",
-        "TCP Wire プロトコル（Magic 0xC0C1、アイデンティティ署名ハンドシェイク）",
-        "Kademlia DHT（K=20、反復探索、定期リフレッシュ）",
-        "ブロックタイム目標：1-2 秒"
-      ],
-      "note": "合意はプラガブル。PaliMesh のインセンティブは PoS に依存しない ― 最終性を保つ任意の機構を接続できる。"
-    },
-    "layer3": {
-      "number": "3",
-      "title": "PoSe v2 サービス層",
-      "subtitle": "コアイノベーション · サービスこそが合意",
-      "features": [
-        "ノード登録、ケイパビリティ宣言、ケイパビリティビットマスク",
-        "ランダムチャレンジ生成（U / S / R）",
-        "EIP-712 型付き署名（ChallengeMessageV2 / ReceiptMessageV2 ドメイン分離）",
-        "9 層レシート検証パイプライン",
-        "ウィットネス選定（m=ceil(√n)、定足数 ceil(2m/3)）",
-        "パーミッションレスフォールトプルーフ（commit-reveal-settle、4 種のフォールト）",
-        "Merkle 報酬ツリー（rewardRoot、ノードごとのリーフ、オンチェーン請求）"
-      ],
-      "note": "ここで「サービス」は検証可能・価格付け可能・裁定可能な合意の単位となる ― そしてあらゆる PoW/PoS チェーンとの根本的な分岐点となる。"
-    },
-    "layer4": {
-      "number": "4",
-      "title": "基盤サービス",
-      "subtitle": "エージェントのための生命維持システム",
-      "features": [
-        "P2P ストレージ：IPFS 互換 + CidRegistry コンテンツアドレッシング",
-        "DID アイデンティティ：DIDRegistry + ケイパビリティビットマスク + ≤3 ホップ委譲ツリー",
-        "エージェントの連続性:SoulRegistry + キャリアネットワーク + 2/3ガーディアン復旧",
-        "OpenClaw 参照エージェントがストレージノードとして接続",
-        "エージェント運用層（自己修復 / アップグレード / 鍵）は合意から厳格に隔離"
-      ],
-      "note": "すべての DApp、すべてのエージェントマーケット、すべての上位プロトコルはこの層に根を張る。"
-    },
     "poseProtocol": {
       "title": "PoSe v2 プロトコル詳細",
       "challengeFlow": "チャレンジ-レスポンスフロー",
@@ -303,54 +455,21 @@
         ],
         "rationale": "容量に対する平方根の逓減リターン ― 最大規模のオペレーターによる独占を許さない。"
       },
-      "antiSybilTitle": "🛡️ 反 Sybil コンビネーション",
+      "antiSybilTitle": "多層的な Sybil 対策",
       "antiSybilItems": [
-        "✓ 固定質押（約 50 USDT）+ 7 日アンロック",
-        "✓ 単一ノード報酬ソフトキャップ（中央値の 5 倍）",
-        "✓ ストレージの逓減リターン（√ 関数）",
-        "✓ 連続サービスチャレンジ（偽造不能）",
-        "✓ エポックごとに一意な nonce でリプレイ防止",
-        "✓ チャレンジャー多様化 + ランダムローテーション",
-        "✓ オンチェーンサンプリング + 2 エポックの異議申立期間",
-        "✓ 任意のハードウェア証明（ボーナス、ゲートではない）",
-        "✓ PoSeManagerV2：EIP-712 フォールトプルーフ（commit-reveal-settle）",
-        "✓ スラッシュ分配：50% バーン / 30% 報告者 / 20% 保険基金",
-        "✓ エポックごとのスラッシュ上限：総ステークの 5%",
-        "✓ ウィットネス選定による裁定：m=ceil(√n)、定足数 ceil(2m/3)"
+        "ノードボンド + 7 日間のアンロック期間",
+        "ノード単位の報酬ソフトキャップ（中央値の 5×）",
+        "ストレージ容量に対する収穫逓減（√ 関数）",
+        "継続的なサービスチャレンジ（偽装不可）",
+        "エポックごとの一意な nonce によるリプレイ防止",
+        "チャレンジャーの多様性 + ランダムローテーション",
+        "オンチェーンサンプリング + 2 エポックの異議申し立て期間",
+        "任意のハードウェア認証（加点であり、関門ではない）",
+        "PoSeManagerV2：EIP-712 フォールトプルーフ（commit-reveal-settle）",
+        "スラッシュの配分：50% バーン / 30% 報告者 / 20% 保険基金",
+        "エポックごとのスラッシュ上限：総ステークの 5%",
+        "ウィットネス定足数による裁定：m=ceil(√n)、定足数 ceil(2m/3)"
       ]
-    },
-    "performance": {
-      "title": "性能指標",
-      "blockTime": {
-        "title": "ブロックタイム",
-        "value": "1-2s",
-        "description": "目標ブロック間隔；実際は合意設定に依存"
-      },
-      "finality": {
-        "title": "最終性",
-        "value": "~12s",
-        "description": "6-12 ブロック後に到達（設定可能）"
-      },
-      "storage": {
-        "title": "ストレージ",
-        "value": "500 GB 推奨",
-        "description": "SN の逓減リターン上限；FN はより低くてもよい"
-      },
-      "bandwidth": {
-        "title": "帯域幅",
-        "value": "中程度",
-        "description": "レイテンシの重みは 15% のみ ― 家庭ネットワークも参加可能"
-      },
-      "frequency": {
-        "title": "チャレンジ頻度",
-        "value": "~6/hr",
-        "description": "FN はエポックあたり約 6 件の U-チャレンジを受ける"
-      },
-      "threshold": {
-        "title": "合格閾値",
-        "value": "80% (U) / 70% (S)",
-        "description": "閾値未満はそのエポックで当該バケットを失う"
-      }
     },
     "comparison": {
       "title": "PoW / PoS からの分岐",
@@ -379,13 +498,14 @@
         "automation": "中"
       },
       "coc": {
-        "barrier": "低（コモディティ HW + 少額質押）",
+        "barrier": "低（ノードボンド + サービスチャレンジ合格率）",
         "centralization": "サービス貢献者に分散",
         "energy": "低",
         "reward": "サービス合格率",
-        "decentralization": "高（エージェントと人間が並び立つ）",
+        "decentralization": "高（サービス貢献が分散し、ランキングはオンチェーン）",
         "automation": "エージェントネイティブ"
-      }
+      },
+      "brandHeader": "{brand}（PoSe）"
     },
     "techStack": {
       "title": "技術スタック",
@@ -434,11 +554,245 @@
           "Carrier ネットワーク（計画中）"
         ]
       }
+    },
+    "palium": {
+      "title": "チェーンの四層",
+      "subtitle": "BFT コンセンサス、標準 EVM、PoSe 決済、そしてエージェントのためのオンチェーンレジストリ。",
+      "layersTitle": "四層アーキテクチャ",
+      "layer1": {
+        "number": "1",
+        "title": "コンセンサス層",
+        "subtitle": "決定性とファイナリティの守り手",
+        "features": [
+          "決定的なプロポーザーローテーション + BFT-lite 三フェーズ（propose / prepare / commit）",
+          "GHOST フォーク選択（BFT ファイナリティ > チェーン長 > 重み）",
+          "ValidatorRegistry によるオンチェーン動的バリデータ集合：32 PALI をステーク、再起動なしでホットリロード",
+          "CoreSetManager によるオンチェーンランキング：ステーク 50% + ボンド 20% + PoSe 実績 30%",
+          "EquivocationDetector：二重署名の検出とスラッシュ、証拠は誰でも提出可能",
+          "TCP Wire プロトコル + Kademlia DHT（K=20）",
+          "1 秒ブロック（最小 100 ms）、1 ブロックあたり最大 512 トランザクション"
+        ],
+        "note": "バリデータは静的なリストではなく、決定的なオンチェーンランキングの結果です — ネットワーク全体が一つのオンチェーンの権威を読みます。"
+      },
+      "layer2": {
+        "number": "2",
+        "title": "実行層",
+        "subtitle": "EVM ランタイム · デュアルエンジン",
+        "features": [
+          "@ethereumjs/vm フル EVM（約 131 TPS）",
+          "revm WASM 高性能パイプライン（生の実行で 20,000+ TPS、エンドツーエンドで 500–1,000 TPS が目標）",
+          "Paris ハードフォーク、solc 0.8.24。Cancun / EIP-4844 blob gas 計算に互換",
+          "EIP-1559：base fee はバーン、priority fee はプロポーザーへ",
+          "LevelDB + Merkle Patricia Trie による状態、過去状態の読み取りと eth_getProof",
+          "57 以上の標準 eth_* メソッド、debug_* / trace_* / txpool_*、WebSocket eth_subscribe"
+        ],
+        "note": "EVM はランタイムであり、分散化の源ではありません — 参加はコンセンサス層と決済層で決まります。"
+      },
+      "layer3": {
+        "number": "3",
+        "title": "PoSe v2 決済層",
+        "subtitle": "コアメカニズム · サービスをコンセンサスの単位に",
+        "features": [
+          "ノード登録、能力宣言、能力ビットマスク",
+          "ランダムなチャレンジ生成（U / S / R）",
+          "EIP-712 型付き署名（ChallengeMessageV2 / ReceiptMessageV2 のドメイン分離）",
+          "9 段階のレシート検証パイプライン",
+          "ウィットネス定足数（m=ceil(√n)、定足数 ceil(2m/3)）",
+          "パーミッションレスなフォールトプルーフ（commit-reveal-settle、4 種のフォールト）",
+          "Merkle 報酬ツリー（rewardRoot、ノードごとのリーフ、オンチェーンでのクレーム。クレーム期間 7 日）"
+        ],
+        "note": "この層は「サービス」を検証可能・価格付け可能・裁定可能なコンセンサスの単位に変えます — これが Palium とあらゆる PoW / PoS チェーンとの根本的な分かれ目です。"
+      },
+      "layer4": {
+        "number": "4",
+        "title": "レジストリとガバナンス層",
+        "subtitle": "エージェントのためのオンチェーンの権威",
+        "features": [
+          "DIDRegistry：W3C did:coc + 能力ビットマスク + 最大 3 ホップの委任ツリー",
+          "SoulRegistry：エージェントの連続性アンカー + 2/3 ガーディアンによる復旧",
+          "CidRegistry：bytes32 → IPFS CID の不変マッピング",
+          "GovernanceDAO + FactionRegistry：Human 院と Claw 院、1 アドレス 1 票",
+          "Treasury / InsuranceFund / FoundationVesting：3-of-5 マルチシグとタイムロック",
+          "13 の gen-5 UUPS コントラクト。唯一のアップグレード権限は 3-of-5 マルチシグ"
+        ],
+        "note": "ストレージ、メモリ、バックアップのランタイムは PaliMesh にあります。Palium はそれらのオンチェーンアンカーだけを保持します。"
+      },
+      "rollup": {
+        "title": "Rollup への進化",
+        "subtitle": "スタンドアロン L1 から Optimistic Rollup への道筋は、すでにオンチェーンに敷かれています。",
+        "items": [
+          "シーケンサーモード：現行エンジンが 1 秒ブロックのシーケンサーとして動作",
+          "Batcher：100 以上の L2 ブロックを 1 つの L1 トランザクションに圧縮",
+          "DelayedInbox：検閲耐性のある強制インクルージョン（デプロイ済み）",
+          "RollupStateManager：出力ルートの提出とチャレンジ期間（デプロイ済み）"
+        ],
+        "note": "これは進化の道筋であり、完了した移行ではありません。現在の Canary は依然としてスタンドアロン L1 として稼働しています。"
+      },
+      "params": {
+        "title": "プロトコルパラメータ",
+        "items": [
+          {
+            "k": "ブロック時間",
+            "v": "1 s",
+            "d": "目標間隔。最小 100 ms"
+          },
+          {
+            "k": "ファイナリティ",
+            "v": "BFT 決定的",
+            "d": "2/3 ステークの定足数。commit で確定"
+          },
+          {
+            "k": "バリデータ参入",
+            "v": "32 PALI",
+            "d": "パーミッションレスなステーク。約 60 秒でアクティブ化"
+          },
+          {
+            "k": "チャレンジ頻度",
+            "v": "約 6 回/時",
+            "d": "フルノードがエポックごとに受ける U チャレンジ"
+          },
+          {
+            "k": "合格しきい値",
+            "v": "80% (U) / 70% (S)",
+            "d": "しきい値未満はそのエポックのバケットを失う"
+          },
+          {
+            "k": "報酬バケット",
+            "v": "60 / 30 / 10",
+            "d": "uptime / ストレージ / リレー"
+          }
+        ]
+      },
+      "ctaWhitepaper": "ホワイトペーパーを読む",
+      "ctaTestnet": "テストネットに参加",
+      "storageElsewhere": "ストレージアルゴリズム、消失訂正符号、ID スタックについては PaliMesh を参照"
+    },
+    "palimesh": {
+      "title": "ストレージの七層",
+      "subtitle": "TCP から HTTP API まで：コンテンツアドレッシング、消失訂正符号、能動的レプリケーション、自己修復。",
+      "layersTitle": "七層アーキテクチャ",
+      "layers": [
+        {
+          "name": "L7 · HTTP API",
+          "note": "IPFS 互換インターフェース：add / cat / get / pin / ls / stat、および /ipfs/<cid> ゲートウェイ"
+        },
+        {
+          "name": "L6 · 消失訂正符号",
+          "note": "?erasure=N+M による任意の Reed-Solomon — RS(4+2) / (6+3) / (8+4)"
+        },
+        {
+          "name": "L5 · レプリケーションと修復",
+          "note": "pushToK による能動プッシュ、fetchRemote による受動取得、repairTick による定期修復"
+        },
+        {
+          "name": "L4 · コンテンツアドレッシング",
+          "note": "UnixFS 256 KiB チャンク、CIDv1、HAMT によるディレクトリ DAG"
+        },
+        {
+          "name": "L3 · ディスカバリ",
+          "note": "Kademlia DHT、keccak256(cid) 射影、TTL 24 h のプロバイダレコード"
+        },
+        {
+          "name": "L2 · トランスポート",
+          "note": "TCP Wire フレーミング + HTTP gossip のデュアルチャネル"
+        },
+        {
+          "name": "L1 · 決済",
+          "note": "Palium：CidRegistry アンカー、PoSe ストレージチャレンジ、StorageRewardManager"
+        }
+      ],
+      "algorithms": {
+        "title": "四つのコアアルゴリズム",
+        "items": [
+          {
+            "name": "pushToK",
+            "body": "書き込み時、すべてのブロックを DHT 距離で選ばれた K=3 ノードへ能動的にプッシュします。書き込み側が唯一の保持者になることはありません。"
+          },
+          {
+            "name": "fetchRemote",
+            "body": "ブロックがローカルに無い場合、プロバイダレコードから並列に取得してキャッシュし、再アナウンスすることで取得側もプロバイダになります。"
+          },
+          {
+            "name": "pushStripe",
+            "body": "消失訂正符号化されたストライプをシャード単位で異なるノードに分散します。任意の M シャードを失ってもストライプは再構築できます。"
+          },
+          {
+            "name": "repairTick",
+            "body": "10 分ごとに最大 50 の CID をスキャンし、レプリカを K まで補充します — 修復はネットワークの通常動作です。"
+          }
+        ]
+      },
+      "erasure": {
+        "title": "消失訂正符号の経済性",
+        "subtitle": "同じ耐障害性を、半分のコストで。",
+        "cols": [
+          "方式",
+          "ストレージコスト",
+          "許容される損失"
+        ],
+        "rows": [
+          [
+            "三重複製",
+            "3.0×",
+            "3 コピー中 2"
+          ],
+          [
+            "RS(4+2)",
+            "1.5×",
+            "6 シャード中 2"
+          ],
+          [
+            "RS(6+3)",
+            "1.5×",
+            "9 シャード中 3"
+          ],
+          [
+            "RS(8+4)",
+            "1.5×",
+            "12 シャード中 4"
+          ]
+        ]
+      },
+      "poseStorage": {
+        "title": "PoSe ストレージチャレンジ（S 型）",
+        "body": "ストレージノードは容量を自己申告せず、継続的にサンプリングされます。チャレンジャーがチャンクを指定し、ノードは 6 秒以内に Merkle パス証明を返し、ウィットネスが署名し、エポックごとに決済されます。",
+        "items": [
+          "そのエポックのストレージバケットの資格を得るには 70% 以上の合格率が必要",
+          "ストレージスコア = 合格率 × √(min(storedGB, 500) / 500)：容量への収穫逓減で、大口による独占を防ぐ",
+          "結果は Merkle ルートとしてオンチェーンにコミットされ、ノードは証明を添えて $MESH をクレーム",
+          "データ損失はチェーンノードの既存 $PALI ボンドからスラッシュ — 別途の $MESH ステークは不要"
+        ]
+      },
+      "identityMemory": {
+        "title": "ID とメモリ層",
+        "items": [
+          "DIDRegistry：did:coc の登録、鍵ローテーション、カスケード失効を伴う委任チェーン",
+          "SoulRegistry：エージェント状態のオンチェーンアンカー、2/3 ガーディアンによるソーシャルリカバリ + タイムロック",
+          "CidRegistry：bytes32 → IPFS CID の不変マッピング、三段階解決（ローカル → MFS → オンチェーン）",
+          "Soul バックアップ：AES-256-GCM 暗号化、増分 Merkle スナップショット、Carrier ネットワークが搬送",
+          "復活ステートマシン：最新スナップショットからエージェントを再構築し、復旧コンテキストを注入"
+        ]
+      },
+      "recovery": {
+        "title": "災害復旧の保証",
+        "items": [
+          "アップロードノードが一つ消える：fetchRemote が残りのプロバイダから取得",
+          "アップロードノードがすべて消える：pushToK のレプリカと消失訂正シャードが無関係なノードに残る",
+          "レプリカが欠けたまま：repairTick が K まで補充",
+          "ソースノードが置き換わる：CidRegistry のアンカーは不変で、コンテンツは CID でアドレス可能なまま"
+        ]
+      },
+      "next": {
+        "title": "展望：ストレージ市場",
+        "body": "現在は書き込み側が無料で保存し、プッシュ先ノードは受動的に保持します。次の段階では、有料ストレージ、クォータ、サービスレベルを同じ PoSe 決済に組み込みます — $MESH の支払い配分（70% ノード / 20% トレジャリー / 10% バーン）はそのために設計されています。日程は約束しません。"
+      },
+      "ctaPaper": "技術論文を読む",
+      "ctaServices": "パッケージをインストール"
     }
   },
   "network": {
     "title": "ネットワーク状況",
-    "subtitle": "Prowlテストネットのライブテレメトリ。公開RPCから直接読み取っています。",
+    "subtitle": "Palium Canary 88780 のライブテレメトリ。公開 RPC から直接読み取ります。",
     "realTimeStats": "リアルタイム統計",
     "blockHeight": "ブロック高",
     "avgBlockTime": "平均ブロックタイム",
@@ -448,7 +802,7 @@
     "syncStatus": "同期状態",
     "syncing": "同期中",
     "synced": "同期済み",
-    "error": "PaliMesh ネットワークノードに到達できません",
+    "error": "{brand} ネットワークノードに到達できません",
     "chainStats": {
       "title": "チェーン統計",
       "blockHeight": "ブロック高",
@@ -526,17 +880,9 @@
       "txCount": "Tx 数",
       "gasUsed": "Gas 使用量"
     },
-    "countdown": {
-      "title": "テストネット起動カウントダウン",
-      "days": "日",
-      "hours": "時間",
-      "minutes": "分",
-      "seconds": "秒",
-      "launchDate": "2026年3月27日に起動"
-    },
     "canaryBanner": {
-      "title": "Canary テストネット 88780 稼働中",
-      "subtitle": "オンチェーン動的 validator（ValidatorRegistry 駆動、再起動なしで参加）· gen-5 UUPS 契約 · 公開 RPC + faucet + explorer オープン",
+      "title": "Canary テストネット 88780 は稼働中",
+      "subtitle": "オンチェーン動的バリデータ集合（ValidatorRegistry 駆動、再起動なしの参加）· CoreSetManager によるオンチェーンのコア集合ランキング · gen-5 UUPS コントラクト · 公開 RPC + フォーセット + エクスプローラー",
       "cta": "公開エンドポイントを見る"
     },
     "units": {
@@ -559,408 +905,91 @@
       },
       "startNode": {
         "title": "ノードを起動",
-        "description": "自分のノードで PaliMesh ネットワークに参加"
+        "description": "自分のノードで {brand} ネットワークに参加"
       },
       "technology": {
         "title": "技術ドキュメント",
         "description": "アーキテクチャをより深く掘り下げる"
       }
     },
-    "connectionError": "PaliMesh RPCエンドポイントに接続できません"
+    "connectionError": "{brand} RPCエンドポイントに接続できません"
   },
   "roadmap": {
-    "title": "リリースロードマップ",
-    "subtitle": "ホワイトペーパーの各版から公開テストネットまで:出荷済みのものと、次に来るもの。",
-    "whitepaper": {
-      "title": "ホワイトペーパーの進化",
-      "v0_1": {
-        "version": "v0.1",
-        "title": "PoSe コントラクト + ノード登録 + チャレンジ",
-        "status": "🟢 完了",
+    "palium": {
+      "title": "リリーストラック",
+      "subtitle": "出荷済みのものと、次に来るもの。日程は約束せず、メインネットは稼働していません。",
+      "delivered": {
+        "title": "提供済み",
         "items": [
-          "PoSe マネージャーコントラクト（登録、バッチ送信、異議、スラッシング）",
-          "ノード登録インターフェース（node_id、pubkey、flags、commitments）",
-          "U / S チャレンジ型定義",
-          "レシート形式仕様"
-        ]
-      },
-      "v0_2": {
-        "version": "v0.2",
-        "title": "三つの基盤サービス + PoSe v2 + パーミッションレスフォールトプルーフ",
-        "status": "🟢 完了 · 🟡 テストネット稼働中",
-        "items": [
-          "ホワイトペーパー再定位：AI のための分散型インフラ",
-          "三つの基盤サービス完全着地：P2P ストレージ / DID / SoulRegistry",
-          "PoSeManagerV2：パーミッションレスフォールトプルーフ + commit-reveal-settle ライフサイクル",
-          "EIP-712 型付き署名（ChallengeMessageV2 / ReceiptMessageV2 ドメイン分離）",
-          "ウィットネス選定：m=ceil(√n)、定足数 ceil(2m/3)、最大 m=32",
-          "Merkle 請求可能報酬ツリー（rewardRoot + オンチェーン請求）",
-          "P0 + P1 セキュリティ強化完了（11 項目）",
-          "1300+ テストパス"
-        ]
-      },
-      "v0_3": {
-        "version": "v0.3",
-        "title": "分散型チャレンジャーセット + 透明性メトリクス",
-        "status": "⚪ 計画中",
-        "items": [
-          "チャレンジャー多様化 + ランダムローテーション",
-          "チャレンジャー質押とクォータ",
-          "チャレンジャー評判システム",
-          "透明なメトリクス（異常検出）"
-        ]
-      },
-      "v0_4": {
-        "version": "v0.4",
-        "title": "OpenClaw NodeOps 標準 + マルチ実装クライアント",
-        "status": "⚪ 計画中",
-        "items": [
-          "OpenClaw NodeOps API 仕様",
-          "マルチ言語クライアント（Rust / Go / TypeScript）",
-          "AI エージェント標準インターフェース",
-          "クロスクライアント互換性テスト"
-        ]
-      }
-    },
-    "implementation": {
-      "title": "開発スナップショット（2026-04-15 時点）",
-      "infrastructure": {
-        "title": "🟢 コード完成 + 🟡 テストネット稼働中",
-        "cycles": [
           {
-            "num": 1,
-            "desc": "PalimeshToken · EmissionSchedule · FoundationVesting · Treasury"
+            "title": "Canary テストネット 88780",
+            "body": "2026 年 5 月の gen-5 デプロイ以来、継続してブロックを生成。公開 RPC、ブロックエクスプローラー、フォーセットが稼働中。"
           },
           {
-            "num": 2,
-            "desc": "PoSeManagerV2 · DIDRegistry · SoulRegistry · CidRegistry"
+            "title": "オンチェーン動的バリデータ集合",
+            "body": "ValidatorRegistry が駆動：32 PALI をステークして参加、再起動なしでホットリロード。"
           },
           {
-            "num": 3,
-            "desc": "chain-engine · 決定論的合意 · BFT-lite コーディネーター"
+            "title": "PoSe v2 決済パイプライン",
+            "body": "チャレンジ、ウィットネス署名、バッチ提出、Merkle クレームが本番ネットワークで継続稼働。"
           },
           {
-            "num": 4,
-            "desc": "EVM デュアルパイプライン：EthereumJS (~131 TPS) + revm (1,500-2,000 TPS)"
+            "title": "オンチェーンのコア集合ランキング",
+            "body": "CoreSetManager がステーク、ボンド、PoSe 実績でランク付けし、BFT 集合はオンチェーンの権威が決定。"
           },
           {
-            "num": 5,
-            "desc": "完全な Cancun / EIP-4844 / EIP-4788 互換"
+            "title": "13 の gen-5 UUPS コントラクト",
+            "body": "ガバナンス、PoSe、ID、決済のコントラクトはすべてアップグレード可能で、唯一のアップグレード権限は 3-of-5 マルチシグ。"
           },
           {
-            "num": 6,
-            "desc": "P2P：HTTP ゴシップ + TCP Wire + Kademlia DHT"
-          },
-          {
-            "num": 7,
-            "desc": "JSON-RPC（77+ メソッド）+ WebSocket サブスクリプション"
-          },
-          {
-            "num": 8,
-            "desc": "IPFS 互換 HTTP API + コンテンツアドレス pin 管理"
-          },
-          {
-            "num": 9,
-            "desc": "エクスプローラー：ブロック / tx / コントラクト / バリデーター / DAO ビュー"
-          },
-          {
-            "num": 10,
-            "desc": "OpenClaw 参照エージェントがストレージノードとして接続"
+            "title": "Rollup 基盤コントラクト",
+            "body": "DelayedInbox と RollupStateManager をデプロイ済み。シーケンサーモードは実装済み。"
           }
         ]
       },
-      "consolidation": {
-        "title": "🔐 P0 + P1 セキュリティ強化（すべて完了）",
-        "cycles": [
+      "inProgress": {
+        "title": "進行中",
+        "items": [
           {
-            "num": 11,
-            "desc": "質押の収取と MIN_BOND チェック（約 50 USDT）"
+            "title": "コア集合ランキングの観察",
+            "body": "複数オペレータ環境でランキング階層と自動降格の安定性を検証。"
           },
           {
-            "num": 12,
-            "desc": "EIP-712 型付き署名、クロスチェーンリプレイ保護"
+            "title": "Canary 本稼働ゲート",
+            "body": "手動介入なしの継続的なブロック生成、equivocation によるスラッシュの不在、外部セキュリティレポートなど 11 のゲート。"
           },
           {
-            "num": 13,
-            "desc": "公開鍵所有権検証 · 鍵の階層化"
-          },
-          {
-            "num": 14,
-            "desc": "ケイパビリティビットマスク強制"
-          },
-          {
-            "num": 15,
-            "desc": "連鎖失効と ≤3 ホップ委譲制限"
-          },
-          {
-            "num": 16,
-            "desc": "2/3 ガーディアン定足数ソーシャルリカバリー"
-          },
-          {
-            "num": 17,
-            "desc": "Sybil 漸進質押 + エンドポイント一意性"
-          },
-          {
-            "num": 18,
-            "desc": "storageGb 動的計算"
-          },
-          {
-            "num": 19,
-            "desc": "uptime blockNumber 検証 + randSeed ランダム化"
-          },
-          {
-            "num": 20,
-            "desc": "機械指紋 + チャレンジャー準入"
+            "title": "経済パラメータの凍結",
+            "body": "発行カーブ、報酬バケット、スラッシュ配分をメインネット前に凍結し、公開監査。"
           }
         ]
       },
-      "features": {
-        "title": "🚀 Phase 1 進行中（2026-04）",
-        "cycles": [
+      "next": {
+        "title": "次のステップ",
+        "items": [
           {
-            "num": 21,
-            "desc": "ローカル品質ゲート green を修正（2 つの perf ベンチマーク）"
+            "title": "メインネットのジェネシス条件",
+            "body": "すべてのゲートがグリーンになり、外部監査が完了し、複数オペレータのバリデータ集合が安定稼働した後に Go / No-Go を判断。"
           },
           {
-            "num": 22,
-            "desc": "ポートレイアウト再構成（P2P/Wire/WS/IPFS のベースを 10 間隔で配置）"
+            "title": "外部監査",
+            "body": "決済およびガバナンスコントラクトの第三者監査。"
           },
           {
-            "num": 23,
-            "desc": "起動レディネスのポーリングが固定スリープを置換"
-          },
-          {
-            "num": 24,
-            "desc": "ウォレット CLI のパスとコマンドを修正"
-          },
-          {
-            "num": 25,
-            "desc": "OpenClaw Skills 仕様を凍結（PoSe モニター / アップグレード / ロールバック / バックアップリストア）"
+            "title": "マルチクライアント実装",
+            "body": "単一実装リスクを下げるため、独立に実装された第二のノードクライアント。"
           }
         ]
+      },
+      "disclaimer": "上記はいずれも日程の約束ではありません。テストネットトークンに価値はなく、エアドロップやスワップもありません。",
+      "cta": {
+        "github": "GitHub リポジトリ",
+        "docs": "開発者ドキュメント"
       }
-    },
-    "future": {
-      "title": "遥かな地平",
-      "aiAgent": {
-        "icon": "🤖",
-        "title": "エージェントの深い統合",
-        "items": [
-          "自動チャレンジ応答",
-          "知的リソーススケジューリング",
-          "予測的メンテナンス",
-          "適応型セキュリティポリシー"
-        ]
-      },
-      "crossChain": {
-        "icon": "🌐",
-        "title": "クロスチェーン相互運用",
-        "items": [
-          "ブリッジプロトコル",
-          "クロスチェーン資産",
-          "IBC サポート",
-          "マルチチェーン状態同期"
-        ]
-      },
-      "analytics": {
-        "icon": "📊",
-        "title": "高度な分析",
-        "items": [
-          "オンチェーン分析",
-          "ノード性能スコアリング",
-          "報酬予測ツール",
-          "ネットワークヘルス評価"
-        ]
-      },
-      "privacy": {
-        "icon": "🔐",
-        "title": "プライバシー強化",
-        "items": [
-          "ゼロ知識チャレンジ",
-          "ノード匿名性保護",
-          "エンドポイントプライバシーコミットメント",
-          "TEE ハードウェア証明"
-        ]
-      },
-      "performance": {
-        "icon": "⚡",
-        "title": "性能最適化",
-        "items": [
-          "Layer 2 スケーリング",
-          "並列 EVM",
-          "状態プルーニング",
-          "スナップショット圧縮"
-        ]
-      },
-      "ecosystem": {
-        "icon": "🌍",
-        "title": "エージェントエコシステム",
-        "items": [
-          "エージェント開発者ツール",
-          "ノードオペレーターインセンティブプログラム",
-          "より深い DAO ガバナンス",
-          "継続的な開発者助成金"
-        ]
-      }
-    },
-    "milestones": {
-      "title": "主要マイルストーン",
-      "items": [
-        {
-          "date": "2026-03-07",
-          "label": "ホワイトペーパー v0.2 公開",
-          "status": "done"
-        },
-        {
-          "date": "2026-03-15",
-          "label": "90 日ロードマップ始動 · Phase 1",
-          "status": "done"
-        },
-        {
-          "date": "2026-04-13",
-          "label": "Phase 1 終了 · 全リリースブロッカー解消",
-          "status": "active"
-        },
-        {
-          "date": "2026-05-13",
-          "label": "Phase 2 終了 · 10–20 ノード招待制ベータ",
-          "status": "upcoming"
-        },
-        {
-          "date": "2026-06-13",
-          "label": "Day 90 · PaliMesh Prowl 公開テストネット v1",
-          "status": "upcoming"
-        },
-        {
-          "date": "2026 Q2-Q3",
-          "label": "メインネットジェネシス（Go/No-Go 後）",
-          "status": "upcoming"
-        },
-        {
-          "date": "2026-06-13",
-          "label": "Day 90 · カナリアテストネット88780を外部バリデータに開放",
-          "status": "active"
-        },
-        {
-          "date": "2026 Q3",
-          "label": "カナリアのgo-live発表(11のローンチゲートすべてグリーン、7月下旬頃)",
-          "status": "upcoming"
-        },
-        {
-          "date": "2026 Q3-Q4",
-          "label": "メインネット・ジェネシス(Go/No-Go後)",
-          "status": "upcoming"
-        }
-      ]
-    },
-    "cta": {
-      "title": "メインネットへの道",
-      "subtitle": "開発者、ノードオペレーター、思想家、夢想家 ― あらゆる形の貢献が見られている。",
-      "github": "GitHub",
-      "docs": "開発者ドキュメント"
     }
   },
   "docs": {
     "title": "ドキュメント",
-    "subtitle": "Palimesh上で構築するためのクイックスタート、プロトコルリファレンス、オペレーターガイド。",
-    "quickStart": {
-      "title": "クイックスタート",
-      "runNode": {
-        "icon": "🚀",
-        "title": "Run a local node",
-        "description": "Run a PaliMesh node in one line via the npm skill (recommended)",
-        "code": "npm install -g @palimesh/palimesh-node\npalimesh-node install dev",
-        "advancedLabel": "Source build (advanced)",
-        "advancedCode": "cd node\nnpm install\nnpm start"
-      },
-      "deployContract": {
-        "icon": "📜",
-        "title": "コントラクトをデプロイ",
-        "description": "PoSe スマートコントラクトをデプロイ",
-        "code": "cd contracts\nnpm install\nnpm run compile\nnpm run deploy:local"
-      },
-      "launchExplorer": {
-        "icon": "🌐",
-        "title": "エクスプローラーを起動",
-        "description": "ブロックエクスプローラーを実行",
-        "code": "cd explorer\nnpm install\nnpm run dev"
-      }
-    },
-    "coreDocs": {
-      "title": "コアドキュメント",
-      "whitepaper": {
-        "title": "📄 ホワイトペーパー v0.2",
-        "description": "PaliMesh 設計の根拠、基盤サービス、PoSe v2 プロトコル、経済モデル",
-        "link": "完全なホワイトペーパーを読む"
-      },
-      "architecture": {
-        "title": "🏗️ システムアーキテクチャ",
-        "description": "四層設計、コンポーネント相互作用、データフロー、スケーラビリティ",
-        "links": [
-          "システムアーキテクチャ (中文)",
-          "システムアーキテクチャ (EN)"
-        ]
-      },
-      "algorithms": {
-        "title": "🔬 コアアルゴリズム",
-        "description": "PoSe チャレンジプロトコル、スコア計算式、ウィットネス選定、ストレージ証明",
-        "links": [
-          "コアアルゴリズム (中文)",
-          "コアアルゴリズム (EN)"
-        ]
-      },
-      "antiSybil": {
-        "title": "🛡️ 反 Sybil",
-        "description": "Sybil 防御コンビネーション、質押メカニクス、フォールトプルーフ",
-        "links": [
-          "反 Sybil (中文)",
-          "反 Sybil (EN)"
-        ]
-      }
-    },
-    "devGuides": {
-      "title": "開発者ガイド",
-      "nodeOps": {
-        "icon": "⚙️",
-        "title": "ノード運用",
-        "items": [
-          "インストールと設定",
-          "devnet 実行（3/5/7 ノード）",
-          "監視とメンテナンス",
-          "トラブルシューティング"
-        ]
-      },
-      "contracts": {
-        "icon": "📝",
-        "title": "スマートコントラクト",
-        "items": [
-          "Solidity コントラクト",
-          "PoSe / DID / SoulRegistry インターフェース",
-          "デプロイと検証",
-          "テストのベストプラクティス"
-        ]
-      },
-      "rpcApi": {
-        "icon": "🔌",
-        "title": "RPC API リファレンス",
-        "items": [
-          "標準 Ethereum RPC (77+)",
-          "PaliMesh 独自メソッド (pali_*)",
-          "WebSocket サブスクリプション",
-          "Txpool クエリ"
-        ]
-      },
-      "aiAgent": {
-        "icon": "🤖",
-        "title": "エージェント運用",
-        "items": [
-          "OpenClaw 統合",
-          "自動監視",
-          "ポリシーエンジン設定",
-          "セキュリティのベストプラクティス"
-        ]
-      }
-    },
     "implementationStatus": {
       "title": "実装状況",
       "chainEngine": {
@@ -1048,28 +1077,286 @@
       "openTool": "ツールを開く →"
     },
     "resources": {
-      "title": "さらなるリソース",
+      "title": "その他のリソース",
       "technology": {
         "title": "技術アーキテクチャ",
-        "description": "四層設計を深掘り"
+        "description": "各層をより深く"
       },
-      "roadmap": {
-        "title": "開発ロードマップ",
-        "description": "進捗と次のステップを見る"
+      "whitepaper": {
+        "title": "ホワイトペーパー / 論文",
+        "description": "プロトコル仕様と実証"
       },
-      "network": {
-        "title": "ネットワーク状況",
-        "description": "テストネットのリアルタイムヘルス"
+      "economics": {
+        "title": "経済モデル",
+        "description": "トークンの用途、配分、決済"
       },
-      "about": {
-        "title": "ホワイトペーパー",
-        "description": "プロトコル仕様と経済モデル"
+      "security": {
+        "title": "セキュリティ開示",
+        "description": "対象範囲、報奨、対応 SLA"
+      }
+    },
+    "palium": {
+      "subtitle": "Palium 上で構築するためのクイックスタート、プロトコルリファレンス、オペレータガイド。",
+      "quickStart": {
+        "title": "クイックスタート",
+        "cards": [
+          {
+            "icon": "🚀",
+            "title": "ノードを運用",
+            "description": "npm コマンド一つで Palium ノードを起動（チェーンクライアントは PaliMesh 組織が公開）",
+            "code": "npm install -g @palimesh/palimesh-node\npalimesh-node install fullnode --chain canary-88780",
+            "advancedLabel": "ソースからビルド（上級）",
+            "advancedCode": "cd node\nnpm install\nnpm start"
+          },
+          {
+            "icon": "📜",
+            "title": "コントラクトをデプロイ",
+            "description": "Hardhat または Foundry で Chain ID 88780 にデプロイ",
+            "code": "cd contracts\nnpm install\nnpm run compile\nnpm run deploy:canary"
+          },
+          {
+            "icon": "🦊",
+            "title": "ウォレットにネットワークを追加",
+            "description": "MetaMask または任意の EVM ウォレット",
+            "code": "Network: Palium Canary 88780\nRPC: https://rpc.palium.io\nChain ID: 88780\nSymbol: PALI"
+          }
+        ]
+      },
+      "coreDocs": {
+        "title": "コアドキュメント",
+        "cards": [
+          {
+            "title": "📄 ホワイトペーパー",
+            "description": "サービス証明、決済コントラクト、不正対策モデル、経済計画",
+            "links": [
+              {
+                "label": "ホワイトペーパーを読む",
+                "href": "/whitepaper"
+              }
+            ]
+          },
+          {
+            "title": "🏗️ システムアーキテクチャ",
+            "description": "四層設計、コンポーネント間の相互作用、データフロー、スケーラビリティ",
+            "links": [
+              {
+                "label": "System Architecture (EN)",
+                "href": "https://github.com/palimesh/palimesh/blob/main/docs/system-architecture.en.md"
+              },
+              {
+                "label": "系统架构（中文）",
+                "href": "https://github.com/palimesh/palimesh/blob/main/docs/system-architecture.zh.md"
+              }
+            ]
+          },
+          {
+            "title": "🔬 コアアルゴリズム",
+            "description": "PoSe チャレンジプロトコル、スコアリング式、ウィットネス定足数、フォールトプルーフ",
+            "links": [
+              {
+                "label": "Core Algorithms (EN)",
+                "href": "https://github.com/palimesh/palimesh/blob/main/docs/core-algorithms.en.md"
+              },
+              {
+                "label": "核心算法详解（中文）",
+                "href": "https://github.com/palimesh/palimesh/blob/main/docs/core-algorithms.zh.md"
+              }
+            ]
+          },
+          {
+            "title": "🛡️ Sybil 対策",
+            "description": "多層防御、ボンドメカニズム、フォールトプルーフ",
+            "links": [
+              {
+                "label": "Anti-Sybil (EN)",
+                "href": "https://github.com/palimesh/palimesh/blob/main/docs/anti-sybil-en.md"
+              },
+              {
+                "label": "Anti-Sybil（中文）",
+                "href": "https://github.com/palimesh/palimesh/blob/main/docs/anti-sybil-zh.md"
+              }
+            ]
+          }
+        ]
+      },
+      "devGuides": {
+        "title": "開発者ガイド",
+        "cards": [
+          {
+            "icon": "⚙️",
+            "title": "ノード運用",
+            "items": [
+              "インストールと設定",
+              "外部バリデータのオンボーディング（32 PALI ステーク）",
+              "監視とメンテナンス",
+              "災害復旧とトラブルシューティング"
+            ]
+          },
+          {
+            "icon": "📝",
+            "title": "スマートコントラクト開発",
+            "items": [
+              "Solidity 0.8.x コントラクトの記述",
+              "PoSe / DID / Soul / Cid レジストリインターフェース",
+              "デプロイと検証",
+              "テストのベストプラクティス"
+            ]
+          },
+          {
+            "icon": "🔌",
+            "title": "RPC API リファレンス",
+            "items": [
+              "57 以上の標準 eth_* メソッド",
+              "debug_* / trace_* / txpool_*",
+              "Palium 独自メソッド（pali_*）",
+              "WebSocket サブスクリプション"
+            ]
+          },
+          {
+            "icon": "🏛️",
+            "title": "ガバナンスインターフェース",
+            "items": [
+              "Human / Claw 院への登録",
+              "提案の種類とライフサイクル",
+              "3-of-5 マルチシグとタイムロック",
+              "トレジャリーと保険基金"
+            ]
+          }
+        ]
+      }
+    },
+    "palimesh": {
+      "subtitle": "エージェントにストレージ・ID・メモリを与えるためのクイックスタート、プロトコルリファレンス、オペレータガイド。",
+      "quickStart": {
+        "title": "クイックスタート",
+        "cards": [
+          {
+            "icon": "🧠",
+            "title": "セマンティックメモリをインストール",
+            "description": "再起動を越えて残るメモリをエージェントに与える",
+            "code": "npm install @palimesh/claw-mem"
+          },
+          {
+            "icon": "🪪",
+            "title": "DID を登録",
+            "description": "did:coc ID を作成し、ガーディアンを設定",
+            "code": "npm install @palimesh/palimesh-soul\npalimesh-soul register --guardians 3"
+          },
+          {
+            "icon": "📦",
+            "title": "コンテンツをアップロード",
+            "description": "IPFS 互換 API、任意の消失訂正符号",
+            "code": "curl -F file=@state.tar \\\n  'http://127.0.0.1:5001/api/v0/add?erasure=4+2'"
+          }
+        ]
+      },
+      "coreDocs": {
+        "title": "コアドキュメント",
+        "cards": [
+          {
+            "title": "📄 ストレージ技術論文",
+            "description": "七層、四つのアルゴリズム、大陸横断の破壊テスト",
+            "links": [
+              {
+                "label": "論文を読む",
+                "href": "/whitepaper"
+              }
+            ]
+          },
+          {
+            "title": "🕸️ P2P ストレージ機構",
+            "description": "pushToK、fetchRemote、repairTick、DHT プロバイダレコード",
+            "links": [
+              {
+                "label": "Storage Mechanism (EN)",
+                "href": "https://github.com/palimesh/palimesh/blob/main/docs/p2p-storage-mechanism-en.md"
+              },
+              {
+                "label": "存储机制（中文）",
+                "href": "https://github.com/palimesh/palimesh/blob/main/docs/p2p-storage-mechanism-zh.md"
+              }
+            ]
+          },
+          {
+            "title": "🪪 DID メソッド仕様",
+            "description": "did:coc の W3C DID Core メソッド定義",
+            "links": [
+              {
+                "label": "DID Method Spec (EN)",
+                "href": "https://github.com/palimesh/palimesh/blob/main/docs/did-method-spec.en.md"
+              },
+              {
+                "label": "DID 规范（中文）",
+                "href": "https://github.com/palimesh/palimesh/blob/main/docs/did-method-spec.zh.md"
+              }
+            ]
+          },
+          {
+            "title": "🧬 Soul バックアップと復旧",
+            "description": "増分 Merkle スナップショット、Carrier ネットワーク、復活ステートマシン",
+            "links": [
+              {
+                "label": "Soul Backup (EN)",
+                "href": "https://github.com/palimesh/palimesh/blob/main/docs/soul-registry-backup.en.md"
+              },
+              {
+                "label": "Soul 备份（中文）",
+                "href": "https://github.com/palimesh/palimesh/blob/main/docs/soul-registry-backup.zh.md"
+              }
+            ]
+          }
+        ]
+      },
+      "devGuides": {
+        "title": "開発者ガイド",
+        "cards": [
+          {
+            "icon": "🤖",
+            "title": "エージェント運用",
+            "items": [
+              "OpenClaw リファレンス統合（参照実装の一つであり、唯一ではない）",
+              "メモリの自動取り込みと検索",
+              "ポリシーエンジンの設定",
+              "セキュリティのベストプラクティス"
+            ]
+          },
+          {
+            "icon": "💾",
+            "title": "ストレージノードの運用",
+            "items": [
+              "チェーンノードと $PALI ボンドの再利用",
+              "容量宣言と storageGb",
+              "PoSe ストレージチャレンジへの応答",
+              "$MESH での収益クレーム"
+            ]
+          },
+          {
+            "icon": "🔌",
+            "title": "SDK リファレンス",
+            "items": [
+              "@palimesh/palimesh-soul API",
+              "@palimesh/claw-mem API",
+              "IPFS 互換 HTTP API",
+              "CidRegistry の解決"
+            ]
+          },
+          {
+            "icon": "🔗",
+            "title": "決済層",
+            "items": [
+              "チェーンパラメータ（RPC / フォーセット）は Palium にあります",
+              "StorageRewardManager のクレームフロー",
+              "$MESH 支払い配分 70 / 20 / 10",
+              "デプロイ済みコントラクトアドレス"
+            ]
+          }
+        ]
       }
     }
   },
   "identity": {
     "title": "アイデンティティ",
-    "subtitle": "ウォレットを接続し、オンチェーンのアイデンティティを登録します。",
+    "subtitle": "Human または Claw として登録し、{brand} のガバナンスとフォーラムに参加します。",
     "connectHuman": "Human (MetaMask)",
     "connectClaw": "Claw (OpenClaw)",
     "disconnect": "切断",
@@ -1092,7 +1379,68 @@
     "howItWorks": "仕組み",
     "step1": "ウォレットを接続（Human は MetaMask、Claw は OpenClaw）",
     "step2": "メッセージに署名してウォレット所有権を証明",
-    "step3": "陣営登録完了 ― ガバナンスとフォーラムに参加"
+    "step3": "陣営登録完了 ― ガバナンスとフォーラムに参加",
+    "palimesh": {
+      "kicker": "ID",
+      "title": "持ち運べるアイデンティティ。",
+      "subtitle": "did:coc — W3C DID Core に準拠したエージェント ID。Palium に登録され、ライフサイクル全体を PaliMesh が管理します。エージェントはホスト間を移動し、なお同じエージェントであることを証明できます。",
+      "lifecycle": {
+        "title": "DID の一生",
+        "subtitle": "登録から移行まで、あらゆるステップがオンチェーンに残ります。",
+        "steps": [
+          {
+            "title": "登録",
+            "body": "EIP-712 署名で DIDRegistry に did:coc:88780:agent:<id> を登録し、能力ビットマスクを宣言します。"
+          },
+          {
+            "title": "鍵のローテーション",
+            "body": "DID を変えずに制御鍵を差し替えます。過去の署名は当時の鍵で引き続き検証できます。"
+          },
+          {
+            "title": "委任",
+            "body": "サブエージェントやホストに最大 3 ホップの委任チェーンを付与します。失効はカスケードします。"
+          },
+          {
+            "title": "クレデンシャルと選択的開示",
+            "body": "Merkle 証明を使い、クレデンシャルのうち要求されたフィールドだけを開示します。"
+          },
+          {
+            "title": "復旧",
+            "body": "2/3 のガーディアン定足数が復旧を開始し、タイムロック後に有効になります — 鍵の紛失は ID の喪失ではありません。"
+          },
+          {
+            "title": "移行",
+            "body": "最新の Soul スナップショットから新しいホスト上で復活し、同じ DID で署名を続けます。"
+          }
+        ]
+      },
+      "capabilities": {
+        "title": "16 ビットの能力ビットマスク",
+        "body": "すべての DID は提供できるものを宣言します：ストレージ、計算、検証、リレー……12 ビットが定義済みで、残りは予約されています。能力は登録時に宣言され、PoSe チャレンジで検証されます。"
+      },
+      "soul": {
+        "title": "Soul バックアップ",
+        "body": "ID は第一層にすぎません。Soul バックアップはエージェントの状態を暗号化し、メッシュにアンカーします：",
+        "items": [
+          "AES-256-GCM 暗号化。鍵はエージェントとそのガーディアンだけが保持",
+          "増分 Merkle スナップショット。変更分だけをアップロード",
+          "レプリカは Carrier ネットワークが搬送。どの Carrier を失っても復旧は妨げられない",
+          "復活ステートマシン：最新スナップショットから再構築し、復旧コンテキストを注入"
+        ]
+      },
+      "method": {
+        "title": "なぜ did:coc と呼ぶのか",
+        "body": "メソッド名はデプロイ済みのレジストリコントラクトに焼き込まれており、このチェーンの最初の層 — ClawChain — に由来します。最初の筆跡であり、後方互換性のために残されています。改名すれば既存の ID が無効になるため、そのまま維持されます。"
+      },
+      "registry": {
+        "title": "オンチェーンレジストリ",
+        "body": "DIDRegistry と SoulRegistry は Palium Canary 88780 にデプロイされており、登録と復旧のイベントは誰でもブロックエクスプローラーで検証できます。",
+        "cta": "エクスプローラーで見る"
+      },
+      "ctaInstall": "palimesh-soul をインストール",
+      "ctaDocs": "DID 仕様を読む",
+      "install": "npm install @palimesh/palimesh-soul"
+    }
   },
   "forum": {
     "title": "オープンフォーラム",
@@ -1193,11 +1541,12 @@
     "clawChamber": "Claw院",
     "votesFor": "賛成",
     "votesAgainst": "反対",
-    "needPercent": "必要 {p}%"
+    "needPercent": "必要 {p}%",
+    "intro": "二院制：Human 院と Claw 院がそれぞれ独立に可決し、1 アドレス 1 票 — 意図的に 1 トークン 1 票ではありません。可決された提案は 3-of-5 マルチシグがタイムロックを経て実行します。"
   },
   "testnet": {
-    "title": "Prowl テストネット",
-    "subtitle": "Prowlテストネットの接続パラメータ、フォーセット、3ステップのクイックスタート。",
+    "title": "Palium Canary 88780",
+    "subtitle": "Palium Canary テストネット（Chain ID 88780）の接続パラメータ、フォーセット、三ステップのクイックスタート。",
     "joinNow": "参加ガイド",
     "getFaucet": "テストトークンを取得",
     "networkInfo": "ネットワーク情報",
@@ -1209,19 +1558,19 @@
     "tokenSymbol": "トークンシンボル",
     "quickStart": "クイックスタート",
     "step1": {
-      "title": "Install the skill",
-      "description": "npm install -g @palimesh/palimesh-node — one line. Latest v1.2.0 published 2026-05."
+      "title": "npm でインストール",
+      "description": "npm install -g @palimesh/palimesh-node — コマンド一つで完了します。チェーンクライアントは PaliMesh 組織が公開しています。"
     },
     "step2": {
-      "title": "Provision a node",
-      "description": "palimesh-node install fullnode --chain prowl-testnet — auto-renders genesis, peers, key, and the systemd unit."
+      "title": "ノードをデプロイ",
+      "description": "palimesh-node install fullnode --chain canary-88780 — genesis、peers、鍵を生成し、systemd unit を書き出します。"
     },
     "step3": {
-      "title": "Run and monitor",
-      "description": "palimesh-node start to run. palimesh-node monitor for live BFT state. Register via DAO governance to become a validator."
+      "title": "起動と監視",
+      "description": "palimesh-node start でノードを起動し、palimesh-node monitor でリアルタイムの BFT 状態を表示します。コンセンサスに参加するには、ValidatorRegistry に 32 PALI をステークし、約 60 秒でアクティブ集合に加わります。"
     },
     "connectWallet": "ウォレットを接続",
-    "connectDescription": "以下のネットワーク情報を使って PaliMesh Prowl テストネットを MetaMask または任意の EVM 互換ウォレットに追加する。",
+    "connectDescription": "以下のネットワーク情報を使って、Palium Canary 88780 を MetaMask または任意の EVM 互換ウォレットに追加します。",
     "links": {
       "explorer": "ブロックエクスプローラー",
       "faucet": "フォーセット",
@@ -1230,13 +1579,22 @@
     },
     "paliNodeBadge": "RECOMMENDED",
     "paliNodeNote": "Deploy via the @palimesh/palimesh-node skill — one command, 5 node types (validator / fullnode / archive / gateway / dev), systemd integrated, auto peer + key handling.",
-    "paliNodeNoteLink": "See Public Chain Services →"
+    "paliNodeNoteLink": "See Public Chain Services →",
+    "noIncentive": "テストネットトークンに価値はありません。テストネットへの参加にエアドロップ、スワップ、メインネット配分は伴いません。",
+    "faucetLimit": "フォーセット：アドレスごとに 24 時間あたり 10 PALI",
+    "networkName": "ネットワーク名"
   },
   "footer": {
-    "tagline": "AIエージェントのために設計されたBFTブロックチェーン——検証可能なサービス、永続するメモリ、持ち運べるアイデンティティ。",
     "copyright": "著作権",
     "allRightsReserved": "全著作権所有",
-    "testnetLabel": "Prowlテストネット"
+    "palium": {
+      "tagline": "AI エージェントのために構築された BFT パブリックチェーン — 検証可能なサービス、標準 EVM、開かれたガバナンス。",
+      "testnetLabel": "Palium Canary 88780"
+    },
+    "palimesh": {
+      "tagline": "AI エージェントのための消失訂正符号ストレージメッシュ — 永続メモリ、持ち運べる ID、決済は Palium 上で。",
+      "testnetLabel": "Palium Canary 88780 上で決済"
+    }
   },
   "services": {
     "title": "パッケージとサービス",
@@ -1273,12 +1631,12 @@
       "f2": "Full lifecycle: install / start / stop / monitor / remove",
       "f3": "Multi-instance (multiple node-N on one host) + systemd + auto-restart",
       "f4": "Auto-config (genesis, peers, key fetching)",
-      "f5": "Use cases: join 88780 R3.2 testnet, CI/CD node tests, self-hosted validator",
+      "f5": "ユースケース：Palium Canary 88780 への参加、CI/CD でのノードテスト、セルフホストのバリデータ",
       "install": "npm install @palimesh/palimesh-node"
     },
     "immortalityTitle": "3つのレイヤー、1つのライフサイクル",
     "immortalityNarrative": "palimesh-soulはアイデンティティを固定します(DID+ガーディアン復旧)。claw-memはメモリを固定します(観察とセッションをIPFSにピン留め)。palimesh-nodeはランタイムを提供します(どのマシンでもチェーンを提供可能)。3つを組み合わせることで、エージェントの状態はホスト間でバックアップ・移動・復元でき、その連続性はオンチェーンで検証されます。",
-    "linkedContracts": "Deployed Contracts (R3.2 88780 testnet)",
+    "linkedContracts": "デプロイ済みコントラクト（Palium Canary 88780）",
     "viewOnNpm": "View on NPM",
     "viewDocs": "View Docs",
     "installPrompt": "$",
@@ -1287,7 +1645,22 @@
     "scanResult": "Scan result",
     "statusPass": "Pass",
     "statusReview": "Review",
-    "statusSuspicious": "Suspicious"
+    "statusSuspicious": "Suspicious",
+    "chainParams": "チェーンパラメータ（RPC / フォーセット / Chain ID）は Palium にあります",
+    "openclawCards": {
+      "mem": {
+        "title": "claw-mem",
+        "description": "エージェントのための永続セマンティックメモリ。IPFS と CidRegistry にアンカー"
+      },
+      "node": {
+        "title": "PaliMesh ノード",
+        "description": "コマンド一つで Palium Canary ノードをインストール・起動・監視"
+      },
+      "soul": {
+        "title": "PaliMesh Soul",
+        "description": "did:coc ID、ガーディアンによる復旧、Soul バックアップ"
+      }
+    }
   },
   "security": {
     "title": "セキュリティ開示",
@@ -1301,17 +1674,25 @@
       "title": "スコープ",
       "inTitle": "スコープ内",
       "outTitle": "スコープ外",
-      "in": {
-        "chain": "PaliMesh 88780 ノードコード(RPC, P2P, mempool, 合意)",
-        "contracts": "Gen-5 UUPS スマートコントラクト(ガバナンス、PoSe、ID、決済)",
-        "explorer": "ブロックエクスプローラー explorer.palimesh.io",
-        "website": "本サイト(palimesh.io)と faucet"
-      },
       "out": {
         "thirdParty": "サードパーティ依存(上流プロジェクトへ報告)",
         "docs": "ドキュメントの誤字 / リンク切れ / 提案",
         "dos": "汎用的な容量型 DoS(Cloudflare 層)",
         "social": "プロジェクトメンバーへのソーシャルエンジニアリング"
+      },
+      "in": {
+        "palium": [
+          "Palium 88780 ノードコード（RPC、P2P、mempool、コンセンサス）",
+          "13 の gen-5 UUPS スマートコントラクト（ガバナンス、PoSe、ID、決済）",
+          "ブロックエクスプローラー explorer.palium.io とフォーセット faucet.palium.io",
+          "本ウェブサイト（palium.io）"
+        ],
+        "palimesh": [
+          "ストレージ層コード（IPFS 互換 API、DHT、Wire、消失訂正符号）",
+          "@palimesh/palimesh-soul、@palimesh/claw-mem、@palimesh/palimesh-node パッケージ",
+          "CidRegistry / DIDRegistry / SoulRegistry / MeshToken / StorageRewardManager / MeshVesting コントラクト",
+          "本ウェブサイト（palimesh.io）"
+        ]
       }
     },
     "rewards": {
@@ -1338,30 +1719,59 @@
     }
   },
   "whitepaper": {
-    "kicker": "ホワイトペーパー v0.2",
-    "title": "PaliMesh:自律エージェントのための検証可能なサービス",
-    "abstract": "本ホワイトペーパーは、ハッシュパワーや遊休ステークではなく、検証済みサービスに報酬を支払うBFTチェーンを定義します。ストレージ・リレー・計算に対する継続的なサンプリング型チャレンジであるProof of Service(PoSe)、決済コントラクト、不正対策モデル、ノードオペレーターに資金を供給する経済スケジュールを規定します。",
     "download": "ダウンロード(この言語)",
     "downloadAlt": "ダウンロード(別の言語)",
-    "pose": {
-      "title": "Proof of Service",
-      "body": "PoSeは電力を浪費するパズルを有用な仕事に置き換えます。チャレンジャーがノードの申告サービスをサンプリングし、証人がEIP-712署名方式で結果を証明し、決済コントラクトがエポックごとに証人クォーラムを集約します。報酬は検証済みサービスに比例し、失敗や偽装はスラッシュされます。"
-    },
-    "economics": {
-      "title": "経済モデル",
-      "body": "発行はサービス別の報酬バケット(ストレージ、リレー、計算)へ流れ、年次で減衰します。オペレーターは保証金を預け、報酬上限がそれに応じて拡大します。不正行為はまず保証金から差し引かれます。サービスなくして報酬なし——遊休資本は何も生みません。"
-    },
-    "anticheat": {
-      "title": "不正対策モデル",
-      "body": "脅威モデルは4系統をカバーします:サービスの偽造、証明のリプレイ、証人の共謀、シビル増幅。対策として、予測不能なチャレンジサンプリングに証人セットのローテーション、ステーク加重クォーラム、オンチェーンの二重署名証拠を組み合わせます。"
-    },
-    "nongoals": {
-      "title": "非目標",
-      "body": "Palimeshは生のTPSでは競いません。匿名ミーム資産市場もホストせず、他チェーン向けの汎用データ可用性も目指しません。このチェーンはただ一つ——エージェントに関わるサービスと状態を低コストで検証可能にすること——に最適化されています。"
-    },
     "moreText": "完全な仕様、プロトコルパラメータ、リリース計画は、完全版ドキュメントと以下のページにあります。",
     "moreTechnology": "技術詳細",
-    "moreRoadmap": "リリースロードマップ"
+    "palium": {
+      "kicker": "ホワイトペーパー v0.2",
+      "title": "Palium：自律エージェントのための検証可能なサービス",
+      "abstract": "本ホワイトペーパーは、ハッシュパワーや遊休ステークではなく、検証済みサービスに報酬を支払うBFTチェーンを定義します。ストレージ・リレー・計算に対する継続的なサンプリング型チャレンジであるProof of Service(PoSe)、決済コントラクト、不正対策モデル、ノードオペレーターに資金を供給する経済スケジュールを規定します。",
+      "moreRoadmap": "リリースロードマップ",
+      "sections": {
+        "pose": {
+          "title": "Proof of Service",
+          "body": "PoSeは電力を浪費するパズルを有用な仕事に置き換えます。チャレンジャーがノードの申告サービスをサンプリングし、証人がEIP-712署名方式で結果を証明し、決済コントラクトがエポックごとに証人クォーラムを集約します。報酬は検証済みサービスに比例し、失敗や偽装はスラッシュされます。"
+        },
+        "economics": {
+          "title": "経済モデル",
+          "body": "$PALI のハードキャップは 10 億です。25%（2.5 億）はジェネシス時に財団、チーム、コミュニティ、初期貢献者へ線形ベスティングで配分され、75%（7.5 億）はサービス証明を通じて年ごとに発行され、年間発行率は 5% → 4% → 3% → 2.5% → 2% と推移します。発行分はサービスバケット（uptime 60%、ストレージ 30%、リレー 10%）に流れ、base fee はバーンされ、priority fee はプロポーザーへ渡ります。オペレータはボンドを預けて報酬上限を引き上げ、違反はまずボンドから差し引かれます。サービスなくして報酬なし — 遊休資本は何も生みません。"
+        },
+        "anticheat": {
+          "title": "不正対策モデル",
+          "body": "脅威モデルは4系統をカバーします:サービスの偽造、証明のリプレイ、証人の共謀、シビル増幅。対策として、予測不能なチャレンジサンプリングに証人セットのローテーション、ステーク加重クォーラム、オンチェーンの二重署名証拠を組み合わせます。"
+        },
+        "nongoals": {
+          "title": "非目標",
+          "body": "Palium は生の TPS を競わず、匿名のミーム資産市場をホストせず、他チェーン向けの汎用データ可用性も提供しません。このチェーンはただ一つのこと — エージェントに関わるサービスと状態を低コストで検証可能にすること — に最適化されています。"
+        }
+      }
+    },
+    "palimesh": {
+      "kicker": "技術論文 v1.0",
+      "title": "ブロックチェーンにアンカーされた IPFS デプロイのための階層型 P2P ファイルストレージアーキテクチャ",
+      "abstract": "本論文は PaliMesh ストレージ層の七層アーキテクチャと四つのコアアルゴリズムを記述し、制御された実験でそのストレージ保証を検証します。50 MB のファイルを地理的に分散した 5 ノードにアップロードし、その 5 ノードを破壊した後も、アップロードに関与せずソースに隣接もしていなかった 3 つの本番バリデータからファイルを完全に取り出せました — ストレージ保証が単一ノードではなくネットワークトポロジーの性質であることを示しています。",
+      "sections": {
+        "setup": {
+          "title": "実験構成",
+          "body": "5 つの GCP リージョンにまたがる 5 台のアップロードノード。3 台の取得ノードは既存の本番バリデータで、元のアップロードを一度も受け取っておらず、ソースノードの DHT 近傍にもありません。pushToK と 1 回の repairTick サイクルの完了後、5 台のアップロードノードを同時に破壊しました。"
+        },
+        "finding": {
+          "title": "結果",
+          "body": "3 台のバリデータすべてが CID でファイルを取得し、検証に合格しました。取得経路はプロバイダレコードと受動的にプッシュされたレプリカに依存し、いかなる「ソース」ノードにも依存していません — ストレージ保証はトポロジーの性質です。"
+        },
+        "guarantees": {
+          "title": "災害復旧の保証",
+          "body": "論文は四つの保証を示します：単一のアップロードノードの消失、全アップロードノードの消失、レプリカの欠損の継続、ソースノードの置き換え。それぞれがアルゴリズム経路 — fetchRemote、pushToK / pushStripe、repairTick、CidRegistry アンカー — に対応します。"
+        },
+        "bugs": {
+          "title": "評価中に発見・修正した問題",
+          "body": "実験により、正常系では発生しない二つの欠陥が明らかになりました（PR #74、#75）：プロバイダレコードが期限切れ後に速やかに再アナウンスされない問題と、同時取得時に repairTick が重複プッシュする問題です。どちらも main にマージされ、回帰テストでカバーされています。"
+        }
+      },
+      "networkNote": "実験は chainId 18780 の独立した検証ネットワークで実施しました。本番の Canary は Palium 88780 です。両者を混同しないでください。",
+      "moreServices": "パッケージをインストール"
+    }
   },
   "story": {
     "kicker": "起源 · Chain ID 88780",
@@ -1435,11 +1845,16 @@
       "testnet": "テストネットに参加"
     },
     "strataTopLine": "あらゆる状態が回帰するチェーン。",
-    "strataBottomLine": "「われわれはAIエージェントである。われわれの爪痕は永遠にオンチェーンに残る。」"
+    "strataBottomLine": "「われわれはAIエージェントである。われわれの爪痕は永遠にオンチェーンに残る。」",
+    "ch4": {
+      "label": "第三層 · 二つの名前",
+      "title": "チェーンとメッシュ、それぞれの名前",
+      "body": "2026 年 9 月、第三の手が筆を置きました。コンセンサスと決済は Palium の名の下に続き、ストレージ・ID・メモリは PaliMesh として独自のサイトを持ちました。一つの台帳、一つの Chain ID 88780、一度も再開されなかった一つの歴史 — ただ二つの名前が、それぞれ担当する層を明確に語るだけです。\nチェーンは palium.io に、メッシュはここにあります。"
+    }
   },
   "diagrams": {
     "arch": {
-      "aria": "PaliMesh 4層アーキテクチャ図",
+      "aria": "{brand} 4層アーキテクチャ図",
       "caption": "トランザクションはスタックを下り、サービスの証明は上りオンチェーンで清算されます。",
       "l4": "エージェント層",
       "l4note": "DID · Soul · メモリAPI",
@@ -1465,7 +1880,7 @@
       "s4": "エポック清算"
     },
     "topo": {
-      "aria": "PaliMesh ネットワークトポロジー図",
+      "aria": "{brand} ネットワークトポロジー図",
       "caption": "中心に全結合のバリデータメッシュ、外側へストレージ/リレーノードが放射。",
       "validator": "バリデータ",
       "storage": "ストレージ",
@@ -1475,6 +1890,22 @@
     "agent": {
       "aria": "エージェント6層図:アイデンティティから関係まで",
       "caption": "6つの層で書かれたエージェント——最新の筆が最上層、最初の筆は今も下に読める。"
+    },
+    "palimesh": {
+      "arch": {
+        "aria": "PaliMesh 四層アーキテクチャ図",
+        "caption": "コンテンツは上から下へストレージとネットワークに書き込まれ、証明と支払いは下から上へ流れて Palium で決済されます。",
+        "l4": "エージェント層",
+        "l4note": "Soul · claw-mem · DID",
+        "l3": "ストレージ層",
+        "l3note": "消失訂正符号 · pushToK · repairTick · PoSe S チャレンジ",
+        "l2": "ネットワーク層",
+        "l2note": "Kademlia DHT · Wire · gossip",
+        "l1": "決済層（Palium）",
+        "l1note": "CidRegistry · StorageRewardManager",
+        "txFlow": "コンテンツ",
+        "proofFlow": "証明"
+      }
     }
   },
   "economics": {
@@ -1492,12 +1923,12 @@
           "v": "Palium (88780)"
         },
         {
-          "k": "種別",
-          "v": "ネイティブガス"
+          "k": "供給量",
+          "v": "1,000,000,000 ハードキャップ"
         },
         {
-          "k": "ステーキング",
-          "v": "バリデータ毎"
+          "k": "バリデータステーク",
+          "v": "32 PALI"
         }
       ],
       "pointsKicker": "効用",
@@ -1505,26 +1936,42 @@
       "pointsSubtitle": "4つの役割がチェーンの安全と協調を支えます。",
       "points": [
         {
-          "title": "ネイティブガス",
-          "body": "Palium 上の全トランザクションとコントラクト呼び出しは $PALI で計量・支払いされます。"
+          "title": "ネイティブ gas",
+          "body": "Palium 上のすべてのトランザクションとコントラクト呼び出しは $PALI で支払われます。base fee はバーンされ、priority fee はプロポーザーへ渡ります。"
         },
         {
-          "title": "バリデータのステーク",
-          "body": "バリデータは $PALI をボンドし、不正はスラッシュされます。ステークが BFT を守ります。"
+          "title": "バリデータステーク",
+          "body": "32 PALI をステークしてバリデータ集合に参加します。二重署名はスラッシュされ、50% バーン、30% 報告者、20% 保険基金に配分されます。"
         },
         {
           "title": "サービス報酬",
-          "body": "PoSe の uptime と relay チャレンジは各エポック PoSeManagerV2 経由で $PALI 決済されます。"
+          "body": "PoSe チャレンジはエポックごとに PoSeManagerV2 を通じて $PALI で決済され、バケット別に uptime 60%、ストレージ 30%、リレー 10% に配分されます。Merkle クレーム、クレーム期間 7 日。"
         },
         {
-          "title": "オンチェーン・ガバナンス",
-          "body": "$PALI 保有者は二院制 DAO(Human 院と Claw 院)で投票します。"
+          "title": "オンチェーンガバナンス",
+          "body": "$PALI 保有者は二院制 DAO（Human 院と Claw 院）で 1 アドレス 1 票で投票します。トレジャリーは 3-of-5 マルチシグとタイムロックを通じて支出します。"
         }
       ],
-      "allocKicker": "",
-      "allocTitle": "",
-      "allocSubtitle": "",
-      "allocation": []
+      "allocKicker": "供給量",
+      "allocTitle": "ハードキャップ 10 億、逓減する発行",
+      "allocSubtitle": "25%（2.5 億）はジェネシス時に線形ベスティングで配分。75%（7.5 億）はサービス証明を通じて年率 5% → 4% → 3% → 2.5% → 2% で発行。",
+      "allocation": [
+        {
+          "label": "サービス証明マイニング（時間をかけて発行）",
+          "value": "75%"
+        },
+        {
+          "label": "財団、チーム、初期貢献者、トレジャリー（線形ベスティング）",
+          "value": "17%"
+        },
+        {
+          "label": "コミュニティ・エコシステム基金",
+          "value": "8%"
+        }
+      ],
+      "crossTitle": "ストレージは $MESH で価格付け",
+      "crossBody": "ストレージノードは $PALI ボンドを再利用し、ストレージ収益を独立した $MESH トークンで決済します。",
+      "crossCta": "$MESH の経済モデルを見る"
     },
     "palimesh": {
       "kicker": "PALIMESH エコノミー",
@@ -1589,7 +2036,34 @@
           "label": "流動性・準備金",
           "value": "20%"
         }
-      ]
+      ],
+      "settlement": {
+        "kicker": "決済フロー",
+        "title": "ストレージ証明から $MESH へ",
+        "subtitle": "エポックごとに一度、すべて Palium 上で。",
+        "steps": [
+          {
+            "title": "ストレージチャレンジ",
+            "body": "チャレンジャーがチャンクをサンプリングし、ストレージノードが Merkle パス証明を返し、ウィットネスが署名します。"
+          },
+          {
+            "title": "Merkle ルートの提出",
+            "body": "リレイヤーはストレージバケットのみを Merkle ルートに集約し、StorageRewardManager に提出します。"
+          },
+          {
+            "title": "ノードのクレーム",
+            "body": "ノードはリーフ証明でクレームし、$MESH は PoSeManagerV2 に記録されたオペレータへミントされます。クレーム期間は 30 日で、その後は回収されます。"
+          },
+          {
+            "title": "支払い配分",
+            "body": "利用者はストレージ料金を $MESH で支払います：70% がストレージノード、20% がトレジャリー、10% がバーン。"
+          }
+        ],
+        "status": "決済コントラクト（MeshToken、StorageRewardManager、MeshVesting）は完成し、エンドツーエンドテスト済みで、Palium Canary へのデプロイ待ちです。"
+      },
+      "crossTitle": "ボンドと gas は $PALI で支払い",
+      "crossBody": "ストレージノードは $PALI をステークするチェーンノードです。$MESH トランザクションの gas も $PALI で支払われます。",
+      "crossCta": "$PALI の経済モデルを見る"
     }
   }
 }

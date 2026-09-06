@@ -1,11 +1,21 @@
 {
-  "name": "palimesh-website",
+  "name": "palium-palimesh-website",
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev -p 3001",
-    "build": "next build",
-    "start": "next start -p 3001",
+    "dev": "npm run dev:palimesh",
+    "dev:palium": "NEXT_PUBLIC_SITE=palium next dev -p 3004",
+    "dev:palimesh": "NEXT_PUBLIC_SITE=palimesh next dev -p 3001",
+    "build": "npm run build:palium && npm run build:palimesh",
+    "prebuild:palium": "npm run check:i18n",
+    "build:palium": "NEXT_PUBLIC_SITE=palium next build",
+    "prebuild:palimesh": "npm run check:i18n",
+    "build:palimesh": "NEXT_PUBLIC_SITE=palimesh next build",
+    "start": "npm run start:palimesh",
+    "start:palium": "NEXT_PUBLIC_SITE=palium next start -p 3004",
+    "start:palimesh": "NEXT_PUBLIC_SITE=palimesh next start -p 3001",
+    "check:i18n": "node scripts/check-i18n-keys.mjs",
+    "smoke": "node scripts/smoke-variants.mjs",
     "lint": "next lint"
   },
   "dependencies": {

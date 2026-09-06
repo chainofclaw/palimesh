@@ -1,11 +1,14 @@
 'use client'
 
-import { useTranslations } from 'next-intl'
+import { useLocale, useTranslations } from 'next-intl'
+import { site, crossSiteUrl } from '@/config/site'
 import { AntiqueDivider } from '@/components/shared/Manuscript'
 import { Link } from '@/i18n/routing'
 
 export default function ServicesPage() {
   const t = useTranslations('services')
+  const tc = useTranslations('common')
+  const locale = useLocale()
 
   return (
     <div className="relative">
@@ -71,6 +74,7 @@ export default function ServicesPage() {
 
         {/* Service 3: Node */}
         <ServiceCard
+          id="node"
           color="blue"
           badge={t('node.badge')}
           title={t('node.title')}
@@ -79,7 +83,17 @@ export default function ServicesPage() {
           installCmd={t('node.install')}
           npmUrl="https://www.npmjs.com/package/@palimesh/palimesh-node"
           contracts={[]}
-          docsHref="/testnet"
+          docsHref="/docs"
+          footer={
+            <a
+              href={crossSiteUrl(locale, '/testnet')}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="ink-button text-sm"
+            >
+              {t('chainParams')}
+            </a>
+          }
         />
 
         {/* OpenClaw Marketplace listings */}
@@ -101,28 +115,28 @@ export default function ServicesPage() {
 
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             <OpenclawCard
-              title="Memory system for claws"
+              title={t('openclawCards.mem.title')}
               skillId="//claw-mem"
               version="v2.3.1"
-              description="Give an AI agent persistent semantic memory that survives restarts and compaction. Captures structured observations from tool calls, summarizes sessions (LLM)…"
+              description={t('openclawCards.mem.description')}
               overall="review"
               scans={{ vt: 'suspicious', llm: 'suspicious', static: 'suspicious' }}
               color="purple"
             />
             <OpenclawCard
-              title="Node of PaliMesh testnet"
+              title={t('openclawCards.node.title')}
               skillId="//palimesh-node"
               version="v1.2.0"
-              description="Operate PaliMesh blockchain nodes — install, start, stop, monitor, and remove validator, fullnode, archive, gateway, and dev nodes. Use when the user…"
+              description={t('openclawCards.node.description')}
               overall="pass"
               scans={{ vt: 'pass', llm: 'pass', static: 'pass' }}
               color="blue"
             />
             <OpenclawCard
-              title="PaliMesh Soul"
+              title={t('openclawCards.soul.title')}
               skillId="//palimesh-soul"
               version="v1.2.10"
-              description="Give an AI agent a persistent on-chain soul on PaliMesh — register and manage the agent's decentralized identity (DID), anchor encrypted backups to IPFS + SoulReg…"
+              description={t('openclawCards.soul.description')}
               overall="review"
               scans={{ vt: 'suspicious', llm: 'suspicious', static: 'pass' }}
               color="cyan"
@@ -141,14 +155,16 @@ export default function ServicesPage() {
                 {t('immortalityNarrative')}
               </p>
               <div className="mt-8 flex flex-wrap justify-center gap-4">
-                <Link
-                  href="/testnet"
+                <a
+                  href={crossSiteUrl(locale, '/testnet')}
+                  target="_blank"
+                  rel="noopener noreferrer"
                   className="px-6 py-2 rounded-lg seal-button text-sm"
                 >
-                  R3.2 Testnet
-                </Link>
+                  {tc('testnet')}
+                </a>
                 <a
-                  href="https://github.com/palimesh/palimesh"
+                  href={site.github}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="px-6 py-2 rounded-lg border border-accent-cyan/30 text-accent-cyan font-display font-semibold hover:bg-accent-cyan/10 transition-all text-sm"
@@ -167,6 +183,7 @@ export default function ServicesPage() {
 // ----- Components -----
 
 function ServiceCard({
+  id,
   color,
   badge,
   title,
@@ -176,7 +193,9 @@ function ServiceCard({
   npmUrl,
   contracts,
   docsHref,
+  footer,
 }: {
+  id?: string
   color: 'cyan' | 'purple' | 'blue'
   badge: string
   title: string
@@ -186,6 +205,7 @@ function ServiceCard({
   npmUrl: string
   contracts: Array<{ name: string; addr: string }>
   docsHref: string
+  footer?: React.ReactNode
 }) {
   const t = useTranslations('services')
   const colorMap: Record<string, { border: string; bg: string; text: string; gradient: string }> = {
@@ -211,7 +231,7 @@ function ServiceCard({
   const c = colorMap[color]
 
   return (
-    <section className={`mb-12 rounded-2xl border ${c.border} bg-gradient-to-br ${c.bg} p-6 md:p-10`}>
+    <section id={id} className={`mb-12 rounded-2xl border ${c.border} bg-gradient-to-br ${c.bg} p-6 md:p-10`}>
       <div className={`inline-block text-xs font-mono ${c.text} mb-4 px-3 py-1 rounded-full border ${c.border}`}>
         {badge}
       </div>
@@ -253,7 +273,7 @@ function ServiceCard({
                 {contracts.map((ct) => (
                   <a
                     key={ct.addr}
-                    href={`https://explorer.palium.io/address/${ct.addr}`}
+                    href={`${site.chain.explorer}/address/${ct.addr}`}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="block bg-bg-primary/40 rounded p-2 hover:bg-bg-primary/60 transition-colors group"
@@ -286,6 +306,7 @@ function ServiceCard({
           </div>
         </div>
       </div>
+      {footer && <div className="mt-6 pt-6 border-t border-text-muted/10 flex flex-wrap gap-3">{footer}</div>}
     </section>
   )
 }
