@@ -1934,11 +1934,15 @@ export class PersistentChainEngine {
         const proposerLc = block.proposer.toLowerCase()
         const era = this.setSchedule ? this.setSchedule.allowedAt(BigInt(block.number)) : undefined
         if (era === null) {
-          log.info("verifyBlockChain: pre-schedule era — proposer membership check skipped", {
-            index: i,
-            number: String(block.number),
-            proposer: block.proposer,
-          })
+          // Log once per window, not per block — a long catch-up adoption over
+          // pre-schedule history (observed: 2244 lines in 2h on v3, one per
+          // block) would otherwise flood the journal.
+          if (i === 0) {
+            log.info("verifyBlockChain: pre-schedule era — proposer membership check skipped for this window", {
+              number: String(block.number),
+              windowSize: blocks.length,
+            })
+          }
         } else {
           const matched = era !== undefined
             ? era.has(proposerLc)
