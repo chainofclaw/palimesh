@@ -35,8 +35,32 @@ import {
 } from "./lib/bft-equivocation.ts";
 import { EquivocationDetectorClient } from "./lib/equivocation-detector-client.ts";
 import { PoSeSlashTotalScanner } from "./lib/pose-slash-total-scanner.ts";
+import { isTransientNetError } from "./lib/transient-net-error.ts";
 
 const log = createLogger("coc-relayer");
+
+// Process-level crash guard (2026-09-06): node's http client can emit a late
+// socket 'error' (ECONNRESET after ethers' own timeout already settled the
+// request promise) with no listener attached — unreachable by any try/catch
+// in tick code, and it killed the relayer mid network-flap. Swallow ONLY
+// known-transient network errors; anything else still exits (systemd
+// restarts the service), so real bugs are never masked.
+process.on("uncaughtException", (error) => {
+  if (isTransientNetError(error)) {
+    log.warn("transient network error escaped to process level; ignored", { error: String(error) });
+    return;
+  }
+  log.error("uncaught exception; exiting", { error: String(error) });
+  process.exit(1);
+});
+process.on("unhandledRejection", (reason) => {
+  if (isTransientNetError(reason)) {
+    log.warn("transient network rejection escaped to process level; ignored", { error: String(reason) });
+    return;
+  }
+  log.error("unhandled rejection; exiting", { error: String(reason) });
+  process.exit(1);
+});
 
 const config = await loadConfig();
 const intervalMs = Number(process.env.COC_RELAYER_INTERVAL_MS || config.relayerIntervalMs || 60000);
