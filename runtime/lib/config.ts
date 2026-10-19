@@ -87,6 +87,17 @@ export interface PaliRuntimeConfig {
    * path and logs a warning. Not required when the FF is off.
    */
   cidRegistryAddress?: string;
+  // Phase 3 ($MESH storage settlement) — all optional; unset = path disabled,
+  // so the live U/R $PALI pipeline is unaffected when $MESH is not deployed.
+  /** Per-epoch $MESH released to storage rewards (mirrors
+   *  StorageRewardManager.emissionPerEpoch). 0/unset disables the storage
+   *  manifest path entirely (no $MESH settlement). */
+  meshEmissionPerEpochWei?: string;
+  /** Directory for storage-only reward manifests (storage-reward-epoch-N.json).
+   *  Falls back to rewardManifestDir when unset. */
+  storageManifestDir?: string;
+  /** Deployed StorageRewardManager address; relayer submits storage epochs to it. */
+  storageRewardManagerAddress?: string;
 }
 
 export function resolveDataDir(): string {

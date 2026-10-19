@@ -24,6 +24,7 @@ module.exports = {
         PALI_FAUCET_ADDRESS: '0x47f9940cCf9777C0407F094A1B0d8c50b0DD01BF',
         PALI_FAUCET_MIN_BALANCE: '100',
         PALI_WEBSITE_URL: 'https://palimesh.io',
+        PALI_PALIUM_URL: 'https://palium.io',
         PALI_EXPLORER_URL: 'https://explorer.palimesh.io',
         PALI_IPFS_URL: 'https://ipfs.palimesh.io',
         PALI_BLOCK_FRESHNESS_SEC: '60',

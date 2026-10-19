@@ -138,3 +138,23 @@ export const REWARD_MANIFEST_TYPES = {
     { name: "scoringInputsHash", type: "bytes32" },
   ],
 } as const
+
+/**
+ * Phase 3 ($MESH): storage-only reward manifest typehash. Same fields as
+ * RewardManifest but a distinct struct name → distinct typehash, so a storage
+ * manifest signature can never be replayed onto the $PALI RewardManifest path
+ * (or vice versa). Signed and verified off-chain under the SAME v2 domain as
+ * RewardManifest (verifyingContract = PoSeManagerV2); cross-path isolation comes
+ * purely from the distinct struct name, not the domain. submitStorageEpoch takes
+ * no signature and does no on-chain EIP-712 check, so the verifyingContract
+ * choice is inert on-chain today — if StorageRewardManager ever adds on-chain
+ * verification, switch the signing domain to its own address first.
+ */
+export const STORAGE_REWARD_MANIFEST_TYPES = {
+  StorageRewardManifest: [
+    { name: "epochId", type: "uint64" },
+    { name: "rewardRoot", type: "bytes32" },
+    { name: "totalReward", type: "uint256" },
+    { name: "scoringInputsHash", type: "bytes32" },
+  ],
+} as const

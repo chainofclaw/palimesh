@@ -611,6 +611,31 @@ export class PersistentChainEngine {
     return set[idx]
   }
 
+  /**
+   * Update the validator set used for PROPOSER ROTATION. The BFT *quorum* set is
+   * updated separately (BftCoordinator.updateValidators via
+   * consensus.onValidatorSetChange); this keeps proposer rotation in lockstep so
+   * a demoted node is never scheduled to propose a block it cannot get quorum
+   * for — the deadlock the core-set feature would otherwise hit. `ids` is the
+   * ranked core set (identical order on every node ⇒ deterministic round-robin).
+   * Setting the full list each call makes both demotion and promotion follow.
+   */
+  updateProposerSet(ids: string[]): void {
+    this.cfg.validators = [...ids]
+    // If governance drives proposer selection, keep it consistent too: deactivate
+    // any active validator not in the new core set. (Promotion on the governance
+    // path would additionally need reactivation — not required for the static
+    // round-robin path which is fully covered by the cfg.validators update above.)
+    if (this.governance) {
+      const keep = new Set(ids.map((i) => i.toLowerCase()))
+      for (const v of this.governance.getActiveValidators()) {
+        if (!keep.has(v.id.toLowerCase())) {
+          this.governance.deactivateValidator(v.id)
+        }
+      }
+    }
+  }
+
   async addRawTx(rawTx: Hex): Promise<MempoolTx> {
     // #438: pre-check stale nonce BEFORE mempool insertion. The in-memory
     // ChainEngine (chain-engine.ts:181-186) has this guard, but the

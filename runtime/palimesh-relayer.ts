@@ -10,6 +10,10 @@ import {
   type ChallengerRewardEntry,
   type ChallengerRewardSettlementEntry,
 } from "./lib/reward-manifest.ts";
+import {
+  readStorageRewardManifest,
+  verifyStorageManifestSignature,
+} from "./lib/storage-reward-manifest.ts";
 import type { SlashEvidence } from "../services/verifier/anti-cheat-policy.ts";
 import { createLogger } from "../node/src/logger.ts";
 import { buildDomain } from "../node/src/crypto/eip712-types.ts";
@@ -152,6 +156,25 @@ const rewardManifestSigner = process.env.PALI_REWARD_MANIFEST_SIGNER
 if (rewardManifestSigner) {
   log.info("reward manifest signer pinned via config", { signer: rewardManifestSigner });
 }
+
+// Phase 3 ($MESH): storage reward settlement. Reuses the same signer (must be
+// authorized as a relayer on StorageRewardManager) and the v2 domain for
+// manifest verification. Unset address disables the path entirely.
+const storageRewardAbi = [
+  "function submitStorageEpoch(uint64 epochId, bytes32 rewardRoot, uint256 totalReward)",
+  "function epochSubmitted(uint64 epochId) view returns (bool)",
+  "function emissionPerEpoch() view returns (uint256)",
+  "function currentEpoch() view returns (uint64)",
+];
+const storageRewardManagerAddress = process.env.PALI_STORAGE_REWARD_MANAGER || config.storageRewardManagerAddress;
+const storageRewardManager = storageRewardManagerAddress && signer
+  ? new Contract(storageRewardManagerAddress, storageRewardAbi, signer)
+  : null;
+const storageManifestDir = config.storageManifestDir ?? rewardManifestDir;
+let lastStorageFinalizeEpoch = 0;
+if (storageRewardManager) {
+  log.info("storage reward settlement enabled", { address: storageRewardManagerAddress, manifestDir: storageManifestDir });
+}
 const pendingChallengesPath = process.env.PALI_PENDING_CHALLENGES_PATH
   || config.pendingChallengesPath
   || join(config.dataDir, "pending-challenges-v2.json");
@@ -196,6 +219,7 @@ async function tick(): Promise<void> {
     if (useV2) {
       await tryInitEpochNonce();
       await tryFinalizeV2();
+      await tryFinalizeStorageEpoch();
       await tryPollBftEquivocations();
       await tryDispute();
       await tryDisputeV2();
@@ -210,6 +234,59 @@ async function tick(): Promise<void> {
   } finally {
     tickInProgress = false;
     tickStartedAtMs = 0;
+  }
+}
+
+/**
+ * Phase 3 ($MESH): submit the epoch's storage-only reward root to
+ * StorageRewardManager. Fully parallel to tryFinalizeV2 — separate cursor,
+ * separate contract, separate manifest dir — so the live U/R $PALI settlement
+ * (finalizeEpochV2) is untouched. Idempotent via on-chain epochSubmitted().
+ */
+async function tryFinalizeStorageEpoch(): Promise<void> {
+  if (!storageRewardManager || !v2Domain) {
+    return;
+  }
+  const candidate = resolveFinalizationCandidate(lastStorageFinalizeEpoch);
+  if (candidate === null) return; // nothing due within the dispute window yet
+  try {
+    if (await storageRewardManager.epochSubmitted(BigInt(candidate))) {
+      lastStorageFinalizeEpoch = candidate;
+      return;
+    }
+    const manifest = readStorageRewardManifest(storageManifestDir, candidate);
+    if (!manifest) {
+      return; // agent has not produced this epoch's storage manifest yet
+    }
+    const totalReward = BigInt(manifest.totalReward);
+    if (totalReward === 0n) {
+      lastStorageFinalizeEpoch = candidate; // empty epoch — nothing to submit
+      return;
+    }
+    const verified = verifyStorageManifestSignature(manifest, v2Domain, { expectedSigner: rewardManifestSigner });
+    if (!verified.valid) {
+      log.error("storage manifest signature invalid; refusing to submit", {
+        epochId: candidate,
+        error: verified.error,
+        recovered: verified.recoveredAddress,
+      });
+      return;
+    }
+    const tx = await retryAsync(
+      () => storageRewardManager.submitStorageEpoch(BigInt(candidate), manifest.rewardRoot, totalReward),
+      txRetryOptions,
+    );
+    const receipt = await retryAsync(() => tx.wait(), txRetryOptions);
+    log.info("storage epoch submitted", {
+      epochId: candidate,
+      txHash: tx.hash,
+      status: receipt?.status,
+      rewardRoot: manifest.rewardRoot,
+      totalReward: totalReward.toString(),
+    });
+    lastStorageFinalizeEpoch = candidate;
+  } catch (error) {
+    log.error("storage epoch submit failed", { epochId: candidate, error: String(error) });
   }
 }
 

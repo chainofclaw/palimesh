@@ -17,7 +17,8 @@
 //   PALI_FAUCET_URL           default https://faucet.palimesh.io
 //   PALI_FAUCET_ADDRESS       default 0x47f9940cCf9777C0407F094A1B0d8c50b0DD01BF
 //   PALI_FAUCET_MIN_BALANCE   default 100 (Palimesh)
-//   PALI_WEBSITE_URL          default https://palimesh.io
+//   PALI_WEBSITE_URL          default https://palimesh.io (存储站)
+//   PALI_PALIUM_URL           default https://palium.io (公链站)
 //   PALI_EXPLORER_URL         default https://explorer.palimesh.io
 //   PALI_IPFS_URL             default https://ipfs.palimesh.io
 //   PALI_BLOCK_FRESHNESS_SEC  default 60
@@ -36,6 +37,7 @@ const cfg = {
   faucetAddr: process.env.PALI_FAUCET_ADDRESS || '0x47f9940cCf9777C0407F094A1B0d8c50b0DD01BF',
   faucetMinBalance: Number(process.env.PALI_FAUCET_MIN_BALANCE || '100'),
   websiteUrl: process.env.PALI_WEBSITE_URL || 'https://palimesh.io',
+  paliumUrl: process.env.PALI_PALIUM_URL || 'https://palium.io',
   explorerUrl: process.env.PALI_EXPLORER_URL || 'https://explorer.palimesh.io',
   ipfsUrl: process.env.PALI_IPFS_URL || 'https://ipfs.palimesh.io',
   blockFreshnessSec: Number(process.env.PALI_BLOCK_FRESHNESS_SEC || '60'),
@@ -214,8 +216,21 @@ const checks = [
       const res = await fetchWithTimeout(cfg.websiteUrl + '/zh')
       if (!res.ok) throw new Error(`website /zh HTTP ${res.status}`)
       const body = await res.text()
-      if (!/Palimesh|Palimesh|公链/.test(body)) throw new Error('website body missing Palimesh branding')
+      if (!/PaliMesh/.test(body)) throw new Error('website body missing PaliMesh branding')
+      if (/PaliMesh Canary|Palium · Public chain/.test(body)) throw new Error('palimesh.io leaks palium variant content')
       return `200 ${body.length}B`
+    },
+  },
+  {
+    name: 'website.palium.root',
+    critical: false,
+    run: async () => {
+      const res = await fetchWithTimeout(cfg.paliumUrl + '/zh')
+      if (!res.ok) throw new Error(`palium.io /zh HTTP ${res.status}`)
+      const body = await res.text()
+      if (!/Palium/.test(body)) throw new Error('palium.io body missing Palium branding')
+      if (/erasure-coded storage mesh|纠删码存储 mesh|\/brand\/logo-seal-simple\.svg/.test(body)) throw new Error('palium.io leaks palimesh variant content')
+      return 'ok'
     },
   },
   {

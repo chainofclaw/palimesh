@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="48" height="48" role="img" aria-label="Palium">
+  <defs>
+    <radialGradient id="pm-wax" cx="38%" cy="32%" r="75%">
+      <stop offset="0" stop-color="#7c5cff"/><stop offset="0.6" stop-color="#5b3fc4"/><stop offset="1" stop-color="#3d2a99"/>
+    </radialGradient>
+  </defs>
+  <circle cx="24" cy="24" r="21" fill="url(#pm-wax)" stroke="#2a1f66" stroke-width="1.5"/>
+  <circle cx="24" cy="24" r="17" fill="none" stroke="#e8c874" stroke-width="1.2" opacity="0.85"/>
+  <text x="23" y="33" text-anchor="middle" font-family="Georgia, 'Times New Roman', serif" font-weight="bold" font-size="26" fill="#f3ead6">P</text>
+  <circle cx="36.5" cy="17" r="2.6" fill="#f0a83c" stroke="#2a1f66" stroke-width="1"/>
+  <circle cx="36.5" cy="31" r="2.6" fill="#f0a83c" stroke="#2a1f66" stroke-width="1"/>
+  <path d="M36.5 19.5 V28.5" stroke="#e8c874" stroke-width="1.3"/>
+</svg>

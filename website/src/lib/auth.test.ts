@@ -18,7 +18,7 @@ describe("signed action auth", () => {
   it("builds and parses canonical signed action messages", () => {
     const message = buildSignMessage("vote", { type: "up", id: 7, target: "post", timestamp: 10 })
 
-    assert.equal(message, 'Palimesh Forum vote\n{"id":7,"target":"post","timestamp":10,"type":"up"}')
+    assert.equal(message, 'PaliMesh Forum vote\n{"id":7,"target":"post","timestamp":10,"type":"up"}')
     assert.deepEqual(parseSignMessage(message), {
       action: "vote",
       data: { id: 7, target: "post", timestamp: 10, type: "up" },

@@ -101,7 +101,7 @@ export function CreateProposalForm() {
       <button
         type="submit"
         disabled={loading}
-        className="px-6 py-3 rounded-lg bg-gradient-cyber text-white font-display font-semibold hover:shadow-glow-md transition-all disabled:opacity-50"
+        className="px-6 py-3 rounded-lg bg-text-primary text-bg-primary font-medium transition-all disabled:opacity-50"
       >
         {loading ? t('submitting') : t('createProposal')}
       </button>

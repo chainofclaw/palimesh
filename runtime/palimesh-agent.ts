@@ -14,8 +14,9 @@ import { ReceiptVerifier } from "../services/verifier/receipt-verifier.ts";
 import { NonceRegistry } from "../services/verifier/nonce-registry.ts";
 import { BatchAggregator } from "../services/aggregator/batch-aggregator.ts";
 import { BatchAggregatorV2 } from "../services/aggregator/batch-aggregator-v2.ts";
-import { computeEpochRewards } from "../services/verifier/scoring.ts";
+import { computeEpochRewards, computeStorageRewards } from "../services/verifier/scoring.ts";
 import { buildRewardRoot } from "../services/common/reward-tree.ts";
+import { writeStorageRewardManifest, storageManifestSigningPayload, type StorageRewardManifest } from "./lib/storage-reward-manifest.ts";
 import { AntiCheatPolicy, EvidenceReason, type SlashEvidence } from "../services/verifier/anti-cheat-policy.ts";
 import { keccak256Hex } from "../services/relayer/keccak256.ts";
 import { ChallengeType } from "../services/common/pose-types.ts";
@@ -31,7 +32,7 @@ import { verifiedStorageBytesFor } from "./lib/pose-score.ts";
 import { auditStorageReceipt, type StorageAuditDeps } from "../services/verifier/storage-audit.ts";
 import { createLogger } from "../node/src/logger.ts";
 import { createNodeSigner, createNodeSignerV2, buildReceiptSignMessage } from "../node/src/crypto/signer.ts";
-import { buildDomain, CHALLENGE_TYPES, RECEIPT_TYPES, REWARD_MANIFEST_TYPES } from "../node/src/crypto/eip712-types.ts";
+import { buildDomain, CHALLENGE_TYPES, RECEIPT_TYPES, REWARD_MANIFEST_TYPES, STORAGE_REWARD_MANIFEST_TYPES } from "../node/src/crypto/eip712-types.ts";
 import { buildSignedPosePayload } from "../node/src/pose-http.ts";
 import {
   collectBatchWitnessSignatures,
@@ -65,6 +66,10 @@ const batchSize = normalizeInt(process.env.PALI_AGENT_BATCH_SIZE || config.agent
 const sampleSize = normalizeInt(process.env.PALI_AGENT_SAMPLE_SIZE || config.agentSampleSize, 2);
 const storageDir = resolveStorageDir(config.dataDir, config.storageDir);
 const rewardManifestDir = config.rewardManifestDir ?? join(config.dataDir, "reward-manifests");
+// Phase 3 ($MESH): storage-only manifest path. Disabled (emission 0) leaves the
+// $PALI reward pipeline untouched.
+const storageManifestDir = config.storageManifestDir ?? rewardManifestDir;
+const meshEmissionPerEpochWei = process.env.PALI_MESH_EMISSION_PER_EPOCH_WEI ?? config.meshEmissionPerEpochWei ?? "0";
 const nonceRegistryPath = process.env.PALI_NONCE_REGISTRY_PATH || config.nonceRegistryPath || join(config.dataDir, "nonce-registry.log");
 const nonceRegistryTtlMs = normalizeInt(
   process.env.PALI_NONCE_REGISTRY_TTL_MS || config.nonceRegistryTtlMs,
@@ -933,6 +938,7 @@ async function tick(): Promise<void> {
           }
         }
         emitEpochScores(currentEpoch);
+        await persistStorageRewardManifestForEpoch(currentEpoch);
         nodeScores.clear();
         currentEpoch = nowEpoch;
         await refreshRewardTargets(currentEpoch);
@@ -998,6 +1004,7 @@ async function tick(): Promise<void> {
         }
         emitEpochScores(currentEpoch);
         await persistRewardManifestForEpoch(currentEpoch);
+        await persistStorageRewardManifestForEpoch(currentEpoch);
         nodeScores.clear();
         currentEpoch = nowEpoch;
         await refreshRewardTargets(currentEpoch);
@@ -1904,6 +1911,73 @@ async function persistRewardManifestForEpoch(epochId: number): Promise<RewardMan
     log.error("reward manifest write failed (non-fatal)", { epochId, error: String(manifestError) });
   }
   return manifest;
+}
+
+/**
+ * Phase 3 ($MESH): build a storage-only reward manifest for the epoch — the
+ * storage bucket of the scoring pipeline settled in $MESH via StorageRewardManager.
+ * Returns null when the $MESH path is disabled (emission 0) or no node earned a
+ * storage reward (empty epoch skipped). Reuses the same reward-tree leaf encoding
+ * as the $PALI RewardManifest so on-chain claim verification is identical.
+ */
+function buildStorageRewardManifestForEpoch(epochId: number): StorageRewardManifest | null {
+  const storagePool = BigInt(meshEmissionPerEpochWei);
+  if (storagePool === 0n) return null;
+  const stats = collectEpochStats(rewardTargets.nodeIds);
+  const scoringResult = computeStorageRewards(storagePool, stats);
+  // totalReward is the sum of leaf amounts, which may be < storagePool when the
+  // anti-hoarding soft cap trims a node (the trimmed remainder is simply not
+  // minted — deflationary). submitStorageEpoch records exactly this total, and
+  // the contract mints per-leaf on claim, so there is no unallocated gap.
+  const totalReward = Object.values(scoringResult.rewards).reduce((sum, amount) => sum + amount, 0n);
+  if (totalReward === 0n) return null;
+  const rewardResult = buildRewardRoot(BigInt(epochId), scoringResult);
+  return {
+    epochId,
+    rewardRoot: rewardResult.root,
+    totalReward: totalReward.toString(),
+    leaves: rewardResult.leaves.map((leaf) => ({ nodeId: leaf.nodeId, amount: leaf.amount.toString() })),
+    proofs: Object.fromEntries(
+      [...rewardResult.proofs.entries()].map(([key, proof]) => [key, proof as string[]]),
+    ),
+    scoringInputsHash: keccak256(toUtf8Bytes(stableStringifyForHash(stats))),
+    generatedAtMs: Date.now(),
+    sourceNodeCount: rewardTargets.nodeIds.length,
+    scoredNodeCount: stats.filter((stat) => stat.storageBps > 0).length,
+  };
+}
+
+async function persistStorageRewardManifestForEpoch(epochId: number): Promise<void> {
+  let manifest: StorageRewardManifest | null;
+  try {
+    manifest = buildStorageRewardManifestForEpoch(epochId);
+  } catch (buildError) {
+    log.error("storage reward manifest build failed (non-fatal)", { epochId, error: String(buildError) });
+    return;
+  }
+  if (!manifest) return; // disabled or empty epoch — nothing to settle in $MESH
+
+  if (agentSignerV2) {
+    try {
+      const payload = storageManifestSigningPayload(manifest);
+      manifest.generatorSignature = await agentSignerV2.eip712.signTypedData(STORAGE_REWARD_MANIFEST_TYPES, payload);
+      manifest.generatorAddress = signer.address.toLowerCase();
+    } catch (sigError) {
+      log.warn("storage manifest signing failed (non-fatal)", { epochId, error: String(sigError) });
+    }
+  }
+  try {
+    writeStorageRewardManifest(storageManifestDir, manifest);
+    log.info("storage reward manifest persisted", {
+      epochId,
+      rewardRoot: manifest.rewardRoot,
+      totalReward: manifest.totalReward,
+      leaves: manifest.leaves.length,
+      signed: Boolean(manifest.generatorSignature),
+    });
+  } catch (manifestError) {
+    log.error("storage reward manifest write failed (non-fatal)", { epochId, error: String(manifestError) });
+  }
 }
 
 function emitEpochScores(epochId: number): void {

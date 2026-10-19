@@ -235,6 +235,53 @@ export interface NodeConfig {
   didAuthMode: "off" | "optional" | "required"
   // EVM engine selection: "ethereumjs" (stable default) or "revm" (experimental high-performance)
   evmEngine: "ethereumjs" | "revm"
+  /**
+   * Core-set ranking (two-tier core / non-core validator model). When enabled,
+   * a deterministic selector ranks candidate validators by composite score and
+   * promotes the top-N (with a floor) into the BFT set at epoch boundaries;
+   * non-core nodes keep participating in PoSe only. Disabled by default → the
+   * existing ValidatorRegistry/static path is untouched. See runtime/lib/core-set-*.
+   */
+  coreSet: CoreSetRuntimeConfig
+}
+
+/** Runtime settings for the core-set ranking feature (see NodeConfig.coreSet). */
+export interface CoreSetRuntimeConfig {
+  /** Master switch. When false, today's ValidatorRegistry/static path is used. */
+  enabled: boolean
+  /** Dry-run: compute + log the core set each epoch but do NOT mutate the BFT set. */
+  shadow: boolean
+  /** Hard floor on core-set size (>= 4, tied to consensus PR1A_MIN_VALIDATORS). */
+  minCore: number
+  /** Upper cap on core-set size. */
+  maxCore: number
+  /** Desired target size before clamping into [minCore, maxCore]. */
+  topN: number
+  /** Composite-score weights in basis points (stake / bond / PoSe-performance). */
+  weightStakeBps: number
+  weightBondBps: number
+  weightPerfBps: number
+  /** Epochs to lag behind the current epoch when reading finalized reward data. */
+  lagEpochs: number
+  /**
+   * PoSeManagerV2 address, read (via this node's own RPC) for per-node bond and
+   * epochRewardRoots. Optional: when unset the perf component is dropped and
+   * ranking uses stake only.
+   */
+  poseManagerV2Address?: string
+  /**
+   * Directory holding the per-epoch reward manifests (leaves) that expand the
+   * on-chain reward root. Optional: when unset (or a leaf fails Merkle
+   * verification) the perf component is dropped uniformly.
+   */
+  rewardManifestDir?: string
+  /**
+   * Phase 2 — CoreSetManager contract address. When set, the node READS the
+   * finalized core set from the contract (single on-chain authority) instead of
+   * recomputing it locally, removing cross-node recompute divergence. When unset
+   * the node uses the Phase 1 local-compute path.
+   */
+  coreSetManagerAddress?: string
 }
 
 export async function loadNodeConfig(): Promise<NodeConfig> {
@@ -583,6 +630,44 @@ export async function loadNodeConfig(): Promise<NodeConfig> {
       ? parseInt(validatorRegistryPollIntervalMsRaw, 10)
       : undefined)
 
+  // Core-set ranking (two-tier core / non-core). Env-driven, all optional with
+  // safe defaults; when enabled=false the existing validator path is untouched.
+  const coreParseInt = (raw: unknown, fallback: number): number => {
+    if (typeof raw === "number" && Number.isFinite(raw)) return Math.trunc(raw)
+    if (typeof raw === "string" && /^\d+$/.test(raw)) return parseInt(raw, 10)
+    return fallback
+  }
+  const userCoreSet = ((user as Record<string, unknown>).coreSet ?? {}) as Record<string, unknown>
+  const coreSetPoseAddrRaw = process.env.PALI_POSE_MANAGER_V2_ADDRESS ?? userCoreSet.poseManagerV2Address
+  const rewardManifestDirRaw = process.env.PALI_REWARD_MANIFEST_DIR ?? userCoreSet.rewardManifestDir
+  const coreSetManagerAddrRaw = process.env.PALI_CORE_SET_MANAGER_ADDRESS ?? userCoreSet.coreSetManagerAddress
+  const coreSet: CoreSetRuntimeConfig = {
+    enabled: parseBooleanFlag(
+      process.env.PALI_CORE_SET_ENABLED ?? userCoreSet.enabled,
+      false,
+    ),
+    shadow: parseBooleanFlag(
+      process.env.PALI_CORE_SET_SHADOW ?? userCoreSet.shadow,
+      true,
+    ),
+    minCore: coreParseInt(process.env.PALI_CORE_SET_MIN ?? userCoreSet.minCore, 4),
+    maxCore: coreParseInt(process.env.PALI_CORE_SET_MAX ?? userCoreSet.maxCore, 21),
+    topN: coreParseInt(process.env.PALI_CORE_SET_TOPN ?? userCoreSet.topN, 21),
+    weightStakeBps: coreParseInt(process.env.PALI_CORE_SET_W_STAKE ?? userCoreSet.weightStakeBps, 5000),
+    weightBondBps: coreParseInt(process.env.PALI_CORE_SET_W_BOND ?? userCoreSet.weightBondBps, 2000),
+    weightPerfBps: coreParseInt(process.env.PALI_CORE_SET_W_PERF ?? userCoreSet.weightPerfBps, 3000),
+    lagEpochs: coreParseInt(process.env.PALI_CORE_SET_LAG_EPOCHS ?? userCoreSet.lagEpochs, 3),
+    poseManagerV2Address: typeof coreSetPoseAddrRaw === "string" && /^0x[0-9a-fA-F]{40}$/.test(coreSetPoseAddrRaw)
+      ? coreSetPoseAddrRaw
+      : undefined,
+    rewardManifestDir: typeof rewardManifestDirRaw === "string" && rewardManifestDirRaw.length > 0
+      ? rewardManifestDirRaw
+      : undefined,
+    coreSetManagerAddress: typeof coreSetManagerAddrRaw === "string" && /^0x[0-9a-fA-F]{40}$/.test(coreSetManagerAddrRaw)
+      ? coreSetManagerAddrRaw
+      : undefined,
+  }
+
   // Validator address mapping for identity alignment
   const userValidatorAddresses = (user as Record<string, unknown>).validatorAddresses
   const validatorAddresses: Record<string, string> | undefined =
@@ -752,6 +837,7 @@ export async function loadNodeConfig(): Promise<NodeConfig> {
     validatorRegistryAddress,
     validatorRegistryFromBlock,
     validatorRegistryPollIntervalMs,
+    coreSet,
     didEnabled: user.didEnabled ?? false,
     didAuthMode: user.didAuthMode ?? "off",
     evmEngine: normalizeEvmEngine(process.env.PALI_EVM_ENGINE ?? (user as Record<string, unknown>).evmEngine),
