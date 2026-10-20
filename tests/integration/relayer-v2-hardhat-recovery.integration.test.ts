@@ -300,7 +300,7 @@ class CrashOnceOpenChallengeContract {
 test("relayer v2 recovery works against real Hardhat JSON-RPC + deployed PoSeManagerV2", async () => {
   const port = await getFreePort()
   const node = await startHardhatNode(port)
-  const tempDir = mkdtempSync(join(tmpdir(), "coc-hardhat-recovery-"))
+  const tempDir = mkdtempSync(join(tmpdir(), "palimesh-hardhat-recovery-"))
   const evidencePath = join(tempDir, "evidence-agent.jsonl")
   const pendingPath = join(tempDir, "pending-challenges-v2.json")
 

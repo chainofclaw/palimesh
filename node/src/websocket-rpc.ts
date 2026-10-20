@@ -145,7 +145,7 @@ export class WsRpcServer {
     // node's pending-tx / log / block notifications, exfiltrating
     // mempool data and bypassing the HTTP CORS gate (#330).
     //
-    // Allowlist sourced from COC_WS_ORIGIN env (comma-separated, exact
+    // Allowlist sourced from PALI_WS_ORIGIN env (comma-separated, exact
     // match against `Origin` header). Defaults match the HTTP CORS
     // default (`http://localhost:3000`) plus same-host loopback so the
     // local explorer + curl/wscat tests keep working out-of-the-box.
@@ -156,7 +156,7 @@ export class WsRpcServer {
     // send NO `Origin` header — these are accepted because Same-Origin
     // Policy doesn't apply to them. The CSWSH attack only works when
     // a BROWSER forges the connection, and browsers MUST set Origin.
-    const allowedOrigins = (process.env.COC_WS_ORIGIN ?? "http://localhost:3000")
+    const allowedOrigins = (process.env.PALI_WS_ORIGIN ?? "http://localhost:3000")
       .split(",")
       .map((o) => o.trim())
       .filter((o) => o.length > 0)
@@ -184,7 +184,7 @@ export class WsRpcServer {
           cb(true)
           return
         }
-        log.warn("WS upgrade rejected: origin not in COC_WS_ORIGIN allowlist", {
+        log.warn("WS upgrade rejected: origin not in PALI_WS_ORIGIN allowlist", {
           origin,
           allowed: allowedOrigins,
         })
@@ -498,8 +498,8 @@ export class WsRpcServer {
   }
 
   private static readonly WS_BLOCKED_METHODS = new Set([
-    "coc_submitProposal",
-    "coc_voteProposal",
+    "pali_submitProposal",
+    "pali_voteProposal",
     "admin_addPeer",
     "admin_removePeer",
     "admin_nodeInfo",

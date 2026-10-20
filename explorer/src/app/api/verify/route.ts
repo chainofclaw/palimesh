@@ -7,14 +7,14 @@ import { getVerifyRateLimitKey } from '@/lib/verify-rate-limit'
 export const runtime = 'nodejs'
 export const dynamic = 'force-dynamic'
 
-const MAX_BODY_BYTES = Number(process.env.COC_VERIFY_MAX_BODY_BYTES ?? 64 * 1024)
-const MAX_SOURCE_CODE_CHARS = Number(process.env.COC_VERIFY_MAX_SOURCE_CHARS ?? 100_000)
-const MAX_OPTIMIZE_RUNS = Number(process.env.COC_VERIFY_MAX_OPTIMIZE_RUNS ?? 1_000_000)
-const RATE_LIMIT_WINDOW_MS = Number(process.env.COC_VERIFY_RATE_WINDOW_MS ?? 60_000)
-const RATE_LIMIT_MAX_REQUESTS = Number(process.env.COC_VERIFY_RATE_MAX_REQUESTS ?? 5)
+const MAX_BODY_BYTES = Number(process.env.PALI_VERIFY_MAX_BODY_BYTES ?? 64 * 1024)
+const MAX_SOURCE_CODE_CHARS = Number(process.env.PALI_VERIFY_MAX_SOURCE_CHARS ?? 100_000)
+const MAX_OPTIMIZE_RUNS = Number(process.env.PALI_VERIFY_MAX_OPTIMIZE_RUNS ?? 1_000_000)
+const RATE_LIMIT_WINDOW_MS = Number(process.env.PALI_VERIFY_RATE_WINDOW_MS ?? 60_000)
+const RATE_LIMIT_MAX_REQUESTS = Number(process.env.PALI_VERIFY_RATE_MAX_REQUESTS ?? 5)
 const REQUIRE_VERIFY_API_KEY =
-  process.env.COC_VERIFY_REQUIRE_API_KEY === '1' || process.env.NODE_ENV === 'production'
-const VERIFY_API_KEY = process.env.COC_VERIFY_API_KEY
+  process.env.PALI_VERIFY_REQUIRE_API_KEY === '1' || process.env.NODE_ENV === 'production'
+const VERIFY_API_KEY = process.env.PALI_VERIFY_API_KEY
 
 type Bucket = { count: number; resetAt: number }
 const rateBuckets = new Map<string, Bucket>()

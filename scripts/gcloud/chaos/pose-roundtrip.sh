@@ -41,7 +41,7 @@ NONCE="0x$(openssl rand -hex 32)"
 ISSUED_AT=$(($(date +%s%N) / 1000000))   # ms
 DEADLINE_OFFSET=10000                     # 10 s (more permissive than node default for cross-continental RTT)
 
-# Minimal challenge body matching what runtime/coc-node.ts expects:
+# Minimal challenge body matching what runtime/palimesh-node.ts expects:
 BODY=$(cat <<EOF
 {"challengeId":"$CHALLENGE_ID","kind":"$KIND","nonce":"$NONCE","issuedAtMs":$ISSUED_AT,"deadlineMs":$DEADLINE_OFFSET${CID:+,"cid":"$CID"}}
 EOF
@@ -49,7 +49,7 @@ EOF
 
 # Step 1: issue challenge
 T0=$(date +%s%N)
-CHALLENGE_HTTP=$(curl -sS --max-time 8 -o /tmp/coc-challenge-resp.json -w '%{http_code}' \
+CHALLENGE_HTTP=$(curl -sS --max-time 8 -o /tmp/palimesh-challenge-resp.json -w '%{http_code}' \
   -X POST -H 'Content-Type: application/json' --data "$BODY" \
   "http://$IP:28780/pose/challenge" 2>/dev/null || echo "000")
 T1=$(date +%s%N)
@@ -57,7 +57,7 @@ CHALLENGE_MS=$(( (T1 - T0) / 1000000 ))
 
 # Step 2: request receipt
 T2=$(date +%s%N)
-RECEIPT_HTTP=$(curl -sS --max-time 8 -o /tmp/coc-receipt-resp.json -w '%{http_code}' \
+RECEIPT_HTTP=$(curl -sS --max-time 8 -o /tmp/palimesh-receipt-resp.json -w '%{http_code}' \
   -X POST -H 'Content-Type: application/json' \
   --data "{\"challengeId\":\"$CHALLENGE_ID\"}" \
   "http://$IP:28780/pose/receipt" 2>/dev/null || echo "000")
@@ -65,14 +65,14 @@ T3=$(date +%s%N)
 RECEIPT_MS=$(( (T3 - T2) / 1000000 ))
 
 # Parse receipt body
-RECEIPT_BODY="$(cat /tmp/coc-receipt-resp.json 2>/dev/null || echo '{}')"
+RECEIPT_BODY="$(cat /tmp/palimesh-receipt-resp.json 2>/dev/null || echo '{}')"
 HAS_SIG=$(python3 -c "
 import sys, json
 try:
-  r = json.loads(open('/tmp/coc-receipt-resp.json').read())
+  r = json.loads(open('/tmp/palimesh-receipt-resp.json').read())
   print('yes' if r.get('signature') or r.get('sig') or r.get('v2', {}).get('signature') else 'no')
 except: print('parse-error')
 " 2>/dev/null || echo "parse-error")
 
 printf '{"ip":"%s","kind":"%s","challenge_http":%s,"challenge_ms":%d,"receipt_http":%s,"receipt_ms":%d,"has_sig":"%s","receipt_size":%d}\n' \
-  "$IP" "$KIND" "$CHALLENGE_HTTP" "$CHALLENGE_MS" "$RECEIPT_HTTP" "$RECEIPT_MS" "$HAS_SIG" "$(stat -c%s /tmp/coc-receipt-resp.json 2>/dev/null || echo 0)"
+  "$IP" "$KIND" "$CHALLENGE_HTTP" "$CHALLENGE_MS" "$RECEIPT_HTTP" "$RECEIPT_MS" "$HAS_SIG" "$(stat -c%s /tmp/palimesh-receipt-resp.json 2>/dev/null || echo 0)"

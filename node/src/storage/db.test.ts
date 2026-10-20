@@ -67,7 +67,7 @@ test("MemoryDatabase: clear", async () => {
 })
 
 test("LevelDatabase: basic CRUD operations", async () => {
-  const tmpDir = mkdtempSync(join(tmpdir(), "coc-db-test-"))
+  const tmpDir = mkdtempSync(join(tmpdir(), "palimesh-db-test-"))
   const db = new LevelDatabase(tmpDir, "test")
 
   try {
@@ -96,7 +96,7 @@ test("LevelDatabase: basic CRUD operations", async () => {
 })
 
 test("LevelDatabase: batch operations", async () => {
-  const tmpDir = mkdtempSync(join(tmpdir(), "coc-db-test-"))
+  const tmpDir = mkdtempSync(join(tmpdir(), "palimesh-db-test-"))
   const db = new LevelDatabase(tmpDir, "test")
 
   try {
@@ -119,7 +119,7 @@ test("LevelDatabase: batch operations", async () => {
 })
 
 test("LevelDatabase: persistence across restarts", async () => {
-  const tmpDir = mkdtempSync(join(tmpdir(), "coc-db-test-"))
+  const tmpDir = mkdtempSync(join(tmpdir(), "palimesh-db-test-"))
 
   try {
     // First session

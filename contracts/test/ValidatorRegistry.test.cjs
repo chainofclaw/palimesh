@@ -1,7 +1,7 @@
 /**
  * ValidatorRegistry Test Suite
  *
- * Sprint 3 deliverable per /home/baominghao/.claude/plans/coc-evm-abstract-turtle.md.
+ * Sprint 3 deliverable per /home/baominghao/.claude/plans/palimesh-evm-abstract-turtle.md.
  *
  * Covers:
  *   - stake() lifecycle: success, nodeId-pubkey mismatch, low stake, double

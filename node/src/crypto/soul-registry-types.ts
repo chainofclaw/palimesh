@@ -1,4 +1,4 @@
-// EIP-712 typed data definitions for COC SoulRegistry contract.
+// EIP-712 typed data definitions for Palimesh SoulRegistry contract.
 // Each type mirrors a Solidity struct for hashStruct consistency.
 
 import type { Eip712Domain } from "./eip712-types.ts"

@@ -15,7 +15,7 @@ import { Wallet, parseEther, Transaction } from "ethers"
 import { createNodeSigner } from "./crypto/signer.ts"
 
 test("PersistentChainEngine: init and close", async () => {
-  const tmpDir = mkdtempSync(join(tmpdir(), "coc-engine-test-"))
+  const tmpDir = mkdtempSync(join(tmpdir(), "palimesh-engine-test-"))
 
   try {
     const evm = await EvmChain.create(2077)
@@ -44,7 +44,7 @@ test("PersistentChainEngine: init and close", async () => {
 })
 
 test("PersistentChainEngine: propose and apply block", async () => {
-  const tmpDir = mkdtempSync(join(tmpdir(), "coc-engine-test-"))
+  const tmpDir = mkdtempSync(join(tmpdir(), "palimesh-engine-test-"))
 
   try {
     const evm = await EvmChain.create(2077)
@@ -107,7 +107,7 @@ test("PersistentChainEngine: propose and apply block", async () => {
 })
 
 test("PersistentChainEngine: persistence across restarts", async () => {
-  const tmpDir = mkdtempSync(join(tmpdir(), "coc-engine-test-"))
+  const tmpDir = mkdtempSync(join(tmpdir(), "palimesh-engine-test-"))
   const wallet = Wallet.createRandom()
 
   const prefundAccounts = [
@@ -203,7 +203,7 @@ test("PersistentChainEngine: persistence across restarts", async () => {
 })
 
 test("PersistentChainEngine: transaction deduplication", async () => {
-  const tmpDir = mkdtempSync(join(tmpdir(), "coc-engine-test-"))
+  const tmpDir = mkdtempSync(join(tmpdir(), "palimesh-engine-test-"))
 
   try {
     const evm = await EvmChain.create(2077)
@@ -269,7 +269,7 @@ test("#438: PersistentChainEngine.addRawTx rejects stale-nonce txs (parity with 
   // The persistent variant (used in production) was missing the same guard,
   // creating both a DoS surface (mempool pollution) and a UX problem
   // (clients think the tx was accepted).
-  const tmpDir = mkdtempSync(join(tmpdir(), "coc-engine-test-"))
+  const tmpDir = mkdtempSync(join(tmpdir(), "palimesh-engine-test-"))
 
   try {
     const evm = await EvmChain.create(2077)
@@ -355,7 +355,7 @@ test("#444: addRawTx rejects insufficient-funds tx at submission (parity with ge
   // submission. Clients see a success hash for a tx that will never
   // execute, and the mempool fills with permanently-unfundable txs (a
   // DoS surface using throwaway wallets).
-  const tmpDir = mkdtempSync(join(tmpdir(), "coc-engine-test-"))
+  const tmpDir = mkdtempSync(join(tmpdir(), "palimesh-engine-test-"))
   try {
     const evm = await EvmChain.create(2077)
     // Wallet is intentionally NOT prefunded.
@@ -407,7 +407,7 @@ test("#444: addRawTx rejects insufficient-funds tx at submission (parity with ge
 })
 
 test("PersistentChainEngine: get transaction by hash", async () => {
-  const tmpDir = mkdtempSync(join(tmpdir(), "coc-engine-test-"))
+  const tmpDir = mkdtempSync(join(tmpdir(), "palimesh-engine-test-"))
 
   try {
     const evm = await EvmChain.create(2077)
@@ -466,7 +466,7 @@ test("PersistentChainEngine: get transaction by hash", async () => {
 })
 
 test("PersistentChainEngine: rejects block with timestamp before parent", async () => {
-  const tmpDir = mkdtempSync(join(tmpdir(), "coc-engine-test-"))
+  const tmpDir = mkdtempSync(join(tmpdir(), "palimesh-engine-test-"))
 
   try {
     const evm = await EvmChain.create(2077)
@@ -513,7 +513,7 @@ test("PersistentChainEngine: rejects block with timestamp before parent", async 
 })
 
 test("PersistentChainEngine: rejects block with future timestamp", async () => {
-  const tmpDir = mkdtempSync(join(tmpdir(), "coc-engine-test-"))
+  const tmpDir = mkdtempSync(join(tmpdir(), "palimesh-engine-test-"))
 
   try {
     const evm = await EvmChain.create(2077)
@@ -559,7 +559,7 @@ test("PersistentChainEngine: rejects block with future timestamp", async () => {
 })
 
 test("PersistentChainEngine: rejects block with forged cumulativeWeight", async () => {
-  const tmpDir = mkdtempSync(join(tmpdir(), "coc-engine-test-"))
+  const tmpDir = mkdtempSync(join(tmpdir(), "palimesh-engine-test-"))
 
   try {
     const evm = await EvmChain.create(2077)
@@ -606,7 +606,7 @@ test("PersistentChainEngine: rejects block with forged cumulativeWeight", async 
 })
 
 test("PersistentChainEngine: importSnapSyncBlocks rejects non-monotonic cumulativeWeight", async () => {
-  const tmpDir = mkdtempSync(join(tmpdir(), "coc-engine-test-"))
+  const tmpDir = mkdtempSync(join(tmpdir(), "palimesh-engine-test-"))
 
   try {
     const evm = await EvmChain.create(2077)
@@ -655,7 +655,7 @@ test("PersistentChainEngine: importSnapSyncBlocks adopts a stake-weighted window
   // infinite retry). This is the 2026-08-05 88780 deadlock. Post-fix, snap-sync
   // only requires monotonic weight + per-block hash integrity, so the real
   // stake-weighted window imports.
-  const tmpDir = mkdtempSync(join(tmpdir(), "coc-engine-test-"))
+  const tmpDir = mkdtempSync(join(tmpdir(), "palimesh-engine-test-"))
   try {
     const evm = await EvmChain.create(2077)
     const engine = new PersistentChainEngine(
@@ -687,7 +687,7 @@ test("PersistentChainEngine: importSnapSyncBlocks adopts a stake-weighted window
 })
 
 test("PersistentChainEngine: ignores untrusted bftFinalized flag from remote block", async () => {
-  const tmpDir = mkdtempSync(join(tmpdir(), "coc-engine-test-"))
+  const tmpDir = mkdtempSync(join(tmpdir(), "palimesh-engine-test-"))
 
   try {
     const evm = await EvmChain.create(2077)
@@ -732,7 +732,7 @@ test("PersistentChainEngine: ignores untrusted bftFinalized flag from remote blo
 })
 
 test("PersistentChainEngine: promotes existing block to bftFinalized on trusted local update", async () => {
-  const tmpDir = mkdtempSync(join(tmpdir(), "coc-engine-test-"))
+  const tmpDir = mkdtempSync(join(tmpdir(), "palimesh-engine-test-"))
 
   try {
     const evm = await EvmChain.create(2077)
@@ -765,7 +765,7 @@ test("PersistentChainEngine: promotes existing block to bftFinalized on trusted 
 })
 
 test("PersistentChainEngine: importSnapSyncBlocks recomputes finality and clears bftFinalized", async () => {
-  const tmpDir = mkdtempSync(join(tmpdir(), "coc-engine-test-"))
+  const tmpDir = mkdtempSync(join(tmpdir(), "palimesh-engine-test-"))
 
   try {
     const evm = await EvmChain.create(2077)
@@ -830,8 +830,8 @@ test("PersistentChainEngine: importSnapSyncBlocks trims overlapping ranges (Phas
   // (where the chain-snapshot RPC always returns ~last 100 blocks
   // overlapping a healthy local chain). Post-H14 we trim to blocks
   // strictly above currentHeight and import the remainder.
-  const tmpDirA = mkdtempSync(join(tmpdir(), "coc-engine-test-"))
-  const tmpDirB = mkdtempSync(join(tmpdir(), "coc-engine-test-"))
+  const tmpDirA = mkdtempSync(join(tmpdir(), "palimesh-engine-test-"))
+  const tmpDirB = mkdtempSync(join(tmpdir(), "palimesh-engine-test-"))
 
   try {
     const evmA = await EvmChain.create(2077)
@@ -911,7 +911,7 @@ test("PersistentChainEngine: importSnapSyncBlocks trims overlapping ranges (Phas
 })
 
 // --- Phase B contract: speculativelyComputeStateRoot behavior.
-// See plans/coc-phase-b-stateroot-vote.md §B2.3-6.
+// See plans/palimesh-phase-b-stateroot-vote.md §B2.3-6.
 // These tests lock in the "spec root matches apply", "zero side effects",
 // "throws → undefined", and "concurrent-safe" invariants that the BFT
 // (blockHash, stateRoot) pair quorum relies on.
@@ -935,7 +935,7 @@ const SPEC_CHAIN_ID = 18780
 const SPEC_PK = "0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80"
 
 async function buildSpecCtx(): Promise<SpecTestCtx> {
-  const tmpDir = mkdtempSync(join(tmpdir(), "coc-spec-"))
+  const tmpDir = mkdtempSync(join(tmpdir(), "palimesh-spec-"))
   const db = new LevelDatabase(join(tmpDir, "state"))
   await db.open()
   const trie = new PersistentStateTrie(db)
@@ -1158,7 +1158,7 @@ test("Phase I1: block reward credits proposer balance after each block", async (
   // per block, the proposer's balance must equal N * reward after N blocks
   // (genesis excluded — height 0 mints nothing). Halving doesn't trigger on
   // these test heights because halvingInterval is set astronomically high.
-  const tmpDir = mkdtempSync(join(tmpdir(), "coc-i1-"))
+  const tmpDir = mkdtempSync(join(tmpdir(), "palimesh-i1-"))
   const db = new LevelDatabase(join(tmpDir, "state"))
   await db.open()
   const trie = new PersistentStateTrie(db)
@@ -1214,7 +1214,7 @@ test("Phase I1: block reward credits proposer balance after each block", async (
 test("Phase I1: block reward disabled by default leaves proposer balance unchanged", async () => {
   // Regression: enableBlockReward defaults to false; flipping to true is the
   // only path to mint. Confirms a missing-or-undefined flag is a hard no-op.
-  const tmpDir = mkdtempSync(join(tmpdir(), "coc-i1off-"))
+  const tmpDir = mkdtempSync(join(tmpdir(), "palimesh-i1off-"))
   const db = new LevelDatabase(join(tmpDir, "state"))
   await db.open()
   const trie = new PersistentStateTrie(db)
@@ -1258,7 +1258,7 @@ test("Phase I1: speculative compute matches post-apply root with rewards enabled
   // compute path must mirror the apply path's reward credit. Otherwise the
   // BFT (hash, stateRoot) joint quorum would always fail because proposer's
   // declared root (with reward credit) != non-proposer's spec root (without).
-  const tmpDir = mkdtempSync(join(tmpdir(), "coc-i1-spec-"))
+  const tmpDir = mkdtempSync(join(tmpdir(), "palimesh-i1-spec-"))
   const db = new LevelDatabase(join(tmpDir, "state"))
   await db.open()
   const trie = new PersistentStateTrie(db)
@@ -1313,7 +1313,7 @@ test("Phase I2: tx priority fee credits proposer, base fee implicitly burned", a
   // credit `gasUsed * priorityFee` to the block proposer. Sender pays full
   // `gasUsed * effectivePrice + value`. Base fee component disappears from
   // supply (sender lost it; coinbase only got priority).
-  const tmpDir = mkdtempSync(join(tmpdir(), "coc-i2-"))
+  const tmpDir = mkdtempSync(join(tmpdir(), "palimesh-i2-"))
   const db = new LevelDatabase(join(tmpDir, "state"))
   await db.open()
   const trie = new PersistentStateTrie(db)
@@ -1420,7 +1420,7 @@ test("Phase I2: tx priority fee credits proposer, base fee implicitly burned", a
 test("Phase I2: zero-priority tx still burns base fee and credits zero priority", async () => {
   // Edge case: maxPriorityFeePerGas = 0 means proposer gets nothing, all the
   // gas cost is base fee burn. Sender still pays full baseFee*gasUsed.
-  const tmpDir = mkdtempSync(join(tmpdir(), "coc-i2-zero-"))
+  const tmpDir = mkdtempSync(join(tmpdir(), "palimesh-i2-zero-"))
   const db = new LevelDatabase(join(tmpDir, "state"))
   await db.open()
   const trie = new PersistentStateTrie(db)
@@ -1476,7 +1476,7 @@ test("Phase I2: zero-priority tx still burns base fee and credits zero priority"
 test("Phase I2: I1 block reward + I2 priority fee both credit proposer in same block", async () => {
   // Combined acceptance: with both flags on, proposer receives reward +
   // priority fee in one block. Validates the two paths don't interfere.
-  const tmpDir = mkdtempSync(join(tmpdir(), "coc-i12-"))
+  const tmpDir = mkdtempSync(join(tmpdir(), "palimesh-i12-"))
   const db = new LevelDatabase(join(tmpDir, "state"))
   await db.open()
   const trie = new PersistentStateTrie(db)
@@ -1552,7 +1552,7 @@ test("Phase H10: applyBlock throws stateRoot mismatch when block.stateRoot != co
   // skipped and a divergent local stateRoot was committed silently.
   // After H10 the equality check fires whenever both block.stateRoot and
   // computed stateRoot are present.
-  const tmpDir = mkdtempSync(join(tmpdir(), "coc-h10-"))
+  const tmpDir = mkdtempSync(join(tmpdir(), "palimesh-h10-"))
   const db = new LevelDatabase(join(tmpDir, "state"))
   await db.open()
   const trie = new PersistentStateTrie(db)
@@ -1595,7 +1595,7 @@ test("Phase H10: applyBlock throws stateRoot mismatch when block.stateRoot != co
     // Need a fresh engine since the original engine already applied block1.
     // Use a new tmpdir/trie pair so the apply path runs cleanly against the
     // tampered claim.
-    const tmpDir2 = mkdtempSync(join(tmpdir(), "coc-h10b-"))
+    const tmpDir2 = mkdtempSync(join(tmpdir(), "palimesh-h10b-"))
     const db2 = new LevelDatabase(join(tmpDir2, "state"))
     await db2.open()
     const trie2 = new PersistentStateTrie(db2)
@@ -1638,7 +1638,7 @@ test("Phase H10: applyBlock throws stateRoot mismatch when block.stateRoot != co
 test("Phase I2: feeDistribution disabled — proposer balance unchanged, priority fee accumulates at 0x0", async () => {
   // Regression: enableFeeDistribution defaults to false so legacy networks
   // see the pre-I2 behaviour (coinbase=0x0, priority fee credited to 0x0).
-  const tmpDir = mkdtempSync(join(tmpdir(), "coc-i2off-"))
+  const tmpDir = mkdtempSync(join(tmpdir(), "palimesh-i2off-"))
   const db = new LevelDatabase(join(tmpDir, "state"))
   await db.open()
   const trie = new PersistentStateTrie(db)
@@ -1707,7 +1707,7 @@ async function buildPhaseX2Engine(opts: {
   validators: string[]
   prefund?: { address: string; balanceWei: string }[]
 }): Promise<{ engine: PersistentChainEngine; wallet: Wallet; tmpDir: string; close: () => Promise<void> }> {
-  const tmpDir = mkdtempSync(join(tmpdir(), "coc-x2-"))
+  const tmpDir = mkdtempSync(join(tmpdir(), "palimesh-x2-"))
   const db = new LevelDatabase(join(tmpDir, "state"))
   await db.open()
   const trie = new PersistentStateTrie(db)
@@ -1745,7 +1745,7 @@ async function buildPhaseX2Engine(opts: {
 }
 
 test("Phase X2 (#84): non-proposer applyBlock(., true) does NOT re-sign stateRootSig as itself", async () => {
-  // Repro for chainofclaw/COC#84: BFT onFinalized calls applyBlock(., true)
+  // Repro for palimesh/palimesh#84: BFT onFinalized calls applyBlock(., true)
   // on every validator, but only the actual block proposer should sign the
   // stateRootSig field. Pre-fix: each follower re-signs with its own key, so
   // observers fetching the block via /p2p/chain-snapshot recover an address

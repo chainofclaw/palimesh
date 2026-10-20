@@ -61,7 +61,7 @@ type WitnessRequestFn = (
  * AND `ecrecover(RECEIPT digest, nodeSig) == nodeOperator(nodeId)` before
  * signing. Backwards-compatible: if these are omitted the witness falls
  * back to the legacy rubber-stamp path (gated by the witness-side
- * `COC_POSE_WITNESS_REQUIRE_VERIFIED` env flag).
+ * `PALI_POSE_WITNESS_REQUIRE_VERIFIED` env flag).
  */
 export interface PushVerifyContext {
   responseBody: Record<string, unknown>

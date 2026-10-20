@@ -43,8 +43,8 @@ export default async function StatsPage() {
     rpcCall<string>('eth_blockNumber').catch(() => '0x0'),
     rpcCall<string>('eth_gasPrice').catch(() => '0x0'),
     rpcCall<{ pending: string; queued: string }>('txpool_status').catch(() => ({ pending: '0x0', queued: '0x0' })),
-    rpcCall<PrunerStats>('coc_prunerStats').catch(() => null),
-    rpcCall<ChainStats>('coc_chainStats').catch(() => null),
+    rpcCall<PrunerStats>('pali_prunerStats').catch(() => null),
+    rpcCall<ChainStats>('pali_chainStats').catch(() => null),
   ])
 
   const height = parseInt(blockHeight, 16)

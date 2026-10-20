@@ -22,7 +22,7 @@ import { existsSync } from "node:fs"
 
 const RPC_PORTS = [38790, 38792, 38794, 38796, 38798] as const
 const TARGET_PORT = 38790
-const DEPLOYED_PATH = "/passinger/projects/ClawdBot/COC/tests/multinode-integration/configs-h15/deployed-pose.json"
+const DEPLOYED_PATH = "/passinger/projects/ClawdBot/Palimesh/tests/multinode-integration/configs-h15/deployed-pose.json"
 
 async function getBlockNumber(port: number): Promise<bigint> {
   try {
@@ -57,7 +57,7 @@ describe("R2.1.c — bad witness signature / garbage input resilience", { timeou
   it("baseline healthy", async () => {
     const heights = await Promise.all(RPC_PORTS.map(getBlockNumber))
     for (const h of heights) assert.ok(h > 0n)
-    assert.ok(alive("coc-h15-agent") && alive("coc-h15-relayer"))
+    assert.ok(alive("palimesh-h15-agent") && alive("palimesh-h15-relayer"))
   })
 
   it("garbage RPC + bad JSON storm; sidecars survive", async () => {
@@ -79,8 +79,8 @@ describe("R2.1.c — bad witness signature / garbage input resilience", { timeou
       }
     }
     await sleep(3_000)
-    assert.ok(alive("coc-h15-agent"), "agent crashed under garbage storm")
-    assert.ok(alive("coc-h15-relayer"), "relayer crashed under garbage storm")
+    assert.ok(alive("palimesh-h15-agent"), "agent crashed under garbage storm")
+    assert.ok(alive("palimesh-h15-relayer"), "relayer crashed under garbage storm")
     console.log(`  ✅ sidecars survived 50 garbage POST requests`)
   })
 

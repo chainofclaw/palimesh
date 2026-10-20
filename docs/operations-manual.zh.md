@@ -1,12 +1,12 @@
-# COC (ChainOfClaw) 运维操作手册
+# Palimesh (Palimesh) 运维操作手册
 
 > 从零到测试网——运维人员完整指南。
 
 > **🟡 Canary 88780 说明** — 本文档涵盖 **代码默认值**(chainId `18780`、RPC
 > 端口 `18780` 等)。**实时 canary 测试网**(chainId **88780**、公开 RPC
-> `https://rpc.chainofclaw.io`、合约地址、faucet、explorer、速率限制)的权威参考
+> `https://rpc.palimesh.io`、合约地址、faucet、explorer、速率限制)的权威参考
 > 见 [`public-endpoints-88780.zh.md`](./public-endpoints-88780.zh.md)。
-> 若是搭节点 **加入 88780**(非本地 devnet),设 `COC_CHAIN_ID=88780`,
+> 若是搭节点 **加入 88780**(非本地 devnet),设 `PALI_CHAIN_ID=88780`,
 > validator/peer 配置见 [`external-validator-onboarding.zh.md`](./external-validator-onboarding.zh.md)。
 
 ---
@@ -62,19 +62,19 @@
 
 ## 2. 仓库安装
 
-原理：COC 是一个多 workspace 系统，只有在代码树和依赖图一致时，节点、合约、运行时和浏览器之间才不会出现版本漂移。
+原理：Palimesh 是一个多 workspace 系统，只有在代码树和依赖图一致时，节点、合约、运行时和浏览器之间才不会出现版本漂移。
 模块/程序功能：本章将仓库目录映射到具体运维组件，帮助你识别哪个 workspace 负责节点执行、合约部署、运行时自动化、钱包操作和可观测性。
 
 ```bash
 git clone https://github.com/<org>/ClawdBot.git
-cd ClawdBot/COC
+cd ClawdBot/Palimesh
 npm install          # 一次性安装所有 workspace 依赖
 ```
 
 ### Workspace 结构
 
 ```
-COC/
+Palimesh/
 ├── node/            # 区块链核心引擎
 ├── contracts/       # Solidity 智能合约 (PoSeManager)
 ├── services/        # PoSe 链下服务
@@ -98,7 +98,7 @@ COC/
 ### 启动节点
 
 ```bash
-COC_DATA_DIR=/tmp/coc-single \
+PALI_DATA_DIR=/tmp/palimesh-single \
   node --experimental-strip-types node/src/index.ts
 ```
 
@@ -137,7 +137,7 @@ curl -s -X POST http://127.0.0.1:18780 \
 原理：节点行为由网络、共识、存储和安全配置共同决定；从运维角度看，这些输入应当明确、可审计、可复现。
 模块/程序功能：本章说明主节点进程的数据目录、配置文件和环境变量，帮助你理解节点实际读取了哪些运行时输入。
 
-配置文件加载自 `{COC_DATA_DIR}/node-config.json`，可通过环境变量覆盖。
+配置文件加载自 `{PALI_DATA_DIR}/node-config.json`，可通过环境变量覆盖。
 
 ### 核心参数
 
@@ -156,35 +156,35 @@ curl -s -X POST http://127.0.0.1:18780 \
 
 | 变量 | 默认值 | 说明 |
 |------|--------|------|
-| `COC_DATA_DIR` | `~/.clawdbot/coc` | 数据目录 |
-| `COC_NODE_CONFIG` | `{dataDir}/node-config.json` | 配置文件路径 |
-| `COC_NODE_KEY` | 自动生成 | 节点私钥（0x + 64 位十六进制）；`COC_NODE_PK` 仅作为旧别名兼容 |
-| `COC_RPC_BIND` | `0.0.0.0` | RPC 监听地址 |
-| `COC_RPC_PORT` | 18780 | RPC 端口 |
-| `COC_WS_BIND` | `0.0.0.0` | WebSocket 监听地址 |
-| `COC_WS_PORT` | 18781 | WebSocket 端口 |
-| `COC_P2P_BIND` | `0.0.0.0` | P2P 监听地址 |
-| `COC_P2P_PORT` | 19780 | P2P 端口 |
-| `COC_WIRE_BIND` | `0.0.0.0` | Wire 协议监听地址 |
-| `COC_WIRE_PORT` | 19781 | Wire 协议端口 |
-| `COC_IPFS_BIND` | `0.0.0.0` | IPFS 监听地址 |
-| `COC_IPFS_PORT` | 5001 | IPFS 端口 |
-| `COC_METRICS_PORT` | 9100 | Prometheus 指标端口 |
-| `COC_DEV_MODE` | `false` | 开发模式（绑定 127.0.0.1） |
-| `COC_NODE_MODE` | `full` | 节点模式：`full` / `archive` / `light` |
+| `PALI_DATA_DIR` | `~/.clawdbot/coc` | 数据目录 |
+| `PALI_NODE_CONFIG` | `{dataDir}/node-config.json` | 配置文件路径 |
+| `PALI_NODE_KEY` | 自动生成 | 节点私钥（0x + 64 位十六进制）；`PALI_NODE_PK` 仅作为旧别名兼容 |
+| `PALI_RPC_BIND` | `0.0.0.0` | RPC 监听地址 |
+| `PALI_RPC_PORT` | 18780 | RPC 端口 |
+| `PALI_WS_BIND` | `0.0.0.0` | WebSocket 监听地址 |
+| `PALI_WS_PORT` | 18781 | WebSocket 端口 |
+| `PALI_P2P_BIND` | `0.0.0.0` | P2P 监听地址 |
+| `PALI_P2P_PORT` | 19780 | P2P 端口 |
+| `PALI_WIRE_BIND` | `0.0.0.0` | Wire 协议监听地址 |
+| `PALI_WIRE_PORT` | 19781 | Wire 协议端口 |
+| `PALI_IPFS_BIND` | `0.0.0.0` | IPFS 监听地址 |
+| `PALI_IPFS_PORT` | 5001 | IPFS 端口 |
+| `PALI_METRICS_PORT` | 9100 | Prometheus 指标端口 |
+| `PALI_DEV_MODE` | `false` | 开发模式（绑定 127.0.0.1） |
+| `PALI_NODE_MODE` | `full` | 节点模式：`full` / `archive` / `light` |
 
 ### 环境变量——安全
 
 | 变量 | 默认值 | 说明 |
 |------|--------|------|
-| `COC_RPC_AUTH_TOKEN` | （无） | RPC Bearer Token 认证 |
-| `COC_ENABLE_ADMIN_RPC` | `false` | 启用 admin_* 命名空间 |
-| `COC_DEV_ACCOUNTS` | （无） | 设为 `1` 启用开发账户 |
-| `COC_SIGNATURE_ENFORCEMENT` | `enforce` | `off` / `monitor` / `enforce` |
-| `COC_P2P_AUTH_MODE` | `enforce` | P2P 入站认证模式 |
-| `COC_P2P_AUTH_MAX_CLOCK_SKEW_MS` | 120000 | 最大时钟偏移（毫秒） |
-| `COC_POSE_AUTH_MODE` | `enforce` | PoSe 挑战认证模式 |
-| `COC_POSE_ALLOWED_CHALLENGERS` | （无） | 逗号分隔的挑战者地址白名单 |
+| `PALI_RPC_AUTH_TOKEN` | （无） | RPC Bearer Token 认证 |
+| `PALI_ENABLE_ADMIN_RPC` | `false` | 启用 admin_* 命名空间 |
+| `PALI_DEV_ACCOUNTS` | （无） | 设为 `1` 启用开发账户 |
+| `PALI_SIGNATURE_ENFORCEMENT` | `enforce` | `off` / `monitor` / `enforce` |
+| `PALI_P2P_AUTH_MODE` | `enforce` | P2P 入站认证模式 |
+| `PALI_P2P_AUTH_MAX_CLOCK_SKEW_MS` | 120000 | 最大时钟偏移（毫秒） |
+| `PALI_POSE_AUTH_MODE` | `enforce` | PoSe 挑战认证模式 |
+| `PALI_POSE_ALLOWED_CHALLENGERS` | （无） | 逗号分隔的挑战者地址白名单 |
 
 ### 功能开关
 
@@ -208,7 +208,7 @@ curl -s -X POST http://127.0.0.1:18780 \
 ### 数据目录结构
 
 ```
-{COC_DATA_DIR}/
+{PALI_DATA_DIR}/
 ├── node-config.json              # 配置文件
 ├── node-key                      # 私钥（权限 0600）
 ├── leveldb/                      # LevelDB 状态存储
@@ -313,8 +313,8 @@ bash scripts/launch-testnet.sh down
 | 水龙头 | 3003 |
 
 环境变量：
-- 设置 `COC_FAUCET_KEY` 指定水龙头私钥
-- 设置 `IMAGE_TAG` 以及可选的 `COC_NODE_IMAGE` / `COC_RUNTIME_IMAGE` / `COC_EXPLORER_IMAGE` / `COC_FAUCET_IMAGE`，用于部署预构建镜像
+- 设置 `PALI_FAUCET_KEY` 指定水龙头私钥
+- 设置 `IMAGE_TAG` 以及可选的 `PALI_NODE_IMAGE` / `PALI_RUNTIME_IMAGE` / `PALI_EXPLORER_IMAGE` / `PALI_FAUCET_IMAGE`，用于部署预构建镜像
 
 ### 6.3 Dockerfile 说明
 
@@ -326,13 +326,13 @@ bash scripts/launch-testnet.sh down
 - **暴露端口**：18780、18781、19780、19781、5001、9100
 
 ```bash
-docker build -f docker/Dockerfile.node -t coc-node:latest .
+docker build -f docker/Dockerfile.node -t palimesh-node:latest .
 ```
 
-runtime 镜像（`docker/Dockerfile.runtime`）打包了 `coc-agent` 和 `coc-relayer`，同样基于 Node 22：
+runtime 镜像（`docker/Dockerfile.runtime`）打包了 `palimesh-agent` 和 `palimesh-relayer`，同样基于 Node 22：
 
 ```bash
-docker build -f docker/Dockerfile.runtime -t coc-runtime:latest .
+docker build -f docker/Dockerfile.runtime -t palimesh-runtime:latest .
 ```
 
 ---
@@ -354,10 +354,10 @@ bash scripts/generate-validator-keys.sh <数量>
 
 ```bash
 # Docker 部署
-COC_DOCKER=1 bash scripts/generate-genesis.sh 3
+PALI_DOCKER=1 bash scripts/generate-genesis.sh 3
 
 # 裸金属部署（将 203.0.113.10 替换成你的引导主机）
-COC_BOOT_HOST=203.0.113.10 bash scripts/generate-genesis.sh 3
+PALI_BOOT_HOST=203.0.113.10 bash scripts/generate-genesis.sh 3
 ```
 
 ### 7.3 引导节点配置
@@ -377,27 +377,27 @@ bash scripts/setup-boot-nodes.sh
 安装 systemd 单元文件：
 
 ```bash
-sudo cp docker/systemd/coc-node.service /etc/systemd/system/
-sudo cp docker/systemd/coc-agent.service /etc/systemd/system/
-sudo cp docker/systemd/coc-relayer.service /etc/systemd/system/
+sudo cp docker/systemd/palimesh-node.service /etc/systemd/system/
+sudo cp docker/systemd/palimesh-agent.service /etc/systemd/system/
+sudo cp docker/systemd/palimesh-relayer.service /etc/systemd/system/
 sudo systemctl daemon-reload
-sudo systemctl enable --now coc-node
+sudo systemctl enable --now palimesh-node
 ```
 
-`coc-node.service` 关键配置：
+`palimesh-node.service` 关键配置：
 - `Restart=always`，`RestartSec=10`
 - `LimitNOFILE=65535`（LevelDB 需要）
-- 环境文件：`/etc/coc/coc-node.env`
+- 环境文件：`/etc/palimesh/palimesh-node.env`
 
-`coc-agent.service` 和 `coc-relayer.service` 使用同样的模式，分别读取：
-- `/etc/coc/coc-agent.env`
-- `/etc/coc/coc-relayer.env`
+`palimesh-agent.service` 和 `palimesh-relayer.service` 使用同样的模式，分别读取：
+- `/etc/palimesh/palimesh-agent.env`
+- `/etc/palimesh/palimesh-relayer.env`
 
 ### 7.5 Nginx 反向代理
 
 ```bash
-sudo cp docker/nginx/coc-rpc.conf /etc/nginx/sites-available/
-sudo ln -s /etc/nginx/sites-available/coc-rpc.conf /etc/nginx/sites-enabled/
+sudo cp docker/nginx/palimesh-rpc.conf /etc/nginx/sites-available/
+sudo ln -s /etc/nginx/sites-available/palimesh-rpc.conf /etc/nginx/sites-enabled/
 sudo nginx -t && sudo systemctl reload nginx
 ```
 
@@ -434,7 +434,7 @@ npm run deploy:local
 # 使用仓库内置的 Hardhat 脚本做本地 PoSe 部署
 npm run deploy:local
 
-# 使用默认的 COC Hardhat 网络别名部署治理合约
+# 使用默认的 Palimesh Hardhat 网络别名部署治理合约
 npm run deploy:governance:coc
 ```
 
@@ -454,7 +454,7 @@ npx hardhat run scripts/deploy-governance.js --network coc
 
 ### 验证 PoSe 合约
 
-COC 当前没有提供 Hardhat `verify:pose` 入口，也没有把 `PoSeManagerV2` 发布到 Etherscan/Sourcify 这类公共验证服务的脚本。
+Palimesh 当前没有提供 Hardhat `verify:pose` 入口，也没有把 `PoSeManagerV2` 发布到 Etherscan/Sourcify 这类公共验证服务的脚本。
 
 当前可用的方式是使用 Explorer 的合约验证页面：
 
@@ -472,8 +472,8 @@ Solidity: 0.8.24
 Hardhat 脚本网络：
   hardhat   -> 内存本地链
   localhost -> 本地 JSON-RPC 端点
-  coc       -> COC_RPC_URL || PROWL_RPC_URL || http://127.0.0.1:18780
-               COC_CHAIN_ID || PROWL_CHAIN_ID || 18780
+  coc       -> PALI_RPC_URL || PROWL_RPC_URL || http://127.0.0.1:18780
+               PALI_CHAIN_ID || PROWL_CHAIN_ID || 18780
   prowl     -> PROWL_RPC_URL || http://127.0.0.1:18780
                PROWL_CHAIN_ID || 18780
 ```
@@ -485,7 +485,7 @@ Hardhat 脚本网络：
 ## 9. 区块链浏览器
 
 原理：浏览器是建立在 RPC 和 WebSocket 之上的只读呈现层，不应被视为独立于链数据之外的权威来源。
-模块/程序功能：本章覆盖 Next.js 浏览器，它从运行中的 COC 节点读取链状态、索引视图、统计分析和合约验证结果。
+模块/程序功能：本章覆盖 Next.js 浏览器，它从运行中的 Palimesh 节点读取链状态、索引视图、统计分析和合约验证结果。
 
 ### 开发模式
 
@@ -528,36 +528,36 @@ npm start
 ## 10. 钱包 CLI
 
 原理：签名和资金管理应与节点执行隔离，这样运维人员才能在不影响验证者或 relayer 进程的前提下独立审计和轮换密钥。
-模块/程序功能：本章覆盖 `wallet/coc-wallet.ts`，它提供轻量级的密钥库管理、余额查询、转账和 nonce/回执查询能力。
+模块/程序功能：本章覆盖 `wallet/palimesh-wallet.ts`，它提供轻量级的密钥库管理、余额查询、转账和 nonce/回执查询能力。
 
 ### 使用方法
 
 ```bash
 # 创建新钱包
-node --experimental-strip-types wallet/coc-wallet.ts create [--password <密码>]
+node --experimental-strip-types wallet/palimesh-wallet.ts create [--password <密码>]
 
 # 从私钥或助记词导入
-node --experimental-strip-types wallet/coc-wallet.ts import <私钥或助记词> [--password <密码>]
+node --experimental-strip-types wallet/palimesh-wallet.ts import <私钥或助记词> [--password <密码>]
 
 # 查询余额
-node --experimental-strip-types wallet/coc-wallet.ts balance <地址> [--rpc <url>]
+node --experimental-strip-types wallet/palimesh-wallet.ts balance <地址> [--rpc <url>]
 
 # 发送 ETH
-node --experimental-strip-types wallet/coc-wallet.ts send <来源地址> <目标地址> <金额(ETH)> [--rpc <url>]
+node --experimental-strip-types wallet/palimesh-wallet.ts send <来源地址> <目标地址> <金额(ETH)> [--rpc <url>]
 
 # 查询交易
-node --experimental-strip-types wallet/coc-wallet.ts tx <交易哈希> [--rpc <url>]
+node --experimental-strip-types wallet/palimesh-wallet.ts tx <交易哈希> [--rpc <url>]
 
 # 获取 Nonce
-node --experimental-strip-types wallet/coc-wallet.ts nonce <地址> [--rpc <url>]
+node --experimental-strip-types wallet/palimesh-wallet.ts nonce <地址> [--rpc <url>]
 ```
 
 ### 配置
 
 | 变量 | 默认值 | 说明 |
 |------|--------|------|
-| `COC_RPC_URL` | `http://127.0.0.1:18780` | RPC 端点 |
-| `COC_WALLET_PASSWORD` | unset | 创建、导入、发送交易所需的密钥库密码；需显式设置或传入 `--password` |
+| `PALI_RPC_URL` | `http://127.0.0.1:18780` | RPC 端点 |
+| `PALI_WALLET_PASSWORD` | unset | 创建、导入、发送交易所需的密钥库密码；需显式设置或传入 `--password` |
 
 密钥库位置：`~/.coc/keystore/{地址}.json`
 
@@ -566,20 +566,20 @@ node --experimental-strip-types wallet/coc-wallet.ts nonce <地址> [--rpc <url>
 ## 11. PoSe 服务层
 
 原理：PoSe 是围绕挑战发起、回执验证、证据持久化、奖励清单生成和链上结算协调构建的链下服务流水线。
-模块/程序功能：本章覆盖实现这条流水线的运行时程序：`coc-node`、`coc-agent`、`coc-relayer` 和 `coc-reward-claim`。
+模块/程序功能：本章覆盖实现这条流水线的运行时程序：`palimesh-node`、`palimesh-agent`、`palimesh-relayer` 和 `palimesh-reward-claim`。
 
-### 11.1 coc-node（PoSe 端点）
+### 11.1 palimesh-node（PoSe 端点）
 
-原理：`coc-node` 是面向 PoSe 的轻量 HTTP 服务，负责签名挑战回执和见证证明；它不是完整的区块链核心节点。
+原理：`palimesh-node` 是面向 PoSe 的轻量 HTTP 服务，负责签名挑战回执和见证证明；它不是完整的区块链核心节点。
 模块/程序功能：该程序对外暴露挑战/回执 API 以及最小化的本地健康检查端点，主要用于测试和运行时集成。
 
 PoSe 运行时服务暴露以下 HTTP 端点：
 
 ```bash
-COC_DATA_DIR=/data/coc \
-COC_NODE_KEY=0x... \
-COC_POSE_WITNESS_AUTH_TOKEN=... \
-  node --experimental-strip-types runtime/coc-node.ts
+PALI_DATA_DIR=/data/coc \
+PALI_NODE_KEY=0x... \
+PALI_POSE_WITNESS_AUTH_TOKEN=... \
+  node --experimental-strip-types runtime/palimesh-node.ts
 ```
 
 | 端点 | 方法 | 说明 |
@@ -589,23 +589,23 @@ COC_POSE_WITNESS_AUTH_TOKEN=... \
 | `/pose/receipt` | POST | 提交回执 |
 | `/pose/witness` | POST | 见证证明（仅 v2） |
 
-安全注意：`/pose/witness` 会签发 EIP-712 witness attestation。配置了 `COC_POSE_WITNESS_AUTH_TOKEN` 或运行时配置里的 `poseWitnessAuthToken` 后，所有调用方都必须提供匹配的 `Authorization: Bearer <token>`；未配置 token 时仅允许 loopback 调用。远程 `witnessNodes` 需要配置对应 `authToken`；公网部署应配合 TLS 或私有网络。
+安全注意：`/pose/witness` 会签发 EIP-712 witness attestation。配置了 `PALI_POSE_WITNESS_AUTH_TOKEN` 或运行时配置里的 `poseWitnessAuthToken` 后，所有调用方都必须提供匹配的 `Authorization: Bearer <token>`；未配置 token 时仅允许 loopback 调用。远程 `witnessNodes` 需要配置对应 `authToken`；公网部署应配合 TLS 或私有网络。
 
-注意：`runtime/coc-node.ts` 的 `/health` 只返回轻量级服务本地状态（`{"ok":true,"ts":...}`）；链高度和节点连接状态仍应通过核心节点 RPC 或 metrics server 查询。
+注意：`runtime/palimesh-node.ts` 的 `/health` 只返回轻量级服务本地状态（`{"ok":true,"ts":...}`）；链高度和节点连接状态仍应通过核心节点 RPC 或 metrics server 查询。
 
-### 11.2 coc-agent（挑战与聚合）
+### 11.2 palimesh-agent（挑战与聚合）
 
 原理：agent 是评分和证据的生产者，它持续抽样目标节点、校验响应，并把观察结果转成可聚合的回执与奖励清单。
 模块/程序功能：该程序负责发起挑战、验证回执、持久化证据/manifest，并为后续 relayer 结算准备输入数据。
 
 ```bash
-COC_NODE_URL=http://127.0.0.1:18780 \
-COC_L1_RPC_URL=http://127.0.0.1:8545 \
-COC_POSE_MANAGER=0x... \
-COC_OPERATOR_PK=0x... \
-COC_AGENT_INTERVAL_MS=60000 \
-COC_AGENT_BATCH_SIZE=5 \
-  node --experimental-strip-types runtime/coc-agent.ts
+PALI_NODE_URL=http://127.0.0.1:18780 \
+PALI_L1_RPC_URL=http://127.0.0.1:8545 \
+PALI_POSE_MANAGER=0x... \
+PALI_OPERATOR_PK=0x... \
+PALI_AGENT_INTERVAL_MS=60000 \
+PALI_AGENT_BATCH_SIZE=5 \
+  node --experimental-strip-types runtime/palimesh-agent.ts
 ```
 
 核心功能：
@@ -616,19 +616,19 @@ COC_AGENT_BATCH_SIZE=5 \
 - 持久化奖励清单到 `{dataDir}/reward-manifests/`
 - Tick 重入保护防止周期重叠
 
-若使用 v2 协议，`coc-agent` 还需要在运行时配置文件中提供 `protocolVersion: 2`、`poseManagerV2Address` 和 `verifyingContract`；这些设置主要通过配置文件而不是单独环境变量读取。
+若使用 v2 协议，`palimesh-agent` 还需要在运行时配置文件中提供 `protocolVersion: 2`、`poseManagerV2Address` 和 `verifyingContract`；这些设置主要通过配置文件而不是单独环境变量读取。
 
-### 11.3 coc-relayer（Epoch 终结与惩罚）
+### 11.3 palimesh-relayer（Epoch 终结与惩罚）
 
 原理：relayer 是结算侧协调器，它将持久化的奖励清单和证据转化为合约调用，同时保持争议和惩罚顺序的确定性。
 模块/程序功能：该程序负责终结 epoch、分发奖励、把 BFT 双签证据桥接到 PoSe 争议管线，并推进 v2 争议生命周期。
 
 ```bash
-COC_L1_RPC_URL=http://127.0.0.1:8545 \
-COC_POSE_MANAGER=0x... \
-COC_SLASHER_PK=0x... \
-COC_RELAYER_INTERVAL_MS=60000 \
-  node --experimental-strip-types runtime/coc-relayer.ts
+PALI_L1_RPC_URL=http://127.0.0.1:8545 \
+PALI_POSE_MANAGER=0x... \
+PALI_SLASHER_PK=0x... \
+PALI_RELAYER_INTERVAL_MS=60000 \
+  node --experimental-strip-types runtime/palimesh-relayer.ts
 ```
 
 核心功能：
@@ -640,15 +640,15 @@ COC_RELAYER_INTERVAL_MS=60000 \
 
 若使用 v2 协议，relayer 还会从运行时配置文件中读取 `protocolVersion`、`poseManagerV2Address`、`verifyingContract` 以及可选的 `l2RpcUrl`。
 
-### 11.4 coc-reward-claim（V2 Merkle 领取）
+### 11.4 palimesh-reward-claim（V2 Merkle 领取）
 
 原理：奖励领取被有意地与奖励生成和 epoch 终结解耦，这样运营者可以在提交 claim 交易前先审计证明和金额。
 模块/程序功能：该程序会读取奖励清单，优先选择 settled manifest 中的证明，并根据协议版本提交 v2 Merkle claim 或 v1 直接 claim。
 
 ```bash
-COC_DATA_DIR=/data/coc \
-COC_OPERATOR_PK=0x... \
-  node --experimental-strip-types runtime/coc-reward-claim.ts --epoch 123 --node-id 0x...
+PALI_DATA_DIR=/data/coc \
+PALI_OPERATOR_PK=0x... \
+  node --experimental-strip-types runtime/palimesh-reward-claim.ts --epoch 123 --node-id 0x...
 ```
 
 对于 v2，该程序从运行时配置文件读取 `protocolVersion`、`poseManagerV2Address` 和 `rewardManifestDir`；对于 v1，则回退到 `poseManagerAddress` 并调用 `claimReward(nodeId)`。
@@ -657,20 +657,20 @@ COC_OPERATOR_PK=0x... \
 
 | 变量 | 默认值 | 说明 |
 |------|--------|------|
-| `COC_NODE_URL` | `http://127.0.0.1:18780` | COC 节点 RPC |
-| `COC_L1_RPC_URL` | `http://127.0.0.1:8545` | 结算层 RPC |
-| `COC_POSE_MANAGER` | （必填） | PoSeManager v1 地址 |
-| `COC_OPERATOR_PK` | （必填） | 运营者私钥 |
-| `COC_OPERATOR_PK_FILE` | （无） | 运营者密钥文件路径 |
-| `COC_SLASHER_PK` | （relayer 必填） | 惩罚者私钥 |
-| `COC_SLASHER_PK_FILE` | （无） | 惩罚者密钥文件路径 |
-| `COC_AGENT_INTERVAL_MS` | 60000 | Agent Tick 间隔 |
-| `COC_AGENT_BATCH_SIZE` | 5 | 每批回执数 |
-| `COC_AGENT_SAMPLE_SIZE` | 2 | 验证抽样大小 |
-| `COC_RELAYER_INTERVAL_MS` | 60000 | Relayer Tick 间隔 |
-| `COC_TX_RETRY_ATTEMPTS` | 2 | 交易重试次数 |
-| `COC_TX_RETRY_BASE_DELAY_MS` | 250 | 基础重试延迟 |
-| `COC_TX_RETRY_MAX_DELAY_MS` | 5000 | 最大重试延迟 |
+| `PALI_NODE_URL` | `http://127.0.0.1:18780` | Palimesh 节点 RPC |
+| `PALI_L1_RPC_URL` | `http://127.0.0.1:8545` | 结算层 RPC |
+| `PALI_POSE_MANAGER` | （必填） | PoSeManager v1 地址 |
+| `PALI_OPERATOR_PK` | （必填） | 运营者私钥 |
+| `PALI_OPERATOR_PK_FILE` | （无） | 运营者密钥文件路径 |
+| `PALI_SLASHER_PK` | （relayer 必填） | 惩罚者私钥 |
+| `PALI_SLASHER_PK_FILE` | （无） | 惩罚者密钥文件路径 |
+| `PALI_AGENT_INTERVAL_MS` | 60000 | Agent Tick 间隔 |
+| `PALI_AGENT_BATCH_SIZE` | 5 | 每批回执数 |
+| `PALI_AGENT_SAMPLE_SIZE` | 2 | 验证抽样大小 |
+| `PALI_RELAYER_INTERVAL_MS` | 60000 | Relayer Tick 间隔 |
+| `PALI_TX_RETRY_ATTEMPTS` | 2 | 交易重试次数 |
+| `PALI_TX_RETRY_BASE_DELAY_MS` | 250 | 基础重试延迟 |
+| `PALI_TX_RETRY_MAX_DELAY_MS` | 5000 | 最大重试延迟 |
 
 ### V2 协议配置
 
@@ -703,15 +703,15 @@ docker compose -f docker/docker-compose.monitoring.yml up -d
 
 ### Prometheus 指标端点
 
-每个节点在 `http://<主机>:<COC_METRICS_PORT>/metrics`（默认 9100）暴露指标。
+每个节点在 `http://<主机>:<PALI_METRICS_PORT>/metrics`（默认 9100）暴露指标。
 
 关键指标：
-- `coc_block_height` — 当前区块高度
-- `coc_tx_pool_size` — 内存池交易数
-- `coc_peer_count` — P2P 连接节点数
-- `coc_consensus_state` — 共识引擎状态
-- `coc_bft_height` — BFT 已确认高度
-- `coc_dht_peers` — DHT 路由表大小
+- `pali_block_height` — 当前区块高度
+- `pali_tx_pool_size` — 内存池交易数
+- `pali_peer_count` — P2P 连接节点数
+- `pali_consensus_state` — 共识引擎状态
+- `pali_bft_height` — BFT 已确认高度
+- `pali_dht_peers` — DHT 路由表大小
 
 ### Grafana 仪表盘
 
@@ -728,11 +728,11 @@ docker compose -f docker/docker-compose.monitoring.yml up -d
 
 | 告警 | 条件 |
 |------|------|
-| NodeDown | `up{job="coc-node"} == 0` |
-| BlockProductionStalled | `increase(coc_block_height[5m]) == 0` |
-| ConsensusStateDegraded | `coc_consensus_state != 0` |
-| HighAuthRejections | `rate(coc_p2p_auth_rejected_total[5m]) > 10` |
-| NoWireConnections | `coc_wire_connections == 0 and coc_peers_connected > 0` |
+| NodeDown | `up{job="palimesh-node"} == 0` |
+| BlockProductionStalled | `increase(pali_block_height[5m]) == 0` |
+| ConsensusStateDegraded | `pali_consensus_state != 0` |
+| HighAuthRejections | `rate(pali_p2p_auth_rejected_total[5m]) > 10` |
+| NoWireConnections | `pali_wire_connections == 0 and pali_peers_connected > 0` |
 
 运行 3 节点 Docker 测试网时，监控需要单独启动：
 
@@ -748,8 +748,8 @@ docker compose -f docker/docker-compose.monitoring.yml up -d
 
 ## 13. 健康检查与状态查询
 
-原理：COC 的健康状态是分层的；RPC、metrics 和 PoSe 服务端点回答的是不同问题，不能把它们当作同一种探针。
-模块/程序功能：本章覆盖核心节点的运维脚本与 RPC 查询方式，并明确区分独立的 `runtime/coc-node.ts` PoSe 服务。
+原理：Palimesh 的健康状态是分层的；RPC、metrics 和 PoSe 服务端点回答的是不同问题，不能把它们当作同一种探针。
+模块/程序功能：本章覆盖核心节点的运维脚本与 RPC 查询方式，并明确区分独立的 `runtime/palimesh-node.ts` PoSe 服务。
 
 ### 节点状态脚本
 
@@ -769,17 +769,17 @@ curl -s -X POST http://127.0.0.1:18780 \
 # 链统计
 curl -s -X POST http://127.0.0.1:18780 \
   -H 'Content-Type: application/json' \
-  -d '{"jsonrpc":"2.0","method":"coc_chainStats","params":[],"id":1}'
+  -d '{"jsonrpc":"2.0","method":"pali_chainStats","params":[],"id":1}'
 
 # BFT 状态
 curl -s -X POST http://127.0.0.1:18780 \
   -H 'Content-Type: application/json' \
-  -d '{"jsonrpc":"2.0","method":"coc_getBftStatus","params":[],"id":1}'
+  -d '{"jsonrpc":"2.0","method":"pali_getBftStatus","params":[],"id":1}'
 
 # 网络统计
 curl -s -X POST http://127.0.0.1:18780 \
   -H 'Content-Type: application/json' \
-  -d '{"jsonrpc":"2.0","method":"coc_getNetworkStats","params":[],"id":1}'
+  -d '{"jsonrpc":"2.0","method":"pali_getNetworkStats","params":[],"id":1}'
 
 # Peer 数量
 curl -s -X POST http://127.0.0.1:18780 \
@@ -794,12 +794,12 @@ curl -s -X POST http://127.0.0.1:18780 \
 curl -s http://127.0.0.1:9100/health
 # 返回: ok
 
-# PoSe 运行时服务（runtime/coc-node.ts）
+# PoSe 运行时服务（runtime/palimesh-node.ts）
 curl -s http://127.0.0.1:19780/health
 # 返回: {"ok":true,"ts":...}
 ```
 
-链级健康状态应通过 `eth_blockNumber`、`coc_chainStats`、`coc_getNetworkStats` 等 JSON-RPC 方法判断；`/health` 只应视作具体 HTTP 服务的存活探针。
+链级健康状态应通过 `eth_blockNumber`、`pali_chainStats`、`pali_getNetworkStats` 等 JSON-RPC 方法判断；`/health` 只应视作具体 HTTP 服务的存活探针。
 
 ---
 
@@ -842,20 +842,20 @@ bash scripts/restore-node.sh <备份归档文件> [数据目录]
 
 ```bash
 # 先停止节点
-systemctl stop coc-node
+systemctl stop palimesh-node
 
 # 归档数据目录
-tar czf coc-backup-$(date +%Y%m%d).tar.gz -C ~/.clawdbot coc/
+tar czf palimesh-backup-$(date +%Y%m%d).tar.gz -C ~/.clawdbot coc/
 
 # 重启
-systemctl start coc-node
+systemctl start palimesh-node
 ```
 
 ---
 
 ## 15. 质量门禁
 
-原理：运维变更应由受影响层级的测试来约束，因为 COC 横跨节点核心、服务层、运行时、合约、浏览器和扩展模块。
+原理：运维变更应由受影响层级的测试来约束，因为 Palimesh 横跨节点核心、服务层、运行时、合约、浏览器和扩展模块。
 模块/程序功能：本章将质量门禁脚本映射到具体测试套件，便于运营者在全量验证和定向重跑之间做选择。
 
 ### 运行全量测试
@@ -914,11 +914,11 @@ node --experimental-strip-types --test \
 | LevelDB `LOCK` 错误 | 上次实例未正常停止 | 删除 `{dataDir}/leveldb/LOCK` 或停止占用进程 |
 | LevelDB 数据损坏 | 非正常关机 | 节点启动时自动修复；或删除 `leveldb/` 重新同步 |
 | 不产生区块 | 单节点启用 BFT 但验证者 <3 | BFT 在 <3 验证者时自动禁用，检查验证者配置 |
-| 节点无法连接 | 防火墙或 P2P 端口错误 | 检查 `COC_P2P_PORT`，确保端口开放，验证节点 URL |
-| RPC 认证被拒 | Token 缺失或错误 | 设置 `COC_RPC_AUTH_TOKEN` 并传递 `Authorization: Bearer <token>` |
+| 节点无法连接 | 防火墙或 P2P 端口错误 | 检查 `PALI_P2P_PORT`，确保端口开放，验证节点 URL |
+| RPC 认证被拒 | Token 缺失或错误 | 设置 `PALI_RPC_AUTH_TOKEN` 并传递 `Authorization: Bearer <token>` |
 | 交易卡住 | Nonce 间隙或 Gas 过低 | 检查 `eth_getTransactionCount` 和 `eth_gasPrice`，用正确 Nonce 重新提交 |
 | PoSe 挑战超时 | 节点不可达或存储响应慢 | 检查节点 `:9100/health` 存活探针并验证 `eth_blockNumber`，同时确认 IPFS 存储正常 |
-| Agent 不提交批次 | 合约未部署或地址错误 | 验证 `COC_POSE_MANAGER` 地址与已部署合约匹配 |
+| Agent 不提交批次 | 合约未部署或地址错误 | 验证 `PALI_POSE_MANAGER` 地址与已部署合约匹配 |
 | Relayer 终结失败 | Epoch 未就绪或 Gas 不足 | 检查 Epoch 时间；确保 Relayer 账户有 ETH 支付 Gas |
 | 浏览器空白页 | RPC URL 错误 | 验证 `NEXT_PUBLIC_RPC_URL` 指向运行中的节点 |
 | `--experimental-strip-types` 报错 | Node.js 版本 < 22 | 升级到 Node.js 22+ |
@@ -933,7 +933,7 @@ node --experimental-strip-types --test \
 ss -ltnp | grep -E '(18780|18781|19780|19781|5001|9100)'
 
 # 查看节点日志（systemd）
-journalctl -u coc-node -f --no-pager
+journalctl -u palimesh-node -f --no-pager
 
 # 检查磁盘占用
 du -sh ~/.clawdbot/coc/leveldb/
@@ -947,13 +947,13 @@ curl -s -X POST http://127.0.0.1:18780 \
 ps aux | grep 'node.*index.ts'
 
 # 查看 Devnet 节点日志
-tail -f /tmp/coc-devnet-*/node-*.log
+tail -f /tmp/palimesh-devnet-*/node-*.log
 ```
 
 ### 恢复流程
 
 **链卡住（无新区块）：**
-1. 检查共识状态：`coc_chainStats` RPC
+1. 检查共识状态：`pali_chainStats` RPC
 2. 验证验证者集：浏览器 `/validators` 页面
 3. 若 BFT 卡住：重启节点清除 BFT 轮次状态
 4. 若单节点：检查磁盘空间和 LevelDB 健康
@@ -973,4 +973,4 @@ tail -f /tmp/coc-devnet-*/node-*.log
 
 ---
 
-*为 COC (ChainOfClaw) 生成——最后更新 2026-03-09*
+*为 Palimesh (Palimesh) 生成——最后更新 2026-03-09*

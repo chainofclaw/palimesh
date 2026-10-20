@@ -41,8 +41,8 @@ import { WireServer } from "./wire-server.ts"
 import { WireClient } from "./wire-client.ts"
 import { MessageType, encodeJsonPayload } from "./wire-protocol.ts"
 import { DhtNetwork } from "./dht-network.ts"
-import { buildCocIpfsWiring } from "./coc-ipfs-wiring.ts"
-import { IpfsRepairLoop } from "./coc-ipfs-repair.ts"
+import { buildCocIpfsWiring } from "./palimesh-ipfs-wiring.ts"
+import { IpfsRepairLoop } from "./palimesh-ipfs-repair.ts"
 import { exportStateSnapshot, importStateSnapshot } from "./state-snapshot.ts"
 import type { StateSnapshot } from "./state-snapshot.ts"
 import type { IStateTrie } from "./storage/state-trie.ts"
@@ -184,7 +184,7 @@ if (existsSync(poisonStorePath)) {
 }
 
 // Node identity signer — created early so Wire/BFT/PoSe all share the same key.
-// loadNodeConfig resolves COC_NODE_KEY/COC_NODE_PK, persisted node-key, or a new key.
+// loadNodeConfig resolves PALI_NODE_KEY/PALI_NODE_PK, persisted node-key, or a new key.
 const nodePrivateKey = config.nodePrivateKey
 const nodeSigner = createNodeSigner(nodePrivateKey)
 
@@ -216,7 +216,12 @@ let registryReader: ValidatorRegistryReader | undefined
 // divergence so a divergence storm doesn't spawn parallel sync attempts.
 // Module-scope so the cooldown survives across BftCoordinator callbacks.
 let lastPeerDivergenceSyncMs = 0
-const PEER_DIVERGENCE_SYNC_COOLDOWN_MS = 60_000
+// Env-overridable (2026-08-30 v3 incident): when a divergence-misfire loop
+// does slip through, ops can throttle H11 without a code deploy.
+const PEER_DIVERGENCE_SYNC_COOLDOWN_MS = (() => {
+  const v = Number(process.env.PALI_PEER_DIVERGENCE_SYNC_COOLDOWN_MS)
+  return Number.isFinite(v) && v > 0 ? v : 60_000
+})()
 
 // Phase H5: rate-limit forced state-snapshot import (the "manual rsync"
 // equivalent). Much longer cooldown than H4 — escalation should NOT happen
@@ -312,7 +317,7 @@ const p2p = new P2PNode(
       // Persistent engine: return recent blocks only (cap to prevent DoS).
       // NOTE: nodes that fall behind by more than this window cannot block-sync;
       // consensus.trySync() detects the gap and falls back to SnapSync when enabled.
-      const MAX_SNAPSHOT_BLOCKS = Number(process.env.COC_MAX_SNAPSHOT_BLOCKS ?? 1000)
+      const MAX_SNAPSHOT_BLOCKS = Number(process.env.PALI_MAX_SNAPSHOT_BLOCKS ?? 1000)
       const height = await chain.getHeight()
       if (height === 0n) return { blocks: [], updatedAtMs: Date.now() }
       const startBlock = height > BigInt(MAX_SNAPSHOT_BLOCKS) ? height - BigInt(MAX_SNAPSHOT_BLOCKS) + 1n : 1n
@@ -417,22 +422,22 @@ p2p.start()
 // handshakes (so /p2p/chain-snapshot has a chance of succeeding), then ask
 // peers for their tips. If peer-quorum disagrees with our LATEST, we
 // demote LATEST backward to the deepest peer-confirmed height. Set
-// `COC_PR1G_DISABLE=1` to bypass (escape hatch for operators in case of a
-// pathological peer set). Set `COC_PR1G_PRUNE=1` to additionally drop
+// `PALI_PR1G_DISABLE=1` to bypass (escape hatch for operators in case of a
+// pathological peer set). Set `PALI_PR1G_PRUNE=1` to additionally drop
 // stale b:N / h:hash rows above the demoted height.
 {
   const persistentChain = chain as PersistentChainEngine
   const hasVerify = typeof persistentChain.verifyAndPromoteTipWithPeers === "function"
   const hasPeers = (config.peers?.length ?? 0) > 0
-  if (process.env.COC_PR1G_DISABLE === "1") {
-    log.warn("PR-1G: disabled via COC_PR1G_DISABLE=1 — skipping tip verification")
+  if (process.env.PALI_PR1G_DISABLE === "1") {
+    log.warn("PR-1G: disabled via PALI_PR1G_DISABLE=1 — skipping tip verification")
   } else if (hasVerify && hasPeers) {
-    const PR1G_PEER_WAIT_MS = Number(process.env.COC_PR1G_WAIT_MS ?? 6000)
+    const PR1G_PEER_WAIT_MS = Number(process.env.PALI_PR1G_WAIT_MS ?? 6000)
     await new Promise((resolve) => setTimeout(resolve, PR1G_PEER_WAIT_MS))
     try {
       const result = await persistentChain.verifyAndPromoteTipWithPeers(p2p, {
-        quorumFraction: Number(process.env.COC_PR1G_QUORUM_FRACTION ?? 0.5),
-        prune: process.env.COC_PR1G_PRUNE === "1",
+        quorumFraction: Number(process.env.PALI_PR1G_QUORUM_FRACTION ?? 0.5),
+        prune: process.env.PALI_PR1G_PRUNE === "1",
       })
       log.info("PR-1G: tip verification complete", {
         verified: result.verified,
@@ -494,10 +499,10 @@ if (bftEnabled) {
   // divergent-but-non-malicious validators (e.g. 2026-04-30 testnet's
   // node-1 shadow state corruption). Production deployments must NOT
   // set this env var.
-  const relaxedQuorum = process.env.COC_DEV_RELAXED_QUORUM === "1"
+  const relaxedQuorum = process.env.PALI_DEV_RELAXED_QUORUM === "1"
   if (relaxedQuorum) {
     log.warn(
-      "⚠ COC_DEV_RELAXED_QUORUM=1 — BFT quorum threshold relaxed; Byzantine safety LOST",
+      "⚠ PALI_DEV_RELAXED_QUORUM=1 — BFT quorum threshold relaxed; Byzantine safety LOST",
       { validators: config.validators.length, chainId: config.chainId },
     )
   }
@@ -543,7 +548,7 @@ if (bftEnabled) {
       blockHash2: evidence.blockHash2,
       detectedAtMs: evidence.detectedAtMs,
       // #725: carry the two BFT signatures through to the evidence store /
-      // coc_getEquivocations RPC / relayer. Without them the relayer's
+      // pali_getEquivocations RPC / relayer. Without them the relayer's
       // on-chain EquivocationDetector submission path always trips its
       // missing-signatures guard and the permissionless slashing layer
       // never runs.
@@ -602,6 +607,10 @@ if (bftEnabled) {
     // proposals (height ≤ chain tip). `lastFinalizedHeight` alone misses
     // gossip-block catch-up after a restart; this closes the gap.
     getChainHeight: () => chain.getHeight(),
+    // Follower fix (2026-08-30): let J1.1 confirm against the locally-applied
+    // block before firing forceSnapSync — a caught-up follower that merely
+    // didn't vote must not loop full state re-imports (v3 30G bloat).
+    getLocalBlock: (height: bigint) => chain.getBlockByNumber(height),
     // PR-1A (2026-05-10): when a BFT round times out at a peer's slot, mark
     // that proposer unreachable so consensus.checkNoProgressWatchdog's fast
     // path (~15s) takes over from the conservative 600s H15 timeout.
@@ -626,6 +635,16 @@ if (bftEnabled) {
       await p2p.broadcastBft(payload)
       // Also broadcast BFT messages via wire protocol (dual transport)
       wireBftBroadcastFn?.(msg)
+    },
+    // Lost-vote livelock fix: when the coordinator re-enters a round for a
+    // block it already prepared, re-gossip that block over both transports
+    // so peers that missed the block itself can join. Clearing our own
+    // seenBlocks entry mirrors consensus.ts's re-broadcast path; per-peer
+    // delivery dedup keeps peers that already have it from being re-sent.
+    regossipBlock: async (block: ChainBlock) => {
+      p2p.seenBlocks.delete(block.hash)
+      await p2p.receiveBlock(block)
+      wireBroadcastFn?.(block)
     },
     // Speculatively execute `block` against current state and return the
     // post-execution stateRoot that this node would commit to — lets BFT
@@ -996,10 +1015,10 @@ if (bftEnabled) {
       })
       return true
     },
-    persistentDivergenceThreshold: process.env.COC_PERSISTENT_DIVERGENCE_THRESHOLD
-      ? Number(process.env.COC_PERSISTENT_DIVERGENCE_THRESHOLD)
+    persistentDivergenceThreshold: process.env.PALI_PERSISTENT_DIVERGENCE_THRESHOLD
+      ? Number(process.env.PALI_PERSISTENT_DIVERGENCE_THRESHOLD)
       : undefined,
-    onPersistentDivergence: process.env.COC_BFT_AUTO_RECOVERY === "1"
+    onPersistentDivergence: process.env.PALI_BFT_AUTO_RECOVERY === "1"
       ? (info) => {
           // Phase H5: H4's incremental snap-sync didn't cure the divergence
           // — usually because the local leveldb is on-disk corrupted and
@@ -1008,7 +1027,7 @@ if (bftEnabled) {
           // (the in-process equivalent of `rsync leveldb-state +
           // leveldb-chain` we've been doing manually).
           //
-          // Default-OFF in production via COC_BFT_AUTO_RECOVERY=1 env gate
+          // Default-OFF in production via PALI_BFT_AUTO_RECOVERY=1 env gate
           // because a misfiring recovery loop overwriting good state would
           // be catastrophic. testnet enables to validate the path.
           if (!consensus) return
@@ -1043,7 +1062,7 @@ if (bftEnabled) {
   // path (no `validatorRegistryAddress` ⇒ this branch is skipped).
   if (config.validatorRegistryAddress) {
     const reader = new ValidatorRegistryReader({
-      rpcUrl: process.env.COC_VALIDATOR_REGISTRY_RPC_URL || `http://127.0.0.1:${config.rpcPort}`,
+      rpcUrl: process.env.PALI_VALIDATOR_REGISTRY_RPC_URL || `http://127.0.0.1:${config.rpcPort}`,
       address: config.validatorRegistryAddress as `0x${string}`,
       persistPath: join(config.dataDir, "validator-registry-reader.state.json"),
       pollIntervalMs: config.validatorRegistryPollIntervalMs,
@@ -1165,7 +1184,7 @@ const ipfs = new IpfsHttpServer(
     storageDir: config.storageDir,
     nodeId: config.nodeId,
     // #9: thread the admin token + anonymous /api/v0/add policy through.
-    // Pre-fix the IPFS server received none of these — `COC_IPFS_ADMIN_TOKEN`
+    // Pre-fix the IPFS server received none of these — `PALI_IPFS_ADMIN_TOKEN`
     // was documented in the source but never read, so admin auth degraded
     // to loopback-only and /api/v0/add was wide-open to anonymous DoS.
     adminAuthToken: config.ipfsAdminAuthToken,
@@ -1376,7 +1395,7 @@ consensus.start()
 // shadow mode it only logs. Bond + epoch reward roots are read from
 // PoSeManagerV2 over this node's own RPC (optional — perf drops to 0 when absent).
 if (bftEnabled && config.coreSet.enabled) {
-  const coreRpcUrl = process.env.COC_VALIDATOR_REGISTRY_RPC_URL || `http://127.0.0.1:${config.rpcPort}`
+  const coreRpcUrl = process.env.PALI_VALIDATOR_REGISTRY_RPC_URL || `http://127.0.0.1:${config.rpcPort}`
   const CORE_ZERO_ROOT = `0x${"0".repeat(64)}`
   const corePoseAddr = config.coreSet.poseManagerV2Address
   const corePoseV2 = corePoseAddr
@@ -1640,7 +1659,7 @@ startRpcServer(
         // Content-addressing enforcement. This pull bypasses the
         // IpfsBlockstore (and its #658 verification), so a peer could
         // otherwise serve forged bytes for `cid` straight back to the
-        // coc_ipfsFetchBlockFromPeer RPC caller — and, for the C2.4 audit
+        // pali_ipfsFetchBlockFromPeer RPC caller — and, for the C2.4 audit
         // sampling use case, a malicious "independent" peer could forge a
         // false audit failure against an honest prover. A block that does
         // not hash to `cid` is discarded; try the next provider.
@@ -1695,7 +1714,7 @@ startRpcServer(
 )
 
 // Start WebSocket RPC server for real-time subscriptions
-// Bind bftCoordinator into the handler closure so WS RPC can access BFT state (e.g. coc_bftRoundState)
+// Bind bftCoordinator into the handler closure so WS RPC can access BFT state (e.g. pali_bftRoundState)
 const wsDidOpts: Record<string, unknown> = {}
 if (didResolverInstance) wsDidOpts.didResolver = didResolverInstance
 if (didDataProviderInstance) wsDidOpts.didDataProvider = didDataProviderInstance
@@ -2034,8 +2053,8 @@ if (wireServer && dhtNetwork) {
 }
 
 // Prometheus metrics server
-const metricsPort = Number(process.env.COC_METRICS_PORT ?? 9100)
-const metricsBind = process.env.COC_METRICS_BIND ?? "127.0.0.1"
+const metricsPort = Number(process.env.PALI_METRICS_PORT ?? 9100)
+const metricsBind = process.env.PALI_METRICS_BIND ?? "127.0.0.1"
 const metricsHandle = startMetricsServer({
   getBlockHeight: () => chain.getHeight(),
   getTxPoolPending: () => chain.mempool.stats().size,

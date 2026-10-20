@@ -27,7 +27,7 @@ against the live fixture; tear down with `bash scripts/run-pose.sh down`.
 | `05-pose-epoch-sanity` | M0 / R2.1.a | Baseline 5-node PoSe fixture healthy after deploy + agent + relayer boot | All 5 RPCs responsive; PoSeManagerV2 active node count = 5; ValidatorRegistry active = 5; agent emits "endpoint fingerprint mode" + first tick within 30 s |
 | `06-pose-missing-receipts` | M2 / R2.1.b | Partition h15-node-3 from cluster network mid-epoch | Sidecars (agent + relayer) survive; chain advances when round-robin skips partitioned slot; partitioned node catches up after rejoin |
 | `07-pose-bad-witness-sig` | M3 / R2.1.c | 50-request garbage POST storm against h15-node-1 RPC (malformed JSON, oversized payloads, non-existent methods) | agent + relayer survive; cluster recovers and advances ≥1 block within 90 s polling window after the storm (BFT round-robin recovery from disrupted node-1) |
-| `08-pose-aggregator-crash` | M4 / R2.1.d | `docker restart` of coc-h15-agent (kills + restarts in one operation; uses restart instead of kill because some Docker daemons treat SIGKILL as user-intent and don't trigger `restart: unless-stopped`) | agent stays alive 3 consecutive 3 s polls within 120 s of restart; chain advances ≥1 block within 90 s during the restart window; relayer unaffected |
+| `08-pose-aggregator-crash` | M4 / R2.1.d | `docker restart` of palimesh-h15-agent (kills + restarts in one operation; uses restart instead of kill because some Docker daemons treat SIGKILL as user-intent and don't trigger `restart: unless-stopped`) | agent stays alive 3 consecutive 3 s polls within 120 s of restart; chain advances ≥1 block within 90 s during the restart window; relayer unaffected |
 | `09-pose-concurrent-claim` | M5 / R2.1.e | 5 wallets fire `claim()` against the same reward leaf in parallel | At least 4 of 5 transactions revert (CAS atomic): `rewardClaimed[leaf]` flag prevents double-claim |
 | `10-pose-slash-event` | M6 / R2.1.f | Read ValidatorRegistry state from all 5 nodes simultaneously | All 5 nodes report identical active validator set + per-validator stake/state — no fork divergence |
 | `11-pose-epoch-boundary` | M7 / R2.1.g | Sample heights + timestamps across all 5 nodes | Block numbers monotonically advance; timestamps monotonically advance; no node lags by >2 blocks |
@@ -148,7 +148,7 @@ slowing down the per-PR feedback loop).
 ### Phase J fixture (3 validators + 1 observer)
 
 3 validators (node-1/2/3) + 1 observer (sync-node), all sharing the
-`coc-multinode` bridge network. Identical chainId / validator set as
+`palimesh-multinode` bridge network. Identical chainId / validator set as
 production testnet — only port mappings differ to avoid colliding with a
 running production cluster.
 
@@ -166,8 +166,8 @@ configurations to a real network.**
 ### H15 fork-off fixture (5 validators + agent + relayer)
 
 5 validators (h15-node-1..5) on chainId 88888, optional sidecars
-(coc-h15-agent + coc-h15-relayer) for PoSe lifecycle scenarios. Bridge
-network `coc-h15`. Anvil 0..4 keys hardcoded in `configs-h15/node-N.json`.
+(palimesh-h15-agent + palimesh-h15-relayer) for PoSe lifecycle scenarios. Bridge
+network `palimesh-h15`. Anvil 0..4 keys hardcoded in `configs-h15/node-N.json`.
 
 | Service | Container port | Host port |
 |---|---|---|
@@ -176,8 +176,8 @@ network `coc-h15`. Anvil 0..4 keys hardcoded in `configs-h15/node-N.json`.
 | h15-node-3 | 18780 | 38794 |
 | h15-node-4 | 18780 | 38796 |
 | h15-node-5 | 18780 | 38798 |
-| coc-h15-agent | — (no host port) | — |
-| coc-h15-relayer | — (no host port) | — |
+| palimesh-h15-agent | — (no host port) | — |
+| palimesh-h15-relayer | — (no host port) | — |
 
 R2.1 milestone status: M0–M7 verified PASS via scenarios 05–11.
 M8 (R2.2 governance demo) and M10 (R3.1 slash automation) are

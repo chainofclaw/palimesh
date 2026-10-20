@@ -5,7 +5,7 @@
 set -e
 
 SERVER="root@159.198.44.136"
-REMOTE_BASE="/root/clawd/COC"
+REMOTE_BASE="/root/clawd/Palimesh"
 SSH_KEY=~/.ssh/openclaw_server_key
 
 echo "🚀 开始同步到生产服务器: $SERVER"
@@ -43,16 +43,16 @@ ssh -i $SSH_KEY $SERVER << 'EOF'
 set -e
 
 echo "📥 安装依赖..."
-cd /root/clawd/COC/website && npm install --prefer-offline --no-audit
-cd /root/clawd/COC/explorer && npm install --prefer-offline --no-audit
+cd /root/clawd/Palimesh/website && npm install --prefer-offline --no-audit
+cd /root/clawd/Palimesh/explorer && npm install --prefer-offline --no-audit
 
 echo "🔨 重新构建..."
-cd /root/clawd/COC/website && npm run build
-cd /root/clawd/COC/explorer && npm run build
+cd /root/clawd/Palimesh/website && npm run build
+cd /root/clawd/Palimesh/explorer && npm run build
 
 echo "🔄 重启 PM2 进程..."
-pm2 restart coc-website
-pm2 restart coc-explorer
+pm2 restart palimesh-website
+pm2 restart palimesh-explorer
 
 echo "⏳ 等待服务启动..."
 sleep 3
@@ -60,7 +60,7 @@ sleep 3
 echo "✅ 服务已重启"
 echo ""
 echo "📊 进程状态:"
-pm2 list | grep -E "coc-website|coc-explorer"
+pm2 list | grep -E "palimesh-website|palimesh-explorer"
 
 EOF
 
@@ -69,9 +69,9 @@ echo "━━━━━━━━━━━━━━━━━━━━━━━━�
 echo "✅ 部署完成！"
 echo ""
 echo "🔗 验证访问:"
-echo "  • Website:  https://clawchain.io"
-echo "  • Explorer: https://explorer.clawchain.io"
+echo "  • Website:  https://palimesh.io"
+echo "  • Explorer: https://explorer.palimesh.io"
 echo ""
 echo "📋 查看日志:"
-echo "  ssh -i $SSH_KEY $SERVER 'pm2 logs coc-website'"
-echo "  ssh -i $SSH_KEY $SERVER 'pm2 logs coc-explorer'"
+echo "  ssh -i $SSH_KEY $SERVER 'pm2 logs palimesh-website'"
+echo "  ssh -i $SSH_KEY $SERVER 'pm2 logs palimesh-explorer'"

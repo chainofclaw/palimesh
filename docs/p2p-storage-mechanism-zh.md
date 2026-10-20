@@ -1,6 +1,6 @@
-# COC P2P 存储机制完整文档
+# Palimesh P2P 存储机制完整文档
 
-> 详细说明 COC 在测试网当前配置下（Phase C Step 2）的分布式 IPFS 存储工作原理。
+> 详细说明 Palimesh 在测试网当前配置下（Phase C Step 2）的分布式 IPFS 存储工作原理。
 > 结合真实代码路径追踪一个 **100 MiB 文件** 的完整存储过程：分块策略、跨节点复制协议、最终落盘节点数。
 > 英文版：`p2p-storage-mechanism-en.md`。
 
@@ -26,7 +26,7 @@
 
 ## 1. 核心设计原则
 
-COC 的 P2P 存储层在 IPFS 的 content-addressing 基础上加了 **4 重保障**：
+Palimesh 的 P2P 存储层在 IPFS 的 content-addressing 基础上加了 **4 重保障**：
 
 1. **UnixFS 分块** — 大文件按 256 KiB 切块（IPFS 事实标准）
 2. **内容寻址** — CIDv1 (dag-pb codec + sha256) 保证每块 bytes ↔ CID 双向单射
@@ -49,7 +49,7 @@ COC 的 P2P 存储层在 IPFS 的 content-addressing 基础上加了 **4 重保�
  │                      IpfsBlockstore     ipfs-blockstore.ts:doPut("local")
  │                              │ onPut 钩子
  │                              ▼
- │                    coc-ipfs-wiring.ts   onPut / pushToK / broadcastProviderAdvertise
+ │                    palimesh-ipfs-wiring.ts   onPut / pushToK / broadcastProviderAdvertise
  │                     ┌────────┼────────────────────────┐
  │                     ▼        ▼                        ▼
  │              DhtNetwork    WireClient              WireClient
@@ -66,7 +66,7 @@ COC 的 P2P 存储层在 IPFS 的 content-addressing 基础上加了 **4 重保�
  │                 ─ 自宣告（不 cascade push）
  │                 ─ 回 gossip
  ▼
-响应 PUT 完成  ← X-COC-Replicas-Warning 响应头（若低于 minReplicas）
+响应 PUT 完成  ← X-Palimesh-Replicas-Warning 响应头（若低于 minReplicas）
 ```
 
 ---
@@ -126,7 +126,7 @@ const merkleRoot   = buildMerkleRoot(merkleLeaves)  // 单 bytes32
 
 ### 3.4 onPut 钩子：三连发
 
-Phase C 注入的 `onPut`（位于 `coc-ipfs-wiring.ts`）对每个写入的 block 做三件事：
+Phase C 注入的 `onPut`（位于 `palimesh-ipfs-wiring.ts`）对每个写入的 block 做三件事：
 
 **(a) 本地自宣告**
 ```typescript
@@ -190,11 +190,11 @@ Phase C3.1 在 `ipfs-http.ts:handleAdd` 的返回前做了一步：
 ```typescript
 const replicaStatus = await awaitReplicationResult(meta.cid, 8000)
 if (replicaStatus.worstReplicaCount < minReplicas /*=2*/) {
-  headers["X-COC-Replicas-Warning"] = `got ${worst}/${minReplicas} (cid=${worstCid})`
+  headers["X-Palimesh-Replicas-Warning"] = `got ${worst}/${minReplicas} (cid=${worstCid})`
 }
 res.writeHead(200, headers)
 ```
-响应 header 可能带 `X-COC-Replicas-Warning: got 0/2` — 上传仍返回 200，但警告没达到最低复制要求。3-node 测试网正常情况下都能达到 2/2 所以无警告。
+响应 header 可能带 `X-Palimesh-Replicas-Warning: got 0/2` — 上传仍返回 200，但警告没达到最低复制要求。3-node 测试网正常情况下都能达到 2/2 所以无警告。
 
 ---
 
@@ -336,7 +336,7 @@ requestBlockFromAny(peerIds, cid, opts):
 
 ### 7.2 Repair 循环（C3.3）
 
-`IpfsRepairLoop.runOnce()`（由 `coc-ipfs-repair.ts` 实现）
+`IpfsRepairLoop.runOnce()`（由 `palimesh-ipfs-repair.ts` 实现）
 - 触发周期：`DEFAULT_TICK_INTERVAL_MS = 10 min`
 - 行为：
   ```
@@ -373,7 +373,7 @@ challenger (agent)
   ─ 选 CID + chunkIndex（从 CidRegistry 池随机抽，DHT 预过滤垄断）
   ─ 发 challenge 到 prover(node-i)
 
-prover (coc-node 边车)
+prover (palimesh-node 边车)
   ─ blockstore.get(leafCid_i) 取 chunk bytes
   ─ leafHash = keccak256(bytes)
   ─ merklePath = buildMerklePath(all400LeafHashes, chunkIndex)
@@ -505,8 +505,8 @@ DHT state (每个 node 的视图都等价):
   - `node/src/ipfs-http.ts` — HTTP 层
   - `node/src/ipfs-unixfs.ts` — UnixFS 编解码
   - `node/src/ipfs-blockstore.ts` — 本地 block 存储 + onPut 钩子
-  - `node/src/coc-ipfs-wiring.ts` — 把 blockstore/DHT/wire 粘起来
-  - `node/src/coc-ipfs-repair.ts` — self-heal
+  - `node/src/palimesh-ipfs-wiring.ts` — 把 blockstore/DHT/wire 粘起来
+  - `node/src/palimesh-ipfs-repair.ts` — self-heal
   - `node/src/dht-network.ts` — Kademlia + provider records
   - `node/src/wire-protocol.ts` — 二进制帧
   - `node/src/wire-server.ts` / `wire-client.ts` — TCP 通信

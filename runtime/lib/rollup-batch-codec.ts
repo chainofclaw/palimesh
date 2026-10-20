@@ -1,5 +1,5 @@
 /**
- * Batch compression/decompression for COC Optimistic Rollup.
+ * Batch compression/decompression for Palimesh Optimistic Rollup.
  *
  * Encodes L2 block data into a compact binary format for L1 data availability posting.
  * Format: [version(1)] [blockCount(4)] [block0] [block1] ... [zlib compressed]

@@ -78,7 +78,7 @@ describe("IPFS E2E", () => {
       const body = (await res.json()) as Record<string, string>
       assert.equal(body.Version, "0.1.0-coc")
       assert.ok("Commit" in body)
-      assert.equal(body.Repo, "coc-ipfs")
+      assert.equal(body.Repo, "palimesh-ipfs")
       assert.ok(body.System)
       assert.equal(body.Golang, "n/a")
     })

@@ -1,15 +1,15 @@
 /**
- * COC Testnet Compatibility Tests
+ * Palimesh Testnet Compatibility Tests
  *
- * Validates EVM compatibility on a live COC network:
- *   - Native ETH/COC transfers between multiple accounts
+ * Validates EVM compatibility on a live Palimesh network:
+ *   - Native ETH/Palimesh transfers between multiple accounts
  *   - ERC-20 token full lifecycle
  *   - ERC-721 NFT minting and transfers
  *   - Staking contract (deposit/withdraw/rewards)
  *   - Multi-sig wallet (submit/confirm/execute)
  *
  * Run locally:  npx hardhat test test/testnet-compat.test.cjs
- * Run on testnet: COC_RPC_URL=http://199.192.16.79:28780 \
+ * Run on testnet: PALI_RPC_URL=http://199.192.16.79:28780 \
  *   DEPLOYER_PRIVATE_KEY=0xac09... npx hardhat test test/testnet-compat.test.cjs --network coc
  */
 const { expect } = require("chai")
@@ -18,7 +18,7 @@ const { ethers } = require("hardhat")
 const FUND_AMOUNT = ethers.parseEther("10")
 const NUM_TEST_WALLETS = 10
 
-describe("COC Testnet Compatibility", function () {
+describe("Palimesh Testnet Compatibility", function () {
   this.timeout(300_000) // 5 min for testnet latency
 
   let deployer

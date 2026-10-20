@@ -2,7 +2,7 @@
 
 ## 概述
 
-coc-backup 扩展的文件级备份保证了 Agent 的所有数据文件可以在宿主机故障后恢复。但 AI Agent 不仅仅是文件——它有正在做的事、积累的决策经验和对项目的语义理解。传统文件恢复后，Agent 只能看到原始文件，却不知道：
+palimesh-backup 扩展的文件级备份保证了 Agent 的所有数据文件可以在宿主机故障后恢复。但 AI Agent 不仅仅是文件——它有正在做的事、积累的决策经验和对项目的语义理解。传统文件恢复后，Agent 只能看到原始文件，却不知道：
 
 - 上次在做什么，做到哪里了
 - 做过哪些关键决策，以及为什么
@@ -41,11 +41,11 @@ coc-backup 扩展的文件级备份保证了 Agent 的所有数据文件可以�
 └────────────────────────┬────────────────────────────────────┘
                          │ 只读 (node:sqlite)
 ┌────────────────────────┴────────────────────────────────────┐
-│                    coc-backup 语义记忆层                     │
+│                    palimesh-backup 语义记忆层                     │
 │                                                             │
 │  备份前:                                                    │
 │  ┌─────────────────────┐    ┌──────────────────────┐       │
-│  │ semantic-snapshot.ts │───→│ .coc-backup/          │      │
+│  │ semantic-snapshot.ts │───→│ .palimesh-backup/          │      │
 │  │ 读取 claude-mem DB   │    │ semantic-snapshot.json│      │
 │  │ token 预算化打包     │    └──────────┬───────────┘       │
 │  └─────────────────────┘               │                    │
@@ -72,7 +72,7 @@ coc-backup 扩展的文件级备份保证了 Agent 的所有数据文件可以�
 
 ### 关键设计决策
 
-1. **桥接而非嵌入**：coc-backup 只读取 claude-mem 的 SQLite 数据库，不嵌入其 SDK agent 管道。活跃的 observation 捕获仍是 claude-mem 的职责。
+1. **桥接而非嵌入**：palimesh-backup 只读取 claude-mem 的 SQLite 数据库，不嵌入其 SDK agent 管道。活跃的 observation 捕获仍是 claude-mem 的职责。
 2. **自包含恢复上下文**：`RECOVERY_CONTEXT.md` 和 `semantic-snapshot.json` 无需 claude-mem worker 即可读取，确保在 carrier 节点上也能完成复活。
 3. **备份时预算化**：token 预算在备份时计算（而非恢复时），恢复只做格式化。
 4. **向后兼容**：`semanticDigest` 为 optional 字段，旧 manifest 不受影响。
@@ -224,7 +224,7 @@ autoRestore / restoreFromCid
 
 ### 无语义快照时的降级
 
-如果 `.coc-backup/semantic-snapshot.json` 不存在（旧备份或 claude-mem 未运行时的备份），仍会生成最小的 `RECOVERY_CONTEXT.md`，仅包含 Recovery Integrity 部分。
+如果 `.palimesh-backup/semantic-snapshot.json` 不存在（旧备份或 claude-mem 未运行时的备份），仍会生成最小的 `RECOVERY_CONTEXT.md`，仅包含 Recovery Integrity 部分。
 
 ---
 
@@ -310,7 +310,7 @@ Parameters:
 
 ## 配置
 
-在 `coc-backup` 扩展配置中添加 `semanticSnapshot` 节：
+在 `palimesh-backup` 扩展配置中添加 `semanticSnapshot` 节：
 
 ```json
 {
@@ -343,9 +343,9 @@ Parameters:
 
 | 文件路径 | 分类 | 加密 |
 |----------|------|------|
-| `.coc-backup/semantic-snapshot.json` | memory | 否 |
+| `.palimesh-backup/semantic-snapshot.json` | memory | 否 |
 | `RECOVERY_CONTEXT.md` | memory | 否 |
-| `.coc-backup/context-snapshot.json` | workspace | 否 |
+| `.palimesh-backup/context-snapshot.json` | workspace | 否 |
 
 ---
 
@@ -381,7 +381,7 @@ Parameters:
        ├── applyManifestChain() → 下载解密写入文件
        └── verifyRestoredFiles() → 磁盘完整性验证
 3. ★ injectRecoveryContext(targetDir, recovery, agentId)
-   ├── 读取 .coc-backup/semantic-snapshot.json
+   ├── 读取 .palimesh-backup/semantic-snapshot.json
    ├── 格式化为 Markdown
    └── 写入 RECOVERY_CONTEXT.md
 4. writeRestoreMarker()
@@ -402,7 +402,7 @@ Parameters:
 
 ## Agent 工具列表
 
-coc-backup 扩展现在注册 **13 个** Agent 工具：
+palimesh-backup 扩展现在注册 **13 个** Agent 工具：
 
 | 工具 | 分类 | 说明 |
 |------|------|------|
@@ -432,4 +432,4 @@ coc-backup 扩展现在注册 **13 个** Agent 工具：
 | `test/context-injector.test.ts` | 5 | 完整上下文生成、空快照降级、锚定状态格式化、管道字符转义 |
 | `test/memory-search.test.ts` | 5 | FTS5 搜索、类型过滤、limit、空数据库、LIKE 降级 |
 
-coc-backup 扩展总测试：**63 个**（原 47 + 新 16），零回归。
+palimesh-backup 扩展总测试：**63 个**（原 47 + 新 16），零回归。

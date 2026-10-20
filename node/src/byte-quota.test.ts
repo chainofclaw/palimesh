@@ -82,8 +82,8 @@ test("ByteQuota — negative / non-finite declaredBytes is rejected", () => {
   assert.equal(q.tryReserve("ip", Number.POSITIVE_INFINITY).ok, false)
 })
 
-test("ByteQuota — COC_IPFS_QUOTA_DISABLED=1 bypasses all checks", () => {
-  process.env.COC_IPFS_QUOTA_DISABLED = "1"
+test("ByteQuota — PALI_IPFS_QUOTA_DISABLED=1 bypasses all checks", () => {
+  process.env.PALI_IPFS_QUOTA_DISABLED = "1"
   try {
     const q = new ByteQuota({ windowMs: 60_000, perKeyMax: 1, globalMax: 1 })
     const r = q.tryReserve("ip", 1_000_000)
@@ -93,7 +93,7 @@ test("ByteQuota — COC_IPFS_QUOTA_DISABLED=1 bypasses all checks", () => {
     r.reservation!.refund()
     assert.equal(q.used("ip"), 0)
   } finally {
-    delete process.env.COC_IPFS_QUOTA_DISABLED
+    delete process.env.PALI_IPFS_QUOTA_DISABLED
   }
 })
 

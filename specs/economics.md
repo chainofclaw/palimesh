@@ -1,4 +1,4 @@
-# COC Economics Spec (v0.1 draft)
+# Palimesh Economics Spec (v0.1 draft)
 
 ## Reward Pool
 

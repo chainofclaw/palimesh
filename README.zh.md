@@ -1,6 +1,6 @@
-# COC（ChainOfClaw）
+# Palimesh（Palimesh）
 
-COC 是一个 EVM 兼容的区块链原型，包含 PoSe（Proof-of-Service）结算与 IPFS 兼容的存储接口。
+Palimesh 是一个 EVM 兼容的区块链原型，包含 PoSe（Proof-of-Service）结算与 IPFS 兼容的存储接口。
 
 ## 目录结构
 
@@ -8,7 +8,7 @@ COC 是一个 EVM 兼容的区块链原型，包含 PoSe（Proof-of-Service）�
 - `specs/`：协议/经济/路线规范
 - `contracts/`：PoSe 结算合约
 - `services/`：链下挑战/验证/聚合/中继
-- `runtime/`：coc-node / coc-agent / coc-relayer
+- `runtime/`：palimesh-node / palimesh-agent / palimesh-relayer
 - `node/`：链引擎 + RPC + P2P + 存储
 - `wallet/`：简易 CLI 钱包
 - `tests/`：集成与端到端测试
@@ -22,7 +22,7 @@ COC 是一个 EVM 兼容的区块链原型，包含 PoSe（Proof-of-Service）�
 - **链引擎**：出块、mempool（EIP-1559 排序、替换、驱逐）、快照、确定性提议者轮换、基础最终性、共识错误恢复（降级模式）
 - **P2P 网络**：基于 HTTP 的 tx/块 gossip、快照同步、每 peer 广播去重、请求体大小限制、广播并发控制
 - **EVM 执行**：内存 + LevelDB 持久化状态、完整 @ethereumjs/vm 集成
-- **JSON-RPC**：57+ 标准以太坊方法 + `coc_*` / `txpool_*` 自定义方法，BigInt 安全序列化
+- **JSON-RPC**：57+ 标准以太坊方法 + `pali_*` / `txpool_*` 自定义方法，BigInt 安全序列化
 - **WebSocket RPC**：`eth_subscribe` / `eth_unsubscribe`（newHeads / newPendingTransactions / logs），订阅验证与限制
 - **EIP-1559**：动态 baseFee 计算（50% 目标利用率、12.5% 最大变化、1 gwei 底价）
 - **PoSe 协议**：
@@ -32,9 +32,9 @@ COC 是一个 EVM 兼容的区块链原型，包含 PoSe（Proof-of-Service）�
   - LevelDB 持久化（区块索引、EVM 状态树、Nonce 注册表）
   - IPFS 兼容 HTTP APIs（add/cat/get/block/pin/ls/stat/id/version）+ `/ipfs/<cid>` 网关 + tar 归档
 - **运行时服务**：
-  - `coc-node`：PoSe 挑战/回执 HTTP 端点
-  - `coc-agent`：挑战生成、批次提交、节点注册
-  - `coc-relayer`：epoch 最终化与惩罚自动化
+  - `palimesh-node`：PoSe 挑战/回执 HTTP 端点
+  - `palimesh-agent`：挑战生成、批次提交、节点注册
+  - `palimesh-relayer`：epoch 最终化与惩罚自动化
 - **节点运维**：基于 YAML 的策略引擎与 agent 生命周期钩子
 - **健康监控**：系统诊断（内存/WS/存储/共识状态）
 - **调试追踪**：debug_traceTransaction、trace_transaction 支持
@@ -64,7 +64,7 @@ COC 是一个 EVM 兼容的区块链原型，包含 PoSe（Proof-of-Service）�
 - **共识指标**：出块和同步性能追踪（propose/sync 时间、成功率、运行时间）
 - **双传输层**：HTTP gossip + TCP 线协议并行传播区块和交易
 - **Wire FIND_NODE**：通过线协议请求/响应消息进行 DHT 节点发现
-- **网络统计 RPC**：`coc_getNetworkStats` 端点聚合 P2P/Wire/DHT/BFT 统计
+- **网络统计 RPC**：`pali_getNetworkStats` 端点聚合 P2P/Wire/DHT/BFT 统计
 - **Wire 去重与中继**：Wire 协议 Block/Tx 去重（BoundedSet: 50K tx, 10K blocks）、跨协议中继（Wire→HTTP）、BFT 双传输层（HTTP+TCP）
 - **DHT 增强**：wireClientByPeerId O(1) 查找用于 FIND_NODE、每 peer 独立 wire port
 - **Devnet 全特性**：多节点 devnet 默认启用 BFT、Wire、DHT、SnapSync，含每节点 wire port 和 DHT 引导节点

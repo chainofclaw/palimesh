@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Generate boot node configuration and DNS seed records for COC testnet
+# Generate boot node configuration and DNS seed records for Palimesh testnet
 # Usage: bash scripts/setup-boot-nodes.sh [config_dir] [domain]
 #
 # Outputs:
@@ -10,7 +10,7 @@ set -euo pipefail
 
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 CONFIG_DIR="${1:-${ROOT}/configs/prowl-testnet}"
-DNS_DOMAIN="${2:-_coc-prowl._tcp.chainofclaw.io}"
+DNS_DOMAIN="${2:-_coc-prowl._tcp.palimesh.io}"
 
 if [[ ! -f "${CONFIG_DIR}/validators.json" ]]; then
   echo "Error: ${CONFIG_DIR}/validators.json not found. Run generate-genesis.sh first."
@@ -51,8 +51,8 @@ for (let i = 0; i < bootCount; i++) {
     rpcUrl: 'http://' + ip + ':' + rpcPort,
   });
 
-  // DNS TXT record: coc-peer:<nodeId>:<p2p_url>
-  dnsRecords.push(dnsDomain + '  TXT  \"coc-peer:' + addr + ':http://' + ip + ':' + p2pPort + '\"');
+  // DNS TXT record: palimesh-peer:<nodeId>:<p2p_url>
+  dnsRecords.push(dnsDomain + '  TXT  \"palimesh-peer:' + addr + ':http://' + ip + ':' + p2pPort + '\"');
 
   dhtSeeds.push({ id: addr, address: ip, port: wirePort });
 }

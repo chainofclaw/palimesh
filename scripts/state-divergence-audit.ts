@@ -79,7 +79,7 @@ function parseArgs(argv: string[]): CliArgs {
   }
   if (args.rpcs.length === 0) {
     // Default to env var or testnet sensible default
-    const fromEnv = process.env.COC_AUDIT_RPCS
+    const fromEnv = process.env.PALI_AUDIT_RPCS
     if (fromEnv) {
       args.rpcs = fromEnv.split(",").map((x) => x.trim()).filter(Boolean)
     } else {

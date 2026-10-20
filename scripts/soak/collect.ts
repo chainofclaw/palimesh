@@ -133,14 +133,14 @@ async function tick(opts: CollectOpts, jsonlPath: string): Promise<void> {
     const text = await fetchMetrics(opts.host, opts.port)
     sample = {
       ts,
-      height: parsePromMetric(text, "coc_block_height"),
-      peers: parsePromMetric(text, "coc_peers_connected"),
-      wireConns: parsePromMetric(text, "coc_wire_connections"),
-      txPoolPending: parsePromMetric(text, "coc_tx_pool_pending"),
-      blockTimeP95: parsePromHistogramP95(text, "coc_block_time_seconds"),
-      equivocations: parsePromMetric(text, "coc_bft_equivocations_total"),
-      forkDepthMax: parsePromMetric(text, "coc_fork_choice_max_depth_blocks"),
-      consensusState: parsePromMetric(text, "coc_consensus_state"),
+      height: parsePromMetric(text, "pali_block_height"),
+      peers: parsePromMetric(text, "pali_peers_connected"),
+      wireConns: parsePromMetric(text, "pali_wire_connections"),
+      txPoolPending: parsePromMetric(text, "pali_tx_pool_pending"),
+      blockTimeP95: parsePromHistogramP95(text, "pali_block_time_seconds"),
+      equivocations: parsePromMetric(text, "pali_bft_equivocations_total"),
+      forkDepthMax: parsePromMetric(text, "pali_fork_choice_max_depth_blocks"),
+      consensusState: parsePromMetric(text, "pali_consensus_state"),
     }
   } catch (err) {
     stderr.write(`[soak] ${ts} fetch failed: ${err instanceof Error ? err.message : String(err)}\n`)

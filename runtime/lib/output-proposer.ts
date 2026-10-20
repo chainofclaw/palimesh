@@ -1,5 +1,5 @@
 /**
- * Output Proposer for COC Optimistic Rollup.
+ * Output Proposer for Palimesh Optimistic Rollup.
  *
  * Periodically reads L2 state roots and submits output proposals to the
  * L1 RollupStateManager contract. This anchors the L2 state on L1 for

@@ -63,7 +63,7 @@ done
 for i in 1 2 3 4 5; do
   IDX=$((i - 1))
   NODE_ID="${VALIDATORS[$IDX]}"
-  KEY=$(grep "^COC_NODE_KEY=" "${KEYS_DIR}/validator-${i}.env" | cut -d= -f2)
+  KEY=$(grep "^PALI_NODE_KEY=" "${KEYS_DIR}/validator-${i}.env" | cut -d= -f2)
 
   RPC_PORT=$((BASE_RPC + IDX))
   P2P_PORT=$((BASE_P2P + IDX))
@@ -146,9 +146,9 @@ JSON
   PID_FILE="${RUN_DIR}/node-${i}.pid"
 
   env \
-    COC_METRICS_PORT="${METRICS_PORT}" \
-    COC_NODE_KEY="${KEY}" \
-    COC_NODE_CONFIG="${DATA_DIR}/node-config.json" \
+    PALI_METRICS_PORT="${METRICS_PORT}" \
+    PALI_NODE_KEY="${KEY}" \
+    PALI_NODE_CONFIG="${DATA_DIR}/node-config.json" \
     node --experimental-strip-types "${ROOT}/node/src/index.ts" >"${LOG_FILE}" 2>&1 &
   echo $! > "${PID_FILE}"
   echo "started validator-${i} (${NODE_ID:0:10}…): rpc=${RPC_PORT} p2p=${P2P_PORT} wire=${WIRE_PORT} pid=$(cat "${PID_FILE}")"

@@ -1,7 +1,7 @@
 /**
  * TPS Benchmark Script
  *
- * Sends signed transactions to a running COC node to measure throughput.
+ * Sends signed transactions to a running Palimesh node to measure throughput.
  *
  * Usage:
  *   node --experimental-strip-types scripts/tps-bench.ts [options]

@@ -1,8 +1,8 @@
 groups:
-  - name: coc-node-alerts
+  - name: palimesh-node-alerts
     rules:
       - alert: BlockProductionStopped
-        expr: increase(coc_block_height[5m]) == 0
+        expr: increase(pali_block_height[5m]) == 0
         for: 5m
         labels:
           severity: critical
@@ -11,7 +11,7 @@ groups:
           description: "No new blocks produced in the last 5 minutes."
 
       - alert: ConsensusDegraded
-        expr: coc_consensus_state != 0
+        expr: pali_consensus_state != 0
         for: 2m
         labels:
           severity: warning
@@ -20,7 +20,7 @@ groups:
           description: "Consensus state is {{ $value }} (expected 0 = healthy) for over 2 minutes."
 
       - alert: HighMemory
-        expr: coc_process_memory_bytes > 2147483648
+        expr: pali_process_memory_bytes > 2147483648
         for: 1m
         labels:
           severity: warning
@@ -29,7 +29,7 @@ groups:
           description: "Process memory exceeds 2GB (current: {{ $value | humanize1024 }})."
 
       - alert: PeerCountLow
-        expr: coc_peers_connected < 2
+        expr: pali_peers_connected < 2
         for: 3m
         labels:
           severity: warning
@@ -38,7 +38,7 @@ groups:
           description: "Connected peers is {{ $value }}, below threshold of 2."
 
       - alert: ForkDetected
-        expr: max(coc_block_height) - min(coc_block_height) > 3
+        expr: max(pali_block_height) - min(pali_block_height) > 3
         for: 2m
         labels:
           severity: critical
@@ -47,7 +47,7 @@ groups:
           description: "Block height delta across nodes exceeds 3 (delta: {{ $value }}). Nodes may have diverged."
 
       - alert: NodeOffline
-        expr: up{job=~"coc-.*"} == 0
+        expr: up{job=~"palimesh-.*"} == 0
         for: 1m
         labels:
           severity: critical
@@ -56,7 +56,7 @@ groups:
           description: "Prometheus cannot reach {{ $labels.instance }} for over 1 minute."
 
       - alert: MempoolBacklog
-        expr: coc_tx_pool_pending > 1000
+        expr: pali_tx_pool_pending > 1000
         for: 5m
         labels:
           severity: warning

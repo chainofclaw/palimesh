@@ -1,14 +1,14 @@
-# COC (ChainOfClaw) Operations Manual
+# Palimesh (Palimesh) Operations Manual
 
 > From zero to testnet — a complete guide for operators.
 
 > **🟡 Canary 88780 note** — This document covers the **codebase defaults**
 > (chainId `18780`, RPC port `18780`, etc.). For the live canary testnet
-> (chainId **88780**, public RPC `https://rpc.chainofclaw.io`,
+> (chainId **88780**, public RPC `https://rpc.palimesh.io`,
 > contract addresses, faucet, explorer, rate limits), the canonical
 > reference is [`public-endpoints-88780.md`](./public-endpoints-88780.md).
 > If you're spinning up a node to **join 88780** (not a local devnet),
-> set `COC_CHAIN_ID=88780` + use the validator/peer config from
+> set `PALI_CHAIN_ID=88780` + use the validator/peer config from
 > [`external-validator-onboarding.md`](./external-validator-onboarding.md).
 
 ---
@@ -64,19 +64,19 @@ Module / program focus: this chapter covers the host requirements shared by the 
 
 ## 2. Repository Setup
 
-Principle: COC is a multi-workspace system, so operators need a consistent checkout and dependency graph before they can run or verify any individual component.
+Principle: Palimesh is a multi-workspace system, so operators need a consistent checkout and dependency graph before they can run or verify any individual component.
 Module / program focus: this chapter maps repository directories to operational programs, so you can tell which workspace owns node execution, contracts, runtime automation, wallet operations, and observability.
 
 ```bash
 git clone https://github.com/<org>/ClawdBot.git
-cd ClawdBot/COC
+cd ClawdBot/Palimesh
 npm install          # Installs all workspaces at once
 ```
 
 ### Workspace Structure
 
 ```
-COC/
+Palimesh/
 ├── node/            # Blockchain core engine
 ├── contracts/       # Solidity smart contracts (PoSeManager)
 ├── services/        # PoSe off-chain services
@@ -100,7 +100,7 @@ Module / program focus: this chapter starts the core blockchain node (`node/src/
 ### Start a node
 
 ```bash
-COC_DATA_DIR=/tmp/coc-single \
+PALI_DATA_DIR=/tmp/palimesh-single \
   node --experimental-strip-types node/src/index.ts
 ```
 
@@ -145,7 +145,7 @@ curl -s -X POST http://127.0.0.1:18780 \
 Principle: node behavior is determined by explicit configuration for networking, consensus, storage, and security; operationally, these inputs should be reviewable and reproducible.
 Module / program focus: this chapter documents the main node process, its data directory layout, and the config/env inputs that shape its runtime behavior.
 
-Configuration is loaded from `{COC_DATA_DIR}/node-config.json` and can be overridden by environment variables.
+Configuration is loaded from `{PALI_DATA_DIR}/node-config.json` and can be overridden by environment variables.
 
 ### Core Parameters
 
@@ -164,37 +164,37 @@ Configuration is loaded from `{COC_DATA_DIR}/node-config.json` and can be overri
 
 | Variable | Default | Description |
 |----------|---------|-------------|
-| `COC_DATA_DIR` | `~/.clawdbot/coc` | Data directory |
-| `COC_NODE_CONFIG` | `{dataDir}/node-config.json` | Config file path |
-| `COC_NODE_KEY` | auto-generated | Node private key (0x + 64 hex); `COC_NODE_PK` is accepted only as a legacy alias |
-| `COC_RPC_BIND` | `0.0.0.0` | RPC listen address |
-| `COC_RPC_PORT` | 18780 | RPC port |
-| `COC_WS_BIND` | `0.0.0.0` | WebSocket listen address |
-| `COC_WS_PORT` | 18781 | WebSocket port |
-| `COC_P2P_BIND` | `0.0.0.0` | P2P listen address |
-| `COC_P2P_PORT` | 19780 | P2P port |
-| `COC_WIRE_BIND` | `0.0.0.0` | Wire protocol listen address |
-| `COC_WIRE_PORT` | 19781 | Wire protocol port |
-| `COC_IPFS_BIND` | `0.0.0.0` | IPFS listen address |
-| `COC_IPFS_PORT` | 5001 | IPFS port |
-| `COC_METRICS_BIND` | `127.0.0.1` | Prometheus metrics listen address |
-| `COC_METRICS_PORT` | 9100 | Prometheus metrics port |
-| `COC_DEV_MODE` | `false` | Dev mode (binds to 127.0.0.1) |
-| `COC_NODE_MODE` | `full` | Node mode: `full` / `archive` / `light` |
+| `PALI_DATA_DIR` | `~/.clawdbot/coc` | Data directory |
+| `PALI_NODE_CONFIG` | `{dataDir}/node-config.json` | Config file path |
+| `PALI_NODE_KEY` | auto-generated | Node private key (0x + 64 hex); `PALI_NODE_PK` is accepted only as a legacy alias |
+| `PALI_RPC_BIND` | `0.0.0.0` | RPC listen address |
+| `PALI_RPC_PORT` | 18780 | RPC port |
+| `PALI_WS_BIND` | `0.0.0.0` | WebSocket listen address |
+| `PALI_WS_PORT` | 18781 | WebSocket port |
+| `PALI_P2P_BIND` | `0.0.0.0` | P2P listen address |
+| `PALI_P2P_PORT` | 19780 | P2P port |
+| `PALI_WIRE_BIND` | `0.0.0.0` | Wire protocol listen address |
+| `PALI_WIRE_PORT` | 19781 | Wire protocol port |
+| `PALI_IPFS_BIND` | `0.0.0.0` | IPFS listen address |
+| `PALI_IPFS_PORT` | 5001 | IPFS port |
+| `PALI_METRICS_BIND` | `127.0.0.1` | Prometheus metrics listen address |
+| `PALI_METRICS_PORT` | 9100 | Prometheus metrics port |
+| `PALI_DEV_MODE` | `false` | Dev mode (binds to 127.0.0.1) |
+| `PALI_NODE_MODE` | `full` | Node mode: `full` / `archive` / `light` |
 
 ### Environment Variables — Security
 
 | Variable | Default | Description |
 |----------|---------|-------------|
-| `COC_RPC_AUTH_TOKEN` | (none) | Bearer token for RPC auth |
-| `COC_ENABLE_ADMIN_RPC` | `false` | Enable admin_* namespace |
-| `COC_RPC_ALLOW_LOOPBACK_ADMIN` | `false` | Treat loopback RPC requests as admin/governance-authorized without Bearer auth; keep disabled behind reverse proxies |
-| `COC_DEV_ACCOUNTS` | (none) | Set `1` to enable dev accounts |
-| `COC_SIGNATURE_ENFORCEMENT` | `enforce` | `off` / `monitor` / `enforce` |
-| `COC_P2P_AUTH_MODE` | `enforce` | P2P inbound auth mode |
-| `COC_P2P_AUTH_MAX_CLOCK_SKEW_MS` | 120000 | Max clock drift (ms) |
-| `COC_POSE_AUTH_MODE` | `enforce` | PoSe challenge auth mode |
-| `COC_POSE_ALLOWED_CHALLENGERS` | (none) | Comma-separated challenger addresses |
+| `PALI_RPC_AUTH_TOKEN` | (none) | Bearer token for RPC auth |
+| `PALI_ENABLE_ADMIN_RPC` | `false` | Enable admin_* namespace |
+| `PALI_RPC_ALLOW_LOOPBACK_ADMIN` | `false` | Treat loopback RPC requests as admin/governance-authorized without Bearer auth; keep disabled behind reverse proxies |
+| `PALI_DEV_ACCOUNTS` | (none) | Set `1` to enable dev accounts |
+| `PALI_SIGNATURE_ENFORCEMENT` | `enforce` | `off` / `monitor` / `enforce` |
+| `PALI_P2P_AUTH_MODE` | `enforce` | P2P inbound auth mode |
+| `PALI_P2P_AUTH_MAX_CLOCK_SKEW_MS` | 120000 | Max clock drift (ms) |
+| `PALI_POSE_AUTH_MODE` | `enforce` | PoSe challenge auth mode |
+| `PALI_POSE_ALLOWED_CHALLENGERS` | (none) | Comma-separated challenger addresses |
 
 ### Feature Flags
 
@@ -218,7 +218,7 @@ Configuration is loaded from `{COC_DATA_DIR}/node-config.json` and can be overri
 ### Data Directory Layout
 
 ```
-{COC_DATA_DIR}/
+{PALI_DATA_DIR}/
 ├── node-config.json              # Configuration
 ├── node-key                      # Private key (mode 0600)
 ├── leveldb/                      # LevelDB state storage
@@ -323,8 +323,8 @@ Optional profile: `agent`, `relayer` via `--profile pose`
 | Faucet | 3003 |
 
 Environment:
-- Set `COC_FAUCET_KEY` for faucet private key
-- Set `IMAGE_TAG` plus optional `COC_NODE_IMAGE` / `COC_RUNTIME_IMAGE` / `COC_EXPLORER_IMAGE` / `COC_FAUCET_IMAGE` to deploy prebuilt images
+- Set `PALI_FAUCET_KEY` for faucet private key
+- Set `IMAGE_TAG` plus optional `PALI_NODE_IMAGE` / `PALI_RUNTIME_IMAGE` / `PALI_EXPLORER_IMAGE` / `PALI_FAUCET_IMAGE` to deploy prebuilt images
 
 ### 6.3 Dockerfile
 
@@ -336,13 +336,13 @@ The node image (`docker/Dockerfile.node`) uses:
 - **Exposed ports**: 18780, 18781, 19780, 19781, 5001, 9100
 
 ```bash
-docker build -f docker/Dockerfile.node -t coc-node:latest .
+docker build -f docker/Dockerfile.node -t palimesh-node:latest .
 ```
 
-The runtime image (`docker/Dockerfile.runtime`) packages `coc-agent` and `coc-relayer` on top of the same Node 22 base:
+The runtime image (`docker/Dockerfile.runtime`) packages `palimesh-agent` and `palimesh-relayer` on top of the same Node 22 base:
 
 ```bash
-docker build -f docker/Dockerfile.runtime -t coc-runtime:latest .
+docker build -f docker/Dockerfile.runtime -t palimesh-runtime:latest .
 ```
 
 ---
@@ -364,10 +364,10 @@ bash scripts/generate-validator-keys.sh <count>
 
 ```bash
 # For Docker deployment
-COC_DOCKER=1 bash scripts/generate-genesis.sh 3
+PALI_DOCKER=1 bash scripts/generate-genesis.sh 3
 
 # For bare-metal deployment (replace 203.0.113.10 with your bootstrap host)
-COC_BOOT_HOST=203.0.113.10 bash scripts/generate-genesis.sh 3
+PALI_BOOT_HOST=203.0.113.10 bash scripts/generate-genesis.sh 3
 ```
 
 ### 7.3 Bootstrap Nodes
@@ -387,27 +387,27 @@ Configures:
 Install the systemd unit file:
 
 ```bash
-sudo cp docker/systemd/coc-node.service /etc/systemd/system/
-sudo cp docker/systemd/coc-agent.service /etc/systemd/system/
-sudo cp docker/systemd/coc-relayer.service /etc/systemd/system/
+sudo cp docker/systemd/palimesh-node.service /etc/systemd/system/
+sudo cp docker/systemd/palimesh-agent.service /etc/systemd/system/
+sudo cp docker/systemd/palimesh-relayer.service /etc/systemd/system/
 sudo systemctl daemon-reload
-sudo systemctl enable --now coc-node
+sudo systemctl enable --now palimesh-node
 ```
 
-Key settings in `coc-node.service`:
+Key settings in `palimesh-node.service`:
 - `Restart=always` with `RestartSec=10`
 - `LimitNOFILE=65535` for LevelDB
-- Environment file: `/etc/coc/coc-node.env`
+- Environment file: `/etc/palimesh/palimesh-node.env`
 
-`coc-agent.service` and `coc-relayer.service` follow the same pattern, using:
-- `/etc/coc/coc-agent.env`
-- `/etc/coc/coc-relayer.env`
+`palimesh-agent.service` and `palimesh-relayer.service` follow the same pattern, using:
+- `/etc/palimesh/palimesh-agent.env`
+- `/etc/palimesh/palimesh-relayer.env`
 
 ### 7.5 Nginx Reverse Proxy
 
 ```bash
-sudo cp docker/nginx/coc-rpc.conf /etc/nginx/sites-available/
-sudo ln -s /etc/nginx/sites-available/coc-rpc.conf /etc/nginx/sites-enabled/
+sudo cp docker/nginx/palimesh-rpc.conf /etc/nginx/sites-available/
+sudo ln -s /etc/nginx/sites-available/palimesh-rpc.conf /etc/nginx/sites-enabled/
 sudo nginx -t && sudo systemctl reload nginx
 ```
 
@@ -444,7 +444,7 @@ npm run deploy:local
 # Local PoSe deployment via the packaged Hardhat script
 npm run deploy:local
 
-# Governance deployment against the default COC Hardhat network alias
+# Governance deployment against the default Palimesh Hardhat network alias
 npm run deploy:governance:coc
 ```
 
@@ -458,14 +458,14 @@ npm run deploy:governance:coc
 
 ### Governance Contracts
 
-On a shared testnet, ownership of every COC contract must sit with a
+On a shared testnet, ownership of every Palimesh contract must sit with a
 multisig — not with the deployer EOA (#686). The recommended sequence is:
 
 ```bash
 # 0. Use a fresh, non-public deployer key. preflight.js rejects the 20
 #    default Hardhat test keys. Fund it from any pre-funded EOA.
 export DEPLOYER_PRIVATE_KEY=<fresh-non-public-key>
-export COC_RPC_URL=... COC_CHAIN_ID=...
+export PALI_RPC_URL=... PALI_CHAIN_ID=...
 
 # 1. Deploy the MultiSigWallet that will own the contracts.
 export MULTISIG_OWNERS=<addr1,addr2,addr3,addr4,addr5>
@@ -490,7 +490,7 @@ The most recent deploy is logged in `docs/88780-redeploy-2026-05-19.md`.
 
 ### Verify PoSe Contract
 
-COC does not currently ship a Hardhat `verify:pose` entrypoint or an Etherscan/Sourcify publication flow for `PoSeManagerV2`.
+Palimesh does not currently ship a Hardhat `verify:pose` entrypoint or an Etherscan/Sourcify publication flow for `PoSeManagerV2`.
 
 Use the Explorer verification workflow instead:
 
@@ -503,7 +503,7 @@ This is a local bytecode verification flow, not a public contract registry publi
 
 ### UUPS storage discipline (since gen-5)
 
-Since 88780 gen-5 (2026-05-20), every COC production contract lives behind
+Since 88780 gen-5 (2026-05-20), every Palimesh production contract lives behind
 a UUPS upgradeable proxy. The proxy's storage slots are permanent; the
 implementation can be replaced by an `upgrades.upgradeProxy()` call from
 the multisig owner.
@@ -537,8 +537,8 @@ Solidity: 0.8.24
 Hardhat script networks:
   hardhat   -> in-memory local chain
   localhost -> local JSON-RPC endpoint
-  coc       -> COC_RPC_URL || PROWL_RPC_URL || http://127.0.0.1:18780
-               COC_CHAIN_ID || PROWL_CHAIN_ID || 18780
+  coc       -> PALI_RPC_URL || PROWL_RPC_URL || http://127.0.0.1:18780
+               PALI_CHAIN_ID || PROWL_CHAIN_ID || 18780
   prowl     -> PROWL_RPC_URL || http://127.0.0.1:18780
                PROWL_CHAIN_ID || 18780
 ```
@@ -550,7 +550,7 @@ Hardhat script networks:
 ## 9. Explorer Setup
 
 Principle: the explorer is a read-oriented client over RPC and WebSocket endpoints; it should never be treated as an authoritative source independent of chain data.
-Module / program focus: this chapter covers the Next.js explorer, which renders chain state, indexed views, analytics, and contract verification against a live COC node.
+Module / program focus: this chapter covers the Next.js explorer, which renders chain state, indexed views, analytics, and contract verification against a live Palimesh node.
 
 ### Development
 
@@ -593,36 +593,36 @@ npm start
 ## 10. Wallet CLI
 
 Principle: signing and custody should remain separate from node execution, so wallet operations can be audited and rotated independently of validator or relayer processes.
-Module / program focus: this chapter covers `wallet/coc-wallet.ts`, a lightweight operator CLI for keystore management, balance inspection, transfers, and nonce/receipt queries.
+Module / program focus: this chapter covers `wallet/palimesh-wallet.ts`, a lightweight operator CLI for keystore management, balance inspection, transfers, and nonce/receipt queries.
 
 ### Usage
 
 ```bash
 # Create a new wallet
-node --experimental-strip-types wallet/coc-wallet.ts create [--password <pwd>]
+node --experimental-strip-types wallet/palimesh-wallet.ts create [--password <pwd>]
 
 # Import from private key or mnemonic
-node --experimental-strip-types wallet/coc-wallet.ts import <key-or-mnemonic> [--password <pwd>]
+node --experimental-strip-types wallet/palimesh-wallet.ts import <key-or-mnemonic> [--password <pwd>]
 
 # Check balance
-node --experimental-strip-types wallet/coc-wallet.ts balance <address> [--rpc <url>]
+node --experimental-strip-types wallet/palimesh-wallet.ts balance <address> [--rpc <url>]
 
 # Send ETH
-node --experimental-strip-types wallet/coc-wallet.ts send <from> <to> <amount-in-eth> [--rpc <url>]
+node --experimental-strip-types wallet/palimesh-wallet.ts send <from> <to> <amount-in-eth> [--rpc <url>]
 
 # Query transaction
-node --experimental-strip-types wallet/coc-wallet.ts tx <hash> [--rpc <url>]
+node --experimental-strip-types wallet/palimesh-wallet.ts tx <hash> [--rpc <url>]
 
 # Get nonce
-node --experimental-strip-types wallet/coc-wallet.ts nonce <address> [--rpc <url>]
+node --experimental-strip-types wallet/palimesh-wallet.ts nonce <address> [--rpc <url>]
 ```
 
 ### Configuration
 
 | Variable | Default | Description |
 |----------|---------|-------------|
-| `COC_RPC_URL` | `http://127.0.0.1:18780` | RPC endpoint |
-| `COC_WALLET_PASSWORD` | unset | Keystore password for create/import/send; set explicitly or pass `--password` |
+| `PALI_RPC_URL` | `http://127.0.0.1:18780` | RPC endpoint |
+| `PALI_WALLET_PASSWORD` | unset | Keystore password for create/import/send; set explicitly or pass `--password` |
 
 Keystore location: `~/.coc/keystore/{address}.json`
 
@@ -631,20 +631,20 @@ Keystore location: `~/.coc/keystore/{address}.json`
 ## 11. PoSe Service Layer
 
 Principle: PoSe is an off-chain service pipeline around challenge issuance, receipt verification, evidence persistence, reward manifest generation, and settlement coordination.
-Module / program focus: this chapter covers the runtime programs that implement that pipeline: `coc-node`, `coc-agent`, `coc-relayer`, and `coc-reward-claim`.
+Module / program focus: this chapter covers the runtime programs that implement that pipeline: `palimesh-node`, `palimesh-agent`, `palimesh-relayer`, and `palimesh-reward-claim`.
 
-### 11.1 coc-node (PoSe Endpoints)
+### 11.1 palimesh-node (PoSe Endpoints)
 
-Principle: `coc-node` is a lightweight PoSe-facing HTTP service that signs challenge receipts and witness attestations; it is not the full blockchain node.
+Principle: `palimesh-node` is a lightweight PoSe-facing HTTP service that signs challenge receipts and witness attestations; it is not the full blockchain node.
 Module / program focus: this program exposes challenge/receipt APIs for test and runtime integration, plus a minimal service-local health endpoint.
 
 The PoSe runtime service exposes these HTTP endpoints:
 
 ```bash
-COC_DATA_DIR=/data/coc \
-COC_NODE_KEY=0x... \
-COC_POSE_WITNESS_AUTH_TOKEN=... \
-  node --experimental-strip-types runtime/coc-node.ts
+PALI_DATA_DIR=/data/coc \
+PALI_NODE_KEY=0x... \
+PALI_POSE_WITNESS_AUTH_TOKEN=... \
+  node --experimental-strip-types runtime/palimesh-node.ts
 ```
 
 | Endpoint | Method | Description |
@@ -654,23 +654,23 @@ COC_POSE_WITNESS_AUTH_TOKEN=... \
 | `/pose/receipt` | POST | Submit receipt |
 | `/pose/witness` | POST | Witness attestation (v2 only) |
 
-Security note: `/pose/witness` signs EIP-712 witness attestations. When `COC_POSE_WITNESS_AUTH_TOKEN` or `poseWitnessAuthToken` is configured, every caller must present `Authorization: Bearer <token>`. Without a token, only loopback callers are accepted. Configure matching `authToken` values on remote `witnessNodes`; keep public deployments behind TLS or a private network.
+Security note: `/pose/witness` signs EIP-712 witness attestations. When `PALI_POSE_WITNESS_AUTH_TOKEN` or `poseWitnessAuthToken` is configured, every caller must present `Authorization: Bearer <token>`. Without a token, only loopback callers are accepted. Configure matching `authToken` values on remote `witnessNodes`; keep public deployments behind TLS or a private network.
 
-Note: `runtime/coc-node.ts` returns a lightweight service-local health payload (`{"ok":true,"ts":...}`) on `/health`; chain height and peer status should still be checked through node RPC or the metrics server.
+Note: `runtime/palimesh-node.ts` returns a lightweight service-local health payload (`{"ok":true,"ts":...}`) on `/health`; chain height and peer status should still be checked through node RPC or the metrics server.
 
-### 11.2 coc-agent (Challenge & Aggregation)
+### 11.2 palimesh-agent (Challenge & Aggregation)
 
 Principle: the agent is the scoring and evidence producer; it continuously samples target nodes, validates replies, and turns observations into batchable receipts and reward manifests.
 Module / program focus: this program drives challenges, verifies receipts, persists evidence/manifests, and prepares data that later feeds relayer settlement.
 
 ```bash
-COC_NODE_URL=http://127.0.0.1:18780 \
-COC_L1_RPC_URL=http://127.0.0.1:8545 \
-COC_POSE_MANAGER=0x... \
-COC_OPERATOR_PK=0x... \
-COC_AGENT_INTERVAL_MS=60000 \
-COC_AGENT_BATCH_SIZE=5 \
-  node --experimental-strip-types runtime/coc-agent.ts
+PALI_NODE_URL=http://127.0.0.1:18780 \
+PALI_L1_RPC_URL=http://127.0.0.1:8545 \
+PALI_POSE_MANAGER=0x... \
+PALI_OPERATOR_PK=0x... \
+PALI_AGENT_INTERVAL_MS=60000 \
+PALI_AGENT_BATCH_SIZE=5 \
+  node --experimental-strip-types runtime/palimesh-agent.ts
 ```
 
 Functions:
@@ -681,19 +681,19 @@ Functions:
 - Persists reward manifests to `{dataDir}/reward-manifests/`
 - Tick reentrance guard prevents overlapping cycles
 
-For protocol v2, `coc-agent` also requires `protocolVersion: 2`, `poseManagerV2Address`, and `verifyingContract` in the runtime config file; those settings are config-backed rather than standalone env-only flags.
+For protocol v2, `palimesh-agent` also requires `protocolVersion: 2`, `poseManagerV2Address`, and `verifyingContract` in the runtime config file; those settings are config-backed rather than standalone env-only flags.
 
-### 11.3 coc-relayer (Epoch Finalization & Slashing)
+### 11.3 palimesh-relayer (Epoch Finalization & Slashing)
 
 Principle: the relayer is the settlement-side coordinator; it turns persisted manifests and evidence into contract calls, while keeping challenge and slash sequencing deterministic.
 Module / program focus: this program finalizes epochs, distributes rewards, bridges BFT equivocation evidence into PoSe disputes, and advances the v2 dispute lifecycle.
 
 ```bash
-COC_L1_RPC_URL=http://127.0.0.1:8545 \
-COC_POSE_MANAGER=0x... \
-COC_SLASHER_PK=0x... \
-COC_RELAYER_INTERVAL_MS=60000 \
-  node --experimental-strip-types runtime/coc-relayer.ts
+PALI_L1_RPC_URL=http://127.0.0.1:8545 \
+PALI_POSE_MANAGER=0x... \
+PALI_SLASHER_PK=0x... \
+PALI_RELAYER_INTERVAL_MS=60000 \
+  node --experimental-strip-types runtime/palimesh-relayer.ts
 ```
 
 Functions:
@@ -705,15 +705,15 @@ Functions:
 
 For protocol v2, the relayer also reads `protocolVersion`, `poseManagerV2Address`, `verifyingContract`, and optional `l2RpcUrl` from the runtime config file.
 
-### 11.4 coc-reward-claim (V2 Merkle Claim)
+### 11.4 palimesh-reward-claim (V2 Merkle Claim)
 
 Principle: reward claiming is intentionally separated from reward generation and finalization, so operators can audit proofs before submitting claim transactions.
 Module / program focus: this program reads reward manifests, resolves the best available proof (settled manifest first), and submits either v2 Merkle claims or v1 direct reward claims.
 
 ```bash
-COC_DATA_DIR=/data/coc \
-COC_OPERATOR_PK=0x... \
-  node --experimental-strip-types runtime/coc-reward-claim.ts --epoch 123 --node-id 0x...
+PALI_DATA_DIR=/data/coc \
+PALI_OPERATOR_PK=0x... \
+  node --experimental-strip-types runtime/palimesh-reward-claim.ts --epoch 123 --node-id 0x...
 ```
 
 For v2, `protocolVersion`, `poseManagerV2Address`, and `rewardManifestDir` are read from the runtime config file. For v1, the same program falls back to `poseManagerAddress` and direct `claimReward(nodeId)`.
@@ -722,20 +722,20 @@ For v2, `protocolVersion`, `poseManagerV2Address`, and `rewardManifestDir` are r
 
 | Variable | Default | Description |
 |----------|---------|-------------|
-| `COC_NODE_URL` | `http://127.0.0.1:18780` | COC node RPC |
-| `COC_L1_RPC_URL` | `http://127.0.0.1:8545` | Settlement layer RPC |
-| `COC_POSE_MANAGER` | (required) | PoSeManager v1 address |
-| `COC_OPERATOR_PK` | (required) | Operator private key |
-| `COC_OPERATOR_PK_FILE` | (none) | Operator key file path |
-| `COC_SLASHER_PK` | (required for relayer) | Slasher private key |
-| `COC_SLASHER_PK_FILE` | (none) | Slasher key file path |
-| `COC_AGENT_INTERVAL_MS` | 60000 | Agent tick interval |
-| `COC_AGENT_BATCH_SIZE` | 5 | Receipts per batch |
-| `COC_AGENT_SAMPLE_SIZE` | 2 | Verification sample size |
-| `COC_RELAYER_INTERVAL_MS` | 60000 | Relayer tick interval |
-| `COC_TX_RETRY_ATTEMPTS` | 2 | Transaction retry count |
-| `COC_TX_RETRY_BASE_DELAY_MS` | 250 | Base retry delay |
-| `COC_TX_RETRY_MAX_DELAY_MS` | 5000 | Max retry delay |
+| `PALI_NODE_URL` | `http://127.0.0.1:18780` | Palimesh node RPC |
+| `PALI_L1_RPC_URL` | `http://127.0.0.1:8545` | Settlement layer RPC |
+| `PALI_POSE_MANAGER` | (required) | PoSeManager v1 address |
+| `PALI_OPERATOR_PK` | (required) | Operator private key |
+| `PALI_OPERATOR_PK_FILE` | (none) | Operator key file path |
+| `PALI_SLASHER_PK` | (required for relayer) | Slasher private key |
+| `PALI_SLASHER_PK_FILE` | (none) | Slasher key file path |
+| `PALI_AGENT_INTERVAL_MS` | 60000 | Agent tick interval |
+| `PALI_AGENT_BATCH_SIZE` | 5 | Receipts per batch |
+| `PALI_AGENT_SAMPLE_SIZE` | 2 | Verification sample size |
+| `PALI_RELAYER_INTERVAL_MS` | 60000 | Relayer tick interval |
+| `PALI_TX_RETRY_ATTEMPTS` | 2 | Transaction retry count |
+| `PALI_TX_RETRY_BASE_DELAY_MS` | 250 | Base retry delay |
+| `PALI_TX_RETRY_MAX_DELAY_MS` | 5000 | Max retry delay |
 
 ### V2 Protocol Configuration
 
@@ -768,15 +768,15 @@ docker compose -f docker/docker-compose.monitoring.yml up -d
 
 ### Prometheus Metrics Endpoint
 
-Each node exposes metrics at `http://<COC_METRICS_BIND>:<COC_METRICS_PORT>/metrics` (default `127.0.0.1:9100`). Set `COC_METRICS_BIND` explicitly when a Prometheus host must scrape over the network.
+Each node exposes metrics at `http://<PALI_METRICS_BIND>:<PALI_METRICS_PORT>/metrics` (default `127.0.0.1:9100`). Set `PALI_METRICS_BIND` explicitly when a Prometheus host must scrape over the network.
 
 Key metrics:
-- `coc_block_height` — current block number
-- `coc_tx_pool_size` — mempool transaction count
-- `coc_peer_count` — connected P2P peers
-- `coc_consensus_state` — consensus engine state
-- `coc_bft_height` — BFT finalized height
-- `coc_dht_peers` — DHT routing table size
+- `pali_block_height` — current block number
+- `pali_tx_pool_size` — mempool transaction count
+- `pali_peer_count` — connected P2P peers
+- `pali_consensus_state` — consensus engine state
+- `pali_bft_height` — BFT finalized height
+- `pali_dht_peers` — DHT routing table size
 
 ### Grafana Dashboards
 
@@ -793,11 +793,11 @@ The monitoring compose file mounts `ops/alerts/prometheus-rules.yml` as the acti
 
 | Alert | Condition |
 |-------|-----------|
-| NodeDown | `up{job="coc-node"} == 0` |
-| BlockProductionStalled | `increase(coc_block_height[5m]) == 0` |
-| ConsensusStateDegraded | `coc_consensus_state != 0` |
-| HighAuthRejections | `rate(coc_p2p_auth_rejected_total[5m]) > 10` |
-| NoWireConnections | `coc_wire_connections == 0 and coc_peers_connected > 0` |
+| NodeDown | `up{job="palimesh-node"} == 0` |
+| BlockProductionStalled | `increase(pali_block_height[5m]) == 0` |
+| ConsensusStateDegraded | `pali_consensus_state != 0` |
+| HighAuthRejections | `rate(pali_p2p_auth_rejected_total[5m]) > 10` |
+| NoWireConnections | `pali_wire_connections == 0 and pali_peers_connected > 0` |
 
 When you run the 3-node Docker testnet, start monitoring separately:
 
@@ -813,8 +813,8 @@ The monitoring stack joins the external `docker_coc-rpc` network and scrapes `no
 
 ## 13. Health Checks & Status
 
-Principle: health in COC is layered; RPC, metrics, and PoSe service endpoints answer different questions and should not be treated as interchangeable probes.
-Module / program focus: this chapter covers operator-facing scripts and RPC calls for the core node, while distinguishing them from the separate `runtime/coc-node.ts` PoSe service.
+Principle: health in Palimesh is layered; RPC, metrics, and PoSe service endpoints answer different questions and should not be treated as interchangeable probes.
+Module / program focus: this chapter covers operator-facing scripts and RPC calls for the core node, while distinguishing them from the separate `runtime/palimesh-node.ts` PoSe service.
 
 ### Node Status Script
 
@@ -834,17 +834,17 @@ curl -s -X POST http://127.0.0.1:18780 \
 # Chain stats
 curl -s -X POST http://127.0.0.1:18780 \
   -H 'Content-Type: application/json' \
-  -d '{"jsonrpc":"2.0","method":"coc_chainStats","params":[],"id":1}'
+  -d '{"jsonrpc":"2.0","method":"pali_chainStats","params":[],"id":1}'
 
 # BFT status
 curl -s -X POST http://127.0.0.1:18780 \
   -H 'Content-Type: application/json' \
-  -d '{"jsonrpc":"2.0","method":"coc_getBftStatus","params":[],"id":1}'
+  -d '{"jsonrpc":"2.0","method":"pali_getBftStatus","params":[],"id":1}'
 
 # Network stats
 curl -s -X POST http://127.0.0.1:18780 \
   -H 'Content-Type: application/json' \
-  -d '{"jsonrpc":"2.0","method":"coc_getNetworkStats","params":[],"id":1}'
+  -d '{"jsonrpc":"2.0","method":"pali_getNetworkStats","params":[],"id":1}'
 
 # Peer count
 curl -s -X POST http://127.0.0.1:18780 \
@@ -859,12 +859,12 @@ curl -s -X POST http://127.0.0.1:18780 \
 curl -s http://127.0.0.1:9100/health
 # Returns: ok
 
-# PoSe runtime service (runtime/coc-node.ts)
+# PoSe runtime service (runtime/palimesh-node.ts)
 curl -s http://127.0.0.1:19780/health
 # Returns: {"ok":true,"ts":...}
 ```
 
-Use JSON-RPC methods such as `eth_blockNumber`, `coc_chainStats`, and `coc_getNetworkStats` for chain health. Use `/health` only as a liveness probe for the specific HTTP service that exposes it.
+Use JSON-RPC methods such as `eth_blockNumber`, `pali_chainStats`, and `pali_getNetworkStats` for chain health. Use `/health` only as a liveness probe for the specific HTTP service that exposes it.
 
 ---
 
@@ -907,20 +907,20 @@ It does not automatically stop the service or run a separate LevelDB repair pass
 
 ```bash
 # Stop node first
-systemctl stop coc-node
+systemctl stop palimesh-node
 
 # Archive data directory
-tar czf coc-backup-$(date +%Y%m%d).tar.gz -C ~/.clawdbot coc/
+tar czf palimesh-backup-$(date +%Y%m%d).tar.gz -C ~/.clawdbot coc/
 
 # Restart
-systemctl start coc-node
+systemctl start palimesh-node
 ```
 
 ---
 
 ## 15. Quality Gate
 
-Principle: operational changes should be gated by tests from the affected layer, because COC spans node, services, runtime, contracts, explorer, and extensions.
+Principle: operational changes should be gated by tests from the affected layer, because Palimesh spans node, services, runtime, contracts, explorer, and extensions.
 Module / program focus: this chapter maps the quality-gate script to the underlying test suites so operators can choose between full validation and targeted reruns.
 
 ### Run Full Test Suite
@@ -979,11 +979,11 @@ Module / program focus: this chapter provides operator-oriented diagnosis and re
 | LevelDB `LOCK` error | Previous instance not stopped | Remove `{dataDir}/leveldb/LOCK` or stop the other process |
 | LevelDB corruption | Unclean shutdown | Node auto-repairs on startup; or manually: delete `leveldb/` and resync |
 | No blocks produced | Single node, BFT enabled with <3 validators | BFT auto-disables with <3 validators; check validator config |
-| Peers not connecting | Firewall or wrong P2P port | Check `COC_P2P_PORT`, ensure port is open, verify peer URLs |
-| RPC auth rejected | Missing or wrong token | Set `COC_RPC_AUTH_TOKEN` and pass `Authorization: Bearer <token>` header |
+| Peers not connecting | Firewall or wrong P2P port | Check `PALI_P2P_PORT`, ensure port is open, verify peer URLs |
+| RPC auth rejected | Missing or wrong token | Set `PALI_RPC_AUTH_TOKEN` and pass `Authorization: Bearer <token>` header |
 | Transaction stuck | Nonce gap or low gas price | Check `eth_getTransactionCount` and `eth_gasPrice`; resubmit with correct nonce |
 | PoSe challenge timeout | Node unreachable or slow storage | Check node liveness on `:9100/health` and verify `eth_blockNumber`; confirm IPFS storage is responsive |
-| Agent not submitting batches | Contract not deployed or wrong address | Verify `COC_POSE_MANAGER` address matches deployed contract |
+| Agent not submitting batches | Contract not deployed or wrong address | Verify `PALI_POSE_MANAGER` address matches deployed contract |
 | Relayer finalization fails | Epoch not ready or insufficient gas | Check epoch timing; ensure relayer account has ETH for gas |
 | Explorer blank page | Wrong RPC URL | Verify `NEXT_PUBLIC_RPC_URL` points to a running node |
 | `--experimental-strip-types` error | Node.js < 22 | Upgrade to Node.js 22+ |
@@ -998,7 +998,7 @@ Module / program focus: this chapter provides operator-oriented diagnosis and re
 ss -ltnp | grep -E '(18780|18781|19780|19781|5001|9100)'
 
 # View node logs (systemd)
-journalctl -u coc-node -f --no-pager
+journalctl -u palimesh-node -f --no-pager
 
 # Check disk usage
 du -sh ~/.clawdbot/coc/leveldb/
@@ -1012,13 +1012,13 @@ curl -s -X POST http://127.0.0.1:18780 \
 ps aux | grep 'node.*index.ts'
 
 # View devnet node logs
-tail -f /tmp/coc-devnet-*/node-*.log
+tail -f /tmp/palimesh-devnet-*/node-*.log
 ```
 
 ### Recovery Procedures
 
 **Stuck chain (no new blocks):**
-1. Check consensus state: `coc_chainStats` RPC
+1. Check consensus state: `pali_chainStats` RPC
 2. Verify validator set: `/validators` in explorer
 3. If BFT stuck: restart nodes to clear BFT round state
 4. If single node: check disk space and LevelDB health
@@ -1038,4 +1038,4 @@ tail -f /tmp/coc-devnet-*/node-*.log
 
 ---
 
-*Generated for COC (ChainOfClaw) — last updated 2026-03-09*
+*Generated for Palimesh (Palimesh) — last updated 2026-03-09*

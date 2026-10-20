@@ -11,7 +11,7 @@ import { P2PNode } from "./p2p.ts"
 // env var got an ACAO header that worked only for the dev origin,
 // blocking every other browser client. This suite verifies:
 //
-//   - "*" wildcard via COC_CORS_ORIGIN="*"
+//   - "*" wildcard via PALI_CORS_ORIGIN="*"
 //   - Comma-separated whitelist with per-request Origin echo
 //   - Vary: Origin set when ACAO is per-request (not "*")
 //   - OPTIONS preflight returns 204 (canonical)
@@ -20,7 +20,7 @@ import { P2PNode } from "./p2p.ts"
 async function startTestRpc(): Promise<{ port: number; close: () => Promise<void> }> {
   const chainId = 18780
   const evm = await EvmChain.create(chainId)
-  const dataDir = "/tmp/coc-rpc-cors-test-" + Date.now() + "-" + Math.random().toString(36).slice(2)
+  const dataDir = "/tmp/palimesh-rpc-cors-test-" + Date.now() + "-" + Math.random().toString(36).slice(2)
   const chain = new ChainEngine(
     { dataDir, nodeId: "n1", validators: ["n1"], finalityDepth: 3, maxTxPerBlock: 50, minGasPriceWei: 1n },
     evm,
@@ -70,14 +70,14 @@ async function probe(port: number, method: "POST" | "OPTIONS", origin?: string):
   return { status: res.status, headers }
 }
 
-test("#330 RPC CORS — '*' wildcard via COC_CORS_ORIGIN=*", async (t) => {
-  const prev = process.env.COC_CORS_ORIGIN
-  process.env.COC_CORS_ORIGIN = "*"
-  process.env.COC_RPC_RATE_LIMIT_DISABLED = "1"
+test("#330 RPC CORS — '*' wildcard via PALI_CORS_ORIGIN=*", async (t) => {
+  const prev = process.env.PALI_CORS_ORIGIN
+  process.env.PALI_CORS_ORIGIN = "*"
+  process.env.PALI_RPC_RATE_LIMIT_DISABLED = "1"
   const { port, close } = await startTestRpc()
   t.after(async () => {
-    if (prev === undefined) delete process.env.COC_CORS_ORIGIN
-    else process.env.COC_CORS_ORIGIN = prev
+    if (prev === undefined) delete process.env.PALI_CORS_ORIGIN
+    else process.env.PALI_CORS_ORIGIN = prev
     await close()
   })
   const { headers } = await probe(port, "POST", "https://anywhere.example")
@@ -86,13 +86,13 @@ test("#330 RPC CORS — '*' wildcard via COC_CORS_ORIGIN=*", async (t) => {
 })
 
 test("#330 RPC CORS — whitelist echoes matched Origin + sets Vary", async (t) => {
-  const prev = process.env.COC_CORS_ORIGIN
-  process.env.COC_CORS_ORIGIN = "https://app.coc.example,https://explorer.coc.example"
-  process.env.COC_RPC_RATE_LIMIT_DISABLED = "1"
+  const prev = process.env.PALI_CORS_ORIGIN
+  process.env.PALI_CORS_ORIGIN = "https://app.coc.example,https://explorer.coc.example"
+  process.env.PALI_RPC_RATE_LIMIT_DISABLED = "1"
   const { port, close } = await startTestRpc()
   t.after(async () => {
-    if (prev === undefined) delete process.env.COC_CORS_ORIGIN
-    else process.env.COC_CORS_ORIGIN = prev
+    if (prev === undefined) delete process.env.PALI_CORS_ORIGIN
+    else process.env.PALI_CORS_ORIGIN = prev
     await close()
   })
   const r1 = await probe(port, "POST", "https://explorer.coc.example")
@@ -112,13 +112,13 @@ test("#458 RPC CORS — unknown Origin gets NO ACAO header (fail-closed, no whit
   // the server's preferred origin to every probe (e.g. an attacker scanning
   // testnets could enumerate which origins each node trusts). CORS-spec
   // fail-closed pattern: omit the header entirely when Origin isn't allowed.
-  const prev = process.env.COC_CORS_ORIGIN
-  process.env.COC_CORS_ORIGIN = "https://prod.coc.example,https://staging.coc.example"
-  process.env.COC_RPC_RATE_LIMIT_DISABLED = "1"
+  const prev = process.env.PALI_CORS_ORIGIN
+  process.env.PALI_CORS_ORIGIN = "https://prod.coc.example,https://staging.coc.example"
+  process.env.PALI_RPC_RATE_LIMIT_DISABLED = "1"
   const { port, close } = await startTestRpc()
   t.after(async () => {
-    if (prev === undefined) delete process.env.COC_CORS_ORIGIN
-    else process.env.COC_CORS_ORIGIN = prev
+    if (prev === undefined) delete process.env.PALI_CORS_ORIGIN
+    else process.env.PALI_CORS_ORIGIN = prev
     await close()
   })
   const { headers } = await probe(port, "POST", "https://attacker.example")
@@ -132,13 +132,13 @@ test("#458 RPC CORS — no-Origin request (curl/server-to-server) still gets whi
   // For non-browser callers (curl, monitoring, server-to-server) CORS
   // doesn't apply — emitting a default ACAO is harmless. Pin the legacy
   // behavior so existing tooling that grep-matches ACAO doesn't break.
-  const prev = process.env.COC_CORS_ORIGIN
-  process.env.COC_CORS_ORIGIN = "https://prod.coc.example,https://staging.coc.example"
-  process.env.COC_RPC_RATE_LIMIT_DISABLED = "1"
+  const prev = process.env.PALI_CORS_ORIGIN
+  process.env.PALI_CORS_ORIGIN = "https://prod.coc.example,https://staging.coc.example"
+  process.env.PALI_RPC_RATE_LIMIT_DISABLED = "1"
   const { port, close } = await startTestRpc()
   t.after(async () => {
-    if (prev === undefined) delete process.env.COC_CORS_ORIGIN
-    else process.env.COC_CORS_ORIGIN = prev
+    if (prev === undefined) delete process.env.PALI_CORS_ORIGIN
+    else process.env.PALI_CORS_ORIGIN = prev
     await close()
   })
   const { headers } = await probe(port, "POST") // no Origin
@@ -147,13 +147,13 @@ test("#458 RPC CORS — no-Origin request (curl/server-to-server) still gets whi
 })
 
 test("#330 RPC CORS — OPTIONS preflight returns 204 No Content", async (t) => {
-  const prev = process.env.COC_CORS_ORIGIN
-  process.env.COC_CORS_ORIGIN = "https://app.coc.example"
-  process.env.COC_RPC_RATE_LIMIT_DISABLED = "1"
+  const prev = process.env.PALI_CORS_ORIGIN
+  process.env.PALI_CORS_ORIGIN = "https://app.coc.example"
+  process.env.PALI_RPC_RATE_LIMIT_DISABLED = "1"
   const { port, close } = await startTestRpc()
   t.after(async () => {
-    if (prev === undefined) delete process.env.COC_CORS_ORIGIN
-    else process.env.COC_CORS_ORIGIN = prev
+    if (prev === undefined) delete process.env.PALI_CORS_ORIGIN
+    else process.env.PALI_CORS_ORIGIN = prev
     await close()
   })
   const { status, headers } = await probe(port, "OPTIONS", "https://app.coc.example")
@@ -165,12 +165,12 @@ test("#330 RPC CORS — OPTIONS preflight returns 204 No Content", async (t) => 
 })
 
 test("#330 RPC CORS — default (env unset) preserves localhost dev fallback", async (t) => {
-  const prev = process.env.COC_CORS_ORIGIN
-  delete process.env.COC_CORS_ORIGIN
-  process.env.COC_RPC_RATE_LIMIT_DISABLED = "1"
+  const prev = process.env.PALI_CORS_ORIGIN
+  delete process.env.PALI_CORS_ORIGIN
+  process.env.PALI_RPC_RATE_LIMIT_DISABLED = "1"
   const { port, close } = await startTestRpc()
   t.after(async () => {
-    if (prev !== undefined) process.env.COC_CORS_ORIGIN = prev
+    if (prev !== undefined) process.env.PALI_CORS_ORIGIN = prev
     await close()
   })
   const r1 = await probe(port, "POST", "http://localhost:3000")

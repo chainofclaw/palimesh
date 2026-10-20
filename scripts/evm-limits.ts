@@ -1,5 +1,5 @@
 /**
- * COC Testnet EVM Limits Test
+ * Palimesh Testnet EVM Limits Test
  *
  * Tests EVM computation and storage boundaries on the live 3-node BFT testnet.
  * - Computation limits via eth_call (no transactions, no stall risk)
@@ -43,7 +43,7 @@ async function waitTx(hash: string): Promise<ethers.TransactionReceipt | null> {
 
 async function main() {
   console.log("══════════════════════════════════════════════════════")
-  console.log("  COC Testnet — EVM Computation & Storage Limits")
+  console.log("  Palimesh Testnet — EVM Computation & Storage Limits")
   console.log("══════════════════════════════════════════════════════")
   console.log(`  RPC: ${RPC}`)
   console.log(`  Height: ${await provider.getBlockNumber()}`)
@@ -195,7 +195,7 @@ async function main() {
 
   // ── Final Report ──
   console.log("\n══════════════════════════════════════════════════════")
-  console.log("  EVM Limits Report — COC Testnet (chainId 18780)")
+  console.log("  EVM Limits Report — Palimesh Testnet (chainId 18780)")
   console.log("══════════════════════════════════════════════════════")
   console.log("  " + "Test".padEnd(22) + "Param".padEnd(14) + "Gas".padEnd(16) + "Time(ms)".padEnd(10) + "Status")
   console.log("  " + "─".repeat(68))

@@ -1,14 +1,14 @@
-# COC Blockchain Technical Whitepaper
+# Palimesh Blockchain Technical Whitepaper
 
 ## Executive Summary
 
-COC (ChainOfClaw) is an EVM-compatible blockchain that innovatively combines **on-chain settlement** with **off-chain proofs** through a **Proof-of-Service (PoSe) mechanism** to implement a **storage verification layer**.
-COC is not positioned as a generic narrative clone-chain; it is designed to provide verifiable service and automated settlement infrastructure for the OpenClaw AI-agent ecosystem.
+Palimesh (Palimesh) is an EVM-compatible blockchain that innovatively combines **on-chain settlement** with **off-chain proofs** through a **Proof-of-Service (PoSe) mechanism** to implement a **storage verification layer**.
+Palimesh is not positioned as a generic narrative clone-chain; it is designed to provide verifiable service and automated settlement infrastructure for the OpenClaw AI-agent ecosystem.
 
 Core Innovations:
 - **PoSe v2 Protocol**: Permissionless fault proofs using EIP-712 signatures and witness arbitration
 - **IPFS-Compatible Storage**: Every blockchain node can store and verify data
-- **OpenClaw AI-Agent Native Design**: COC is built as a trust and settlement layer for autonomous agents, with verifiable service proofs, automated rewards/penalties, and identity registration infrastructure (agent-to-agent collaboration orchestration planned for future versions)
+- **OpenClaw AI-Agent Native Design**: Palimesh is built as a trust and settlement layer for autonomous agents, with verifiable service proofs, automated rewards/penalties, and identity registration infrastructure (agent-to-agent collaboration orchestration planned for future versions)
 - **Multi-Layer Consensus**: Supports deterministic rotation, degraded mode, and optional BFT coordinator
 - **Hybrid Networking**: HTTP gossip + TCP Wire protocol + DHT network running simultaneously
 
@@ -26,7 +26,7 @@ Traditional blockchains face three critical challenges:
 
 ### 1.2 Solution Architecture
 
-COC adopts a **layered verification architecture**:
+Palimesh adopts a **layered verification architecture**:
 
 ```
 Layer 1: EVM Layer (on-chain computation)
@@ -828,7 +828,7 @@ To keep comparisons defensible and auditable, this section follows three rules:
 
 ### 6.2 Mainstream Chain Comparison (Architecture Trade-offs)
 
-| Dimension | COC | Ethereum | Solana | Polygon PoS | Arbitrum / Optimism |
+| Dimension | Palimesh | Ethereum | Solana | Polygon PoS | Arbitrum / Optimism |
 |-----------|-----|----------|--------|-------------|---------------------|
 | **Architecture Layer** | L1 | L1 | L1 | Ethereum sidechain (PoS, checkpointed to Ethereum) | Optimistic Rollup (L2) |
 | **Execution Environment** | EVM | EVM | SVM | EVM | EVM |
@@ -839,17 +839,17 @@ To keep comparisons defensible and auditable, this section follows three rules:
 | **Ecosystem Positioning** | OpenClaw AI-agent-native + EVM compatibility | Security and liquidity base layer | High-throughput, low-latency execution | Cost-efficient EVM ecosystem extension | Lower-cost Ethereum execution with shared liquidity context |
 
 **Defensible takeaways (non-absolute):**
-1. If your core requirement is “objective AI-agent service proofs + enforceable penalties + reward closure,” COC is structurally aligned.
+1. If your core requirement is “objective AI-agent service proofs + enforceable penalties + reward closure,” Palimesh is structurally aligned.
 2. If your top priority is deepest liquidity and conservative base-layer security assumptions, Ethereum (+ major L2s) remains the default.
 3. If you prioritize high-throughput low-latency execution and accept a non-EVM toolchain, Solana is strong.
 4. If you prioritize low-cost EVM deployment, Polygon and Arbitrum/Optimism are mature choices, but they do not natively provide storage-service QoS proofs.
 
 **Positioning Statement:**
-COC does not claim to dominate every mainstream chain on generic throughput, ecosystem scale, or base-layer security prestige; its actual innovation is bringing **verifiable service proofs, objectively enforceable penalties, and closed-loop rewards** directly into the protocol surface for AI-agent infrastructure.
+Palimesh does not claim to dominate every mainstream chain on generic throughput, ecosystem scale, or base-layer security prestige; its actual innovation is bringing **verifiable service proofs, objectively enforceable penalties, and closed-loop rewards** directly into the protocol surface for AI-agent infrastructure.
 
 ### 6.3 Storage-Network Comparison (Filecoin / Arweave / Storj)
 
-| Dimension | COC | Filecoin | Arweave | Storj |
+| Dimension | Palimesh | Filecoin | Arweave | Storj |
 |-----------|-----|----------|---------|-------|
 | **Primary Goal** | General execution + service proofs + storage commitments | Decentralized storage market | Permanent data network | Decentralized object storage service |
 | **Programmability** | EVM smart contracts | FVM/FEVM smart contracts | SmartWeave/AO-style programmability | Not a chain-native smart-contract platform |
@@ -858,9 +858,9 @@ COC does not claim to dominate every mainstream chain on generic throughput, eco
 | **Typical Workloads** | OpenClaw AI-agent state + service settlement | Cold/warm storage and retrieval market | Long-lived archival publishing | Private file/object storage |
 
 **Conclusion:**
-1. Filecoin and Arweave are stronger on storage-economics specialization; COC is stronger where execution and service-verifiable settlement must be integrated.
+1. Filecoin and Arweave are stronger on storage-economics specialization; Palimesh is stronger where execution and service-verifiable settlement must be integrated.
 2. Storj is an engineering-focused decentralized storage service, not a general-purpose L1 execution layer.
-3. COC is not positioned to replace all storage networks; it is positioned to provide an executable, verifiable, incentive-closed substrate for the OpenClaw AI-agent ecosystem.
+3. PALI is not positioned to replace all storage networks; it is positioned to provide an executable, verifiable, incentive-closed substrate for the OpenClaw AI-agent ecosystem.
 
 ### 6.4 Decision Matrix
 
@@ -872,7 +872,7 @@ COC does not claim to dominate every mainstream chain on generic throughput, eco
 Need objective evidence + enforceable penalties + reward closure?
 │
 ├─ Yes → Also need on-chain contract orchestration?
-│        ├─ Yes → COC (OpenClaw AI-agent-native)
+│        ├─ Yes → Palimesh (OpenClaw AI-agent-native)
 │        └─ No  → specialized storage network + external arbitration stack
 │
 └─ No  → Is EVM liquidity and ecosystem depth the priority?
@@ -880,7 +880,7 @@ Need objective evidence + enforceable penalties + reward closure?
          └─ No  → evaluate Solana or storage-first networks by workload
 ```
 
-### 6.5 COC Innovation and Distinct Positioning (Argument-Ready)
+### 6.5 PALI Innovation and Distinct Positioning (Argument-Ready)
 
 | Innovation | Mechanism | Key Difference vs Common Approaches | Verifiable Outcome |
 |------------|-----------|-------------------------------------|--------------------|
@@ -950,7 +950,7 @@ Pin Management: pin/unpin/list (GC not yet implemented)
 ### Single-Node Development
 
 ```bash
-COC_DATA_DIR=/tmp/coc-dev \
+PALI_DATA_DIR=/tmp/palimesh-dev \
 node --experimental-strip-types node/src/index.ts
 ```
 
@@ -971,21 +971,21 @@ bash scripts/start-devnet.sh 3    # Start 3-node devnet
 
 > **🟡 Canary phase (88780)** — The example below documents the codebase's
 > default ports (`18780/19780/5001/19781`). To **join the live canary
-> testnet** (chainId `88780`), set `COC_CHAIN_ID=88780` and follow
+> testnet** (chainId `88780`), set `PALI_CHAIN_ID=88780` and follow
 > [`public-endpoints-88780.md`](./public-endpoints-88780.md) for the
-> canonical RPC URL (`https://rpc.chainofclaw.io`), contract addresses,
+> canonical RPC URL (`https://rpc.palimesh.io`), contract addresses,
 > faucet, explorer, and rate-limit posture. External operators should
 > use [`external-validator-onboarding.md`](./external-validator-onboarding.md)
 > for the full stake + BFT-inclusion workflow.
 
 1. **Configure Environment Variables**:
    ```bash
-   COC_CHAIN_ID=1
-   COC_RPC_BIND=0.0.0.0
-   COC_RPC_PORT=18780
-   COC_P2P_PORT=19780
-   COC_IPFS_PORT=5001
-   COC_WIRE_PORT=19781
+   PALI_CHAIN_ID=1
+   PALI_RPC_BIND=0.0.0.0
+   PALI_RPC_PORT=18780
+   PALI_P2P_PORT=19780
+   PALI_IPFS_PORT=5001
+   PALI_WIRE_PORT=19781
    ```
 
 2. **Start Node**:
@@ -1004,7 +1004,7 @@ bash scripts/start-devnet.sh 3    # Start 3-node devnet
 
 ## IX. Summary
 
-COC is a blockchain **purpose-built for data services**:
+Palimesh is a blockchain **purpose-built for data services**:
 
 1. **PoSe v2**: Permissionless distributed fault proofs via witness arbitration
 2. **IPFS Compatible**: Every node can store, anyone can verify

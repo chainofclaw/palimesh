@@ -1,4 +1,4 @@
-# COC Economics v1 (testnet) — Phase I Parameters
+# Palimesh Economics v1 (testnet) — Phase I Parameters
 
 > **Audience**: validator operators, governance reviewers.
 > **Scope**: testnet (Prowl) economy parameters for the public-testnet
@@ -18,25 +18,25 @@ before state commit. Reference: `node/src/base-fee.ts:114-128`.
 
 | Parameter | Value | Notes |
 |---|---|---|
-| `INITIAL` (`COC_BLOCK_REWARD_WEI`) | `2_000_000_000_000_000_000` (2 COC) | testnet only |
-| `INTERVAL` (`COC_BLOCK_REWARD_HALVING_INTERVAL_BLOCKS`) | `42_048_000` (~4 years @ 3 s/block) | matches mainnet curve |
+| `INITIAL` (`PALI_BLOCK_REWARD_WEI`) | `2_000_000_000_000_000_000` (2 PALI) | testnet only |
+| `INTERVAL` (`PALI_BLOCK_REWARD_HALVING_INTERVAL_BLOCKS`) | `42_048_000` (~4 years @ 3 s/block) | matches mainnet curve |
 | Genesis (`height=0`) reward | `0` | always |
 | Reward floor | `0` after 64 halvings | dust prevention |
 
 **Why geometric halving**: testnet operators are the same group as future
 mainnet validators; running the same curve catches off-by-one and
 post-halving boundary bugs before mainnet activation. Initial value is
-small (2 COC) because testnet tokens have no real value — the curve
+small (2 PALI) because testnet tokens have no real value — the curve
 shape, not the magnitude, is what's being validated.
 
 **Consensus invariant**: every node MUST run the same curve. Mismatch
 across the validator set = stateRoot divergence = chain stall (the
 2026-04-30 testnet pattern that Phase H1 hardened against). Operators
-MUST flip `COC_BLOCK_REWARD_ENABLED` simultaneously.
+MUST flip `PALI_BLOCK_REWARD_ENABLED` simultaneously.
 
 ## 2. EIP-1559 Fee Distribution (Sprint I2)
 
-When `COC_FEE_DISTRIBUTION_ENABLED=1`, the executionBlock's `coinbase`
+When `PALI_FEE_DISTRIBUTION_ENABLED=1`, the executionBlock's `coinbase`
 is set to the block proposer's resolved address (via
 `validatorAddressMap`), so ethereumjs runTx credits priority fee to the
 proposer. Base fee continues to be effectively burned (sent to `0x0`).
@@ -59,16 +59,16 @@ already shipping pre-I).
 | Parameter | Value | Source |
 |---|---|---|
 | Genesis validator stakes | per-validator `stake: bigint` in `validatorStakes[]` config | `node/src/config.ts` |
-| Default stake (when `validatorStakes` omitted) | `1_000_000_000_000_000_000` (1 COC) | `chain-engine-persistent.ts:117` |
+| Default stake (when `validatorStakes` omitted) | `1_000_000_000_000_000_000` (1 PALI) | `chain-engine-persistent.ts:117` |
 | Quorum threshold | strict 2/3 + 1 wei | `bft.ts` `hasQuorum()` |
-| Relaxed quorum (testnet only) | exactly 2/3 | `COC_DEV_RELAXED_QUORUM=1`; **must be 0 in production** |
+| Relaxed quorum (testnet only) | exactly 2/3 | `PALI_DEV_RELAXED_QUORUM=1`; **must be 0 in production** |
 
 ## 4. Equivocation Slashing (Sprints I3a / I4a)
 
 Equivocation = a validator emits two BFT messages of the same `(type,
 height)` for different `blockHash`. Detected by
 `node/src/bft.ts` `EquivocationDetector`; evidence flushed to chain via
-`runtime/coc-relayer.ts` (Sprint I3c). On-chain enforcement:
+`runtime/palimesh-relayer.ts` (Sprint I3c). On-chain enforcement:
 `contracts/contracts-src/governance/EquivocationDetector.sol`.
 
 | Parameter | Value | Notes |
@@ -77,7 +77,7 @@ height)` for different `blockHash`. Detected by
 | Slash cooldown | `1000` blocks (`DEFAULT_SLASH_COOLDOWN_BLOCKS`) | prevents griefing-via-replay |
 | Evidence accepted from | any caller (permissionless) | Sprint I3a |
 | Encoded by | `runtime/lib/bft-slash-bridge.ts` | Sprint I3b |
-| Auto-submitted by | `coc-relayer` on next finalize tick | Sprint I3c |
+| Auto-submitted by | `palimesh-relayer` on next finalize tick | Sprint I3c |
 
 **`slashTotal` estimator** (Sprint I4a, `runtime/lib/pose-slash-estimator.ts`):
 the relayer scans recent finality + evidence to compute the cumulative
@@ -129,16 +129,16 @@ ENTIRE validator set to flip simultaneously (consensus-affecting).
 
 | Env | Default | Required when | Owner |
 |---|---|---|---|
-| `COC_BLOCK_REWARD_ENABLED` | `0` | Sprint I1 active | every validator |
-| `COC_BLOCK_REWARD_WEI` | unset → `0` | I1 active | every validator (must match) |
-| `COC_BLOCK_REWARD_HALVING_INTERVAL_BLOCKS` | `42_048_000` | I1 active | every validator (must match) |
-| `COC_FEE_DISTRIBUTION_ENABLED` | `0` | Sprint I2 active | every validator |
-| `COC_BFT_AUTO_RECOVERY` | `0` | recommended on testnet | each validator independent |
-| `COC_DEV_RELAXED_QUORUM` | `0` | NEVER `1` in production | each validator |
+| `PALI_BLOCK_REWARD_ENABLED` | `0` | Sprint I1 active | every validator |
+| `PALI_BLOCK_REWARD_WEI` | unset → `0` | I1 active | every validator (must match) |
+| `PALI_BLOCK_REWARD_HALVING_INTERVAL_BLOCKS` | `42_048_000` | I1 active | every validator (must match) |
+| `PALI_FEE_DISTRIBUTION_ENABLED` | `0` | Sprint I2 active | every validator |
+| `PALI_BFT_AUTO_RECOVERY` | `0` | recommended on testnet | each validator independent |
+| `PALI_DEV_RELAXED_QUORUM` | `0` | NEVER `1` in production | each validator |
 
 **Validation tooling** (planned for Week 9): `bash scripts/check-economy-flags.sh`
 to verify all 3 testnet validators report identical reward/halving values
-via `coc_nodeInfo`.
+via `pali_nodeInfo`.
 
 ## 8. Open questions (for Week 9 governance freeze)
 

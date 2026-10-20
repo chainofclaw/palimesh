@@ -47,7 +47,7 @@ describe("importStateSnapshot: contract accounts with storage", () => {
   it("preserves peer storageRoot for accounts with no storage", async () => {
     // Externally-touched accounts on testnet can carry storageRoot equal to
     // EthereumJS's KECCAK256_RLP_S (canonical empty trie root, 0x56e81f17…)
-    // instead of COC's 0x000… sentinel. Earlier fix attempts overrode every
+    // instead of Palimesh's 0x000… sentinel. Earlier fix attempts overrode every
     // account's storageRoot to 0x000, which made the encoded account JSON
     // diverge from the peer's and cascaded into a stateRoot mismatch on
     // verify. Verify the importer keeps the peer's value when there are no
@@ -89,7 +89,7 @@ describe("importStateSnapshot: contract accounts with storage", () => {
     const a = await trie.get("0x" + "aa".repeat(20))
     const b = await trie.get("0x" + "bb".repeat(20))
     assert.equal(a?.storageRoot, KECCAK256_RLP_S, "EthereumJS empty root must round-trip")
-    assert.equal(b?.storageRoot, "0x" + "00".repeat(32), "COC sentinel must round-trip")
+    assert.equal(b?.storageRoot, "0x" + "00".repeat(32), "Palimesh sentinel must round-trip")
   })
 
   it("rolls STATE_ROOT_KEY back to original root when expected mismatch fails", async () => {

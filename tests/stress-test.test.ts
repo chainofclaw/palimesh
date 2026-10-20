@@ -1,5 +1,5 @@
 /**
- * Stress Tests for COC Blockchain
+ * Stress Tests for Palimesh Blockchain
  *
  * Tests system behavior under heavy load across:
  * - EVM execution throughput
@@ -75,7 +75,7 @@ async function createTestEngine(maxTxPerBlock = 100): Promise<{
   await evm.prefund([{ address: FUNDER_ADDR, balanceWei: "100000000000000000000000" }])
   const engine = new ChainEngine(
     {
-      dataDir: `/tmp/coc-stress-${Date.now()}-${Math.random().toString(36).slice(2)}`,
+      dataDir: `/tmp/palimesh-stress-${Date.now()}-${Math.random().toString(36).slice(2)}`,
       nodeId: FUNDER_ADDR.toLowerCase(),
       validators: [FUNDER_ADDR.toLowerCase()],
       finalityDepth: 3,

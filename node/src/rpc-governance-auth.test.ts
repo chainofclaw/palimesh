@@ -1,9 +1,9 @@
 /**
- * Security regression: governance-mutating RPC methods (coc_submitProposal,
- * coc_voteProposal) must be gated to loopback / Bearer-auth callers.
+ * Security regression: governance-mutating RPC methods (pali_submitProposal,
+ * pali_voteProposal) must be gated to loopback / Bearer-auth callers.
  *
  * Bug: the only guard was `proposer/voterId === localNodeId`. The node's id
- * is public (coc_nodeInfo, P2P handshakes), so that check authenticates
+ * is public (pali_nodeInfo, P2P handshakes), so that check authenticates
  * nothing — any remote RPC client could submit validator-governance
  * proposals and cast the node's stake-weighted vote (a vote crossing the
  * threshold mutates the validator set via executeProposal).
@@ -23,7 +23,7 @@ const CHAIN_ID = 18780
 
 async function makeChain() {
   const evm = await EvmChain.create(CHAIN_ID)
-  const dataDir = "/tmp/coc-gov-auth-test-" + Date.now() + "-" + Math.random().toString(36).slice(2)
+  const dataDir = "/tmp/palimesh-gov-auth-test-" + Date.now() + "-" + Math.random().toString(36).slice(2)
   const chain = new ChainEngine(
     { dataDir, nodeId: "n1", validators: ["n1"], finalityDepth: 3, maxTxPerBlock: 50, minGasPriceWei: 1n },
     evm,
@@ -35,11 +35,11 @@ async function makeChain() {
 const isUnauthorized = (err: unknown): boolean =>
   typeof err === "object" && err !== null && (err as { code?: number }).code === -32003
 
-test("coc_submitProposal rejects an unauthorized caller", async () => {
+test("pali_submitProposal rejects an unauthorized caller", async () => {
   const { evm, chain, p2p } = await makeChain()
   await assert.rejects(
     () => handleRpcMethod(
-      "coc_submitProposal",
+      "pali_submitProposal",
       [{ type: "add_validator", targetId: "victim", proposer: "n1" }],
       CHAIN_ID, evm, chain, p2p, undefined,
       { callerAuthorized: false, nodeId: "n1" },
@@ -49,11 +49,11 @@ test("coc_submitProposal rejects an unauthorized caller", async () => {
   )
 })
 
-test("coc_voteProposal rejects an unauthorized caller", async () => {
+test("pali_voteProposal rejects an unauthorized caller", async () => {
   const { evm, chain, p2p } = await makeChain()
   await assert.rejects(
     () => handleRpcMethod(
-      "coc_voteProposal",
+      "pali_voteProposal",
       [{ proposalId: "p1", voterId: "n1", approve: true }],
       CHAIN_ID, evm, chain, p2p, undefined,
       { callerAuthorized: false, nodeId: "n1" },
@@ -68,7 +68,7 @@ test("governance RPC default-denies when authorization is absent", async () => {
   // opts omitted entirely — callerAuthorized undefined → must default-deny.
   await assert.rejects(
     () => handleRpcMethod(
-      "coc_voteProposal",
+      "pali_voteProposal",
       [{ proposalId: "p1", voterId: "n1", approve: true }],
       CHAIN_ID, evm, chain, p2p,
     ),
@@ -84,7 +84,7 @@ test("an authorized caller passes the gate (no -32003)", async () => {
   let code: number | undefined
   try {
     await handleRpcMethod(
-      "coc_voteProposal",
+      "pali_voteProposal",
       [{ proposalId: "p1", voterId: "n1", approve: true }],
       CHAIN_ID, evm, chain, p2p, undefined,
       { callerAuthorized: true, nodeId: "n1" },

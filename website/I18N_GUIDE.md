@@ -1,8 +1,8 @@
-# COC Website 国际化(i18n)指南
+# Palimesh Website 国际化(i18n)指南
 
 ## ✅ 已完成
 
-COC Website现已支持5种语言的完整国际化:
+Palimesh Website现已支持5种语言的完整国际化:
 
 - 🇨🇳 **中文** (zh) - 默认语言
 - 🇺🇸 **English** (en)  
@@ -136,14 +136,6 @@ import { LanguageSwitcher } from '@/components/LanguageSwitcher'
 }
 ```
 
-### 待扩展翻译
-
-其他页面(about, technology, network, roadmap, docs)目前使用硬编码文本，需要:
-
-1. 在 `messages/*.json` 中添加对应的翻译键
-2. 在页面组件中使用 `useTranslations()` 替换硬编码文本
-3. 更新所有5种语言的翻译文件
-
 ## 🔧 配置说明
 
 ### 修改默认语言
@@ -262,4 +254,10 @@ A: next-intl支持代码分割，只加载当前页面需要的翻译。
 
 ---
 
-**国际化支持让COC网站真正面向全球用户! 🌍**
+**国际化支持让Palimesh网站真正面向全球用户! 🌍**
+
+## 双站变体与品牌占位符
+
+- 共享文案里不要写死品牌名，用 `{brand}`（本站品牌）、`{token}`（本站代币符号）、`{chain}`（结算链 Palium）、`{networkName}`（Palium Canary 88780）。替换在 `src/i18n/request.ts` 加载期完成。
+- 语义随站不同的段落放在 `xxx.palium.*` / `xxx.palimesh.*` 子命名空间。
+- `npm run check:i18n` 会检查：五语叶子 key 完全一致、每个 key 的占位符集合一致、品牌字面量只出现在允许清单路径（见 `scripts/check-i18n-keys.mjs`）。

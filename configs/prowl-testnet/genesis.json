@@ -1,6 +1,6 @@
 {
   "chainId": 18780,
-  "chainName": "COC Prowl Testnet",
+  "chainName": "Palimesh Prowl Testnet",
   "blockTimeMs": 3000,
   "syncIntervalMs": 5000,
   "validators": [

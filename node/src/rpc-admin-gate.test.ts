@@ -20,7 +20,7 @@ async function startTestRpc(opts?: { authToken?: string; enableAdminRpc?: boolea
 }> {
   const chainId = 18780
   const evm = await EvmChain.create(chainId)
-  const dataDir = "/tmp/coc-admin-gate-test-" + Date.now() + "-" + Math.random().toString(36).slice(2)
+  const dataDir = "/tmp/palimesh-admin-gate-test-" + Date.now() + "-" + Math.random().toString(36).slice(2)
   const chain = new ChainEngine(
     { dataDir, nodeId: "n1", validators: ["n1"], finalityDepth: 3, maxTxPerBlock: 50, minGasPriceWei: 1n },
     evm,
@@ -101,7 +101,7 @@ test("isLoopbackAddress recognizes 127.x.x.x / ::1 / IPv4-mapped IPv6", () => {
 })
 
 test("#336: loopback request cannot call admin_* without explicit opt-in", async (t) => {
-  process.env.COC_RPC_RATE_LIMIT_DISABLED = "1"
+  process.env.PALI_RPC_RATE_LIMIT_DISABLED = "1"
   const { port, close } = await startTestRpc({ enableAdminRpc: true })
   t.after(async () => { await close() })
 
@@ -111,7 +111,7 @@ test("#336: loopback request cannot call admin_* without explicit opt-in", async
 })
 
 test("#336: loopback request can call admin_* when explicitly opted in", async (t) => {
-  process.env.COC_RPC_RATE_LIMIT_DISABLED = "1"
+  process.env.PALI_RPC_RATE_LIMIT_DISABLED = "1"
   const { port, close } = await startTestRpc({ enableAdminRpc: true, allowLoopbackRpcAuth: true })
   t.after(async () => { await close() })
 
@@ -136,7 +136,7 @@ test("#336: admin methods reject when admin enabled but rpcAuth is set + no toke
 })
 
 test("#336: admin methods accept when valid Bearer token + admin enabled", async (t) => {
-  process.env.COC_RPC_RATE_LIMIT_DISABLED = "1"
+  process.env.PALI_RPC_RATE_LIMIT_DISABLED = "1"
   const TOKEN = "secret-admin-token-1234"
   const { port, close } = await startTestRpc({ authToken: TOKEN, enableAdminRpc: true })
   t.after(async () => { await close() })
@@ -147,7 +147,7 @@ test("#336: admin methods accept when valid Bearer token + admin enabled", async
 })
 
 test("#336: admin methods reject when admin DISABLED (existing behaviour preserved)", async (t) => {
-  process.env.COC_RPC_RATE_LIMIT_DISABLED = "1"
+  process.env.PALI_RPC_RATE_LIMIT_DISABLED = "1"
   const { port, close } = await startTestRpc({ enableAdminRpc: false })
   t.after(async () => { await close() })
 

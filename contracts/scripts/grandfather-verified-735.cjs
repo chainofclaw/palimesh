@@ -52,7 +52,7 @@
  *   it can do is produce a wrong plan that a multisig signer must still
  *   approve manually.
  *
- * Refs: chainofclaw/COC#735.
+ * Refs: palimesh/palimesh#735.
  */
 
 const path = require("node:path")
@@ -170,7 +170,7 @@ async function main() {
 
   // Persist plan artefact.
   const planArtefact = {
-    issue: "https://github.com/chainofclaw/COC/issues/735",
+    issue: "https://github.com/palimesh/palimesh/issues/735",
     factionRegistry: ethers.getAddress(factionRegistryAddress),
     multisig: ethers.getAddress(multisigAddress),
     scannedAt: new Date().toISOString(),
@@ -194,7 +194,7 @@ async function main() {
     description: `FactionRegistry.verify(${e.address}) — ${e.faction}, registered block ${e.registeredAtBlock}`,
   }))
   const multisigArtefact = {
-    issue: "https://github.com/chainofclaw/COC/issues/735",
+    issue: "https://github.com/palimesh/palimesh/issues/735",
     multisig: ethers.getAddress(multisigAddress),
     factionRegistry: ethers.getAddress(factionRegistryAddress),
     filterOnlyUnverified,

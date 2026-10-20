@@ -1,10 +1,10 @@
 #!/usr/bin/env node
-// COC daily summary — aggregates 24h of health-loop ticks into a one-page
+// Palimesh daily summary — aggregates 24h of health-loop ticks into a one-page
 // digest. Run via cron / pm2 cron / on-demand.
 //
 //   node daily-summary.mjs                # print to stdout
 //   node daily-summary.mjs --hours 24
-//   node daily-summary.mjs --log /root/.pm2/logs/coc-health-loop-out.log
+//   node daily-summary.mjs --log /root/.pm2/logs/palimesh-health-loop-out.log
 
 import { readFileSync } from 'node:fs'
 
@@ -16,7 +16,7 @@ function arg(flag, def) {
 
 const cfg = {
   hours: Number(arg('--hours', '24')),
-  log: arg('--log', '/root/.pm2/logs/coc-health-loop-out.log'),
+  log: arg('--log', '/root/.pm2/logs/palimesh-health-loop-out.log'),
 }
 
 const lines = readFileSync(cfg.log, 'utf8').split('\n')
@@ -52,7 +52,7 @@ const activeOk = recent.filter((t) => t.active === true).length
 const failCounts = {}
 for (const t of recent) for (const f of t.fails) failCounts[f] = (failCounts[f] || 0) + 1
 
-console.log(`COC daily summary — last ${cfg.hours}h ending ${new Date().toISOString()}`)
+console.log(`Palimesh daily summary — last ${cfg.hours}h ending ${new Date().toISOString()}`)
 console.log('='.repeat(72))
 console.log(`Total ticks:    ${total}`)
 console.log(`HEALTHY:        ${healthy} (${(100 * healthy / Math.max(1, total)).toFixed(1)}%)`)

@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # chaos/partition.sh — Inject an iptables-level partition between two groups
-# of gcloud VMs. Drops both directions of TCP traffic on COC ports.
+# of gcloud VMs. Drops both directions of TCP traffic on Palimesh ports.
 #
 # This isolates one half of the cluster from the other while keeping local
 # services healthy (RPC/SSH stay reachable from the operator). Run repair() to
@@ -12,9 +12,9 @@
 #
 # Notes:
 # - The "vs" literal between groups is required for clarity.
-# - Repair is idempotent and removes coc-chaos rules from every named host.
+# - Repair is idempotent and removes palimesh-chaos rules from every named host.
 # - Side A is what blocks Side B, and Side B is what blocks Side A.
-# - Implemented with iptables -I INPUT and OUTPUT in chain "coc-chaos".
+# - Implemented with iptables -I INPUT and OUTPUT in chain "palimesh-chaos".
 
 set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -22,18 +22,18 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 . "$SCRIPT_DIR/../_lib.sh"
 require_gcloud
 
-CHAIN_NAME="coc-chaos"
-COC_PORTS=(28780 28781 29780 29781 28786)
+CHAIN_NAME="palimesh-chaos"
+PALI_PORTS=(28780 28781 29780 29781 28786)
 
 apply_chain_install() {
-  # Idempotent install of an iptables chain that we use to block COC traffic.
+  # Idempotent install of an iptables chain that we use to block Palimesh traffic.
   cat <<'BASH'
 set -e
-sudo iptables -t filter -N coc-chaos 2>/dev/null || true
-# Make sure INPUT and OUTPUT jump to coc-chaos at the top exactly once.
-sudo iptables -C INPUT  -j coc-chaos 2>/dev/null || sudo iptables -I INPUT  -j coc-chaos
-sudo iptables -C OUTPUT -j coc-chaos 2>/dev/null || sudo iptables -I OUTPUT -j coc-chaos
-sudo iptables -F coc-chaos
+sudo iptables -t filter -N palimesh-chaos 2>/dev/null || true
+# Make sure INPUT and OUTPUT jump to palimesh-chaos at the top exactly once.
+sudo iptables -C INPUT  -j palimesh-chaos 2>/dev/null || sudo iptables -I INPUT  -j palimesh-chaos
+sudo iptables -C OUTPUT -j palimesh-chaos 2>/dev/null || sudo iptables -I OUTPUT -j palimesh-chaos
+sudo iptables -F palimesh-chaos
 BASH
 }
 
@@ -46,33 +46,33 @@ IFS=',' read -ra TARGETS <<< "$target_ips_csv"
 IFS=',' read -ra PORTS <<< "$ports_csv"
 for ip in "\${TARGETS[@]}"; do
   for p in "\${PORTS[@]}"; do
-    sudo iptables -A coc-chaos -p tcp -d "\$ip" --dport "\$p" -j DROP
-    sudo iptables -A coc-chaos -p tcp -s "\$ip" --sport "\$p" -j DROP
+    sudo iptables -A palimesh-chaos -p tcp -d "\$ip" --dport "\$p" -j DROP
+    sudo iptables -A palimesh-chaos -p tcp -s "\$ip" --sport "\$p" -j DROP
   done
 done
-echo "applied $(sudo iptables -L coc-chaos -n | wc -l) rules"
+echo "applied $(sudo iptables -L palimesh-chaos -n | wc -l) rules"
 EOF
 }
 
 repair_chain() {
   cat <<'BASH'
 set -e
-sudo iptables -F coc-chaos 2>/dev/null || true
-echo "coc-chaos chain flushed"
+sudo iptables -F palimesh-chaos 2>/dev/null || true
+echo "palimesh-chaos chain flushed"
 BASH
 }
 
 resolve_ip() {
   local node="$1" zone
   zone="$(resolve_zone "$node")"
-  gcloud compute instances describe "$node" --zone="$zone" --project="$COC_GCP_PROJECT" \
+  gcloud compute instances describe "$node" --zone="$zone" --project="$PALI_GCP_PROJECT" \
     --format="value(networkInterfaces[0].accessConfigs[0].natIP)"
 }
 
 ssh_run() {
   local node="$1" cmd="$2" zone
   zone="$(resolve_zone "$node")"
-  gcloud compute ssh "$node" --zone="$zone" --project="$COC_GCP_PROJECT" \
+  gcloud compute ssh "$node" --zone="$zone" --project="$PALI_GCP_PROJECT" \
     --quiet --command="$cmd"
 }
 
@@ -97,7 +97,7 @@ case "$cmd" in
 
     A_IPS=$(IFS=','; for n in "${A_NODES[@]}"; do printf "%s," "${IP[$n]}"; done | sed 's/,$//')
     B_IPS=$(IFS=','; for n in "${B_NODES[@]}"; do printf "%s," "${IP[$n]}"; done | sed 's/,$//')
-    PORTS_CSV=$(IFS=','; printf "%s," "${COC_PORTS[@]}" | sed 's/,$//')
+    PORTS_CSV=$(IFS=','; printf "%s," "${PALI_PORTS[@]}" | sed 's/,$//')
 
     echo "==> Installing chain on group-a nodes (block group-b traffic)"
     for n in "${A_NODES[@]}"; do
@@ -107,7 +107,7 @@ case "$cmd" in
     for n in "${B_NODES[@]}"; do
       ssh_run "$n" "$(apply_chain_install; apply_block_rules_for "$A_IPS" "$PORTS_CSV")"
     done
-    echo "==> Partition active. Verify with: ssh <node> sudo iptables -L coc-chaos -n"
+    echo "==> Partition active. Verify with: ssh <node> sudo iptables -L palimesh-chaos -n"
     ;;
   repair)
     NODES_CSV="${2:-}"

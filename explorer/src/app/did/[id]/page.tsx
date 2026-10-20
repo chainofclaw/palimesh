@@ -22,7 +22,7 @@ interface DIDDocument {
     type: string
     serviceEndpoint: string
   }>
-  cocAgent?: {
+  paliAgent?: {
     registeredAt?: string
     version?: number
     identityCid?: string
@@ -55,7 +55,7 @@ export default async function DIDDetailPage({
   const { id } = await params
   const agentId = id.toLowerCase().startsWith("0x") ? id.toLowerCase() : `0x${id.toLowerCase()}`
 
-  const result = await rpcCall<ResolutionResult>("coc_resolveDid", [`did:coc:${agentId}`]).catch(() => null)
+  const result = await rpcCall<ResolutionResult>("pali_resolveDid", [`did:coc:${agentId}`]).catch(() => null)
 
   if (!result || !result.didDocument) {
     return (
@@ -97,7 +97,7 @@ export default async function DIDDetailPage({
         </div>
         <div className="bg-white rounded-lg shadow p-4">
           <div className="text-gray-500 text-xs uppercase">Version</div>
-          <div className="text-lg font-bold">{doc.cocAgent?.version ?? "-"}</div>
+          <div className="text-lg font-bold">{doc.paliAgent?.version ?? "-"}</div>
         </div>
         <div className="bg-white rounded-lg shadow p-4">
           <div className="text-gray-500 text-xs uppercase">Created</div>
@@ -151,11 +151,11 @@ export default async function DIDDetailPage({
       )}
 
       {/* Capabilities */}
-      {doc.cocAgent?.capabilities && doc.cocAgent.capabilities.length > 0 && (
+      {doc.paliAgent?.capabilities && doc.paliAgent.capabilities.length > 0 && (
         <div className="bg-white rounded-lg shadow p-6 mb-6">
           <h2 className="text-lg font-semibold mb-4">Capabilities</h2>
           <div className="flex flex-wrap gap-2">
-            {doc.cocAgent.capabilities.map((cap, i) => (
+            {doc.paliAgent.capabilities.map((cap, i) => (
               <span key={i} className="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm font-medium">
                 {cap}
               </span>
@@ -181,14 +181,14 @@ export default async function DIDDetailPage({
       )}
 
       {/* Lineage */}
-      {doc.cocAgent?.lineage && doc.cocAgent.lineage.parent && (
+      {doc.paliAgent?.lineage && doc.paliAgent.lineage.parent && (
         <div className="bg-white rounded-lg shadow p-6 mb-6">
           <h2 className="text-lg font-semibold mb-4">Lineage</h2>
           <div className="text-sm space-y-1">
-            <div><span className="text-gray-500">Parent:</span> <span className="font-mono">{doc.cocAgent.lineage.parent}</span></div>
-            <div><span className="text-gray-500">Generation:</span> {doc.cocAgent.lineage.generation}</div>
-            {doc.cocAgent.lineage.forkHeight && (
-              <div><span className="text-gray-500">Fork Height:</span> {doc.cocAgent.lineage.forkHeight}</div>
+            <div><span className="text-gray-500">Parent:</span> <span className="font-mono">{doc.paliAgent.lineage.parent}</span></div>
+            <div><span className="text-gray-500">Generation:</span> {doc.paliAgent.lineage.generation}</div>
+            {doc.paliAgent.lineage.forkHeight && (
+              <div><span className="text-gray-500">Fork Height:</span> {doc.paliAgent.lineage.forkHeight}</div>
             )}
           </div>
         </div>

@@ -3,7 +3,7 @@ import assert from "node:assert/strict"
 import { buildDIDDocument, buildDeactivatedDocument, registerKeyLabel } from "./did-document-builder.ts"
 import type { BuilderInput, SoulIdentityData, GuardianData, ResurrectionConfigData, VerificationMethodData } from "./did-document-builder.ts"
 import { KEY_PURPOSE } from "../crypto/did-registry-types.ts"
-import { W3C_DID_CONTEXT, COC_DID_CONTEXT } from "./did-types.ts"
+import { W3C_DID_CONTEXT, PALI_DID_CONTEXT } from "./did-types.ts"
 import { keccak256, toUtf8Bytes } from "ethers"
 
 const ZERO32 = "0x" + "00".repeat(32)
@@ -31,7 +31,7 @@ describe("buildDIDDocument", () => {
     const input: BuilderInput = { chainId: CHAIN_ID, soul: makeSoul() }
     const doc = buildDIDDocument(input)
 
-    assert.deepStrictEqual(doc["@context"], [W3C_DID_CONTEXT, COC_DID_CONTEXT])
+    assert.deepStrictEqual(doc["@context"], [W3C_DID_CONTEXT, PALI_DID_CONTEXT])
     assert.ok(doc.id.includes(AGENT_ID.toLowerCase()))
     assert.ok(doc.id.startsWith("did:coc:"))
 
@@ -135,11 +135,11 @@ describe("buildDIDDocument", () => {
     const bitmask = 0x0001 | 0x0004 | 0x0020 // storage + validation + witness
     const doc = buildDIDDocument({ chainId: CHAIN_ID, soul: makeSoul(), capabilities: bitmask })
 
-    assert.ok(doc.cocAgent?.capabilities)
-    assert.ok(doc.cocAgent!.capabilities!.includes("storage"))
-    assert.ok(doc.cocAgent!.capabilities!.includes("validation"))
-    assert.ok(doc.cocAgent!.capabilities!.includes("witness"))
-    assert.equal(doc.cocAgent!.capabilities!.length, 3)
+    assert.ok(doc.paliAgent?.capabilities)
+    assert.ok(doc.paliAgent!.capabilities!.includes("storage"))
+    assert.ok(doc.paliAgent!.capabilities!.includes("validation"))
+    assert.ok(doc.paliAgent!.capabilities!.includes("witness"))
+    assert.equal(doc.paliAgent!.capabilities!.length, 3)
   })
 
   it("includes lineage when parent is set", () => {
@@ -150,27 +150,27 @@ describe("buildDIDDocument", () => {
     }
     const doc = buildDIDDocument({ chainId: CHAIN_ID, soul: makeSoul(), lineage })
 
-    assert.ok(doc.cocAgent?.lineage)
-    assert.equal(doc.cocAgent!.lineage!.parent, lineage.parentAgentId)
-    assert.equal(doc.cocAgent!.lineage!.generation, 2)
+    assert.ok(doc.paliAgent?.lineage)
+    assert.equal(doc.paliAgent!.lineage!.parent, lineage.parentAgentId)
+    assert.equal(doc.paliAgent!.lineage!.generation, 2)
   })
 
   it("omits lineage when parent is zero", () => {
     const lineage = { parentAgentId: ZERO32, forkHeight: 0n, generation: 0 }
     const doc = buildDIDDocument({ chainId: CHAIN_ID, soul: makeSoul(), lineage })
-    assert.equal(doc.cocAgent?.lineage, undefined)
+    assert.equal(doc.paliAgent?.lineage, undefined)
   })
 
   it("includes service endpoints", () => {
     const services = [
-      { id: "#rpc", type: "CocRpcEndpoint", serviceEndpoint: "http://localhost:18780" },
-      { id: "#wire", type: "CocWireProtocol", serviceEndpoint: "tcp://localhost:19781" },
+      { id: "#rpc", type: "PaliRpcEndpoint", serviceEndpoint: "http://localhost:18780" },
+      { id: "#wire", type: "PaliWireProtocol", serviceEndpoint: "tcp://localhost:19781" },
     ]
     const doc = buildDIDDocument({ chainId: CHAIN_ID, soul: makeSoul(), services })
 
     assert.ok(doc.service)
     assert.equal(doc.service!.length, 2)
-    assert.equal(doc.service![0].type, "CocRpcEndpoint")
+    assert.equal(doc.service![0].type, "PaliRpcEndpoint")
   })
 
   it("omits service array when empty", () => {
@@ -178,17 +178,17 @@ describe("buildDIDDocument", () => {
     assert.equal(doc.service, undefined)
   })
 
-  it("includes registration timestamp in cocAgent", () => {
+  it("includes registration timestamp in paliAgent", () => {
     const doc = buildDIDDocument({ chainId: CHAIN_ID, soul: makeSoul() })
-    assert.ok(doc.cocAgent?.registeredAt)
-    assert.ok(doc.cocAgent!.registeredAt!.includes("2024"))
+    assert.ok(doc.paliAgent?.registeredAt)
+    assert.ok(doc.paliAgent!.registeredAt!.includes("2024"))
   })
 
   it("omits zero CIDs from agent metadata", () => {
     const soul = makeSoul({ identityCid: ZERO32, latestSnapshotCid: ZERO32 })
     const doc = buildDIDDocument({ chainId: CHAIN_ID, soul })
-    assert.equal(doc.cocAgent?.identityCid, undefined)
-    assert.equal(doc.cocAgent?.latestSnapshotCid, undefined)
+    assert.equal(doc.paliAgent?.identityCid, undefined)
+    assert.equal(doc.paliAgent?.latestSnapshotCid, undefined)
   })
 })
 
@@ -196,7 +196,7 @@ describe("buildDeactivatedDocument", () => {
   it("returns document with empty verification methods", () => {
     const doc = buildDeactivatedDocument(AGENT_ID, CHAIN_ID)
 
-    assert.deepStrictEqual(doc["@context"], [W3C_DID_CONTEXT, COC_DID_CONTEXT])
+    assert.deepStrictEqual(doc["@context"], [W3C_DID_CONTEXT, PALI_DID_CONTEXT])
     assert.ok(doc.id.includes(AGENT_ID.toLowerCase()))
     assert.deepStrictEqual(doc.verificationMethod, [])
     assert.deepStrictEqual(doc.authentication, [])

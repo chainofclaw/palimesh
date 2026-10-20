@@ -1,15 +1,15 @@
-# coc-explorer Incident Response Runbook
+# palimesh-explorer Incident Response Runbook
 
-This runbook is for emergency isolation and secure recovery when `coc-explorer` is suspected compromised.
+This runbook is for emergency isolation and secure recovery when `palimesh-explorer` is suspected compromised.
 
 ## 1) Emergency Isolation (keep explorer offline)
 
 1. Run the containment script as root:
-   - `COC/scripts/emergency-isolate-explorer.sh --block-ip <ioc_ip_1> --block-ip <ioc_ip_2>`
+   - `Palimesh/scripts/emergency-isolate-explorer.sh --block-ip <ioc_ip_1> --block-ip <ioc_ip_2>`
    - Or pass `--ioc-file /root/iocs.txt` with one IP/CIDR per line.
 2. Confirm explorer is offline:
-   - `pm2 status | grep coc-explorer` should show stopped (if PM2 path is used).
-   - `systemctl status coc-explorer` should show inactive (if systemd path is used).
+   - `pm2 status | grep palimesh-explorer` should show stopped (if PM2 path is used).
+   - `systemctl status palimesh-explorer` should show inactive (if systemd path is used).
    - `ss -lntp | grep :3000` should return no public listener.
 3. Confirm miner/downloader processes are gone:
    - `pgrep -af 'CeuzT0b|i1LT1A|RPEiZT|oHdzPs5h|xmrig|stratum|/let'` should return empty.
@@ -17,11 +17,11 @@ This runbook is for emergency isolation and secure recovery when `coc-explorer` 
 ## 2) Apply Security Fixes
 
 1. Deploy patched explorer app with hardened `/api/verify` controls:
-   - API key gate (`COC_VERIFY_API_KEY`)
-   - request size limits (`COC_VERIFY_MAX_BODY_BYTES`, `COC_VERIFY_MAX_SOURCE_CHARS`)
-   - in-process rate limits (`COC_VERIFY_RATE_WINDOW_MS`, `COC_VERIFY_RATE_MAX_REQUESTS`)
+   - API key gate (`PALI_VERIFY_API_KEY`)
+   - request size limits (`PALI_VERIFY_MAX_BODY_BYTES`, `PALI_VERIFY_MAX_SOURCE_CHARS`)
+   - in-process rate limits (`PALI_VERIFY_RATE_WINDOW_MS`, `PALI_VERIFY_RATE_MAX_REQUESTS`)
 2. Keep remote solc downloads disabled in production:
-   - `COC_SOLC_ALLOW_REMOTE=0`
+   - `PALI_SOLC_ALLOW_REMOTE=0`
 3. Reload Nginx with explorer and `/api/verify` specific limits.
 4. Ensure explorer runs least-privileged:
    - systemd hardening enabled
@@ -30,9 +30,9 @@ This runbook is for emergency isolation and secure recovery when `coc-explorer` 
 
 ## 3) Verification Checklist Before Re-enable
 
-- `npm run build` succeeds in `COC/explorer`.
+- `npm run build` succeeds in `Palimesh/explorer`.
 - `nginx -t` succeeds before reload.
-- `systemd-analyze security coc-explorer.service` improves vs baseline.
+- `systemd-analyze security palimesh-explorer.service` improves vs baseline.
 - `curl -i https://<explorer-host>/api/verify` without key returns `401`/`503`.
 - `curl -i -H 'x-verify-api-key: ...' ...` with oversized body returns `413`.
 - Burst requests to `/api/verify` trigger `429` with `Retry-After`.

@@ -4,7 +4,7 @@
 #   2. deploy ValidatorRegistry + PoSeManagerV2 + InsuranceFund + EquivocationDetector
 #   3. stake 5 validators (anvil 0..4)
 #   4. patch agent-config.json + relayer-config.json with deployed addresses
-#   5. bring up coc-agent + coc-relayer sidecars
+#   5. bring up palimesh-agent + palimesh-relayer sidecars
 #   6. run 05-pose-epoch-sanity scenario
 #   7. tear down on success (leave running on failure)
 #
@@ -30,7 +30,7 @@ up() {
 
   echo "==> [2/3] Deploying PoSe contract suite to fork-off chain"
   cd "$FIXTURE_DIR/.." && cd ..  # reach contracts/ workspace root
-  cd /passinger/projects/ClawdBot/COC/contracts
+  cd /passinger/projects/ClawdBot/Palimesh/contracts
   node "$SCRIPT_DIR/deploy-pose-on-h15.mjs"
   cd "$FIXTURE_DIR"
 
@@ -51,7 +51,7 @@ up() {
     "validatorRegistryAddress" \
     "$(jq -r '.contracts.ValidatorRegistry.address' "$DEPLOYED_PATH")"
 
-  echo "==> Bringing up sidecars (coc-agent + coc-relayer)"
+  echo "==> Bringing up sidecars (palimesh-agent + palimesh-relayer)"
   docker compose \
     -f "$FIXTURE_DIR/docker-compose-h15.yml" \
     -f "$FIXTURE_DIR/docker-compose-pose.yml" \
@@ -70,7 +70,7 @@ patch_config() {
 }
 
 deploy() {
-  cd /passinger/projects/ClawdBot/COC/contracts
+  cd /passinger/projects/ClawdBot/Palimesh/contracts
   node "$SCRIPT_DIR/deploy-pose-on-h15.mjs"
 }
 
@@ -102,8 +102,8 @@ case "$ACTION" in
       down
     else
       echo "==> Test FAILED — leaving fixture up for inspection."
-      echo "    docker logs coc-h15-agent | tail -100"
-      echo "    docker logs coc-h15-relayer | tail -100"
+      echo "    docker logs palimesh-h15-agent | tail -100"
+      echo "    docker logs palimesh-h15-relayer | tail -100"
       echo "    bash $SCRIPT_DIR/run-pose.sh down  # to clean up"
       exit 1
     fi

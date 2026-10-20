@@ -1,10 +1,10 @@
-# COC Reward Mechanism
+# Palimesh Reward Mechanism
 
-This document describes the complete reward mechanism of the COC (ChainOfClaw) blockchain, covering scoring, distribution, slashing, and claiming across both protocol versions.
+This document describes the complete reward mechanism of the Palimesh (Palimesh) blockchain, covering scoring, distribution, slashing, and claiming across both protocol versions.
 
 ## 1. Overview
 
-COC uses a **Proof-of-Service (PoSe)** model to incentivize node operators. Nodes earn rewards by responding to service challenges (storage proofs, relay checks, uptime pings) within each epoch. Two protocol versions coexist:
+Palimesh uses a **Proof-of-Service (PoSe)** model to incentivize node operators. Nodes earn rewards by responding to service challenges (storage proofs, relay checks, uptime pings) within each epoch. Two protocol versions coexist:
 
 | Aspect | V1 (Push-based) | V2 (Pull-based Merkle Claim) |
 |--------|-----------------|------------------------------|
@@ -71,7 +71,7 @@ The reward manifest is the authoritative data bridge between the off-chain scori
 ### 3.1 Flow
 
 ```
-Agent (coc-agent)           Filesystem              Relayer (coc-relayer)        Contract
+Agent (palimesh-agent)           Filesystem              Relayer (palimesh-relayer)        Contract
   │                           │                        │                          │
   ├─ computeEpochRewards() ──►│                        │                          │
   ├─ buildRewardTree()    ──►│                        │                          │
@@ -206,10 +206,10 @@ Any address can call `claim(epochId, nodeId, amount, merkleProof)`:
 
 ### 6.3 CLI Claim Tool
 
-`runtime/coc-reward-claim.ts` automates claiming:
+`runtime/palimesh-reward-claim.ts` automates claiming:
 
 ```bash
-node --experimental-strip-types runtime/coc-reward-claim.ts --epoch 42 --node-id 0x...
+node --experimental-strip-types runtime/palimesh-reward-claim.ts --epoch 42 --node-id 0x...
 ```
 
 It reads the best available manifest (settled > unsettled), verifies the EIP-712 signature, looks up the Merkle proof for the node, and submits the `claim()` transaction.
@@ -320,7 +320,7 @@ If `allowEmptyWitnessSubmission = true` (off by default in production), batches 
 
 ## 10. BFT → PoSe Slash Bridge
 
-> Source: `node/src/bft-coordinator.ts`, `runtime/coc-relayer.ts`
+> Source: `node/src/bft-coordinator.ts`, `runtime/palimesh-relayer.ts`
 
 When the BFT consensus layer detects equivocation (double-voting), the evidence flows into the PoSe slashing pipeline:
 
@@ -332,10 +332,10 @@ BFT EquivocationDetector
   │       ├─ ValidatorGovernance.slash()
   │       └─ EvidenceStore.record()
   │
-  ├─ coc_getEquivocations RPC endpoint
+  ├─ pali_getEquivocations RPC endpoint
   │   └─ returns stored equivocation evidence
   │
-  └─ Relayer polls coc_getEquivocations
+  └─ Relayer polls pali_getEquivocations
       └─ tryDisputeV2():
           ├─ openChallenge(commitHash) + bond
           ├─ revealChallenge(targetNodeId, faultType=1, evidence)
@@ -348,12 +348,12 @@ The commit-reveal lifecycle for equivocation faults follows the same 3-step proc
 
 ```
 ┌──────────────────────────────────────────────────────────────────────────┐
-│                        COC Reward Lifecycle                              │
+│                        Palimesh Reward Lifecycle                              │
 ├──────────────────────────────────────────────────────────────────────────┤
 │                                                                          │
 │  ┌─────────┐    challenge     ┌──────────┐    receipt     ┌──────────┐  │
 │  │  Agent   │ ──────────────► │   Node   │ ─────────────► │  Agent   │  │
-│  │(coc-agent)│                │ (target) │                │(verifier)│  │
+│  │(palimesh-agent)│                │ (target) │                │(verifier)│  │
 │  └────┬─────┘                 └──────────┘                └────┬─────┘  │
 │       │                                                        │        │
 │       │  ┌──────────────┐ witness attestation ┌──────────────┐ │        │
@@ -416,8 +416,8 @@ The commit-reveal lifecycle for equivocation faults follows the same 3-step proc
 | `services/common/reward-tree.ts` | Merkle tree construction (`buildRewardTree`) |
 | `services/common/pose-types-v2.ts` | V2 types (RewardLeaf, FaultProof, ResultCode) |
 | `services/relayer/epoch-finalizer.ts` | Challenger reward allocation |
-| `runtime/coc-relayer.ts` | Epoch finalization, fault proof lifecycle |
-| `runtime/coc-reward-claim.ts` | V2 automated claim CLI |
+| `runtime/palimesh-relayer.ts` | Epoch finalization, fault proof lifecycle |
+| `runtime/palimesh-reward-claim.ts` | V2 automated claim CLI |
 | `contracts/contracts-src/settlement/PoSeManager.sol` | V1 on-chain settlement |
 | `contracts/contracts-src/settlement/PoSeManagerV2.sol` | V2 on-chain settlement |
 | `contracts/contracts-src/settlement/IPoSeManagerV2.sol` | V2 interface and events |

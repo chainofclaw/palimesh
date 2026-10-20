@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # chaos/run-churn-sequence.sh — Drive a 4-hour churn experiment per the
 # pre-set timeline in
-# /home/bob/.claude/plans/coc-gcloud-3-5-bft-p2p-sleepy-wall.md.
+# /home/bob/.claude/plans/palimesh-gcloud-3-5-bft-p2p-sleepy-wall.md.
 #
 # The script wraps existing tools (30-stop-burst, 31-start-burst, stop-anchor,
 # start-anchor, partition.sh, corrupt-stateroot.sh, snapshot-cluster.sh,
@@ -14,7 +14,7 @@
 #   bash run-churn-sequence.sh --dry-run           # echo events without acting
 #   bash run-churn-sequence.sh --pose-only         # skip stop/start, only PoSe
 #
-# Output: /tmp/coc-churn-run-<UTC-iso>.jsonl
+# Output: /tmp/palimesh-churn-run-<UTC-iso>.jsonl
 
 set -uo pipefail
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -34,7 +34,7 @@ while [[ $# -gt 0 ]]; do
 done
 
 RUN_TS=$(date -u +%Y%m%dT%H%M%SZ)
-LOG_FILE="/tmp/coc-churn-run-${RUN_TS}.jsonl"
+LOG_FILE="/tmp/palimesh-churn-run-${RUN_TS}.jsonl"
 echo "==> Run log: $LOG_FILE"
 
 snap() {
@@ -69,11 +69,11 @@ wait_min() {
 }
 
 # Resolve IPs once for partition payloads
-A1_IP=$(gcloud compute instances describe "$COC_ANCHOR_1_NAME" --zone="$COC_ANCHOR_1_ZONE" --project="$COC_GCP_PROJECT" --format="value(networkInterfaces[0].accessConfigs[0].natIP)" 2>/dev/null || echo "")
-A2_IP=$(gcloud compute instances describe "$COC_ANCHOR_2_NAME" --zone="$COC_ANCHOR_2_ZONE" --project="$COC_GCP_PROJECT" --format="value(networkInterfaces[0].accessConfigs[0].natIP)" 2>/dev/null || echo "")
-B1_IP=$(gcloud compute instances describe "$COC_BURST_1_NAME"  --zone="$COC_BURST_1_ZONE"  --project="$COC_GCP_PROJECT" --format="value(networkInterfaces[0].accessConfigs[0].natIP)" 2>/dev/null || echo "")
-B2_IP=$(gcloud compute instances describe "$COC_BURST_2_NAME"  --zone="$COC_BURST_2_ZONE"  --project="$COC_GCP_PROJECT" --format="value(networkInterfaces[0].accessConfigs[0].natIP)" 2>/dev/null || echo "")
-B3_IP=$(gcloud compute instances describe "$COC_BURST_3_NAME"  --zone="$COC_BURST_3_ZONE"  --project="$COC_GCP_PROJECT" --format="value(networkInterfaces[0].accessConfigs[0].natIP)" 2>/dev/null || echo "")
+A1_IP=$(gcloud compute instances describe "$PALI_ANCHOR_1_NAME" --zone="$PALI_ANCHOR_1_ZONE" --project="$PALI_GCP_PROJECT" --format="value(networkInterfaces[0].accessConfigs[0].natIP)" 2>/dev/null || echo "")
+A2_IP=$(gcloud compute instances describe "$PALI_ANCHOR_2_NAME" --zone="$PALI_ANCHOR_2_ZONE" --project="$PALI_GCP_PROJECT" --format="value(networkInterfaces[0].accessConfigs[0].natIP)" 2>/dev/null || echo "")
+B1_IP=$(gcloud compute instances describe "$PALI_BURST_1_NAME"  --zone="$PALI_BURST_1_ZONE"  --project="$PALI_GCP_PROJECT" --format="value(networkInterfaces[0].accessConfigs[0].natIP)" 2>/dev/null || echo "")
+B2_IP=$(gcloud compute instances describe "$PALI_BURST_2_NAME"  --zone="$PALI_BURST_2_ZONE"  --project="$PALI_GCP_PROJECT" --format="value(networkInterfaces[0].accessConfigs[0].natIP)" 2>/dev/null || echo "")
+B3_IP=$(gcloud compute instances describe "$PALI_BURST_3_NAME"  --zone="$PALI_BURST_3_ZONE"  --project="$PALI_GCP_PROJECT" --format="value(networkInterfaces[0].accessConfigs[0].natIP)" 2>/dev/null || echo "")
 
 cat <<EOF
 ==> Cluster IPs at run start:
@@ -129,21 +129,21 @@ if [[ "$POSE_ONLY" == "0" ]]; then
   # === T+70: partition ======================================================
   wait_min 19 "until t+70"
   snap "t70-before-partition"
-  run "bash $SCRIPT_DIR/partition.sh apply $COC_ANCHOR_1_NAME,$COC_BURST_1_NAME vs $COC_ANCHOR_2_NAME,$COC_BURST_2_NAME,$COC_BURST_3_NAME"
+  run "bash $SCRIPT_DIR/partition.sh apply $PALI_ANCHOR_1_NAME,$PALI_BURST_1_NAME vs $PALI_ANCHOR_2_NAME,$PALI_BURST_2_NAME,$PALI_BURST_3_NAME"
   wait_min 1 "partition settle"
   snap "t70-during-partition"
 
   # === T+75: repair partition ===============================================
   wait_min 4 "partition duration"
   snap "t75-before-repair"
-  run "bash $SCRIPT_DIR/partition.sh repair $COC_ANCHOR_1_NAME,$COC_BURST_1_NAME,$COC_ANCHOR_2_NAME,$COC_BURST_2_NAME,$COC_BURST_3_NAME"
+  run "bash $SCRIPT_DIR/partition.sh repair $PALI_ANCHOR_1_NAME,$PALI_BURST_1_NAME,$PALI_ANCHOR_2_NAME,$PALI_BURST_2_NAME,$PALI_BURST_3_NAME"
   wait_min 2 "wire reconnect"
   snap "t75-after-repair"
 
   # === T+95: corrupt-stateroot anchor-2 =====================================
   wait_min 18 "until t+95"
   snap "t95-before-corrupt"
-  run "bash $SCRIPT_DIR/corrupt-stateroot.sh $COC_ANCHOR_2_NAME"
+  run "bash $SCRIPT_DIR/corrupt-stateroot.sh $PALI_ANCHOR_2_NAME"
   wait_min 2 "snap-sync recovery"
   snap "t95-after-corrupt-recovery"
 

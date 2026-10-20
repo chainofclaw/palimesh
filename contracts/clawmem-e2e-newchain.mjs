@@ -3,7 +3,7 @@
  * registries on the 3-server testnet (chainId 18780).
  *
  * Exercises the full backup/recovery workflow that claw-mem (or
- * coc-backup descendants) would drive in production:
+ * palimesh-backup descendants) would drive in production:
  *
  *   1. Generate a synthetic AI-agent identity (agentId, identityCid).
  *   2. EIP-712-sign RegisterSoul, call SoulRegistry.registerSoul.
@@ -30,7 +30,7 @@ const ephemeral = ethers.Wallet.createRandom()
 const KEY = process.env.AGENT_KEY || ephemeral.privateKey
 
 const deployed = JSON.parse(readFileSync(
-  "/passinger/projects/ClawdBot/COC/contracts/deployed-registries-newchain.json",
+  "/passinger/projects/ClawdBot/Palimesh/contracts/deployed-registries-newchain.json",
   "utf8",
 ))
 

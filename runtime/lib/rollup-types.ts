@@ -1,5 +1,5 @@
 /**
- * Shared types for COC Optimistic Rollup runtime services.
+ * Shared types for Palimesh Optimistic Rollup runtime services.
  */
 
 export type Hex = `0x${string}`

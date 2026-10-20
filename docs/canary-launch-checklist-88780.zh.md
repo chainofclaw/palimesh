@@ -23,7 +23,7 @@
    与 [`validator-registry-reader-enablement-88780.md`](./validator-registry-reader-enablement-88780.md)。
    *负责*:核心团队
    *当前*:**2026-06-10 已关闭。** 当前 validator(v1–v5)各自链上
-   `stake(nodeId, pubkeyNode)` 32 COC(B4),全节点设 `validatorRegistryAddress`
+   `stake(nodeId, pubkeyNode)` 32 PALI(B4),全节点设 `validatorRegistryAddress`
    拉起(B5)。链上 `getActiveValidators()` 返回 **5 active**;节点日志
    `BFT validator set updated from ValidatorRegistry count=5`。validator 集合现
    由链上驱动并零重启热更新 —— 外部 operator 通过质押加入,无需改配置或协调重启。
@@ -31,7 +31,7 @@
    B3 已验证。)剩余的 HIGH 项灾难恢复 Runbook dry-run 单列为 Gate 7。
 
 2. **☐ 最近 30 天连续出块无人工干预**
-   *证据*:Grafana dashboard `coc-overview` 面板 "Block height per node, 30d 回溯"
+   *证据*:Grafana dashboard `palimesh-overview` 面板 "Block height per node, 30d 回溯"
    — 必须显示无 > 60s 的水平线,除了计划内 rolling upgrade 窗口(也必须有日志)。
    *负责*:ops
    *当前*:88780 自 gen-5 redeploy 2026-05-20 (commit `e5e6022`) 以来连续出块。
@@ -79,31 +79,31 @@
    equivocation slash 响应、OZ-manifest 损坏。
 
 8. **☐ 公开 RPC 端点加固**
-   *证据*:`https://rpc.chainofclaw.io` 在 10K req/min DDoS 测试(k6 / Artillery)下存活,
+   *证据*:`https://rpc.palimesh.io` 在 10K req/min DDoS 测试(k6 / Artillery)下存活,
    不降级 validator-internal RPC。Cloudflare 或等同 CDN/WAF 前置。
    *负责*:ops
    *当前*:待办。按父 plan A.2.4;独立于本文档 sprint。
    Validator-internal RPC(`209.74.64.88:38780` 等)保持私有;仅 LB 前端暴露流量。
 
 9. **☐ Faucet 可持续模型**
-   *证据*:faucet 24h 连续 100 drip 请求/小时下存活,余额维持 ≥ 1000 COC(自动 refill 在位)。
+   *证据*:faucet 24h 连续 100 drip 请求/小时下存活,余额维持 ≥ 1000 PALI(自动 refill 在位)。
    *负责*:ops
-   *当前*:待办。当前 `faucet/` 代码是测试网调优(10 COC drip,24h 冷却)。
-   canary 阶段的 refill cron job 缺失;需 SOP + 余额降至 500 COC 以下时告警。
+   *当前*:待办。当前 `faucet/` 代码是测试网调优(10 PALI drip,24h 冷却)。
+   canary 阶段的 refill cron job 缺失;需 SOP + 余额降至 500 PALI 以下时告警。
 
 10. **🟡 Grafana dashboards committed + Prometheus alerts wired**
-    *证据*:4 个 dashboard(`docker/grafana/dashboards/coc-{overview,consensus,network,resources}.json`)
+    *证据*:4 个 dashboard(`docker/grafana/dashboards/palimesh-{overview,consensus,network,resources}.json`)
     + `ops/alerts/prometheus-rules.yml` 中 11 条 alert(4 组:availability、security、
     performance、network),每条映射到
     [`observability-runbook-88780.zh.md`](./observability-runbook-88780.zh.md) 一节(Stage 6)。
     SLO 编码:`SlowBlockProduction`(出块 p99 代理)、`EquivocationDetected`
-    (清白记录 gate)、`LowPeerCount` / `coc_validators_active` panel(BFT quorum)、
+    (清白记录 gate)、`LowPeerCount` / `pali_validators_active` panel(BFT quorum)、
     `HighMempoolBacklog`(mempool ack 代理)。
     *负责*:ops
     *当前*:资产 + 每条 alert SOP 已交付。剩余子任务(已跟踪,不阻塞 Gate 10):
     - 验证 dashboards 在新 Grafana 干净导入(上线前手动 dry-run);
     - 接 Alertmanager `runbook_url` annotation 指向公开 runbook URL(docs 站点上线后);
-    - 可选:加 `ValidatorQuorumAtRisk` alert(`coc_validators_active < 5`)
+    - 可选:加 `ValidatorQuorumAtRisk` alert(`pali_validators_active < 5`)
       预防 chaos T2 风格的 2-down 重启竞速;
     - 对齐 dev-stack `docker/prometheus/alerts.yml` 与权威 `ops/alerts/prometheus-rules.yml`
       (或废弃 dev 文件)。
@@ -111,7 +111,7 @@
 ### 可发现性
 
 11. **☐ 公开 docs 站点已发布**
-    *证据*:`https://chainofclaw.io/en/docs` 可达,渲染新的 88780-canary 文档树
+    *证据*:`https://palimesh.io/en/docs` 可达,渲染新的 88780-canary 文档树
     (whitepaper, architecture, operations, canary launch, security 类别),
     locale 切换(zh / en)正常。
     *负责*:web/frontend
@@ -154,7 +154,7 @@ ops-infra 建设在 ~2026-06-24 完成后才能开始)。
 
 即使 11 gate 全 ☑,若上线前夜出现下列任一条件,推迟发布:
 
-- [chainofclaw/COC issues](https://github.com/chainofclaw/COC/issues) 任何 `priority:critical` 未关
+- [palimesh/Palimesh issues](https://github.com/palimesh/palimesh/issues) 任何 `priority:critical` 未关
 - 链最近 7 天有过出块停滞
 - 任一 multisig signer 不可达(3-of-5 仍安全但缓冲已侵蚀)
 - 活跃 validator 数(`ValidatorRegistry.getActiveValidators().length`,当前 5)

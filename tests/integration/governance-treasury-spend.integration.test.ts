@@ -367,7 +367,7 @@ test("GovernanceDAO bicameral: passes only when BOTH HUMAN and CLAW chambers app
       // raw 32-byte inner hash reproduces the contract's expectation exactly.
       for (let i = 0; i < claws.length; i++) {
         const w = claws[i]!
-        const agentId = keccak256(toUtf8Bytes(`coc-agent-${i}`))
+        const agentId = keccak256(toUtf8Bytes(`palimesh-agent-${i}`))
         // abi.encodePacked(bytes32, address) == 32-byte hash || 20-byte addr
         const packed = agentId + w.address.slice(2).toLowerCase()
         const innerHash = keccak256(packed)

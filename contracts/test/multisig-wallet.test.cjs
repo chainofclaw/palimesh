@@ -1,7 +1,7 @@
 /**
  * MultiSigWallet Tests
  *
- * Covers the wallet used as the owner of COC governance / settlement
+ * Covers the wallet used as the owner of Palimesh governance / settlement
  * contracts:
  * - Constructor validation (owner set, threshold bounds, dedup, zero address)
  * - submit / confirm / execute happy path (N-of-M threshold)

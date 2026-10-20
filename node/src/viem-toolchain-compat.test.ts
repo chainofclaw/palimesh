@@ -23,9 +23,9 @@ const CHAIN_ID = 18780
 const FUNDED_PK = "0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80"
 const FUNDED_ADDRESS = "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266"
 
-const cocChain = defineChain({
+const paliChain = defineChain({
   id: CHAIN_ID,
-  name: "COC Local",
+  name: "Palimesh Local",
   nativeCurrency: { name: "ETH", symbol: "ETH", decimals: 18 },
   rpcUrls: { default: { http: ["http://127.0.0.1:0"] } },
 })
@@ -73,7 +73,7 @@ describe("P11: viem toolchain compatibility", () => {
 
   function getPublicClient() {
     return createPublicClient({
-      chain: { ...cocChain, rpcUrls: { default: { http: [`http://127.0.0.1:${rpcPort}`] } } },
+      chain: { ...paliChain, rpcUrls: { default: { http: [`http://127.0.0.1:${rpcPort}`] } } },
       transport: http(`http://127.0.0.1:${rpcPort}`),
     })
   }

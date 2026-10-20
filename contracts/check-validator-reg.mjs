@@ -2,7 +2,7 @@ import { Contract, JsonRpcProvider } from "ethers"
 import { readFile } from "node:fs/promises"
 const RPC = "http://104.198.192.85:28780"  // anchor-1
 const REG = "0xB7f8BC63BbcaD18155201308C8f3540b07f84F5e"
-const { abi } = JSON.parse(await readFile("/passinger/projects/ClawdBot/COC/contracts/artifacts/contracts-src/governance/ValidatorRegistry.sol/ValidatorRegistry.json","utf-8"))
+const { abi } = JSON.parse(await readFile("/passinger/projects/ClawdBot/Palimesh/contracts/artifacts/contracts-src/governance/ValidatorRegistry.sol/ValidatorRegistry.json","utf-8"))
 const provider = new JsonRpcProvider(RPC)
 const reg = new Contract(REG, abi, provider)
 const active = await reg.getActiveValidators()

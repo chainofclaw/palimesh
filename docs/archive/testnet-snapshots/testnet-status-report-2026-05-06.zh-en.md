@@ -3,14 +3,14 @@
 **Date / 日期**: 2026-05-06 02:35 UTC
 **Author / 作者**: COC Operations
 **Scope / 范围**: 试验网当前实测状态、已落地能力、距 Day-90 测试网正式上线还差什么、距主网商用还差什么 / Live state of Prowl testnet, what's landed, what stands between us and the Day-90 public-testnet launch, and what stands between us and a production mainnet.
-**Source data / 数据来源**: live RPC + Prometheus + systemd + git log on `clawchain-server` (199.192.16.79).
+**Source data / 数据来源**: live RPC + Prometheus + systemd + git log on `palimesh-server` (199.192.16.79).
 
 ---
 
 ## 1. 执行摘要 / Executive Summary
 
 **中文.**
-COC Prowl 测试网目前以 3 个 native systemd validator + 1 docker sync-node + 1 docker light peer + relayer/agent/faucet/explorer 的混合拓扑运行在 `clawchain-server` (199.192.16.79)，链高度 212,535，全节点同步。Phase H/I/J/M/N/D/S 全部代码已落地（共识自恢复、经济模型、Skills v0.2 spec、可观测性、native 部署、light peer + IPFS 200MB 配额）。
+COC Prowl 测试网目前以 3 个 native systemd validator + 1 docker sync-node + 1 docker light peer + relayer/agent/faucet/explorer 的混合拓扑运行在 `palimesh-server` (199.192.16.79)，链高度 212,535，全节点同步。Phase H/I/J/M/N/D/S 全部代码已落地（共识自恢复、经济模型、Skills v0.2 spec、可观测性、native 部署、light peer + IPFS 200MB 配额）。
 
 **测试网当前是"功能完整但运行不稳"状态**：单次会话内观察到 4 次链短停（每次 5-15 分钟，自恢复或人工恢复），均由两个根因驱动：(a) 验证者重启后 mempool drift 导致 BFT 提议哈希不一致 → equivocationDetector 累积 evidence → quorum 凑不齐；(b) Phase J1.1 dedup + H11 cooldown 三连锁 corner case（已修复 commit `6cfa622`，待 24h soak 验证）。
 
@@ -19,7 +19,7 @@ COC Prowl 测试网目前以 3 个 native systemd validator + 1 docker sync-node
 距**主网商用**距离更大（保守估计 6-12 个月）：核心安全闭环（密钥托管、second client 实现、抗女巫）、经济参数完整审计、生产级 SLO/告警/值守、跨主机 validator 部署、erasure-coded 存储、合约审计、桥接、KYC/合规等都还没启动。
 
 **English.**
-The COC Prowl testnet currently runs as a hybrid topology of 3 native systemd validators + 1 docker sync-node + 1 docker light peer + relayer/agent/faucet/explorer on `clawchain-server` (199.192.16.79). Chain height 212,535, all nodes synchronised. Phase H/I/J/M/N/D/S code has all landed (consensus self-recovery, economics model, Skills v0.2 spec, observability, native deployment, light peer + IPFS 200MB cap).
+The COC Prowl testnet currently runs as a hybrid topology of 3 native systemd validators + 1 docker sync-node + 1 docker light peer + relayer/agent/faucet/explorer on `palimesh-server` (199.192.16.79). Chain height 212,535, all nodes synchronised. Phase H/I/J/M/N/D/S code has all landed (consensus self-recovery, economics model, Skills v0.2 spec, observability, native deployment, light peer + IPFS 200MB cap).
 
 **The testnet today is "feature-complete but unstable in operation"**: within this single session we observed four chain-stall events (5-15 min each, self- or human-recovered), driven by two root causes: (a) validator-restart-induced mempool drift produces divergent BFT proposed-block hashes, equivocationDetector accumulates evidence, quorum cannot form; (b) the Phase J1.1 dedup × H11 cooldown × sync-in-flight triple-collision corner case (now fixed by commit `6cfa622`, awaiting 24h soak confirmation).
 
@@ -281,7 +281,7 @@ Trigger the descope sequence from roadmap §5.7.2:
 
 ```bash
 # 当前链状态 / current chain state
-ssh clawchain-server '
+ssh palimesh-server '
 for p in 28780 28782 28784 18780 38780; do
   echo -n "port $p height="
   curl -sS -d "{\"jsonrpc\":\"2.0\",\"id\":1,\"method\":\"eth_blockNumber\",\"params\":[]}" \
@@ -293,7 +293,7 @@ done'
 curl -s http://199.192.16.79:9101/metrics | grep -E '^coc_(bft_equivocations_total|fork_choice_max_depth_blocks|block_height|consensus_state) '
 
 # soak 状态 / soak status
-ssh clawchain-server 'wc -l /root/clawd/COC/docs/soak-reports/raw/phase-2-j-fix-w8e.jsonl'
+ssh palimesh-server 'wc -l /root/clawd/COC/docs/soak-reports/raw/phase-2-j-fix-w8e.jsonl'
 
 # 完整 phase commit 历史 / full phase commit history
 git log --oneline --all | grep -iE 'Phase [A-Z]'

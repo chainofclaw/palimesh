@@ -82,7 +82,7 @@ function firstNonLoopbackIPv4(): string | null {
 //
 // #344/#460: block/rm, repo/gc and pin/rm are state-destroying. The gate
 // in isIpfsAdminAuthorized() allows: (a) any loopback caller, OR (b) a
-// non-loopback caller presenting a matching X-COC-IPFS-Admin-Token header
+// non-loopback caller presenting a matching X-Palimesh-IPFS-Admin-Token header
 // when adminAuthToken is configured. A non-loopback caller without a valid
 // token gets 403.
 //
@@ -205,7 +205,7 @@ describe("IPFS E2E Extended — Admin Auth Gate", () => {
           : `${lanBase}${route}?arg=bafkreiaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa`
       const res = await fetch(url, {
         method: "POST",
-        headers: { "x-coc-ipfs-admin-token": "totally-wrong-token" },
+        headers: { "x-palimesh-ipfs-admin-token": "totally-wrong-token" },
       })
       assert.equal(res.status, 403, `wrong token must be 403 on ${route}`)
     }
@@ -233,7 +233,7 @@ describe("IPFS E2E Extended — Admin Auth Gate", () => {
     for (const { route, url } of probes) {
       const res = await fetch(url, {
         method: "POST",
-        headers: { "x-coc-ipfs-admin-token": "e2e-secret-token-abc" },
+        headers: { "x-palimesh-ipfs-admin-token": "e2e-secret-token-abc" },
       })
       assert.equal(
         res.status,
@@ -279,7 +279,7 @@ describe("IPFS E2E Extended — Admin Auth Gate (no token configured)", () => {
     const lanBase = `http://${lanIp}:${server["cfg"].port}`
     const res = await fetch(`${lanBase}/api/v0/repo/gc`, {
       method: "POST",
-      headers: { "x-coc-ipfs-admin-token": "anything" },
+      headers: { "x-palimesh-ipfs-admin-token": "anything" },
     })
     assert.equal(res.status, 403)
   })

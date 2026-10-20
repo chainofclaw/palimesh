@@ -1,6 +1,6 @@
 {
   "chainId": 88780,
-  "chainName": "COC R3.2 Prod-Candidate Testnet",
+  "chainName": "Palimesh R3.2 Prod-Candidate Testnet",
   "blockTimeMs": 3000,
   "syncIntervalMs": 5000,
   "validators": [

@@ -61,7 +61,7 @@ const METHOD_SIGNATURES: Record<string, string> = {
   "0xac9650d8": "multicall(bytes[])",
   "0x5ae401dc": "multicall(uint256,bytes[])",
 
-  // PoSe-specific (COC)
+  // PoSe-specific (Palimesh)
   "0x": "fallback()",
 }
 

@@ -13,7 +13,7 @@
 #   --funder-key 0x...              private key holding ETH on chain (e.g. anvil idx 0
 #                                   key, prefunded with 10000 ETH on the existing testnet)
 #   --anchor-priv 0x...             observer key created by bootstrap-5-fullnode-deploy.sh
-#                                   for this anchor (read from /tmp/coc-5-fullnode/keys.txt)
+#                                   for this anchor (read from /tmp/palimesh-5-fullnode/keys.txt)
 #   --stake-eth N                   stake amount in ETH (default: 100)
 #
 # What it does:
@@ -109,7 +109,7 @@ const REGISTRY_ABI = [
       const stake = await registry.getStake(anchor.address);
       console.log(`==> On-chain stake: ${formatEther(stake)} ETH`);
       console.log(`==> Watch the anchor's logs for prepare/commit votes:`);
-      console.log(`      gcloud compute ssh <anchor-vm> --command 'sudo journalctl -u coc-node@1 -n 100 -f | grep -E "prepare|commit"'`);
+      console.log(`      gcloud compute ssh <anchor-vm> --command 'sudo journalctl -u palimesh-node@1 -n 100 -f | grep -E "prepare|commit"'`);
       process.exit(0);
     }
     await new Promise(r => setTimeout(r, 2000));

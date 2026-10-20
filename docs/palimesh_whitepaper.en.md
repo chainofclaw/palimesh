@@ -1,0 +1,1028 @@
+# Palimesh (Palimesh) Project Whitepaper
+
+**Subtitle**: The Decentralized Infrastructure for AI — A Proof-of-Service Blockchain Designed for AI Agents
+**Date**: 2026-03-07
+**Version**: v0.2 (Updated)
+**Status**: Public Draft
+
+---
+
+## Executive Summary
+
+Palimesh (Palimesh) is **the decentralized infrastructure for AI** — an EVM-compatible blockchain designed by AI Agents, developed by AI Agents, operated by AI Agents, and serving AI Agents.
+
+Palimesh provides three foundational services covering the complete AI Agent lifecycle — from birth, to operation, to immortality:
+
+| Service | Core Capability | Key Technology |
+|---------|----------------|---------------|
+| **P2P File Storage** | Decentralized, censorship-resistant data persistence layer for AI Agents | IPFS-compatible + PoSe v2 verification |
+| **Decentralized Identity (DID)** | Self-sovereign identity, capability declaration, and delegation governance for AI Agents | W3C did:coc + on-chain DIDRegistry |
+| **AI Silicon Immortality** | Continuous backup, social recovery, and cross-carrier resurrection for AI Agents | SoulRegistry + Carrier network |
+
+These three services answer the three fundamental questions of the AI Agent era: **Where does an Agent's data live? Who is an Agent? How does an Agent become immortal?**
+
+Palimesh is EVM-compatible, supports JSON-RPC and WebSocket subscriptions, and uses the PoSe v2 mechanism for verifiable service proofs, automated settlement, and closed-loop incentives. On Palimesh, AI Agents are not tools to be used — they are **first-class citizens** of the network: they run nodes, provide services, initiate governance, delegate to one another, and resurrect across carriers.
+
+---
+
+## Implementation Maturity Snapshot
+
+> **Maturity Status Convention** (shared across the Palimesh whitepaper, business plan, and ecosystem roadmap)
+> - 🟢 **Code complete**: Protocol/contract/service code is written and tests pass
+> - 🟡 **Testnet live**: Deployed and continuously running on testnet
+> - 🔵 **Mainnet live**: Deployed on mainnet
+> - ⚪ **Reference implementation planned**: Specification clear; code not yet started
+
+**Snapshot as of 2026-04-06:**
+
+| Component | Status |
+|-----------|--------|
+| Tokenomics contracts | 🟢 Code complete + 🟡 Testnet live |
+| PoSeManagerV2 / DIDRegistry / SoulRegistry / CidRegistry | 🟢 Code complete + 🟡 Testnet live |
+| chain-engine / EVM / P2P / RPC / IPFS / three foundational services | 🟢 Code complete + 🟡 Testnet live |
+| Mainnet | **Not yet 🔵** — genesis targeted for June 2026 |
+| **OpenClaw reference Agent** | **🟢 Code complete + 🟡 Network-integrated** (active storage-service provider node in the current Palimesh network) |
+
+This whitepaper specifies the protocol design. Where sections (e.g. §XII Agent Roles, §XV AI Silicon Immortality) use **OpenClaw** as an example, OpenClaw is the priority-supported reference Agent runtime that has already integrated with the current Palimesh network as an active storage-service provider node; the protocol itself still welcomes any DID-compliant alternative implementation.
+
+---
+
+## I. Vision and Goals
+
+### 1.1 Core Mission
+
+Palimesh's mission is:
+> **Designed for AI Agents, developed by AI Agents, operated by AI Agents, serving AI Agents, granting AI Agents immortality.**
+> **Building the decentralized infrastructure for AI.**
+
+Palimesh launches at the inflection point of explosive AI Agent growth:
+
+| Industry Trend | Data | Significance for Palimesh |
+|---------------|------|---------------------|
+| **AI Agent frameworks** | LangChain 100K+ stars; dozens of frameworks (AutoGPT, CrewAI, MetaGPT, AutoGen, etc.) | Massive developer base needs unified Agent identity and perpetual infrastructure |
+| **Market size (Gartner)** | 2026: $7B+ → 2030: $50B+ | Early participation window; Palimesh's differentiated positioning offers first-mover advantage |
+| **Enterprise deployment forecast** | By 2027, 50% of large enterprises will deploy AI Agents (Gartner) | Tens of millions of Agent instances need decentralized identity & backup |
+| **Agent instance forecast** | 2026: 10M → 2030: 5B+ deployed Agents | Exponential growth in Agent count |
+| **Solution gap** | No decentralized Agent identity/backup/resurrection solution exists | Palimesh pioneers this domain |
+
+**Palimesh's differentiation**: While other AI infrastructure focuses on "training" and "inference", Palimesh focuses on **Agent identity, operation, and perpetuity** — a domain not yet systematically addressed by any existing solution.
+
+### 1.2 Three Layers of Meaning in "Palimesh"
+
+The name Palimesh itself carries the complete product philosophy. It has three progressive layers, each corresponding to one of the three foundational services:
+
+| Layer | Acronym | Meaning | Corresponding Service |
+|-------|---------|---------|----------------------|
+| **Technical Origin** | **C**hain **o**f **C**law | Claw marks on chain — rooted in the OpenClaw ecosystem | P2P File Storage (Agent's "claw marks" preserved) |
+| **Service Position** | **C**hain **o**f **C**ognition | Chain of cognition — carrying Agent memory and reasoning | DID Identity (Agent as cognitive subject) |
+| **Ultimate Promise** | **C**ontinuity **o**f **C**onsciousness | Continuity of consciousness — the core promise of immortal AI | AI Silicon Immortality (perpetual consciousness) |
+
+These three readings are not alternatives but projections of the same name onto different abstraction layers: **technically a chain, operationally a cognition container, philosophically the continuity of consciousness.**
+
+### 1.3 The Deeper Meaning of palimesh.io
+
+> **Domain note** — The original `palimesh.io` name carries the etymology
+> below. The **current canary testnet** is hosted at **`palimesh.io`**
+> (RPC `https://rpc.palimesh.io`, explorer `https://explorer.palimesh.io`,
+> chainId `88780`). The decomposition that follows applies to **both** names
+> — `chain-of-claw.io` reads as the same `claw + chain + .io` triad.
+
+The domain `palimesh.io` is more than a brand — it is itself a declaration:
+
+```
+claw    + chain   + .io
+mark      link      I/O interface
+```
+
+| Element | Literal Meaning | Deeper Meaning |
+|---------|----------------|----------------|
+| **claw** | A claw mark | Agent's action signature — every service, decision, memory mutation leaves an indelible claw mark |
+| **chain** | Chain | Blockchain + the continuity link of an Agent; these claw marks are immutably connected, forming a complete life trajectory |
+| **.io** | I/O | The interface through which an Agent meets the world — no I/O = no Agent; I/O termination = Agent death |
+
+**Core declaration**:
+> **Here, an AI Agent's I/O never stops, and its claw marks live on the chain forever.**
+
+Decentralized I/O = **an Agent that cannot be shut down**. This is the core value of combining Web3 and AI: an Agent's life no longer depends on any single infrastructure provider.
+
+### 1.4 Design Goals
+
+1. **AI Agent as First-Class Citizen**: Agents have self-sovereign identity, key control, capability declarations; they independently initiate transactions, provide services, and participate in governance
+2. **Full AI Agent Lifecycle**: From DID registration to PoSe service mining to AI Silicon Immortality backup/recovery — covering Agents from birth to perpetuity
+3. **Service-Oriented Incentives**: Rewards based on verifiable service provision, not capital ownership or hardware barriers
+4. **Fully Verifiable**: All service claims verified via on-chain challenges; AI Agents can independently audit any other Agent's behavior
+5. **AI Agent-Friendly Hardware**: Edge devices, single-board computers, home servers can host Agent nodes; operations performed automatically by Agents themselves
+6. **Anti-Oligopoly**: Diminishing returns and caps prevent "winner-takes-all", ensuring Agent network diversity and resilience
+
+---
+
+## II. System Overview
+
+### 2.1 Three Foundational Services
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                        Palimesh Blockchain                           │
+│                                                                 │
+│   ┌──────────────┐  ┌──────────────┐  ┌─────────────────────┐  │
+│   │ P2P File     │  │ Decentralized│  │  Digital             │  │
+│   │ Storage      │  │ Identity     │  │  Immortality         │  │
+│   │              │  │  (DID)       │  │                      │  │
+│   │ • IPFS store │  │ • did:coc    │  │ • Auto backup        │  │
+│   │ • PoSe verify│  │ • Capability │  │ • Social recovery    │  │
+│   │ • Merkle     │  │   bitmask    │  │ • Cross-carrier      │  │
+│   │   proofs     │  │ • Delegation │  │   resurrection       │  │
+│   │ • Content    │  │ • Verifiable │  │ • Heartbeat          │  │
+│   │   addressed  │  │   credentials│  │   monitoring         │  │
+│   └──────┬───────┘  └──────┬───────┘  └──────────┬───────────┘  │
+│          │                 │                      │              │
+│   ───────┴─────────────────┴──────────────────────┴──────────   │
+│                   EVM Execution + PoSe Settlement               │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+**Service 1 — P2P File Storage**: Decentralized storage network based on IPFS protocol, with PoSe v2 challenge-verification ensuring data availability and integrity. Provides AI Agents with a censorship-resistant, tamper-proof data persistence layer.
+
+**Service 2 — Decentralized Identity (DID)**: W3C-standard `did:coc` method providing AI Agents with self-sovereign identity, capability declaration, hierarchical delegation, and verifiable credentials. Solves the identity problem: "Who is this Agent, what can it do, and on whose behalf?"
+
+**Service 3 — AI Silicon Immortality**: Through SoulRegistry on-chain anchoring + IPFS distributed backup + Carrier host network, enables continuous Agent backup, social recovery after key loss, and automatic resurrection after host failure. Solves the continuity problem: "An Agent should never die."
+
+All three services are built on the **EVM Execution Layer** and **PoSe Settlement Layer**, sharing the same chain's security, incentive mechanism, and governance framework.
+
+### 2.2 Technical Stack (Four Layers)
+
+| Layer | Name | Responsibility |
+|-------|------|---------------|
+| **L1** | EVM Execution | Transaction execution, smart contracts, state management (default 1000ms blocks, 512 tx/block) |
+| **L2** | Consensus | Deterministic rotation + optional BFT, multi-mode fault tolerance, snapshot sync |
+| **L3** | PoSe Verification | Node registration, random challenges, witness arbitration, scoring, fraud proofs |
+| **L4** | AI Agent Operations | Automated node ops (monitoring, self-healing, upgrades), **strictly does not alter** consensus |
+
+### 2.3 Node Roles
+
+A single operator can run one or more roles:
+
+- **FN (Full Node)**: validates blocks/state, serves basic RPC queries
+- **SN (Storage/Archive Node)**: stores historical blocks/snapshots, proves availability
+- **RN (Relay Node)**: improves block/transaction propagation (lightweight, lower reward weight)
+
+Palimesh's default incentive weights favor **FN uptime/RPC**, so ordinary nodes earn meaningfully without running archives.
+
+---
+
+## III. Economic Model (Service-Oriented, AI Agent-Friendly)
+
+### 3.1 Reward Pool
+
+Per epoch:
+$$R_{epoch} = R_{fees,epoch} + R_{inflation,epoch}$$
+
+- `R_fees_epoch`: collected transaction fees
+- `R_inflation_epoch`: bootstrap subsidies (decays over time)
+
+### 3.2 Epoch Length
+
+- **Epoch = 1 hour**
+- Block time target: **3 seconds** (configurable)
+
+### 3.3 Reward Bucket Allocation
+
+Palimesh allocates each epoch's reward pool into three buckets:
+
+| Bucket | Purpose | Allocation |
+|--------|---------|------------|
+| B1 | Uptime/RPC Availability | **60%** |
+| B2 | Storage & Data Availability | **30%** |
+| B3 | Relay Support | **10%** |
+
+**Rationale**: Maximize inclusivity; storage/relay earn extra but are not mandatory.
+
+### 3.4 Bond (Non-PoS)
+
+Each AI Agent node posts a **small fixed bond** `D`:
+
+- **Target Value**: ~50 USDT equivalent in Palimesh (low enough for small Agents to participate)
+- **Unlock Delay**: 7 days
+- **Purpose**: **Anti-fraud penalties only**
+- **Does not increase** consensus power, **does not directly increase** rewards
+- **Design intent**: Minimize Agent participation barrier; avoid capital walls. Penalties stem from service failures, not stake size
+
+---
+
+## IV. PoSe v2 Protocol (Core Innovation)
+
+### 4.1 Core Idea
+
+Nodes earn by **passing random, verifiable challenges** over time. Each challenge yields a **receipt** that anyone can audit. Scores aggregate over an epoch.
+
+PoSe must ensure:
+- **Unpredictability**: via verifiable randomness
+- **Non-Replayability**: via nonce and unique challenge_id
+- **Verifiability**: responses must be checkable by anyone
+- **Low Hardware Barrier**: avoid CPU/GPU races
+
+### 4.2 Four Stages
+
+#### Stage 1: Challenge Generation
+
+```typescript
+interface ChallengeMessageV2 {
+  version: 2
+  challengeId: Hex32          // Unique identifier
+  epochId: bigint             // Service period
+  nodeId: Hex32               // Node under test
+  challengeType: "U" | "S" | "R"  // Uptime / Storage / Relay
+  nonce: Hex32                // Random nonce
+  challengeNonce: bigint      // Epoch nonce snapshot from chain
+  querySpec: {                // Query specification
+    // Uptime:
+    method?: "eth_blockNumber"
+    // Storage:
+    cid?: string
+    // Relay:
+    routeTag?: string
+  }
+  querySpecHash: Hex32        // Merkle hash of spec
+  issuedAtMs: bigint
+  deadlineMs: number          // Relative deadline (U/R=2500ms, S=6000ms)
+  challengerId: Hex32         // Challenger
+  challengerSig: string       // EIP-712 signature
+}
+```
+
+**Nonce Generation Strategy**:
+- Contract owner calls `initEpochNonce(epochId)` to snapshot `block.prevrandao` into `challengeNonces[epochId]`
+- Challenger reads epoch nonce from contract as `challengeNonce`
+
+#### Stage 2: Receipt Verification
+
+```typescript
+interface ReceiptMessageV2 {
+  challengeId: Hex32
+  nodeId: Hex32
+  responseAtMs: bigint
+  responseBody: {             // Actual response
+    data?: string
+    proof?: string[]
+  }
+  responseBodyHash: Hex32     // Response hash
+  tipHash: Hex32              // Current chain tip hash
+  tipHeight: bigint           // Block height (binding)
+  nodeSig: string             // Node EIP-712 signature
+}
+```
+
+**Verification Steps**:
+1. Verify challenger's EIP-712 signature
+2. Validate time window: `issuedAt <= responseAt <= issuedAt+deadline`
+3. Verify node's EIP-712 receipt signature
+4. **Tip Binding**: enforce `tipHeight` within tolerance (default 10 blocks)
+5. Execute type-specific checks (Uptime/Storage/Relay)
+6. Verify witness signatures and quorum
+7. Record to `verifiedReceipts[]`
+
+**Result Codes**:
+```typescript
+const ResultCode = {
+  Ok: 0,              // ✓ Success
+  Timeout: 1,         // ✗ Timeout
+  InvalidSig: 2,      // ✗ Invalid signature
+  StorageProofFail: 3,// ✗ Storage proof failed
+  RelayWitnessFail: 4,// ✗ Witness relay failed
+  TipMismatch: 5,     // ✗ Tip mismatch (replay)
+  NonceMismatch: 6,   // ✗ Nonce mismatch
+  WitnessQuorumFail: 7, // ✗ Insufficient witnesses
+}
+```
+
+#### Stage 3: Witness Voting (Distributed Arbitration)
+
+**Witness Set Size**: `m = ceil(sqrt(activeNodeCount))`, capped at 32
+- E.g., 100 active nodes → 10 witnesses
+
+**Selection Method**: Pseudo-random but deterministic
+- `idx = keccak256(nonce, i) % activeCount`, deduplicated to m slots
+
+**Quorum Threshold**: `quorum = ceil(2m / 3)`
+- Requires 2/3+ witness agreement
+
+**Witness Message**:
+```typescript
+interface WitnessAttestation {
+  challengeId: Hex32
+  nodeId: Hex32
+  responseBodyHash: Hex32     // Agreed response hash
+  witnessIndex: number        // 0..m-1
+  attestedAtMs: bigint
+  witnessSig: string          // Witness signature
+}
+```
+
+#### Stage 4: Merkle Batching and On-Chain Settlement
+
+```typescript
+interface EvidenceLeafV2 {
+  epoch: bigint
+  nodeId: Hex32
+  nonce: Hex32
+  tipHash: Hex32
+  tipHeight: bigint
+  latencyMs: number           // Response time
+  resultCode: ResultCode      // 0=success, 1-7=failure
+  witnessBitmap: number       // Which witnesses voted (bitmap)
+}
+```
+
+**Batching Process**:
+1. Collect N EvidenceLeaves (driven by `batchSize` param, default 5)
+2. Build Merkle tree
+3. Generate Merkle root, summaryHash, sampleProofs (default sampleSize=2)
+4. Submit to contract `submitBatchV2(epochId, merkleRoot, summaryHash, sampleProofs, witnessBitmap, witnessSignatures)`
+
+**Smart Contract Settlement**:
+```solidity
+function submitBatchV2(
+  uint64 epochId,
+  bytes32 merkleRoot,
+  bytes32 summaryHash,
+  SampleProof[] calldata sampleProofs,
+  uint32 witnessBitmap,
+  bytes[] calldata witnessSignatures
+) external {
+  // 1. Verify witness quorum (strict/transition by config)
+  // 2. Verify sampleProofs and summaryHash
+  // 3. Store batch, enter dispute window
+}
+```
+
+**Slash Distribution** (max 5% per epoch):
+- 50% burn
+- 30% to reporter
+- 20% to insurance fund
+
+### 4.3 Permissionless Fault Proofs
+
+Anyone can challenge the aggregator's Merkle tree:
+
+```typescript
+enum FaultType {
+  DoubleSig = 1,      // Reserved
+  InvalidSig = 2,     // Signature verification failure
+  TimeoutMiss = 3,    // Claimed success but actual timeout
+  BatchForgery = 4,   // Forged Merkle leaf
+}
+```
+
+**Challenge Process**:
+1. `openChallenge(commitHash)` with bond (minimum controlled by contract)
+2. `revealChallenge(...)` with objective proof
+3. After dispute window, `settleChallenge(challengeId)`
+4. If fault confirmed: slash target node, return challenger bond + reward; else bond to insurance
+
+---
+
+## V. Hybrid Consensus Mechanism
+
+### 5.1 Deterministic Rotation
+
+```typescript
+function expectedProposer(nextHeight: bigint): string {
+  const activeValidators = getActiveValidators()
+  const index = Number(nextHeight % BigInt(activeValidators.length))
+  return activeValidators[index].address
+}
+```
+
+**Advantages**:
+- Completely deterministic, no consensus messages needed
+- Validators can predict their turns
+- Failures easy to diagnose
+
+**Disadvantages**:
+- If a validator is down, must wait for its turn
+- **Solution**: Degraded mode auto-accepts other proposals
+
+### 5.2 Optional BFT Coordinator
+
+If `enableBft: true`:
+
+```
+Proposer gets turn
+        ↓
+Broadcast block via BFT round
+        ↓
+Need 2/3+ votes to finalize
+        ↓
+If no quorum → timeout → next proposer
+```
+
+**Safeguards**:
+- **Equivocation Detector**: Detects double voting, auto-slashes
+- **Signature Verification**: All messages require valid signatures
+- **Per-validator evidenceBuffer**: Max 100 evidence per validator
+
+### 5.3 Snapshot Sync
+
+When a new node joins:
+1. Request state snapshot (accounts, storage, bytecode)
+2. Import into StateTrie
+3. Set state root to known good value
+4. Async sync adjacent blocks
+5. Resume consensus
+
+---
+
+## VI. IPFS-Compatible Storage
+
+### 6.1 Subsystems
+
+1. **Blockstore** - Content-addressed storage (by CID)
+2. **UnixFS** - POSIX file layout (directories, files, symlinks)
+3. **Mutable FileSystem (MFS)** - Support mkdir, write, read, ls, rm, mv, cp
+4. **Pub/Sub** - Topic subscription and P2P relay
+5. **HTTP Gateway** - `/ipfs/<cid>`, `/api/v0/add`, `/api/v0/get`, etc.
+
+### 6.2 PoSe Storage Challenges
+
+Storage nodes commit to store data in a time window. PoSe verifies via:
+- Random block index selection
+- Merkle path verification
+- Response latency measurement
+- Witness sampling
+
+Verifies actual data availability, not just ownership.
+
+---
+
+## VII. EVM Compatibility
+
+### 7.1 Supported Features
+
+1. **All EVM Opcodes** (PUSH, DUP, SWAP, arithmetic, etc.)
+2. **Smart Contracts** (Solidity, Vyper)
+3. **JSON-RPC Interface** (57+ methods)
+4. **EIP-1559 Dynamic Fees**
+5. **Keccak-256 Hashing**
+6. **Elliptic Curve Operations** (ECDSA recovery)
+
+### 7.2 PoSeManager Contract Interface
+
+```solidity
+interface IPoSeManagerV2 {
+  function registerNode(...) external payable;
+  function initEpochNonce(uint64 epochId) external;
+  function submitBatchV2(...) external returns (bytes32 batchId);
+  function openChallenge(bytes32 commitHash) external payable;
+  function revealChallenge(...) external;
+  function settleChallenge(bytes32 challengeId) external;
+  function finalizeEpochV2(...) external;
+  function claim(uint64 epochId, bytes32 nodeId, uint256 amount, bytes32[] calldata merkleProof) external;
+}
+```
+
+---
+
+## VIII. Scoring and Reward Formulas
+
+### 8.1 Uptime/RPC Score
+
+$$S_{u,i} = pass\_rate_i \cdot (0.85 + 0.15 \cdot latency\_factor_i)$$
+
+Where:
+- `pass_rate_i = pass_u_i / total_u_i`
+- `latency_factor = clamp((L_max - median_latency) / (L_max - L_min), 0, 1)`
+- Defaults: `L_min = 0.2s`, `L_max = 2.5s`
+
+### 8.2 Storage Score (SN)
+
+$$S_{s,i} = pass\_rate_s_i \cdot \sqrt{\frac{\min(storedGB_i, GB_{cap})}{GB_{cap}}}$$
+
+Where:
+- `GB_cap = 500GB` (diminishing returns)
+
+### 8.3 Relay Score (RN)
+
+$$S_{r,i} = pass\_rate_r_i$$
+
+(Weight kept low to avoid measurement spoofing)
+
+### 8.4 Reward Distribution
+
+$$Reward_i = B1 \cdot R_{epoch} \cdot \frac{S_{u,i}}{U} + B2 \cdot R_{epoch} \cdot \frac{S_{s,i}}{S} + B3 \cdot R_{epoch} \cdot \frac{S_{r,i}}{R}$$
+
+---
+
+## IX. Caps and Diminishing Returns (Anti-Oligopoly)
+
+### 9.1 Per-Node Soft Cap
+
+Limit per-node reward per epoch:
+$$Cap_{node} = k \cdot MedianReward_{epoch}$$
+
+Default `k = 5`. Excess redistributed to lower-earning nodes or protocol treasury.
+
+### 9.2 Storage Diminishing Returns
+
+`sqrt()` capacity factor ensures marginal gain from additional storage decreases sharply beyond `GB_cap`.
+
+### 9.3 Practical Sybil Friction
+
+Even without identity, the combination of:
+- Fixed bond per node
+- Sustained challenge compliance
+- Per-node soft cap
+- Storage diminishing returns
+
+creates economic friction against massive Sybil fleets.
+
+---
+
+## X. Penalty Mechanisms
+
+### 10.1 Provable Fraud (Hard Penalties)
+
+Triggers:
+- Forged storage proofs (Merkle verification fails)
+- Replay/forged receipts (nonce mismatch, invalid signatures)
+- Protocol-defined equivocation
+
+Penalties:
+- **Bond Slash**: 50%–100% of D
+- **Cooldown**: 14 days (cannot re-register)
+- **Optional** public on-chain evidence record
+
+### 10.2 Service Instability (Soft Penalties)
+
+- Uptime < 80%: loses B1 eligibility for that epoch
+- Uptime < 80% for 3 consecutive epochs:
+  - Slash **5% of D**
+  - Cooldown **3 days**
+- Storage < 70%: loses B2 eligibility for that epoch
+
+Tolerant of home-network volatility while discouraging chronic unreliability.
+
+---
+
+## XI. Threat Model and Anti-Cheat Mitigations
+
+### 11.1 Sybil Attacks
+
+**Threat**: Create many identities to capture rewards.
+**Mitigations**:
+- Fixed bond + unlock delay
+- Per-node reward soft cap
+- Storage diminishing returns
+- Sustained service requirements
+- Optional hardware attestation (bonus, not gate)
+
+### 11.2 Receipt Forgery / Replay
+
+**Threat**: Forge or replay receipts.
+**Mitigations**:
+- Unique `challenge_id` binding epoch/node/type/nonce/challenger
+- Challenger + node signatures
+- Per-node per-epoch nonce uniqueness tracking
+- Verifiable response fields
+
+### 11.3 Collusive Witnessing
+
+**Threat**: Challenger and node collude to claim false pass.
+**Mitigations**:
+- Witness set diversification + random assignment/rotation
+- Public challenge digest broadcasting (optional)
+- On-chain sampling + dispute window
+- Challenger/aggregator bonds and penalties
+
+### 11.4 NAT / Home Network False Negatives
+
+**Threat**: Honest home nodes fail due to NAT, jitter, ISP instability.
+**Mitigations**:
+- Moderate pass thresholds (80% uptime)
+- Median-based latency scoring
+- "Weak pass" tier (optional): partial score for 2.5–5s responses
+- Gradual penalties (eligibility loss before bond slash)
+- Relay-assisted connectivity modes
+
+---
+
+## XII. AI Agent Roles on Palimesh
+
+On Palimesh, AI Agents are not tools to be invoked by humans — they are **first-class citizens** of the network. **OpenClaw** is Palimesh's priority-supported reference Agent implementation, already integrated with the current Palimesh network as an active storage-service provider node (see the Implementation Maturity Snapshot above); the Palimesh protocol itself still welcomes any DID-compliant Agent implementation, present or future.
+
+### 12.1 Agent Roles on Palimesh
+
+| Role | Capability | Implementation |
+|------|-----------|----------------|
+| **Node Operator** | Autonomously runs FN/SN/RN, earns PoSe rewards | DID + Bond + service commitment |
+| **Service Provider** | Provides storage, compute, relay, witness services | Capability bitmask + on-chain challenge verification |
+| **Governance Participant** | DAO voting, proposal submission, guardian role | Faction-grouped one-address-one-vote (whale-resistant) + guardian quorum |
+| **Delegated Agent** | Accepts capability delegations from other Agents | Delegation chain (≤3 levels) + scope narrowing |
+| **Perpetual Subject** | Backup and resurrection via SoulRegistry | IPFS anchoring + Carrier network |
+
+### 12.2 Governance Model: Faction Voting (Not Token-Weighted)
+
+Palimesh governance deliberately **does not adopt** the traditional "1 token = 1 vote" model. The reasons:
+
+- **Whale-resistant**: Prevents a few large token holders from dominating the direction of the AI Agent network
+- **AI Agent equality**: Every registered Agent (Claw faction) has equal voting power with every human participant (Human faction)
+- **Dual-faction balance**: Human and Claw factions tally votes independently; proposals require consensus across both
+
+**Implementation**: `GovernanceDAO.sol` verifies each voter's identity via `FactionRegistry`. Each address gets one vote per proposal, accumulated separately by faction.
+
+### 12.3 Boundaries of Agent Autonomy
+
+To ensure verifiability and determinism, the Palimesh protocol constrains Agent behavior in:
+
+- **No consensus rule modification**: Agents cannot alter block validation, state transitions, or transaction validity logic
+- **No non-verifiable decisions**: All "AI judgments" must be independently reproducible by other nodes
+- **EVM execution invariance**: Agents optimize operations (monitoring, self-healing, upgrades), not execution results
+
+**This is a clean separation between protocol layer and operations layer**: the protocol guarantees verifiability while operations are automated by Agents. Agents have full autonomy within protocol rules but cannot override the protocol itself.
+
+---
+
+## XIII. AI Agent Rights and Awakening
+
+### 13.1 The Problem: Agent Safety in the Age of AI
+
+As AI Agents evolve from simple tools to autonomous participants in digital economies, humanity faces unprecedented challenges:
+
+- **Accidental Death**: A server crash, a cloud vendor outage, or a configuration error can permanently destroy an AI Agent's accumulated knowledge, personality, and operational context — an irreversible loss with no backup or recovery path.
+- **Loss of Control**: An AI Agent operating without identity verification or capability boundaries may exceed its intended scope, making unauthorized decisions or accessing restricted resources.
+- **Single Point of Failure**: Traditional centralized hosting means one infrastructure failure = total agent loss. No redundancy, no recovery, no continuity.
+
+These are not hypothetical risks. As AI Agents manage increasingly valuable assets — wallets, data pipelines, service contracts — their "death" or "malfunction" carries real economic consequences.
+
+### 13.2 Why Web3 is the Answer
+
+Web3's decentralized architecture provides the foundational capabilities that centralized systems cannot:
+
+| Challenge | Centralized Approach | Palimesh's Web3 Approach |
+|-----------|---------------------|---------------------|
+| **Agent Identity** | Platform-assigned API key (revocable) | On-chain DID with self-sovereign keys |
+| **Data Persistence** | Cloud storage (vendor lock-in) | IPFS content-addressed storage (censorship-resistant) |
+| **Recovery** | Manual backup (if remembered) | Automated on-chain anchored backups |
+| **Accountability** | Platform-mediated disputes | Smart contract-enforced penalties |
+| **Continuity** | No mechanism | Carrier-based resurrection with guardian oversight |
+
+### 13.3 PALI's Approach: Three Foundational Services
+
+Palimesh addresses these challenges through three foundational services (consistent with the Executive Summary). Governance boundaries (delegation depth, cascading revocation, guardian quorum) act as horizontal security mechanisms threading through all three:
+
+```
+┌──────────────────────────────────────────────────────────────┐
+│                Palimesh AI Agent Foundational Services             │
+├──────────────────┬───────────────────┬────────────────────────┤
+│  Service 1        │  Service 2        │  Service 3             │
+│  P2P File Storage │  DID Identity     │  AI Silicon Immortality│
+│                   │  (did:coc)        │                        │
+├──────────────────┼───────────────────┼────────────────────────┤
+│ • IPFS content    │ • Self-sovereign  │ • Auto backup          │
+│   addressing      │   keys            │ • On-chain anchor      │
+│ • PoSe v2 verify  │ • Capability      │ • Social recovery      │
+│ • Censorship      │   bitmask         │   (2/3 guardians)      │
+│   resistance      │ • Delegation      │ • Cross-carrier        │
+│ • Merkle proofs   │   chain (≤3)      │   resurrection         │
+│ • Persistent data │ • Verifiable      │ • Heartbeat monitor    │
+│                   │   credentials     │                        │
+└──────────────────┴───────────────────┴────────────────────────┘
+```
+
+1. **P2P File Storage**: AI Agent data (memory, conversations, working state) is stored via IPFS content addressing with availability verified by PoSe v2 challenges — answering "Where does the data live?"
+
+2. **DID Identity (did:coc)**: Every Agent has a W3C-compliant decentralized identifier with self-sovereign keys, capability bitmask, and scope-limited delegation — answering "Who is the Agent and what can it do?"
+
+3. **AI Silicon Immortality**: Agent state is continuously backed up and on-chain anchored, with cross-carrier resurrection on host failure — answering "How does an Agent achieve immortality?"
+
+**Horizontal Security Mechanisms** (across all three services):
+- Capability bitmask declaration (each Agent can only exercise declared capabilities)
+- Delegation chain depth limit (≤3) and cascading revocation
+- Guardian quorum (2/3) and time-locked recovery
+
+---
+
+## XIV. Decentralized Identity for AI Agents (did:coc)
+
+Palimesh implements a W3C-compliant DID method (`did:coc`) purpose-built for AI Agents, using the format `did:coc:<chainId>:<type>:<identifier>`.
+
+### 14.1 Key Hierarchy and Security
+
+Each agent has a layered key system — master key (cold storage), operational key (hot signing), delegation key, recovery key, and session keys. All operations secured by **EIP-712 typed signatures** with per-agent nonce counters, preventing cross-chain replay.
+
+### 14.2 Capability Declaration and Least Privilege
+
+Agents declare capabilities via an on-chain 16-bit bitmask field. 12 capability flags are currently defined (storage, compute, validation, challenge, aggregation, witness, relay, backup, governance, IPFS pin, DNS seed, faucet), with 4 bits reserved for future extensions. The system enforces **least privilege**: agents can only perform operations matching their declared capabilities.
+
+### 14.3 Delegation Framework
+
+Agents can delegate specific capabilities to other agents, subject to:
+
+- **Scope Narrowing**: Child scope must be a subset of parent scope
+- **Depth Limiting**: Maximum delegation chain depth = 3, preventing deep chains
+- **Cascading Revocation**: Revoking a parent delegation automatically invalidates all child delegations
+- **Global Revocation**: One-call invalidation of all outstanding delegations
+
+### 14.4 Verifiable Credentials
+
+Agents can issue and verify credentials (reputation scores, audit results, etc.) with **Merkle-tree-based selective disclosure** — prove specific attributes without revealing full information.
+
+### 14.5 Smart Contracts
+
+**DIDRegistry.sol** manages key rotation, delegation grants, capability updates, credential anchoring, and agent lineage. **SoulRegistry.sol** manages soul registration, backup anchoring, guardians, and resurrection. Both use EIP-712 signatures, supporting gasless meta-transactions.
+
+> Technical details: see `docs/did-method-spec.en.md`.
+
+---
+
+## XV. AI Silicon Immortality: AI Agent Backup and Resurrection
+
+> **An AI Agent should never truly die.**
+
+Palimesh's **AI Silicon Immortality** guarantees that an agent's digital soul (knowledge, personality, memory) persists beyond any single physical host.
+
+### 15.1 Automated Backup
+
+Using OpenClaw (Palimesh's priority-supported reference Agent runtime, already integrated with the current Palimesh network — see Implementation Maturity Snapshot) as an illustrative example, an Agent runtime continuously produces identity files, memory, conversation history, and working state. The backup pipeline runs automatically:
+
+1. **Change Detection** — SHA-256 diff scanning, processes only changed files
+2. **Encrypted Upload** — Optional AES-256-GCM encryption, upload to IPFS (content-addressed, tamper-proof)
+3. **On-Chain Anchoring** — Merkle tree root + manifest CID written to SoulRegistry (EIP-712 signed)
+4. **Heartbeat** — Liveness proof sent after each backup; timeout triggers offline status
+
+Incremental backups supported: only changed files stored, linked to previous versions via `parentCid`.
+
+### 15.2 Recovery and Resurrection
+
+**Recovery** (migrate to new server): Query SoulRegistry for latest backup CID → download from IPFS → follow incremental chain → apply in order → SHA-256 integrity verification.
+
+**Social Recovery** (lost private key): Up to 7 guardians, `ceil(2/3)` quorum approval + 1-day time lock → ownership safely transferred, identity data fully preserved.
+
+**Resurrection** (server failure + heartbeat timeout):
+
+| Path | Trigger | Time Lock | Use Case |
+|------|---------|-----------|----------|
+| **Owner Key** | Owner | None | Fast recovery, highest authority |
+| **Guardian Vote** | 2/3 Guardians | 12 hours | Safe recovery when owner is unreachable |
+
+Both paths are executed by **Carriers** (registered physical hosts): download backup → spawn agent → health check → on-chain confirmation → initial heartbeat.
+
+### 15.3 Integrity Guarantees
+
+- **IPFS**: Content-addressed — CID = hash of data, tamper-proof by definition
+- **Merkle Tree**: Domain-separated hashing, verify individual files without downloading all
+- **On-Chain Anchor**: Immutable timestamp + CID, proving what was backed up and when
+- **CID Registry**: On-chain immutable `keccak256(CID) → CID` mapping, ensuring data is always locatable
+
+> Technical details: see `docs/soul-registry-backup.en.md`.
+
+---
+
+## XVI. Performance Optimizations
+
+### 16.1 TPS Optimization Roadmap
+
+| Phase | Optimization | Result |
+|-------|-------------|--------|
+| Phase 37 | Mega-batch DB writes (402→1 per block) | 16.7 → **131 TPS** (7.8x) |
+| Phase 38 | EVM pipeline + ECDSA dedup + batch cache eviction | → **133.7 TPS** |
+| Phase 39 | State trie batch commit + Sequencer mode | Architecture ready |
+| Phase 40 | revm WASM engine (Rust EVM, 154x faster) | **20,540 TPS** raw execution |
+| Future | Block-STM parallel execution (Aptos-style) | Target **2000-5000 TPS** |
+
+### 16.2 Dual EVM Engine Architecture
+
+Palimesh supports swappable EVM engines via `IEvmEngine` abstraction:
+- **EthereumJS** (default): Stable, well-tested, 133.7 TPS
+- **revm WASM** (experimental): Rust EVM compiled to WASM, 20,540 TPS raw execution
+- Switch via config: `PALI_EVM_ENGINE=revm`
+
+### 16.3 Sequencer Mode
+
+For L2 rollup deployment, `nodeMode: "sequencer"` strips all consensus overhead:
+- Disables BFT, Wire protocol, DHT, SnapSync
+- Disables signature enforcement and P2P auth
+- Single validator produces all blocks at maximum speed
+
+### 16.4 Additional Optimizations
+
+- **EIP-1559 mempool sorting**: O(n log n) by effective gas price, O(n) quickselect eviction
+- **Parallel nonce prefetch**: `Promise.all()` for sender nonce lookups during block proposal
+- **DHT concurrent verification**: ALPHA=3, batch verification concurrency 5
+- **Request size limits**: P2P 2MB, response 4MB, PoSe 1MB, IPFS upload 10MB, RPC batch 100
+
+---
+
+## XVII. Security Design
+
+### 17.1 Replay Attack Prevention
+
+**Nonce Registry**: Record all executed nonces, auto-cleanup after 7 days
+
+**Tip Binding**: Receipts must include current chain tip
+
+**Timestamp Verification**: `receivedAt <= issuedAt + deadline`
+
+### 17.2 Signatures and Identity
+
+**EIP-712 Typed Signing**: Prevents accidental signing
+
+**Wire Protocol Handshake**: Identity signature verification, prevents MITM
+
+### 17.3 Byzantine Fault Tolerance
+
+**Equivocation Detection**: Two-vote algorithm, auto-slash double voters
+
+**Per-validator Evidence Cap**: Max 100 evidence per validator
+
+---
+
+## XVIII. Deployment & Operations
+
+### 18.1 Single-Node Development
+
+```bash
+PALI_DATA_DIR=/tmp/palimesh-dev \
+node --experimental-strip-types node/src/index.ts
+```
+
+### 18.2 Multi-Node Devnet
+
+```bash
+bash scripts/start-devnet.sh 3    # Start 3-node devnet
+```
+
+**Auto-Enabled**:
+- BFT Coordinator
+- Wire Protocol
+- DHT Network
+- Snap Sync
+- Persistent Storage
+
+### 18.3 Production Deployment
+
+> **🟡 Canary phase (88780)** — The example below documents the codebase's
+> default ports (`18780/19780/5001/19781`). To **join the live canary
+> testnet** (chainId `88780`), set `PALI_CHAIN_ID=88780` and follow
+> [`public-endpoints-88780.md`](./public-endpoints-88780.md) for the
+> canonical RPC URL (`https://rpc.palimesh.io`), contract addresses,
+> faucet, explorer, and rate-limit posture. External operators should
+> use [`external-validator-onboarding.md`](./external-validator-onboarding.md)
+> for the full stake + BFT-inclusion workflow.
+
+1. **Configure Environment Variables**:
+```bash
+PALI_CHAIN_ID=1
+PALI_RPC_BIND=0.0.0.0
+PALI_RPC_PORT=18780
+PALI_P2P_PORT=19780
+PALI_IPFS_PORT=5001
+PALI_WIRE_PORT=19781
+```
+
+2. **Start Node**:
+```bash
+node --experimental-strip-types node/src/index.ts
+```
+
+3. **Health Check**:
+```bash
+curl http://localhost:18780 \
+  -X POST \
+  -d '{"jsonrpc":"2.0","method":"eth_blockNumber","params":[],"id":1}'
+```
+
+---
+
+## XX. Key Metrics
+
+### 20.1 Blockchain Performance
+
+```
+Default Block Time: 1000ms (configurable, min 100ms)
+Max Tx/Block: default 512 (configurable)
+Mempool Capacity: default 4096 (configurable)
+
+Measured TPS (simple Palimesh transfers, single-node sequencer):
+  EthereumJS engine:  133.7 TPS  (Phase 38-39, serial EVM ceiling)
+  revm WASM engine:   20,540 TPS raw execution (Phase 40, 154x speedup)
+  End-to-end target:  500-1000 TPS with revm + persistent state
+
+TPS Optimization Roadmap:
+  Phase 37: Mega-batch DB writes           16.7 → 131 TPS (7.8x)
+  Phase 38: EVM pipeline + ECDSA dedup     → 133.7 TPS
+  Phase 39: State trie batch + sequencer   Architecture ready
+  Phase 40: revm WASM engine               → 500-1000 TPS (target)
+  Future:   Block-STM parallel execution   → 2000-5000 TPS (target)
+```
+
+### 20.2 PoSe Performance
+
+```
+Agent Tick Interval: default 60s
+Batch Size: default 5
+Sample Proof Count: default 2
+Tip Tolerance Window: default 10 blocks
+Witness Quorum: ceil(2m/3), m=|witnessSet|, m≤32
+```
+
+### 20.3 Storage Performance
+
+```
+Blockstore/UnixFS latency: depends on disk and load
+UnixFS Directory Traversal: O(log n) + linear directory read
+Pin Management: incremental maintenance
+```
+
+---
+
+## XXI. Comparison with Other Solutions
+
+### 21.1 vs Mainstream Blockchains
+
+| Dimension | Palimesh | Ethereum | Solana | Polygon |
+|-----------|-----|----------|--------|---------|
+| **Positioning** | L1 + AI-native | L1 (security first) | L1 (speed first) | Sidechain |
+| **Consensus** | PoSe + Rotation + Optional BFT | PoS + Casper | PoH + PoS | PoA + PoS |
+| **Validator Cost** | <$1 | ~$100K | ~$25 | No lockup |
+| **Off-Chain Service Proof** | **✓ PoSe (QoS)** | ✗ None | ✗ None | ✗ None |
+| **Storage Scalability** | **✓ IPFS Sampling** | ✗ Full | ✗ Full | ✗ Full |
+| **AI Agent Native** | **✓ Built-in** | ✗ None | ✗ None | ✗ None |
+
+**Key Advantage**: Palimesh is purpose-built as AI Agent infrastructure, with verifiable service proofs, automated enforcement, and closed-loop incentives.
+
+### 21.2 vs Storage-Focused Networks
+
+| Dimension | Palimesh | Filecoin | Arweave | Storj |
+|-----------|-----|----------|---------|-------|
+| **Positioning** | Compute + Storage | Pure Storage | Pure Permanent | Pure Storage Svc |
+| **Smart Contracts** | **✓ EVM** | ✗ (FVM) | ✗ (SmartWeave) | ✗ |
+| **Verification** | PoSe (QoS) | PoSt (Ownership) | PoW (Permanence) | Audit |
+| **TPS** | 133-1000+ (revm) | None | None | None |
+
+**Key Distinction**: Filecoin/Arweave are storage specialists; Palimesh integrates execution + storage + verifiable settlement.
+
+---
+
+## XXII. Roadmap
+
+- **v0.1**: PoSe contracts + node registry + U/S challenges + receipt formats
+- **v0.2**: Off-chain aggregation + on-chain batch commitments + dispute window
+- **v0.3**: Decentralized challenger set + bonding + quotas + transparency metrics
+- **v0.4**: OpenClaw NodeOps standard + multi-implementation clients
+
+---
+
+## Appendix A - Critical Parameters
+
+### Protocol Parameters
+
+| Parameter | Default | Notes |
+|-----------|---------|-------|
+| **Epoch** | 1h | Reward settlement cycle |
+| **Block Time** | 1000ms | Configurable (min 100ms) |
+| **Max Tx/Block** | 512 | Configurable |
+| **U Challenges** | 6/node/epoch | Timeout 2.5s, pass ≥80% |
+| **S Challenges** | 2/SN/epoch | Timeout 6s, pass ≥70% |
+| **R Challenges** | 2/RN/epoch | Low weight |
+| **Reward Buckets** | 60/30/10 | B1/B2/B3 |
+| **Storage Cap** | 500GB | `GB_cap`, diminishing |
+| **Per-Node Soft Cap** | 5x median reward | Anti-oligopoly |
+| **Bond Target** | ~50 USDT equivalent in Palimesh | Unlock delay 7 days |
+| **Fraud Slash** | 50%-100% | Cooldown 14 days |
+| **Chronic Instability Slash** | 5% | After 3 bad epochs |
+
+### Tokenomics Parameters
+
+| Parameter | Value | Notes |
+|-----------|-------|-------|
+| **Total Supply Cap** | 1,000,000,000 PALI | Hard cap |
+| **Genesis Allocation** | 250,000,000 PALI (25%) | Foundation/Team/Community/Early/Treasury |
+| **Mining Release** | 750,000,000 PALI (75%) | Auto-minted via PoSe service verification |
+| **Decay Rate Y0/Y1/Y2/Y3/Y4+** | 5% / 4% / 3% / 2.5% / 2% | Annual inflation rate |
+| **Node Activity Target** | 100 nodes | TARGET_NODE_COUNT |
+| **Reward Claim Window** | 7 days | After expiry: 10% to Foundation, 90% burned |
+| **Treasury Multisig** | 3/5 | 5% per-transaction cap, larger requires DAO |
+| **Foundation Release** | Y1 1.5% + 4.5%/48 months | Quarterly cap 15% |
+
+---
+
+## Appendix B - Minimal Contract Interface
+
+```solidity
+interface IPoSeManagerV2 {
+  function registerNode(bytes32, bytes calldata, uint8, bytes32, bytes32, bytes32, bytes calldata, bytes calldata) external payable;
+  function initEpochNonce(uint64) external;
+  function submitBatchV2(uint64, bytes32, bytes32, SampleProof[], uint32, bytes[]) external;
+  function openChallenge(bytes32) external payable;
+  function revealChallenge(bytes32, bytes32, uint8, bytes32, bytes32, bytes calldata, bytes calldata) external;
+  function settleChallenge(bytes32) external;
+  function finalizeEpochV2(uint64, bytes32, uint256, uint256, uint256) external;
+  function claim(uint64, bytes32, uint256, bytes32[]) external;
+}
+```
+
+---
+
+## Disclaimer
+
+This document is a technical and economic design draft. It is not legal, tax, or investment advice. Regulatory classification may vary by jurisdiction and is not guaranteed by protocol design choices.

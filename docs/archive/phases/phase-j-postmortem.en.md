@@ -110,7 +110,7 @@ deliver fresh votes.
 
 ## Acceptance — Production J1.1 fingerprint (2026-05-06 W8)
 
-Phase J shipped to clawchain-server as `coc-node:phase-j-local` on
+Phase J shipped to palimesh-server as `coc-node:phase-j-local` on
 2026-05-05 17:06 UTC. Within 6 minutes of deploy, node-2 emitted:
 
 ```

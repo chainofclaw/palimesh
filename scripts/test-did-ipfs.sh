@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# COC DID + IPFS Full Test Suite — runs inside Docker container
+# Palimesh DID + IPFS Full Test Suite — runs inside Docker container
 set -uo pipefail
 
 IPFS="http://127.0.0.1:5001"
@@ -13,7 +13,7 @@ fail() { failed=$((failed+1)); failures="$failures $1"; echo "  ❌ $1${2:+ — 
 jq_() { node -e "let d='';process.stdin.on('data',c=>d+=c);process.stdin.on('end',()=>{try{const k=process.argv[1];if(!/^[A-Za-z_$][A-Za-z0-9_$]*$/.test(k))return;const o=JSON.parse(d);const v=o?.[k];console.log(v ?? '')}catch{console.log('')}})" "$1"; }
 
 echo "══════════════════════════════════════════════════════"
-echo "  COC DID + IPFS/P2P Storage Test Suite"
+echo "  Palimesh DID + IPFS/P2P Storage Test Suite"
 echo "══════════════════════════════════════════════════════"
 
 echo ""; echo "── A. IPFS Basic Operations ──"
@@ -140,7 +140,7 @@ t1=$(date +%s%N | cut -b1-13)
 
 echo ""; echo "── E. DID RPC Methods ──"
 
-for method in coc_resolveDid coc_getDIDDocument coc_getAgentCapabilities coc_getAgentLineage coc_getVerificationMethods; do
+for method in pali_resolveDid pali_getDIDDocument pali_getAgentCapabilities pali_getAgentLineage pali_getVerificationMethods; do
   r=$(curl -sf -X POST -H 'Content-Type: application/json' -d "{\"jsonrpc\":\"2.0\",\"method\":\"$method\",\"id\":1,\"params\":[\"0x0000000000000000000000000000000000000001\"]}" "$RPC")
   if echo "$r" | grep -q "result"; then
     pass "E $method" "has result"

@@ -1,5 +1,5 @@
 {
-  "_phase": "N1 \u2014 native systemd validator instance 3. Deployed to /etc/coc/node-3.json.",
+  "_phase": "N1 \u2014 native systemd validator instance 3. Deployed to /etc/palimesh/node-3.json.",
   "_note": "Ports preserved from docker host-side mapping (28784/28785/29784/29785).",
   "nodeId": "0x3c44cdddb6a900fa2b585dd299e03d12fa4293bc",
   "chainId": 18780,

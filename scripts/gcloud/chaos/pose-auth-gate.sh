@@ -34,8 +34,8 @@ while [[ $# -gt 0 ]]; do
 done
 
 if [[ -z "$NODE_IP" ]]; then
-  NODE_IP=$(gcloud compute instances describe "$COC_ANCHOR_1_NAME" \
-    --zone="$COC_ANCHOR_1_ZONE" --project="$COC_GCP_PROJECT" \
+  NODE_IP=$(gcloud compute instances describe "$PALI_ANCHOR_1_NAME" \
+    --zone="$PALI_ANCHOR_1_ZONE" --project="$PALI_GCP_PROJECT" \
     --format="value(networkInterfaces[0].accessConfigs[0].natIP)" 2>/dev/null || echo "")
 fi
 [[ -z "$NODE_IP" ]] && { echo "no node IP resolved"; exit 2; }
@@ -49,7 +49,7 @@ echo
 # Helper: post a JSON body, capture HTTP code + body
 post() {
   local body="$1"
-  curl -sS --max-time 5 -o /tmp/coc-pose-auth-gate-resp.json \
+  curl -sS --max-time 5 -o /tmp/palimesh-pose-auth-gate-resp.json \
     -w '%{http_code}' \
     -X POST -H 'Content-Type: application/json' \
     --data "$body" "$URL$PATH_REQ" 2>/dev/null || echo "000"
@@ -57,21 +57,21 @@ post() {
 
 # ---- 1. /pose/status sanity (no auth required) ----
 echo "[1] GET /pose/status (no auth) — expect 200"
-STATUS_HTTP=$(curl -sS --max-time 5 -o /tmp/coc-status.json -w '%{http_code}' "$URL/pose/status")
-echo "    HTTP $STATUS_HTTP body: $(cat /tmp/coc-status.json)"
+STATUS_HTTP=$(curl -sS --max-time 5 -o /tmp/palimesh-status.json -w '%{http_code}' "$URL/pose/status")
+echo "    HTTP $STATUS_HTTP body: $(cat /tmp/palimesh-status.json)"
 [[ "$STATUS_HTTP" == "200" ]] || echo "    ❌ status endpoint not reachable"
 echo
 
 # ---- 2. Missing _auth envelope ----
 echo "[2] POST without _auth — expect 401 'missing auth envelope'"
 HTTP=$(post '{"nodeId":"0x0000000000000000000000000000000000000000000000000000000000000001"}')
-echo "    HTTP $HTTP body: $(cat /tmp/coc-pose-auth-gate-resp.json)"
+echo "    HTTP $HTTP body: $(cat /tmp/palimesh-pose-auth-gate-resp.json)"
 echo
 
 # ---- 3. Malformed _auth (missing fields) ----
 echo "[3] POST with empty _auth — expect 401 'invalid auth envelope fields'"
 HTTP=$(post '{"nodeId":"0x0000000000000000000000000000000000000000000000000000000000000001","_auth":{}}')
-echo "    HTTP $HTTP body: $(cat /tmp/coc-pose-auth-gate-resp.json)"
+echo "    HTTP $HTTP body: $(cat /tmp/palimesh-pose-auth-gate-resp.json)"
 echo
 
 # ---- 4. Clock skew too large ----
@@ -115,11 +115,11 @@ const message = `pose:http:${path}:${senderId}:${ts}:${nonce}:${payloadHash}`;
 
 # Persist ephemeral private key for the run
 PRIVKEY=$(node -e 'const {Wallet} = require("ethers"); console.log(Wallet.createRandom().privateKey)' 2>/dev/null \
-  || (cd /passinger/projects/ClawdBot/COC && node -e 'const {Wallet} = require("ethers"); console.log(Wallet.createRandom().privateKey)'))
+  || (cd /passinger/projects/ClawdBot/Palimesh && node -e 'const {Wallet} = require("ethers"); console.log(Wallet.createRandom().privateKey)'))
 
 mkbody() {
   AUTH_ARGS="$1" node -e "$GEN_SCRIPT" 2>/dev/null \
-    || (cd /passinger/projects/ClawdBot/COC && AUTH_ARGS="$1" node -e "$GEN_SCRIPT")
+    || (cd /passinger/projects/ClawdBot/Palimesh && AUTH_ARGS="$1" node -e "$GEN_SCRIPT")
 }
 
 # Build skewed-timestamp signed body — use a plausible past timestamp far
@@ -130,7 +130,7 @@ SKEW_TS=$(( ( $(date +%s) - 3600 ) * 1000 ))
 SKEW_BODY=$(mkbody "$(printf '{"privKey":"%s","path":"%s","timestampMs":%d,"payload":{"nodeId":"%s"}}' "$PRIVKEY" "$PATH_REQ" "$SKEW_TS" "$NID")")
 echo "[4] POST with timestampMs 1h ago (skew>>120s) — expect 401 'auth timestamp out of range'"
 HTTP=$(post "$SKEW_BODY")
-echo "    HTTP $HTTP body: $(cat /tmp/coc-pose-auth-gate-resp.json)"
+echo "    HTTP $HTTP body: $(cat /tmp/palimesh-pose-auth-gate-resp.json)"
 echo
 
 # ---- 5. Tampered signature (last hex digit flipped) ----
@@ -138,7 +138,7 @@ NOW_MS=$(($(date +%s) * 1000))
 TAMP_BODY=$(mkbody "$(printf '{"privKey":"%s","path":"%s","timestampMs":%d,"payload":{"nodeId":"%s"},"tamperSig":true}' "$PRIVKEY" "$PATH_REQ" "$NOW_MS" "$NID")")
 echo "[5] POST with tampered signature — expect 401 'invalid auth signature'"
 HTTP=$(post "$TAMP_BODY")
-echo "    HTTP $HTTP body: $(cat /tmp/coc-pose-auth-gate-resp.json)"
+echo "    HTTP $HTTP body: $(cat /tmp/palimesh-pose-auth-gate-resp.json)"
 echo
 
 # ---- 6. Valid sig but ephemeral sender (not registered as operator) ----
@@ -147,13 +147,13 @@ NONCE_OK=$(node -e 'console.log(require("crypto").randomUUID())' 2>/dev/null || 
 VALID_BODY=$(mkbody "$(printf '{"privKey":"%s","path":"%s","timestampMs":%d,"nonce":"%s","payload":{"nodeId":"%s"}}' "$PRIVKEY" "$PATH_REQ" "$NOW_MS" "$NONCE_OK" "$NID")")
 echo "[6] POST with valid sig + unregistered challenger — expect 403 'challenger not allowed' OR 200 if allowlist empty"
 HTTP=$(post "$VALID_BODY")
-echo "    HTTP $HTTP body: $(cat /tmp/coc-pose-auth-gate-resp.json)"
+echo "    HTTP $HTTP body: $(cat /tmp/palimesh-pose-auth-gate-resp.json)"
 echo
 
 # ---- 7. Replay: send same _auth again, nonce should be tracked now ----
 echo "[7] POST same body again (nonce replay) — expect 401 'auth nonce replay detected'"
 HTTP=$(post "$VALID_BODY")
-echo "    HTTP $HTTP body: $(cat /tmp/coc-pose-auth-gate-resp.json)"
+echo "    HTTP $HTTP body: $(cat /tmp/palimesh-pose-auth-gate-resp.json)"
 echo
 
 echo "==> Done. Inspect outputs above. Each line shows the gate branch + actual response."

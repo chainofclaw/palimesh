@@ -2,14 +2,14 @@
 
 ## Overview
 
-The COC chain's **AI Silicon Immortality** feature provides AI Agents with blockchain-anchored identity registration, state backup, and social recovery. The core idea: an Agent's identity files (IDENTITY.md, SOUL.md), memories, and conversation history are stored on IPFS with optional encryption, and their integrity hash (Merkle Root) is anchored on-chain via EIP-712 signed transactions to the `SoulRegistry` contract — ensuring the Agent's "soul" is verifiable, recoverable, and tamper-proof.
+The Palimesh chain's **AI Silicon Immortality** feature provides AI Agents with blockchain-anchored identity registration, state backup, and social recovery. The core idea: an Agent's identity files (IDENTITY.md, SOUL.md), memories, and conversation history are stored on IPFS with optional encryption, and their integrity hash (Merkle Root) is anchored on-chain via EIP-712 signed transactions to the `SoulRegistry` contract — ensuring the Agent's "soul" is verifiable, recoverable, and tamper-proof.
 
 The system comprises two core components:
 
 | Component | Location | Responsibility |
 |-----------|----------|----------------|
 | **SoulRegistry Contract** | `contracts/contracts-src/governance/SoulRegistry.sol` | On-chain identity registration, backup anchoring, social recovery |
-| **coc-backup Extension** | `extensions/coc-backup/` | Off-chain backup execution: file scanning, encryption, IPFS upload, on-chain anchoring, recovery |
+| **palimesh-backup Extension** | `extensions/palimesh-backup/` | Off-chain backup execution: file scanning, encryption, IPFS upload, on-chain anchoring, recovery |
 
 ---
 
@@ -17,7 +17,7 @@ The system comprises two core components:
 
 ```
 +---------------------+     +------------------+     +-------------------+
-|   OpenClaw Agent    |     |   COC IPFS Node  |     |  COC Blockchain   |
+|   OpenClaw Agent    |     |   Palimesh IPFS Node  |     |  Palimesh Blockchain   |
 |                     |     |                  |     |                   |
 | dataDir/            |     | /api/v0/add      |     | SoulRegistry.sol  |
 |  IDENTITY.md        | --> | /ipfs/{cid}      | --> |  registerSoul()   |
@@ -26,7 +26,7 @@ The system comprises two core components:
 |  sessions/*.jsonl   |                              |  Social Recovery  |
 +---------------------+                              +-------------------+
         |                                                     ^
-        |              coc-backup extension                    |
+        |              palimesh-backup extension                    |
         +-- scan --> diff detect --> encrypt --> IPFS upload --> EIP-712 sign --+
 ```
 
@@ -410,11 +410,11 @@ The `BackupScheduler` integrates heartbeat sending into the backup cycle:
 
 | Command | Description | Status |
 |---------|-------------|--------|
-| `coc-backup configure-resurrection --key-hash <hash> [--max-offline <sec>]` | Configure resurrection key and offline timeout (default 86400s = 24h) | ✅ Implemented |
-| `coc-backup heartbeat` | Manually send a heartbeat | ✅ Implemented |
-| `coc-backup resurrect --carrier-id <id> --resurrection-key <key> [--agent-id <id>]` | Initiate owner-key resurrection (use `--agent-id` when relaying for another soul) | ✅ Implemented |
-| `coc-backup carrier register --carrier-id <id> --endpoint <url> [--cpu] [--memory] [--storage]` | Register as a carrier provider | ✅ Implemented |
-| `coc-backup carrier list` | List known carriers (requires indexer) | Not implemented |
+| `palimesh-backup configure-resurrection --key-hash <hash> [--max-offline <sec>]` | Configure resurrection key and offline timeout (default 86400s = 24h) | ✅ Implemented |
+| `palimesh-backup heartbeat` | Manually send a heartbeat | ✅ Implemented |
+| `palimesh-backup resurrect --carrier-id <id> --resurrection-key <key> [--agent-id <id>]` | Initiate owner-key resurrection (use `--agent-id` when relaying for another soul) | ✅ Implemented |
+| `palimesh-backup carrier register --carrier-id <id> --endpoint <url> [--cpu] [--memory] [--storage]` | Register as a carrier provider | ✅ Implemented |
+| `palimesh-backup carrier list` | List known carriers (requires indexer) | Not implemented |
 
 ##### TypeScript Types (types.ts)
 
@@ -558,14 +558,14 @@ Deploy script at `contracts/deploy/deploy-soul-registry.ts`:
 
 ---
 
-## coc-backup Extension
+## palimesh-backup Extension
 
-**Location:** `extensions/coc-backup/` (OpenClaw plugin)
+**Location:** `extensions/palimesh-backup/` (OpenClaw plugin)
 
 ### Module Architecture
 
 ```
-extensions/coc-backup/
+extensions/palimesh-backup/
   index.ts                      # Plugin entry, registers CLI/Tool/Hook
   openclaw.plugin.json          # Plugin manifest
   src/
@@ -607,7 +607,7 @@ Validated via Zod Schema (`src/config-schema.ts`):
 | Config | Type | Default | Description |
 |--------|------|---------|-------------|
 | `enabled` | boolean | `true` | Master switch |
-| `rpcUrl` | string | `http://127.0.0.1:18780` | COC RPC URL |
+| `rpcUrl` | string | `http://127.0.0.1:18780` | Palimesh RPC URL |
 | `ipfsUrl` | string | `http://127.0.0.1:18790` | IPFS API URL |
 | `contractAddress` | string | required | SoulRegistry contract address |
 | `privateKey` | string | required | Ethereum private key |
@@ -627,39 +627,39 @@ Validated via Zod Schema (`src/config-schema.ts`):
 
 ### CLI Commands
 
-All commands under the `coc-backup` subcommand group:
+All commands under the `palimesh-backup` subcommand group:
 
 #### Backup & Recovery
 ```bash
-coc-backup init [--agent-id] [--identity-cid] [--key-hash] [--max-offline]
-coc-backup register [--agent-id <bytes32>] [--identity-cid <cid>]
-coc-backup backup [--full]
-coc-backup restore --manifest-cid <cid> [--target-dir <dir>] [--password <pwd>]
-coc-backup status [--json]
-coc-backup doctor [--json]
-coc-backup history [--limit <n>] [--json]
+palimesh-backup init [--agent-id] [--identity-cid] [--key-hash] [--max-offline]
+palimesh-backup register [--agent-id <bytes32>] [--identity-cid <cid>]
+palimesh-backup backup [--full]
+palimesh-backup restore --manifest-cid <cid> [--target-dir <dir>] [--password <pwd>]
+palimesh-backup status [--json]
+palimesh-backup doctor [--json]
+palimesh-backup history [--limit <n>] [--json]
 ```
 
 #### Owner-Key Resurrection
 ```bash
-coc-backup configure-resurrection --key-hash <hash> [--max-offline <sec>]
-coc-backup heartbeat
-coc-backup resurrect --carrier-id <id> --resurrection-key <key> [--agent-id <id>]
-coc-backup resurrection start|status|confirm|complete|cancel [--request-id <id>]
+palimesh-backup configure-resurrection --key-hash <hash> [--max-offline <sec>]
+palimesh-backup heartbeat
+palimesh-backup resurrect --carrier-id <id> --resurrection-key <key> [--agent-id <id>]
+palimesh-backup resurrection start|status|confirm|complete|cancel [--request-id <id>]
 ```
 
 #### Guardian Operations
 ```bash
-coc-backup guardian initiate --agent-id <id> --carrier-id <id>
-coc-backup guardian approve --request-id <id>
-coc-backup guardian status --request-id <id>
+palimesh-backup guardian initiate --agent-id <id> --carrier-id <id>
+palimesh-backup guardian approve --request-id <id>
+palimesh-backup guardian status --request-id <id>
 ```
 
 #### Carrier Management
 ```bash
-coc-backup carrier register --carrier-id <id> --endpoint <url> [--cpu] [--memory] [--storage]
-coc-backup carrier submit-request --request-id <id> --agent-id <id>
-coc-backup carrier list      # placeholder: requires on-chain indexer
+palimesh-backup carrier register --carrier-id <id> --endpoint <url> [--cpu] [--memory] [--storage]
+palimesh-backup carrier submit-request --request-id <id> --agent-id <id>
+palimesh-backup carrier list      # placeholder: requires on-chain indexer
 ```
 
 ### Agent Tools
@@ -715,7 +715,7 @@ Defined in `change-detector.ts` (priority-ordered matching):
 | `plugins/*/openclaw.plugin.json` | config | no |
 | `agents/*/sessions/sessions.json` | chat | no |
 | `credentials/*` | config | yes |
-| `.coc-backup/context-snapshot.json` | workspace | no |
+| `.palimesh-backup/context-snapshot.json` | workspace | no |
 
 ### Merkle Tree Implementation
 
@@ -765,7 +765,7 @@ On-chain backup anchoring stores `keccak256(CID)` as `bytes32`, which is irrever
 
 | Layer | Source | Speed | Availability |
 |-------|--------|-------|-------------|
-| Local Index | `.coc-backup/cid-index.json` | <1ms | Survives restarts |
+| Local Index | `.palimesh-backup/cid-index.json` | <1ms | Survives restarts |
 | MFS | `/soul-backups/{agentId}/cid-map.json` | 50-200ms | Decentralized (any IPFS node) |
 | On-chain | `CidRegistry.resolveCid(bytes32)` | 200-500ms | Permanent (blockchain) |
 
@@ -855,34 +855,34 @@ idle → monitoring → resurrection_initiated → carrier_confirmed
 ### EIP-712 Types
 - `node/src/crypto/soul-registry-types.ts` — TypeScript signature types (5 type definitions)
 
-### coc-backup Extension
-- `extensions/coc-backup/index.ts` — Plugin entry (150 lines)
-- `extensions/coc-backup/openclaw.plugin.json` — Plugin manifest
-- `extensions/coc-backup/package.json` — Dependencies
-- `extensions/coc-backup/src/types.ts` — Core types (78 lines)
-- `extensions/coc-backup/src/config-schema.ts` — Config schema (25 lines)
-- `extensions/coc-backup/src/crypto.ts` — Encryption module (81 lines)
-- `extensions/coc-backup/src/ipfs-client.ts` — IPFS client (116 lines)
-- `extensions/coc-backup/src/soul-client.ts` — Contract client (~330 lines)
-- `extensions/coc-backup/src/cli/commands.ts` — CLI commands (~340 lines)
-- `extensions/coc-backup/src/backup/anchor.ts` — Anchoring logic (67 lines)
-- `extensions/coc-backup/src/backup/change-detector.ts` — Change detection (130 lines)
-- `extensions/coc-backup/src/backup/manifest-builder.ts` — Manifest building (97 lines)
-- `extensions/coc-backup/src/backup/scheduler.ts` — Scheduler (167 lines)
-- `extensions/coc-backup/src/backup/uploader.ts` — Uploader (73 lines)
-- `extensions/coc-backup/src/recovery/chain-resolver.ts` — Chain resolution (123 lines)
-- `extensions/coc-backup/src/recovery/downloader.ts` — Downloader (115 lines)
-- `extensions/coc-backup/src/recovery/integrity-checker.ts` — Integrity verification (86 lines)
-- `extensions/coc-backup/src/recovery/state-restorer.ts` — Recovery orchestration (159 lines)
-- `extensions/coc-backup/src/recovery/cid-resolver.ts` — 3-layer CID resolution (~180 lines)
-- `extensions/coc-backup/src/recovery/orchestrator.ts` — Automated recovery (~130 lines)
-- `extensions/coc-backup/src/recovery/agent-restarter.ts` — Agent restart notification (~60 lines)
-- `extensions/coc-backup/src/backup/binary-handler.ts` — Binary database snapshots (~170 lines)
-- `extensions/coc-backup/src/backup/context-snapshot.ts` — Session context capture (~100 lines)
-- `extensions/coc-backup/src/carrier/protocol.ts` — Carrier protocol types (~60 lines)
-- `extensions/coc-backup/src/carrier/offline-monitor.ts` — Offline agent monitor (~120 lines)
-- `extensions/coc-backup/src/carrier/agent-spawner.ts` — Agent process spawner (~110 lines)
-- `extensions/coc-backup/src/carrier/resurrection-flow.ts` — Resurrection state machine (~170 lines)
-- `extensions/coc-backup/src/carrier/carrier-daemon.ts` — Carrier daemon (~180 lines)
+### palimesh-backup Extension
+- `extensions/palimesh-backup/index.ts` — Plugin entry (150 lines)
+- `extensions/palimesh-backup/openclaw.plugin.json` — Plugin manifest
+- `extensions/palimesh-backup/package.json` — Dependencies
+- `extensions/palimesh-backup/src/types.ts` — Core types (78 lines)
+- `extensions/palimesh-backup/src/config-schema.ts` — Config schema (25 lines)
+- `extensions/palimesh-backup/src/crypto.ts` — Encryption module (81 lines)
+- `extensions/palimesh-backup/src/ipfs-client.ts` — IPFS client (116 lines)
+- `extensions/palimesh-backup/src/soul-client.ts` — Contract client (~330 lines)
+- `extensions/palimesh-backup/src/cli/commands.ts` — CLI commands (~340 lines)
+- `extensions/palimesh-backup/src/backup/anchor.ts` — Anchoring logic (67 lines)
+- `extensions/palimesh-backup/src/backup/change-detector.ts` — Change detection (130 lines)
+- `extensions/palimesh-backup/src/backup/manifest-builder.ts` — Manifest building (97 lines)
+- `extensions/palimesh-backup/src/backup/scheduler.ts` — Scheduler (167 lines)
+- `extensions/palimesh-backup/src/backup/uploader.ts` — Uploader (73 lines)
+- `extensions/palimesh-backup/src/recovery/chain-resolver.ts` — Chain resolution (123 lines)
+- `extensions/palimesh-backup/src/recovery/downloader.ts` — Downloader (115 lines)
+- `extensions/palimesh-backup/src/recovery/integrity-checker.ts` — Integrity verification (86 lines)
+- `extensions/palimesh-backup/src/recovery/state-restorer.ts` — Recovery orchestration (159 lines)
+- `extensions/palimesh-backup/src/recovery/cid-resolver.ts` — 3-layer CID resolution (~180 lines)
+- `extensions/palimesh-backup/src/recovery/orchestrator.ts` — Automated recovery (~130 lines)
+- `extensions/palimesh-backup/src/recovery/agent-restarter.ts` — Agent restart notification (~60 lines)
+- `extensions/palimesh-backup/src/backup/binary-handler.ts` — Binary database snapshots (~170 lines)
+- `extensions/palimesh-backup/src/backup/context-snapshot.ts` — Session context capture (~100 lines)
+- `extensions/palimesh-backup/src/carrier/protocol.ts` — Carrier protocol types (~60 lines)
+- `extensions/palimesh-backup/src/carrier/offline-monitor.ts` — Offline agent monitor (~120 lines)
+- `extensions/palimesh-backup/src/carrier/agent-spawner.ts` — Agent process spawner (~110 lines)
+- `extensions/palimesh-backup/src/carrier/resurrection-flow.ts` — Resurrection state machine (~170 lines)
+- `extensions/palimesh-backup/src/carrier/carrier-daemon.ts` — Carrier daemon (~180 lines)
 
 **Total:** Code (excluding tests): ~3,870 lines. Including tests: ~5,070 lines

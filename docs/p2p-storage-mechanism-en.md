@@ -1,6 +1,6 @@
-# COC P2P Storage Mechanism — Full Reference
+# Palimesh P2P Storage Mechanism — Full Reference
 
-> Complete specification of how distributed IPFS storage works in COC under the current Phase C Step 2 testnet config.
+> Complete specification of how distributed IPFS storage works in Palimesh under the current Phase C Step 2 testnet config.
 > Illustrated by tracing a real **100 MiB file** end-to-end: chunking strategy, cross-node replication protocol, final replica count.
 > Chinese version: `p2p-storage-mechanism-zh.md`.
 
@@ -26,7 +26,7 @@ Uploading a 100 MiB file through `node-1`'s IPFS HTTP on the 3-validator testnet
 
 ## 1. Design Principles
 
-COC's P2P storage layer extends IPFS content-addressing with **4 extra guarantees**:
+Palimesh's P2P storage layer extends IPFS content-addressing with **4 extra guarantees**:
 
 1. **UnixFS chunking** — large files split into 256 KiB blocks (IPFS de-facto standard)
 2. **Content addressing** — CIDv1 (dag-pb codec + sha256) gives a bijection between bytes and CID
@@ -49,7 +49,7 @@ User PUT entry point       IPFS HTTP      POST /api/v0/add → ipfs-http.ts:hand
  │                      IpfsBlockstore     ipfs-blockstore.ts:doPut("local")
  │                              │  onPut hook
  │                              ▼
- │                    coc-ipfs-wiring.ts   onPut / pushToK / broadcastProviderAdvertise
+ │                    palimesh-ipfs-wiring.ts   onPut / pushToK / broadcastProviderAdvertise
  │                     ┌────────┼────────────────────────┐
  │                     ▼        ▼                        ▼
  │              DhtNetwork    WireClient              WireClient
@@ -67,7 +67,7 @@ User PUT entry point       IPFS HTTP      POST /api/v0/add → ipfs-http.ts:hand
  │                 ─ gossip back
  │                 ─ DO NOT cascade push
  ▼
-PUT response  ← X-COC-Replicas-Warning header if below minReplicas
+PUT response  ← X-Palimesh-Replicas-Warning header if below minReplicas
 ```
 
 ---
@@ -127,7 +127,7 @@ This Merkle tree is **separate from the UnixFS DAG**. DAG uses sha256 (IPFS stan
 
 ### 3.4 onPut hook chain: three actions
 
-Phase C's onPut (in `coc-ipfs-wiring.ts`) does three things per block:
+Phase C's onPut (in `palimesh-ipfs-wiring.ts`) does three things per block:
 
 **(a) Self-announce locally**
 ```typescript
@@ -190,11 +190,11 @@ Phase C3.1 added a step in `ipfs-http.ts:handleAdd` before returning:
 ```typescript
 const replicaStatus = await awaitReplicationResult(meta.cid, 8000)
 if (replicaStatus.worstReplicaCount < minReplicas /*=2*/) {
-  headers["X-COC-Replicas-Warning"] = `got ${worst}/${minReplicas} (cid=${worstCid})`
+  headers["X-Palimesh-Replicas-Warning"] = `got ${worst}/${minReplicas} (cid=${worstCid})`
 }
 res.writeHead(200, headers)
 ```
-Response may carry `X-COC-Replicas-Warning: got 0/2` — upload still returns 200, but flags failure to reach minReplicas. 3-node testnet normally gets 2/2 so no warning.
+Response may carry `X-Palimesh-Replicas-Warning: got 0/2` — upload still returns 200, but flags failure to reach minReplicas. 3-node testnet normally gets 2/2 so no warning.
 
 ---
 
@@ -336,7 +336,7 @@ requestBlockFromAny(peerIds, cid, opts):
 
 ### 7.2 Repair loop (C3.3)
 
-`IpfsRepairLoop.runOnce()` (from `coc-ipfs-repair.ts`)
+`IpfsRepairLoop.runOnce()` (from `palimesh-ipfs-repair.ts`)
 - Period: `DEFAULT_TICK_INTERVAL_MS = 10 min`
 - Behavior:
   ```
@@ -373,7 +373,7 @@ Challenger (agent)
   ─ Pick CID + chunkIndex (from CidRegistry pool, pre-filtered by DHT)
   ─ Send challenge to prover(node-i)
 
-Prover (coc-node sidecar)
+Prover (palimesh-node sidecar)
   ─ blockstore.get(leafCid_i) → chunk bytes
   ─ leafHash = keccak256(bytes)
   ─ merklePath = buildMerklePath(all400LeafHashes, chunkIndex)
@@ -506,8 +506,8 @@ All listed in Phase C's "explicitly deferred" list, to be addressed in Phase D.
   - `node/src/ipfs-http.ts` — HTTP layer
   - `node/src/ipfs-unixfs.ts` — UnixFS encode/decode
   - `node/src/ipfs-blockstore.ts` — local block storage + onPut hook
-  - `node/src/coc-ipfs-wiring.ts` — glues blockstore / DHT / wire
-  - `node/src/coc-ipfs-repair.ts` — self-heal loop
+  - `node/src/palimesh-ipfs-wiring.ts` — glues blockstore / DHT / wire
+  - `node/src/palimesh-ipfs-repair.ts` — self-heal loop
   - `node/src/dht-network.ts` — Kademlia + provider records
   - `node/src/wire-protocol.ts` — binary frames
   - `node/src/wire-server.ts` / `wire-client.ts` — TCP transport

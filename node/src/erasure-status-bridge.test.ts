@@ -13,7 +13,7 @@ import assert from "node:assert/strict"
  * V8 message leaked through.
  *
  * Live testnet 88780 reproduction (pre-fix):
- *   curl -d '{"jsonrpc":"2.0","id":1,"method":"coc_erasureStatus",
+ *   curl -d '{"jsonrpc":"2.0","id":1,"method":"pali_erasureStatus",
  *            "params":["not-a-cid"]}' http://node:28780
  *   → {"error":{"code":-32603,"message":"Right-hand side of
  *      'instanceof' is not an object"}}
@@ -45,7 +45,7 @@ test("#505: resolveCid sanitizes multiformats library error messages (no library
   // (TypedDataEncoder INVALID_ARGUMENT leak), #214 (HTTP error shape).
   //
   // Live testnet 88780 reproduction (this iteration):
-  //   coc_erasureStatus(["not-a-cid"])
+  //   pali_erasureStatus(["not-a-cid"])
   //     → -32602 "unparseable CID: To parse non base32, base36 or
   //               base58btc encoded CID multibase decoder must be provided"
   // Fix emits a clean shape-only message.
@@ -108,7 +108,7 @@ test("#358: simulating the pre-fix bug shape — `err instanceof undefined` thro
  *    '/var/lib/coc/node-1/storage/blocks/bafyrei…'"
  * Anyone calling the public RPC could enumerate the server's data dir
  * layout + node identifier. Live testnet 88780 reproduction (pre-fix):
- *   curl -d '{"jsonrpc":"2.0","id":1,"method":"coc_erasureStatus",
+ *   curl -d '{"jsonrpc":"2.0","id":1,"method":"pali_erasureStatus",
  *            "params":["bafyreidskjqd4on73tlrhh2ovrgz3ihrekrojvg6yqxgldubsvgivqo2gq"]}'
  *   → {"error":{"code":-32604,
  *      "message":"manifest block missing: ENOENT: no such file or directory,

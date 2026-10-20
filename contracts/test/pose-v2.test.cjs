@@ -1062,7 +1062,7 @@ describe("PoSeManagerV2", function () {
     it("does not credit bookkeeping emission as spendable native reward balance", async function () {
       await registerNode(manager, deployer)
 
-      const Token = await ethers.getContractFactory("COCToken")
+      const Token = await ethers.getContractFactory("PalimeshToken")
       const token = await upgrades.deployProxy(
         Token,
         [[deployer.address], [ethers.parseEther("250000000")], deployer.address],
@@ -1091,7 +1091,7 @@ describe("PoSeManagerV2", function () {
 
   describe("enableEmission idempotency (#734)", function () {
     it("rejects second call once emission is enabled", async function () {
-      const Token = await ethers.getContractFactory("COCToken")
+      const Token = await ethers.getContractFactory("PalimeshToken")
       const token = await upgrades.deployProxy(
         Token,
         [[deployer.address], [ethers.parseEther("250000000")], deployer.address],
@@ -1111,7 +1111,7 @@ describe("PoSeManagerV2", function () {
     })
 
     it("blocks malicious-token swap after emission is enabled", async function () {
-      const Token = await ethers.getContractFactory("COCToken")
+      const Token = await ethers.getContractFactory("PalimeshToken")
       const realToken = await upgrades.deployProxy(
         Token,
         [[deployer.address], [ethers.parseEther("250000000")], deployer.address],

@@ -170,7 +170,7 @@ export function jsonStringify(obj: unknown): string {
 
 // RPC parameter validation helpers — extracted to ./rpc-validators.ts (PR-1Q, 2026-05-12).
 // All shape/hex/address/hash/tag/filter validation now lives in the shared layer
-// so ipfs-http.ts, pose-http.ts, websocket-rpc.ts, and runtime/coc-node.ts can
+// so ipfs-http.ts, pose-http.ts, websocket-rpc.ts, and runtime/palimesh-node.ts can
 // reuse the same predicates without copy-paste drift.
 
 const MAX_RPC_BODY = 1024 * 1024 // 1 MB max request body for RPC
@@ -181,11 +181,11 @@ setInterval(() => rateLimiter.cleanup(), 300_000).unref()
 function isDevAccountsEnabled(): boolean {
   // Only enable dev accounts with explicit opt-in — NODE_ENV=test no longer sufficient
   // to prevent accidental exposure of hardcoded private keys in production
-  return process.env.COC_DEV_ACCOUNTS === "1"
+  return process.env.PALI_DEV_ACCOUNTS === "1"
 }
 
-// Debug/trace RPC feature gate: only enabled when COC_DEBUG_RPC=1
-const DEBUG_RPC_ENABLED = process.env.COC_DEBUG_RPC === "1"
+// Debug/trace RPC feature gate: only enabled when PALI_DEBUG_RPC=1
+const DEBUG_RPC_ENABLED = process.env.PALI_DEBUG_RPC === "1"
 
 // Test account manager (dev/test only)
 interface TestAccount {
@@ -262,7 +262,7 @@ interface RpcRuntimeOptions {
   /**
    * Phase C2.2: expose DHT provider lookups to the PoSe challenger so it
    * can pre-filter monopoly CIDs before issuing a Storage challenge.
-   * When omitted, `coc_dhtFindProviders` returns an empty array and
+   * When omitted, `pali_dhtFindProviders` returns an empty array and
    * the challenger falls back to trying without a DHT hint.
    */
   findProviders?: (cid: string, maxK?: number) => string[]
@@ -331,14 +331,14 @@ export function startRpcServer(
   const poseRoutes = pose ? registerPoseRoutes(pose) : []
 
   const server = http.createServer(async (req, res) => {
-    // #330: CORS supports comma-separated COC_CORS_ORIGIN whitelist + "*"
+    // #330: CORS supports comma-separated PALI_CORS_ORIGIN whitelist + "*"
     // wildcard + per-request Origin echo. Pre-fix the env was treated as a
     // single value and defaulted to "http://localhost:3000" — every prod
     // deployment that forgot to set the env hardcoded this single dev
     // origin, blocking all other browser clients. Spec-compliant pattern:
     // when whitelist matches request Origin, echo it back + add Vary: Origin
     // so intermediate caches don't serve the wrong origin.
-    const corsConfig = process.env.COC_CORS_ORIGIN ?? "http://localhost:3000"
+    const corsConfig = process.env.PALI_CORS_ORIGIN ?? "http://localhost:3000"
     const reqOrigin = typeof req.headers.origin === "string" ? req.headers.origin : null
     // #458: when request Origin is provided but NOT in the whitelist, do NOT
     // emit Access-Control-Allow-Origin. Pre-fix code echoed `whitelist[0]`
@@ -514,7 +514,7 @@ export function startRpcServer(
         const rpcOpts: Record<string, unknown> = {}
         // Loopback OR a validated global Bearer token authorizes admin-class
         // AND governance-mutating RPC methods. Computed unconditionally so the
-        // governance gate (coc_submitProposal / coc_voteProposal) does not
+        // governance gate (pali_submitProposal / pali_voteProposal) does not
         // depend on the admin-RPC feature flag being enabled.
         const callerAuthorized = !!rpcAuthOptions?.authToken
           || (rpcAuthOptions?.allowLoopbackRpcAuth === true && isLoopbackAddress(clientIp))
@@ -530,7 +530,7 @@ export function startRpcServer(
           //   (b) loopback trust was explicitly enabled and the request
           //       came from loopback (127.0.0.1 / ::1).
           // No RFC1918 allow — operators wanting LAN access must set
-          // COC_RPC_AUTH_TOKEN explicitly.
+          // PALI_RPC_AUTH_TOKEN explicitly.
           rpcOpts.adminAuthorized = callerAuthorized
         }
         const resolvedNodeId = nodeId ?? runtimeOptions?.nodeId
@@ -565,7 +565,7 @@ export function startRpcServer(
           rpcOpts.didDataProvider = runtimeOptions.didDataProvider
         }
         // Phase C2.2/C2.4: plumb the DHT provider-lookup and peer-fetch
-        // callbacks through so coc_dhtFindProviders / coc_ipfsFetchBlockFromPeer
+        // callbacks through so pali_dhtFindProviders / pali_ipfsFetchBlockFromPeer
         // handlers can invoke them. Without these forwards the handlers
         // see `opts.findProviders === undefined` and return empty.
         if (runtimeOptions?.findProviders) {
@@ -703,7 +703,7 @@ async function handleOne(
   // #314: cap method name length so a malicious client can't force an
   // N-byte echo via the default `method not supported: ${payload.method}`
   // error path (rpc.ts:methodNotFound around the dispatch switch). The
-  // longest standard Ethereum/COC RPC method is ~30 chars
+  // longest standard Ethereum/Palimesh RPC method is ~30 chars
   // ("eth_getTransactionReceiptsByBlock"). 128 is generous headroom and
   // bounds the response amplification any unauthenticated client can
   // force from a malformed request. -32600 (invalid request) per
@@ -841,7 +841,7 @@ async function handleRpc(
 ) {
   switch (payload.method) {
     case "web3_clientVersion":
-      return "COC/0.2"
+      return "Palimesh/0.2"
     case "net_version":
       return String(chainId)
     case "eth_chainId":
@@ -1072,7 +1072,7 @@ async function handleRpc(
       // surfaces as -32603 with V8 message leak (data).
       validateTxCallFields(callParams)
       // #602: geth/anvil/erigon all honour a 3rd param `stateOverride`
-      // (per-call balance/nonce/code/state overrides). COC's EVM doesn't
+      // (per-call balance/nonce/code/state overrides). Palimesh's EVM doesn't
       // wire those into callRaw, but pre-fix params[2] was silently
       // ignored — including string/array/garbage shapes. A caller using
       // Tenderly-style simulation (or viem's `eth_call(..., overrides)`)
@@ -1543,7 +1543,7 @@ async function handleRpc(
       // because that's the EIP-712 reference impl + MetaMask docs
       // convention. Pre-fix the handler only accepted object form and
       // rejected stringified payloads as -32602 "invalid typedData:
-      // expected object" — every browser wallet flow broke against COC.
+      // expected object" — every browser wallet flow broke against Palimesh.
       let typedData = (payload.params ?? [])[1]
       if (typeof typedData === "string") {
         try {
@@ -1674,7 +1674,7 @@ async function handleRpc(
       }
     }
     case "debug_traceCall": {
-      if (!DEBUG_RPC_ENABLED) methodNotFound("debug methods disabled (set COC_DEBUG_RPC=1)")
+      if (!DEBUG_RPC_ENABLED) methodNotFound("debug methods disabled (set PALI_DEBUG_RPC=1)")
       // #172: shape validation symmetric with eth_call.
       const callParams = (requireCallObject((payload.params ?? [])[0], "debug_traceCall") ?? {}) as Record<string, string>
       // #148: validate shape — same as eth_call.
@@ -1702,7 +1702,7 @@ async function handleRpc(
       return formatDebugTraceResult(result, traceOpts)
     }
     case "debug_traceTransaction": {
-      if (!DEBUG_RPC_ENABLED) methodNotFound("debug methods disabled (set COC_DEBUG_RPC=1)")
+      if (!DEBUG_RPC_ENABLED) methodNotFound("debug methods disabled (set PALI_DEBUG_RPC=1)")
       // #294: pre-fix `String((payload.params)[0] ?? "") as Hex` silently
       // coerced number/array/object inputs to "123"/"x,y"/"[object Object]"
       // — none of which match any real tx hash, so the lookup returned
@@ -1730,7 +1730,7 @@ async function handleRpc(
       return formatDebugTraceResult(traceResult, traceOpts)
     }
     case "debug_traceBlockByNumber": {
-      if (!DEBUG_RPC_ENABLED) methodNotFound("debug methods disabled (set COC_DEBUG_RPC=1)")
+      if (!DEBUG_RPC_ENABLED) methodNotFound("debug methods disabled (set PALI_DEBUG_RPC=1)")
       // #294: drop the String() coercion wrapper — resolveBlockNumber
       // (via parseBlockTag) already enforces the spec shape and rejects
       // arrays/objects/numbers per JSON-RPC #194. Pre-fix `String([42])`
@@ -1751,7 +1751,7 @@ async function handleRpc(
       }))
     }
     case "trace_transaction": {
-      if (!DEBUG_RPC_ENABLED) methodNotFound("debug methods disabled (set COC_DEBUG_RPC=1)")
+      if (!DEBUG_RPC_ENABLED) methodNotFound("debug methods disabled (set PALI_DEBUG_RPC=1)")
       // #294: strict shape + structured -32004 for not-found. Pre-fix
       // `String(...) as Hex` accepted garbage and the plain Error
       // (`transaction not found: <coerced input>`) bubbled as -32603
@@ -1765,7 +1765,7 @@ async function handleRpc(
       return formatLocalizedOpenEthereumCallTraces(result.callTraces, txContext)
     }
     case "trace_call": {
-      if (!DEBUG_RPC_ENABLED) methodNotFound("debug methods disabled (set COC_DEBUG_RPC=1)")
+      if (!DEBUG_RPC_ENABLED) methodNotFound("debug methods disabled (set PALI_DEBUG_RPC=1)")
       // #172: shape validation symmetric with eth_call.
       const callParams = (requireCallObject((payload.params ?? [])[0], "trace_call") ?? {}) as Record<string, string>
       const traceTypes = normalizeReplayTraceTypes((payload.params ?? [])[1])
@@ -1780,7 +1780,7 @@ async function handleRpc(
       return formatTraceReplayResult(result, traceTypes)
     }
     case "trace_callMany": {
-      if (!DEBUG_RPC_ENABLED) methodNotFound("debug methods disabled (set COC_DEBUG_RPC=1)")
+      if (!DEBUG_RPC_ENABLED) methodNotFound("debug methods disabled (set PALI_DEBUG_RPC=1)")
       const callRequests = normalizeTraceCallManyRequests((payload.params ?? [])[0])
       const executionContext = await resolveHistoricalExecutionContext((payload.params ?? [])[1], chain)
       const results = await evm.traceCallMany(
@@ -1792,7 +1792,7 @@ async function handleRpc(
       return results.map((result, index) => formatTraceReplayResult(result, callRequests[index].traceTypes))
     }
     case "trace_replayTransaction": {
-      if (!DEBUG_RPC_ENABLED) methodNotFound("debug methods disabled (set COC_DEBUG_RPC=1)")
+      if (!DEBUG_RPC_ENABLED) methodNotFound("debug methods disabled (set PALI_DEBUG_RPC=1)")
       // #294: strict tx-hash validation (same family as trace_transaction).
       const txHash = requireTxHashParam(payload.params ?? [], 0)
       const traceTypes = normalizeReplayTraceTypes((payload.params ?? [])[1])
@@ -1800,7 +1800,7 @@ async function handleRpc(
       return formatTraceReplayResult(result, traceTypes)
     }
     case "trace_replayBlockTransactions": {
-      if (!DEBUG_RPC_ENABLED) methodNotFound("debug methods disabled (set COC_DEBUG_RPC=1)")
+      if (!DEBUG_RPC_ENABLED) methodNotFound("debug methods disabled (set PALI_DEBUG_RPC=1)")
       // #294: drop String() coercion wrapper (same as debug_traceBlockByNumber).
       const traceTypes = normalizeReplayTraceTypes((payload.params ?? [])[1])
       const blockNumber = await resolveBlockNumber((payload.params ?? [])[0], chain)
@@ -1808,7 +1808,7 @@ async function handleRpc(
       return results.map((result) => formatTraceReplayResult(result, traceTypes))
     }
     case "trace_rawTransaction": {
-      if (!DEBUG_RPC_ENABLED) methodNotFound("debug methods disabled (set COC_DEBUG_RPC=1)")
+      if (!DEBUG_RPC_ENABLED) methodNotFound("debug methods disabled (set PALI_DEBUG_RPC=1)")
       // #294: strict 0x-hex string; pre-fix String() let bool/number/array
       // through and traceRawTxOnState failed downstream with a leaked
       // V8 / ethers error.
@@ -1825,7 +1825,7 @@ async function handleRpc(
       return formatTraceReplayResult(result, traceTypes)
     }
     case "trace_block": {
-      if (!DEBUG_RPC_ENABLED) methodNotFound("debug methods disabled (set COC_DEBUG_RPC=1)")
+      if (!DEBUG_RPC_ENABLED) methodNotFound("debug methods disabled (set PALI_DEBUG_RPC=1)")
       // #294: drop String() coercion; structured -32004 for not-found.
       const blockNumber = await resolveBlockNumber((payload.params ?? [])[0], chain)
       const block = await Promise.resolve(chain.getBlockByNumber(blockNumber))
@@ -1843,12 +1843,12 @@ async function handleRpc(
       )
     }
     case "trace_filter": {
-      if (!DEBUG_RPC_ENABLED) methodNotFound("debug methods disabled (set COC_DEBUG_RPC=1)")
+      if (!DEBUG_RPC_ENABLED) methodNotFound("debug methods disabled (set PALI_DEBUG_RPC=1)")
       const query = requireFilterObject((payload.params ?? [])[0])
       return await queryTraceFilter(chain, evm, query)
     }
     case "trace_get": {
-      if (!DEBUG_RPC_ENABLED) methodNotFound("debug methods disabled (set COC_DEBUG_RPC=1)")
+      if (!DEBUG_RPC_ENABLED) methodNotFound("debug methods disabled (set PALI_DEBUG_RPC=1)")
       // #294: strict tx-hash validation + structured -32004 for not-found.
       const txHash = requireTxHashParam(payload.params ?? [], 0)
       const traceAddress = normalizeTraceAddressPath((payload.params ?? [])[1])
@@ -1873,7 +1873,7 @@ async function handleRpc(
         coc: "1.0",
       }
     case "debug_getRawTransaction": {
-      if (!DEBUG_RPC_ENABLED) methodNotFound("debug methods disabled (set COC_DEBUG_RPC=1)")
+      if (!DEBUG_RPC_ENABLED) methodNotFound("debug methods disabled (set PALI_DEBUG_RPC=1)")
       // #294: strict tx-hash validation (same family as debug_traceTransaction).
       const rawTxHash = requireTxHashParam(payload.params ?? [], 0)
       // Find block containing the transaction
@@ -1897,7 +1897,7 @@ async function handleRpc(
       return null
     }
     case "debug_getRawReceipts": {
-      if (!DEBUG_RPC_ENABLED) methodNotFound("debug methods disabled (set COC_DEBUG_RPC=1)")
+      if (!DEBUG_RPC_ENABLED) methodNotFound("debug methods disabled (set PALI_DEBUG_RPC=1)")
       // #499: pass raw param; parseBlockTag handles unknown shapes.
       const rawReceiptHeight = await Promise.resolve(chain.getHeight())
       const rawReceiptNum = parseBlockTag((payload.params ?? [])[0], rawReceiptHeight)
@@ -1907,7 +1907,7 @@ async function handleRpc(
     }
     case "debug_getRawHeader":
     case "debug_getRawBlock": {
-      if (!DEBUG_RPC_ENABLED) methodNotFound("debug methods disabled (set COC_DEBUG_RPC=1)")
+      if (!DEBUG_RPC_ENABLED) methodNotFound("debug methods disabled (set PALI_DEBUG_RPC=1)")
       // Simplified: return JSON-encoded block data as hex (not RLP)
       // Full RLP encoding deferred to future phase
       // #499: pass raw param; parseBlockTag handles unknown shapes.
@@ -1993,7 +1993,7 @@ async function handleRpc(
       // zero uncles." Geth rejects malformed inputs with -32602
       // regardless of whether the body would have been zero. Same
       // empty-result-masking-bug family as #166/#188/#196/#242.
-      // COC uses PoSe consensus with no uncle blocks, so the body
+      // Palimesh uses PoSe consensus with no uncle blocks, so the body
       // stays "0x0"/null for well-formed inputs.
       requireBlockHashParam(payload.params ?? [], 0)
       if (payload.method.endsWith("AndIndex")) {
@@ -2016,7 +2016,7 @@ async function handleRpc(
       return "0x0"
     }
     case "eth_getWork":
-      // PoW stub — COC uses PoSe consensus, no mining
+      // PoW stub — Palimesh uses PoSe consensus, no mining
       return ["0x" + "0".repeat(64), "0x" + "0".repeat(64), "0x" + "0".repeat(64)]
     case "eth_submitWork":
     case "eth_submitHashrate":
@@ -2407,7 +2407,7 @@ async function handleRpc(
       }
       return { pending: inspect(pending), queued: inspect(queued) }
     }
-    case "coc_getTransactionsByAddress": {
+    case "pali_getTransactionsByAddress": {
       // #120: validate address shape so typos surface as -32602 instead
       // of silently missing the index → empty result. Pre-fix, "not-an-address"
       // and "0x123" both returned [] indistinguishable from a real empty
@@ -2468,7 +2468,7 @@ async function handleRpc(
       }
       return []
     }
-    case "coc_dhtFindProviders": {
+    case "pali_dhtFindProviders": {
       // Phase C2.2: the PoSe challenger pre-filters monopoly CIDs by
       // asking the local DHT who currently advertises a given CID.
       // #146: pre-fix this returned errors wrapped in `result.error`,
@@ -2496,12 +2496,12 @@ async function handleRpc(
       const providers = findProviders?.(cid, cap) ?? []
       return { providers }
     }
-    case "coc_ipfsFetchBlockFromPeer": {
+    case "pali_ipfsFetchBlockFromPeer": {
       // Phase C2.4: audit sampling. Fetch the raw chunk bytes for `cid`
       // from a DHT-advertised peer, optionally excluding `excludePeerId`
       // (the prover). Returns base64-encoded bytes so JSON-RPC can
       // transport the blob.
-      // #146: same fix as coc_dhtFindProviders — structured error in
+      // #146: same fix as pali_dhtFindProviders — structured error in
       // the `error` field, not embedded in `result`.
       const cid = requireRpcCidParam(payload.params ?? [])
       // #250: pre-fix `String((payload.params ?? [])[1] ?? "")` silently
@@ -2522,13 +2522,13 @@ async function handleRpc(
       const bytes = await fetchBlockFromPeer?.(cid, excludePeerId)
       return { bytes: bytes ? Buffer.from(bytes).toString("base64") : null }
     }
-    case "coc_nodeInfo": {
+    case "pali_nodeInfo": {
       const height = await Promise.resolve(chain.getHeight())
       const mempoolStats = chain.mempool.stats()
       return {
-        clientVersion: "COC/0.2",
+        clientVersion: "Palimesh/0.2",
         // #561: pre-fix chainId leaked as a raw JS number (88780) here
-        // while eth_chainId + coc_chainStats.chainId both emit hex
+        // while eth_chainId + pali_chainStats.chainId both emit hex
         // ("0x15acc"). Clients comparing across endpoints saw
         // `88780 !== "0x15acc"` and concluded the node was misconfigured.
         // Format-drift family with #517 (nextProposalBlock decimal vs hex
@@ -2540,7 +2540,7 @@ async function handleRpc(
         uptime: Math.floor(process.uptime()),
       }
     }
-    case "coc_validators": {
+    case "pali_validators": {
       const height = await Promise.resolve(chain.getHeight())
       const nextHeight = height + 1n
       const currentProposer = chain.expectedProposer(nextHeight)
@@ -2556,8 +2556,8 @@ async function handleRpc(
           id: v,
           isCurrentProposer: v === currentProposer,
           // #607: pre-fix this emitted a raw JS number (decimal) while
-          // sibling endpoints (eth_blockNumber, coc_chainStats.blockHeight,
-          // coc_validators.currentHeight, coc_nodeInfo.blockHeight) all
+          // sibling endpoints (eth_blockNumber, pali_chainStats.blockHeight,
+          // pali_validators.currentHeight, pali_nodeInfo.blockHeight) all
           // return 0x-prefixed hex per Ethereum JSON-RPC convention.
           // Clients aggregating block numbers from multiple endpoints saw
           // `nextProposalBlock=88751` ≠ `blockHeight="0x15a8f"` and concluded
@@ -2568,15 +2568,15 @@ async function handleRpc(
       }
       return { validators, currentHeight: height, nextProposer: currentProposer }
     }
-    case "coc_prunerStats": {
+    case "pali_prunerStats": {
       if (typeof chain.getPrunerStats === "function") {
         return await chain.getPrunerStats()
       }
       return { latestBlock: 0, pruningHeight: 0, retainedBlocks: 0 }
     }
-    case "coc_getPeers": {
+    case "pali_getPeers": {
       // #108: doc-referenced in docs/runbooks/phase-q-erasure-coding.md:204
-      // ("peers should appear in `coc_getPeers` output"). Public (non-admin)
+      // ("peers should appear in `pali_getPeers` output"). Public (non-admin)
       // peer list — only exposes the per-peer { id, url } fields already
       // visible in P2P gossip traffic; no sensitive routing/auth state.
       const peers = p2p.getPeers?.() ?? p2p.discovery?.getActivePeers?.() ?? []
@@ -2585,7 +2585,7 @@ async function handleRpc(
         url: peer.advertisedUrl ?? peer.url ?? "unknown",
       }))
     }
-    case "coc_getValidators": {
+    case "pali_getValidators": {
       if (hasGovernance(chain)) {
         const validators = chain.governance.getActiveValidators()
         return validators.map((v) => ({
@@ -2609,13 +2609,13 @@ async function handleRpc(
         active: true,
       }))
     }
-    case "coc_submitProposal": {
+    case "pali_submitProposal": {
       // Governance-mutating: gate to loopback / Bearer-auth callers. The
       // later `proposer === localNodeId` check is NOT authentication — the
       // node's id is public — so without this gate any remote RPC client
       // could submit validator-governance proposals as the node.
       if (!(opts as Record<string, unknown>)?.callerAuthorized) {
-        unauthorized("coc_submitProposal requires RPC auth token or explicit loopback trust")
+        unauthorized("pali_submitProposal requires RPC auth token or explicit loopback trust")
       }
       // #234: pre-fix the plain `new Error(...)` fell through to the
       // outer catch's `-32603 internal error` default. Per JSON-RPC
@@ -2639,7 +2639,7 @@ async function handleRpc(
       // non-string values in string slots (downstream filters / serializers
       // broke with -32603 V8 errors) or echoed the coerced garbage back to
       // clients. Same anti-pattern as #220 (outer shape — now covered) and
-      // #551 (coc_voteProposal field strict validation). Validate each
+      // #551 (pali_voteProposal field strict validation). Validate each
       // required field BEFORE the hasGovernance() gate so the same -32602
       // fires on read-only nodes too (#432 validation-order rule).
       const proposalParams = rawParams as Record<string, unknown>
@@ -2680,7 +2680,7 @@ async function handleRpc(
         stakeAmount = BigInt(stakeRaw as string | number)
       }
       if (!hasGovernance(chain)) {
-        methodNotFound("coc_submitProposal: governance module not enabled on this node")
+        methodNotFound("pali_submitProposal: governance module not enabled on this node")
       }
       // Only the local node can submit proposals via RPC
       const localNodeId = (opts as Record<string, unknown>)?.nodeId as string | undefined
@@ -2703,17 +2703,17 @@ async function handleRpc(
         status: proposal.status,
       }
     }
-    case "coc_voteProposal": {
+    case "pali_voteProposal": {
       // Governance-mutating: gate to loopback / Bearer-auth callers. A vote
       // crossing the threshold mutates the validator set via executeProposal,
       // and `voterId === localNodeId` is not authentication (the node's id is
       // public). Without this gate any remote RPC client could cast the
       // node's stake-weighted validator-governance vote.
       if (!(opts as Record<string, unknown>)?.callerAuthorized) {
-        unauthorized("coc_voteProposal requires RPC auth token or explicit loopback trust")
+        unauthorized("pali_voteProposal requires RPC auth token or explicit loopback trust")
       }
-      // #234: same -32601 mapping as coc_submitProposal.
-      // #220: same null-check as coc_submitProposal — params=[] / [null]
+      // #234: same -32601 mapping as pali_submitProposal.
+      // #220: same null-check as pali_submitProposal — params=[] / [null]
       // pre-fix bubbled "Cannot read properties of null (reading 'voterId')"
       // through the outer catch as a -32603 V8 leak.
       // #432: validate input BEFORE governance-module check (same as #424).
@@ -2738,7 +2738,7 @@ async function handleRpc(
         invalidParams("invalid approve: expected boolean")
       }
       if (!hasGovernance(chain)) {
-        methodNotFound("coc_voteProposal: governance module not enabled on this node")
+        methodNotFound("pali_voteProposal: governance module not enabled on this node")
       }
       // Only the local node can vote via RPC
       const localVoterId = (opts as Record<string, unknown>)?.nodeId as string | undefined
@@ -2757,7 +2757,7 @@ async function handleRpc(
         votes: updated?.votes ? Object.fromEntries(updated.votes) : {},
       }
     }
-    case "coc_getGovernanceStats": {
+    case "pali_getGovernanceStats": {
       if (!hasGovernance(chain)) {
         return { enabled: false }
       }
@@ -2771,7 +2771,7 @@ async function handleRpc(
         currentEpoch: `0x${gStats.currentEpoch.toString(16)}`,
       }
     }
-    case "coc_getProposals": {
+    case "pali_getProposals": {
       // #436: validate shape BEFORE backend-config short-circuit so
       // garbage input returns -32602, not a silent `[]`. Same family
       // as #432 / PR #431 (which fixed the methodNotFound variant).
@@ -2803,8 +2803,8 @@ async function handleRpc(
         voteCount: p.votes.size,
       }))
     }
-    case "coc_getDaoProposal": {
-      // #234: same -32601 mapping as coc_submitProposal.
+    case "pali_getDaoProposal": {
+      // #234: same -32601 mapping as pali_submitProposal.
       // #432: validate proposalId BEFORE governance-module check so
       // garbage input (number, boolean, missing) gets -32602 even on
       // read-only fullnodes where governance isn't enabled. Same
@@ -2814,7 +2814,7 @@ async function handleRpc(
         invalidParams("invalid proposal id: expected non-empty string")
       }
       if (!hasGovernance(chain)) {
-        methodNotFound("coc_getDaoProposal: governance module not enabled on this node")
+        methodNotFound("pali_getDaoProposal: governance module not enabled on this node")
       }
       const gov = chain.governance
       const proposal = gov.getProposal(proposalId)
@@ -2838,7 +2838,7 @@ async function handleRpc(
       }
       return { id: proposal.id, status: proposal.status, votes: Object.fromEntries(proposal.votes) }
     }
-    case "coc_getDaoProposals": {
+    case "pali_getDaoProposals": {
       // #436: validate shape BEFORE backend-config short-circuit (same
       // family as #432 / PR #431). Without this, garbage filter shapes
       // silently get `[]` instead of -32602 on read-only nodes.
@@ -2898,7 +2898,7 @@ async function handleRpc(
         voteCount: p.votes.size,
       }))
     }
-    case "coc_getDaoStats": {
+    case "pali_getDaoStats": {
       if (!hasGovernance(chain)) return { enabled: false }
       const gov3 = chain.governance
       const stats = gov3.getGovernanceStats?.() ?? { activeValidators: 0, totalStake: 0n, pendingProposals: 0, totalProposals: 0, currentEpoch: 0n }
@@ -2915,12 +2915,12 @@ async function handleRpc(
         factions: factionStats,
       }
     }
-    case "coc_getTreasuryBalance": {
+    case "pali_getTreasuryBalance": {
       if (!hasGovernance(chain)) return { balance: "0x0" }
       const treasury2 = chain.governance.getTreasuryBalance?.() ?? 0n
       return { balance: `0x${treasury2.toString(16)}` }
     }
-    case "coc_getFaction": {
+    case "pali_getFaction": {
       // #436: validate shape BEFORE backend-config short-circuit (same
       // family as #432 / PR #431). Without this, garbage address shapes
       // silently get `null` instead of -32602 on read-only nodes.
@@ -2928,7 +2928,7 @@ async function handleRpc(
       // 0x-prefixed string — "0x123", "0xZZZ…" and other malformed
       // addresses all silently returned null (indistinguishable from
       // "real address, no faction"). Use requireAddressParam (40-char
-      // enforcement) to match the rest of the coc_* address-taking
+      // enforcement) to match the rest of the pali_* address-taking
       // endpoints (#120, #122, #124, #128, #471, family).
       const address = requireAddressParam(payload.params ?? [], 0).toLowerCase() as Hex
       if (!hasGovernance(chain)) return null
@@ -2940,7 +2940,7 @@ async function handleRpc(
         joinedAtEpoch: `0x${factionInfo.joinedAtEpoch.toString(16)}`,
       }
     }
-    case "coc_getBftStatus": {
+    case "pali_getBftStatus": {
       if (!bftCoordinator) {
         return { enabled: false, active: false }
       }
@@ -2955,7 +2955,7 @@ async function handleRpc(
         equivocations: bftState.equivocations,
       }
     }
-    case "coc_getNetworkStats": {
+    case "pali_getNetworkStats": {
       const peerCount = p2p?.getPeers?.()?.length ?? 0
       const height = await Promise.resolve(chain.getHeight())
       const p2pStats = (opts as Record<string, unknown>)?.p2pStats
@@ -2996,7 +2996,7 @@ async function handleRpc(
         },
       }
     }
-    case "coc_getRewardManifest": {
+    case "pali_getRewardManifest": {
       // #252: reject non-integer epochId (was: Number(true)→1, Number([1])→1, Number("1")→1)
       // #424: validate BEFORE short-circuiting on missing rewardManifestDir.
       // Pre-fix the dir check ran first, so on any node where the manifest
@@ -3021,9 +3021,9 @@ async function handleRpc(
         leaves: manifest.leaves.length,
       }
     }
-    case "coc_getRewardClaim": {
+    case "pali_getRewardClaim": {
       // #252: reject non-integer epochId and non-string nodeId
-      // #424: same as coc_getRewardManifest — validate at the boundary
+      // #424: same as pali_getRewardManifest — validate at the boundary
       // before checking backend configuration so garbage input never
       // returns silent `null`.
       const epochId = requireIntegerParam(payload.params ?? [], 0, "epochId")
@@ -3037,7 +3037,7 @@ async function handleRpc(
       if (!manifest) return null
       return lookupRewardClaim(manifest, nodeId)
     }
-    case "coc_chainStats": {
+    case "pali_chainStats": {
       const height = await Promise.resolve(chain.getHeight())
       const now = Date.now()
       // #479: include mempool size in cache key so that pendingTxCount /
@@ -3114,7 +3114,7 @@ async function handleRpc(
           //
           // #606: the original fix landed `"1"` as the literal fallback,
           // which silently lied: same node returned chainId `0x1` from
-          // coc_chainStats and `0x495c` (18780) from eth_chainId — two
+          // pali_chainStats and `0x495c` (18780) from eth_chainId — two
           // endpoints disagreeing about which chain you're on. Use the
           // RPC handler's `chainId` parameter (the canonical source
           // eth_chainId reads from, rpc.ts:813) so the two endpoints
@@ -3126,9 +3126,9 @@ async function handleRpc(
       })().finally(() => { chainStatsComputing = null })
       return await chainStatsComputing
     }
-    case "coc_getContracts": {
+    case "pali_getContracts": {
       // #249: pre-fix `(payload.params ?? [])[0] as Record<string,
-      // unknown> | undefined` was a TS runtime no-op. coc_getContracts
+      // unknown> | undefined` was a TS runtime no-op. pali_getContracts
       // with bool/string/number/array silently fell through with
       // property reads → undefined → "default pagination" → returned
       // all contracts as if the arg was absent. Same anti-pattern as
@@ -3137,7 +3137,7 @@ async function handleRpc(
       const opts = requireFilterObject((payload.params ?? [])[0])
       // #258: pre-fix the inner fields used the same silent-coercion
       // anti-pattern fixed in #254 for the positional sibling
-      // coc_getTransactionsByAddress: `Number(opts.limit ?? 50) || 50`
+      // pali_getTransactionsByAddress: `Number(opts.limit ?? 50) || 50`
       // coerced `true`→1, `"5"`→5, `[5]`→5; `opts.reverse !== false`
       // accepted `0`/`"false"`/`null` as truthy (== reverse=true), the
       // opposite of the client's intent. Mirror #254's strict per-field
@@ -3185,13 +3185,13 @@ async function handleRpc(
       }
       return []
     }
-    case "coc_blockIndexStatus": {
+    case "pali_blockIndexStatus": {
       // Exposes whether the node maintains a block index so clients can distinguish
       // "index empty" from "index not enabled" — avoids Explorer falling back to
       // slow serial block-scan on nodes that will never return data anyway.
       return { enabled: hasBlockIndex(chain) }
     }
-    case "coc_getContractInfo": {
+    case "pali_getContractInfo": {
       // #122: stricter validation so typos return -32602 instead of
       // silently null (indistinguishable from "this address has no
       // deployed contract"). Mirrors the #120 fix for getTransactionsByAddress.
@@ -3209,7 +3209,7 @@ async function handleRpc(
       }
       return null
     }
-    case "coc_erasureStatus": {
+    case "pali_erasureStatus": {
       // RPC bridge for the existing HTTP /api/v0/erasure/status handler.
       // Doc-referenced for ops tooling (phase-q-erasure-coding.md:233);
       // returns per-stripe data/parity availability for a Reed-Solomon
@@ -3224,17 +3224,17 @@ async function handleRpc(
       const cid = requireStringParam(payload.params ?? [], 0, "manifest CID")
       return getter(cid)
     }
-    case "coc_getEquivocationsTotal": {
+    case "pali_getEquivocationsTotal": {
       // Cheap counter for ops monitoring. The operator runbook
       // (docs/operator-runbook.{en,zh}.md section 5) instructs operators
       // to alert when this rises above zero, so the method must exist as
       // a first-class endpoint instead of forcing callers to fetch the
-      // full evidence array via coc_getEquivocations and count it.
+      // full evidence array via pali_getEquivocations and count it.
       const totalGetter = (opts as RpcRuntimeOptions | undefined)?.getBftEquivocations
       if (!totalGetter) return 0
       return totalGetter(0).length
     }
-    case "coc_getEquivocations": {
+    case "pali_getEquivocations": {
       // #226: pre-fix `Number(params[0] ?? 0)` silently mapped {}, true,
       // non-numeric strings, NaN → 0 or NaN, and accepted negative
       // sinceMs that the getter treats as "from epoch start." Validate
@@ -3287,7 +3287,7 @@ async function handleRpc(
       return {
         nodeId: (opts as Record<string, unknown>)?.nodeId ?? "unknown",
         enode: `coc://${(opts as Record<string, unknown>)?.nodeId ?? "unknown"}@0.0.0.0:0`,
-        clientVersion: "COC/0.2",
+        clientVersion: "Palimesh/0.2",
         chainId,
         blockHeight: `0x${height.toString(16)}`,
         peerCount: p2p?.getPeers?.()?.length ?? 0,
@@ -3446,7 +3446,7 @@ async function handleRpc(
       }
     }
     // ── DID Identity Layer ──────────────────────────────────────
-    case "coc_resolveDid": {
+    case "pali_resolveDid": {
       // #432: validate input BEFORE backend-config check so garbage params
       // (numbers, booleans, objects, missing) get -32602 even on nodes
       // where the DID resolver isn't configured. Pre-fix the
@@ -3458,7 +3458,7 @@ async function handleRpc(
       if (!didResolver) methodNotFound("DID resolver not configured on this node (requires soulRegistryAddress + didRegistryAddress)")
       return didResolver.resolve(did)
     }
-    case "coc_getDIDDocument": {
+    case "pali_getDIDDocument": {
       // #432: same — validate before backend-config check.
       const agentId = requireStringParam(payload.params ?? [], 0, "agentId")
       const didResolver = opts?.didResolver as { resolve: (did: string) => Promise<{ didDocument: unknown }> } | undefined
@@ -3466,7 +3466,7 @@ async function handleRpc(
       const result = await didResolver.resolve(`did:coc:${agentId}`)
       return result.didDocument ?? null
     }
-    case "coc_getAgentCapabilities": {
+    case "pali_getAgentCapabilities": {
       // #432: same — validate before backend-config check.
       const agentId = requireStringParam(payload.params ?? [], 0, "agentId")
       const didProvider = opts?.didDataProvider
@@ -3476,28 +3476,28 @@ async function handleRpc(
       const { capabilityBitmaskToNames } = await import("./did/did-types.ts")
       return { capabilities: capabilityBitmaskToNames(bitmask), bitmask }
     }
-    case "coc_getDelegations": {
+    case "pali_getDelegations": {
       // #432: same — validate before backend-config check.
       const agentId = requireStringParam(payload.params ?? [], 0, "agentId")
       const didProvider = opts?.didDataProvider
       if (!didProvider) methodNotFound("DID data provider not configured on this node")
       return didProvider.getFullDelegations(agentId)
     }
-    case "coc_getAgentLineage": {
+    case "pali_getAgentLineage": {
       // #432: same — validate before backend-config check.
       const agentId = requireStringParam(payload.params ?? [], 0, "agentId")
       const didProvider = opts?.didDataProvider
       if (!didProvider?.getLineage) methodNotFound("DID data provider not configured on this node")
       return didProvider.getLineage(agentId)
     }
-    case "coc_getVerificationMethods": {
+    case "pali_getVerificationMethods": {
       // #432: same — validate before backend-config check.
       const agentId = requireStringParam(payload.params ?? [], 0, "agentId")
       const didProvider = opts?.didDataProvider
       if (!didProvider?.getVerificationMethods) methodNotFound("DID data provider not configured on this node")
       return didProvider.getVerificationMethods(agentId)
     }
-    case "coc_getCredentialAnchor": {
+    case "pali_getCredentialAnchor": {
       // Checks the on-chain credential anchor only: existence, revocation, expiry.
       // Does NOT verify VC content, signatures, or proofs — use verifiable-credentials.ts
       // for full credential verification.
@@ -4313,7 +4313,7 @@ export function formatRawTransaction(
     const parsed = Transaction.from(rawTx)
     // #456: ethers v6 returns EIP-55 mixed-case for parsed.from/to. Geth +
     // Erigon emit addresses lowercased in JSON-RPC responses, and the rest
-    // of COC's API (receipts, block.miner, eth_getLogs) already lowercases.
+    // of Palimesh's API (receipts, block.miner, eth_getLogs) already lowercases.
     // Pre-fix eth_getTransactionByHash returned mixed case while
     // eth_getTransactionReceipt returned lowercase for the SAME tx — same-
     // -value comparisons across endpoints failed string-equality checks
@@ -4323,7 +4323,7 @@ export function formatRawTransaction(
     // eth_getTransactionByHash / eth_getBlockByNumber omitted the field,
     // even though it's part of the signed RLP and required by spec. Indexers
     // that decode accessList (for gas-cost analysis, MEV scoring, etc.)
-    // silently saw `undefined` for every type-1/2 tx on COC.
+    // silently saw `undefined` for every type-1/2 tx on Palimesh.
     const accessList = Array.isArray(parsed.accessList) && parsed.accessList.length > 0
       ? parsed.accessList.map((entry) => ({
           address: entry.address,
@@ -4415,7 +4415,7 @@ async function formatPersistentReceipt(
   const normalizedTo = normalizePersistedTo(tx.receipt.to)
   // #466: viem.getCreateAddress returns the address in EIP-55 mixed case.
   // Geth + Erigon always lowercase addresses in JSON-RPC responses, and
-  // the rest of COC's receipt body (from / to / log.address) is already
+  // the rest of Palimesh's receipt body (from / to / log.address) is already
   // lowercase. Pre-fix the deploy receipts returned a mixed-case
   // contractAddress while every other field was lowercase — dApps that
   // string-compared the deploy receipt's contractAddress vs the address
@@ -4715,7 +4715,7 @@ async function formatBlock(block: Awaited<ReturnType<IChainEngine["getBlockByNum
     // 42-char "0x..." string char-by-char, producing 42 BYTES of extraData
     // — both wasteful AND a violation of Ethereum's 32-byte extraData cap
     // (consensus rule). External spec-strict validators (L2 fraud-proof
-    // generators, geth-strict block import) rejected COC blocks.
+    // generators, geth-strict block import) rejected Palimesh blocks.
     //
     // When proposer is a 20-byte hex address, use it directly. Otherwise
     // (test fixtures, non-address node IDs) fall back to UTF-8 encoding

@@ -17,7 +17,7 @@ describe("deploy-pose", () => {
     assert.equal(params.confirmations, 2)
   })
 
-  it("resolves L2 COC config", () => {
+  it("resolves L2 PALI config", () => {
     const params = resolveDeployParams("l2-coc")
     assert.equal(params.chainId, 18780)
     assert.equal(params.gasStrategy, "legacy")

@@ -36,7 +36,7 @@ interface DrillResult {
 
 const KNOWN_ERROR_CODES = new Set([
   -32700, -32600, -32601, -32602, -32603, -32005,
-  // COC custom (#180/#196/#200 etc — Geth-style)
+  // Palimesh custom (#180/#196/#200 etc — Geth-style)
   -32001, -32003, -32004,
 ])
 
@@ -219,7 +219,7 @@ async function runAdversarial(target: string, results: DrillResult[]): Promise<v
     { name: "sendRawTransaction_array", req: { jsonrpc: "2.0", id: 1, method: "eth_sendRawTransaction", params: [[]] } },
     { name: "getProof_address_array", req: { jsonrpc: "2.0", id: 1, method: "eth_getProof", params: [[], [], "latest"] } },
     { name: "empty_batch", req: [] },
-    { name: "unknown_coc_method", req: { jsonrpc: "2.0", id: 1, method: "coc_undefinedFooBar", params: [] } },
+    { name: "unknown_coc_method", req: { jsonrpc: "2.0", id: 1, method: "pali_undefinedFooBar", params: [] } },
   ]
 
   for (const { name, req } of cases) {

@@ -1,6 +1,6 @@
-# COC GCloud 5-Fullnode Testbed
+# Palimesh GCloud 5-Fullnode Testbed
 
-Bring up 5 fullnodes on gcloud that join the existing COC testnet (chainId 18780)
+Bring up 5 fullnodes on gcloud that join the existing Palimesh testnet (chainId 18780)
 to validate BFT consensus, p2p storage (IPFS + erasure coding), and recent
 fixes (#70-#73, Phase H/J/Q) under realistic cross-region network conditions.
 
@@ -43,11 +43,11 @@ set from 3 to 5 (quorum 2→4, fault tolerance f=0→f=1).
 ## One-time setup
 
 ```bash
-cd /passinger/projects/ClawdBot/COC
+cd /passinger/projects/ClawdBot/Palimesh
 
 # 1) Configure
 cp scripts/gcloud/config.env.example scripts/gcloud/config.env
-$EDITOR scripts/gcloud/config.env   # fill in COC_GCP_PROJECT, upstream IPs, etc.
+$EDITOR scripts/gcloud/config.env   # fill in PALI_GCP_PROJECT, upstream IPs, etc.
 
 # 2) gcloud auth
 gcloud auth login
@@ -67,7 +67,7 @@ bash scripts/gcloud/20-create-burst.sh  burst-1
 bash scripts/gcloud/20-create-burst.sh  burst-2
 bash scripts/gcloud/20-create-burst.sh  burst-3
 
-# Generate per-host bundles (writes /tmp/coc-5-fullnode/)
+# Generate per-host bundles (writes /tmp/palimesh-5-fullnode/)
 # Replace IPs with the actual external IPs from `gcloud compute instances list`.
 bash scripts/bootstrap-5-fullnode-deploy.sh \
   --chain-id 18780 \
@@ -80,7 +80,7 @@ bash scripts/bootstrap-5-fullnode-deploy.sh \
   --gcloud-host-4 <burst-2 external IP> \
   --gcloud-host-5 <burst-3 external IP>
 
-# Deploy COC fullnode onto each VM (~3-5 min per VM on first run)
+# Deploy Palimesh fullnode onto each VM (~3-5 min per VM on first run)
 bash scripts/gcloud/50-deploy-node.sh all
 ```
 
@@ -101,8 +101,8 @@ done
 After both anchors have caught up to the chain head:
 
 ```bash
-# Read the per-anchor private key from /tmp/coc-5-fullnode/keys.txt
-ANCHOR1_PRIV=$(grep -m1 node_1_priv /tmp/coc-5-fullnode/keys.txt | cut -d= -f2)
+# Read the per-anchor private key from /tmp/palimesh-5-fullnode/keys.txt
+ANCHOR1_PRIV=$(grep -m1 node_1_priv /tmp/palimesh-5-fullnode/keys.txt | cut -d= -f2)
 
 # Use a funder key with prefunded balance on the upstream chain
 # (e.g. anvil idx 0 if the testnet was prefunded with that account).
@@ -118,7 +118,7 @@ bash scripts/anchor-stake-register.sh \
 
 ## Test matrix
 
-Run scenarios from `/home/bob/.claude/plans/coc-gcloud-3-5-bft-p2p-sleepy-wall.md`.
+Run scenarios from `/home/bob/.claude/plans/palimesh-gcloud-3-5-bft-p2p-sleepy-wall.md`.
 Quick reference:
 
 | ID | Command |
@@ -136,7 +136,7 @@ Quick reference:
 # Between validation runs, stop bursts to save ~$0.10/hr
 bash scripts/gcloud/30-stop-burst.sh all-bursts
 
-# Resume — systemd auto-restarts coc-node@1 on boot, snap-sync resumes
+# Resume — systemd auto-restarts palimesh-node@1 on boot, snap-sync resumes
 bash scripts/gcloud/31-start-burst.sh all-bursts
 ```
 
@@ -154,7 +154,7 @@ bash scripts/gcloud/40-destroy-all.sh full
 
 **Node won't sync past height N**
 - Check upstream validator IPs are reachable: `curl http://<upstream-ip>:28780 ...`
-- Inspect logs: `gcloud compute ssh <node> --command 'sudo journalctl -u coc-node@1 -n 200'`
+- Inspect logs: `gcloud compute ssh <node> --command 'sudo journalctl -u palimesh-node@1 -n 200'`
 - Strict mode (`p2pInboundAuthMode=enforce`) may reject upstream nodes still
   using `observe`. If upstream rejects our handshake, temporarily set
   `p2pInboundAuthMode=observe` in the rendered config (re-render via bootstrap
@@ -162,7 +162,7 @@ bash scripts/gcloud/40-destroy-all.sh full
 
 **Wire handshake failures across regions**
 - Check each VM's `gcloud compute firewall-rules list` allows tcp:29781
-- Verify `advertisedP2pUrl` in `/etc/coc/node-1.json` uses the **external** IP
+- Verify `advertisedP2pUrl` in `/etc/palimesh/node-1.json` uses the **external** IP
   (not the GCE internal IP) — bootstrap script uses what you passed to
   `--gcloud-host-N`.
 

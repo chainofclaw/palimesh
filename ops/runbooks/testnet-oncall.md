@@ -28,29 +28,29 @@ Alert received
 
 **Steps**:
 1. SSH to the affected node host.
-2. Check process status: `docker ps | grep coc-node` or `pgrep -f "node/src/index.ts"`.
+2. Check process status: `docker ps | grep palimesh-node` or `pgrep -f "node/src/index.ts"`.
 3. Check system resources: `free -h`, `df -h`, `dmesg | tail`.
-4. Review logs: `docker logs coc-node-N --tail 200` or `journalctl -u coc-node -n 200`.
-5. Restart if OOM or crash: `docker restart coc-node-N`.
+4. Review logs: `docker logs palimesh-node-N --tail 200` or `journalctl -u palimesh-node -n 200`.
+5. Restart if OOM or crash: `docker restart palimesh-node-N`.
 6. Verify recovery: `bash scripts/node-status.sh http://HOST:18780`.
 
 **Escalation**: If node fails to restart after 2 attempts, escalate to Core Node Lead.
 
 ## 2. Block Production Stalled
 
-**Symptoms**: `coc_block_height` not increasing for 5+ minutes.
+**Symptoms**: `pali_block_height` not increasing for 5+ minutes.
 
 **Steps**:
-1. Check consensus state: `curl ... coc_getNetworkStats`.
+1. Check consensus state: `curl ... pali_getNetworkStats`.
 2. Check peer connectivity: `curl ... net_peerCount`.
-3. If all nodes stalled: check BFT round status via `coc_getBftStatus`.
+3. If all nodes stalled: check BFT round status via `pali_getBftStatus`.
 4. If single node: check if it's the proposer in current rotation.
-5. Check mempool: `curl ... coc_mempoolStats` (empty mempool = normal if no transactions).
+5. Check mempool: `curl ... pali_mempoolStats` (empty mempool = normal if no transactions).
 6. Force restart consensus: restart the affected node.
 
 ## 3. Consensus Degraded
 
-**Symptoms**: `coc_consensus_state != 0` for 5+ minutes.
+**Symptoms**: `pali_consensus_state != 0` for 5+ minutes.
 
 **Steps**:
 1. Check which state: `0=healthy, 1=degraded, 2=recovering`.
@@ -61,10 +61,10 @@ Alert received
 
 ## 4. High Auth Rejections
 
-**Symptoms**: `coc_p2p_auth_rejected_total` rising rapidly.
+**Symptoms**: `pali_p2p_auth_rejected_total` rising rapidly.
 
 **Steps**:
-1. Check network stats: `curl ... coc_getNetworkStats` → review `authRejected` counts.
+1. Check network stats: `curl ... pali_getNetworkStats` → review `authRejected` counts.
 2. Identify source IPs: check node logs for rejected auth attempts.
 3. If from known validator: check clock sync (`ntpq -p`); clock skew > 30s causes auth failures.
 4. If from unknown IPs: potential attack. Monitor but rely on rate limiting.
@@ -76,10 +76,10 @@ Alert received
 
 **Steps**:
 1. This is critical: a validator double-voted.
-2. Check BFT status: `curl ... coc_getBftStatus` → `equivocations` field.
+2. Check BFT status: `curl ... pali_getBftStatus` → `equivocations` field.
 3. Identify the validator from logs.
 4. Slashing should be automatic via BftSlashingHandler.
-5. Verify slash applied: check validator stake via `coc_getValidators`.
+5. Verify slash applied: check validator stake via `pali_getValidators`.
 6. If validator removed: verify network still has 2/3+ quorum for BFT.
 7. Document the incident for post-mortem.
 

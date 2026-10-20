@@ -2,13 +2,13 @@
  * Phase I4b — PoSe slashTotal chain scanner
  *
  * Wraps the I4a estimator (computeExpectedSlashTotal) with the on-chain
- * data fetch needed by `coc-relayer.ts:tryFinalizeV2`. Walks
+ * data fetch needed by `palimesh-relayer.ts:tryFinalizeV2`. Walks
  * `ChallengeRevealed` events emitted by `PoSeManagerV2` for an epoch's
  * window, filters by `challengeFaultConfirmed`, reads each offender's
  * bond + already-slashed amount, and feeds the resulting list into the
  * pure helper.
  *
- * The relayer activates this path when `COC_RELAYER_AUTO_SLASH=1`. When
+ * The relayer activates this path when `PALI_RELAYER_AUTO_SLASH=1`. When
  * off, the manifest's `slashTotal` field continues to be the source of
  * truth (today's behaviour). The scanner is a *fallback* when the
  * manifest generator hasn't been upgraded to compute slashTotal itself.

@@ -59,10 +59,10 @@ async function compileCounter(): Promise<{ abi: any[]; bytecode: string }> {
 }
 
 test("ethers provider deploys and traces contracts without custom patches", async () => {
-  const previousDebugEnv = process.env.COC_DEBUG_RPC
-  process.env.COC_DEBUG_RPC = "1"
+  const previousDebugEnv = process.env.PALI_DEBUG_RPC
+  process.env.PALI_DEBUG_RPC = "1"
 
-  const tempDir = await mkdtemp(join(tmpdir(), "coc-ethers-compat-"))
+  const tempDir = await mkdtemp(join(tmpdir(), "palimesh-ethers-compat-"))
   const evm = await EvmChain.create(CHAIN_ID)
   const engine = new PersistentChainEngine(
     {
@@ -149,7 +149,7 @@ test("ethers provider deploys and traces contracts without custom patches", asyn
     await engine.close()
     await p2p.stop?.()
     await rm(tempDir, { recursive: true, force: true })
-    if (previousDebugEnv === undefined) delete process.env.COC_DEBUG_RPC
-    else process.env.COC_DEBUG_RPC = previousDebugEnv
+    if (previousDebugEnv === undefined) delete process.env.PALI_DEBUG_RPC
+    else process.env.PALI_DEBUG_RPC = previousDebugEnv
   }
 })

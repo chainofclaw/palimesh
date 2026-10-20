@@ -140,7 +140,7 @@ test("ValidatorRegistryReader: handler exception does not break further dispatch
 })
 
 test("ValidatorRegistryReader: persist writes a parseable JSON sidecar with the scan cursor", async () => {
-  const dir = mkdtempSync(join(tmpdir(), "coc-vrr-persist-"))
+  const dir = mkdtempSync(join(tmpdir(), "palimesh-vrr-persist-"))
   try {
     const persistPath = join(dir, "state.json")
     const reader = new ValidatorRegistryReader({
@@ -166,7 +166,7 @@ test("ValidatorRegistryReader: hydrate picks up lastScannedBlock from a pre-exis
   // must pick up at that block, not re-scan from genesis. Without this the
   // reader walks the entire chain history on every node restart — at 88780
   // testnet height ~380k blocks, that's a 5+ min eth_getLogs storm.
-  const dir = mkdtempSync(join(tmpdir(), "coc-vrr-hydrate-"))
+  const dir = mkdtempSync(join(tmpdir(), "palimesh-vrr-hydrate-"))
   try {
     const persistPath = join(dir, "state.json")
     writeFileSync(persistPath, JSON.stringify({ lastScannedBlock: "67890" }) + "\n")
@@ -191,7 +191,7 @@ test("ValidatorRegistryReader: corrupted sidecar falls back to configured fromBl
   // to start. Fall back to `fromBlock` and re-scan; we'll catch up to head
   // on the next tick. Without this, a corrupted sidecar would brick the
   // node's BFT validator-set reader permanently until manual file deletion.
-  const dir = mkdtempSync(join(tmpdir(), "coc-vrr-corrupt-"))
+  const dir = mkdtempSync(join(tmpdir(), "palimesh-vrr-corrupt-"))
   try {
     const persistPath = join(dir, "state.json")
     writeFileSync(persistPath, "{ this is not valid json @@@", "utf-8")

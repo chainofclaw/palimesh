@@ -2,7 +2,7 @@
 
 > Six crisis scenarios with symptoms / diagnosis / recovery / rollback /
 > ops-handoff for each. Each scenario references the chaos memory file
-> [`coc-88780-2026-05-26-chaos-engineering-T1-T8.md`](https://github.com/chainofclaw/COC/blob/main/docs/coc-88780-2026-05-26-chaos-engineering-T1-T8.md)
+> [`coc-88780-2026-05-26-chaos-engineering-T1-T8.md`](https://github.com/palimesh/palimesh/blob/main/docs/coc-88780-2026-05-26-chaos-engineering-T1-T8.md)
 > (in `~/.claude/projects/.../memory/`) for proven recovery patterns
 > observed during prior chaos drills.
 
@@ -49,7 +49,7 @@ artifact recovery.
 ### Symptoms
 
 - Block height stops advancing across all reachable RPCs for > 60s
-- `coc_getBftStatus` shows the same round + phase across many polls
+- `pali_getBftStatus` shows the same round + phase across many polls
 - Most validators' logs show `Phase H15: proposer slot timeout, falling
   back` repeating
 
@@ -57,7 +57,7 @@ artifact recovery.
 
 ```bash
 # Step 1 — confirm height is stuck across the cluster
-for RPC in "https://rpc.chainofclaw.io" \
+for RPC in "https://rpc.palimesh.io" \
            "http://209.74.64.88:38780" \
            "http://159.198.36.3:28780" \
            "http://199.192.16.79:28780"; do
@@ -71,7 +71,7 @@ done
 # Step 2 — see what each validator thinks the round / phase is
 for RPC in <each validator>; do
   curl -s $RPC -H 'content-type: application/json' \
-    -d '{"jsonrpc":"2.0","id":1,"method":"coc_getBftStatus"}' | jq .result
+    -d '{"jsonrpc":"2.0","id":1,"method":"pali_getBftStatus"}' | jq .result
 done
 
 # Step 3 — identify which validator(s) are NOT participating
@@ -93,7 +93,7 @@ Symptoms map to causes:
 ### Recovery
 
 **For BFT-timeout stall (most common)**:
-- Identify the missing validator(s) via `coc_getBftStatus.validators` vs
+- Identify the missing validator(s) via `pali_getBftStatus.validators` vs
   active vote set
 - Bring missing validator(s) back online (see scenario 5 procedure)
 - Within 1 round (~3s after the last missing node rejoins), chain resumes
@@ -293,7 +293,7 @@ Public communication scheduled: <UTC>
 
 - All 6 validator RPCs unresponsive
 - Block production stopped
-- `https://rpc.chainofclaw.io` returns 503
+- `https://rpc.palimesh.io` returns 503
 
 ### Diagnosis
 
@@ -328,15 +328,15 @@ Procedure:
 ```bash
 # 1. SSH to each validator host + obs-1
 # 2. Run the parallel restart via the proven script:
-bash /tmp/coc-chaos-T8.sh   # if still present from chaos sprint
+bash /tmp/palimesh-chaos-T8.sh   # if still present from chaos sprint
 # OR reproduce inline:
 SSH_KEY=$HOME/.ssh/openclaw_server_key
-( ssh -i $SSH_KEY root@209.74.64.88   "systemctl restart coc-node@88" ) &
-( ssh -i $SSH_KEY root@159.198.44.136 "systemctl restart coc-node@1"  ) &
-( ssh -i $SSH_KEY root@199.192.16.79  "systemctl restart coc-node@88" ) &
-( ssh -i $SSH_KEY root@159.198.36.3   "systemctl restart coc-node@1"  ) &
-( ssh -i $SSH_KEY root@159.198.36.25  "systemctl restart coc-node@1"  ) &
-( ssh             bob@34.139.57.20      "sudo systemctl restart coc-node@1" ) &
+( ssh -i $SSH_KEY root@209.74.64.88   "systemctl restart palimesh-node@88" ) &
+( ssh -i $SSH_KEY root@159.198.44.136 "systemctl restart palimesh-node@1"  ) &
+( ssh -i $SSH_KEY root@199.192.16.79  "systemctl restart palimesh-node@88" ) &
+( ssh -i $SSH_KEY root@159.198.36.3   "systemctl restart palimesh-node@1"  ) &
+( ssh -i $SSH_KEY root@159.198.36.25  "systemctl restart palimesh-node@1"  ) &
+( ssh             bob@34.139.57.20      "sudo systemctl restart palimesh-node@1" ) &
 wait
 
 # 3. Wait 30s, probe block production
@@ -369,7 +369,7 @@ Last good height: <N>
 Suspected cause: <coordinated software bug | network outage | DDoS | unknown>
 Recovery path: <parallel restart | genesis bootstrap | engineering escalation>
 Estimated time-to-recover: <30 min for parallel restart>
-Public communication: <YES — status page update at chainofclaw.io/network>
+Public communication: <YES — status page update at palimesh.io/network>
 Owner: <ops lead>
 ```
 
@@ -393,7 +393,7 @@ Confirm the compromise scope:
 ### Recovery
 
 **Immediate (within minutes)**:
-1. **Stop the compromised validator node** (`systemctl stop coc-node@N`)
+1. **Stop the compromised validator node** (`systemctl stop palimesh-node@N`)
    — prevents the attacker from forcing a double-sign if they obtain the
    key copy
 2. **Voluntary unstake**: from the still-controlled key (in a clean
@@ -408,7 +408,7 @@ Confirm the compromise scope:
 4. **Wait 14 days** (`UNSTAKE_LOCKUP`). Cannot be shortened
 5. **Withdraw old stake** (`withdrawStake`) — this returns stake minus
    any slashes incurred during the lockup window
-6. **Re-stake with new key**: 32 COC from the fresh key, register a new
+6. **Re-stake with new key**: 32 PALI from the fresh key, register a new
    nodeId on the registry
 
 ### Rollback path
@@ -450,7 +450,7 @@ You're at fault, but you need to know HOW:
 1. Identify the two conflicting signed messages (`hashA`, `hashB`) from
    the `EquivocationProven` event:
    ```bash
-   curl -s https://rpc.chainofclaw.io \
+   curl -s https://rpc.palimesh.io \
      -H 'content-type: application/json' \
      -d "{\"jsonrpc\":\"2.0\",\"id\":1,\"method\":\"eth_getLogs\",\"params\":[{
        \"address\":\"0xa5dcE830e917176c1091fd6112F41E47692C510e\",
@@ -490,7 +490,7 @@ forward-only (steps above).
 
 ```
 [EQUIVOCATION SLASH] nodeId <ID>
-Slash amount: <amount> COC (10% of <remaining stake>)
+Slash amount: <amount> Palimesh (10% of <remaining stake>)
 Confused signatures: hashA=<...> hashB=<...> at height=<N>
 Root cause: <multi-node-same-key | software bug | unknown>
 Re-stake plan: <wait 14d, new key, re-stake>

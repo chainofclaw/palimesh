@@ -15,9 +15,9 @@
 
 set -euo pipefail
 
-NODE="${1:-coc-mn-node-2}"
+NODE="${1:-palimesh-mn-node-2}"
 DURATION_S="${2:-180}"
-NETWORK="coc-multinode"
+NETWORK="palimesh-multinode"
 
 if ! docker ps --format '{{.Names}}' | grep -q "^${NODE}\$"; then
   echo "ERROR: container ${NODE} not running"

@@ -1,6 +1,6 @@
 import { VM, createVM, runTx } from "@ethereumjs/vm"
 import { EVMError } from "@ethereumjs/evm"
-import { Hardfork, createCustomCommon, getPresetChainConfig } from "@ethereumjs/common"
+import { Hardfork, createCustomCommon } from "@ethereumjs/common"
 import { Account, Address, bytesToHex, hexToBytes, bigIntToBytes, bigIntToHex, setLengthLeft } from "@ethereumjs/util"
 import { createTxFromRLP, createLegacyTx } from "@ethereumjs/tx"
 import { createBlock } from "@ethereumjs/block"
@@ -11,15 +11,16 @@ import type { HardforkScheduleEntry } from "./config.ts"
 import type { CallTrace, CallTraceResult, RpcAccessListItem, TraceOptions, TraceStep, TransactionTrace, TxTraceResult } from "./trace-types.ts"
 import { RunTxWorkerPool, isSimpleTransfer, type PreloadedAccount } from "./runtx-worker-pool.ts"
 import { createLogger } from "./logger.ts"
+import { palimeshChainConfig } from "./chain-common.ts"
 
 const evmLog = createLogger("evm")
-// Opt-in (disabled by default): set COC_USE_RUNTX_WORKER=1 to route
+// Opt-in (disabled by default): set PALI_USE_RUNTX_WORKER=1 to route
 // simple transfers through a worker-thread runTx harness, where a
 // Worker.terminate() call can kill a hung Promise that Promise.race
 // cannot. Contract creation and contract calls always stay on the
 // main-thread path because the worker's in-memory state manager
 // would miss arbitrary SLOAD targets.
-const WORKER_ENABLED = process.env.COC_USE_RUNTX_WORKER === "1"
+const WORKER_ENABLED = process.env.PALI_USE_RUNTX_WORKER === "1"
 const sharedWorkerPool: RunTxWorkerPool | null = WORKER_ENABLED
   ? new RunTxWorkerPool(10_000, 3)
   : null
@@ -134,7 +135,7 @@ const BEACON_ROOTS_RUNTIME_CODE =
   "0x3373fffffffffffffffffffffffffffffffffffffffe14604d57602036146024575f5ffd5b5f35801560495762001fff810690815414603c575f5ffd5b62001fff01545f5260205ff35b5f5ffd5b62001fff42064281555f359062001fff015500"
 const ZERO_BEACON_ROOT = new Uint8Array(32)
 
-// #594 / #608: KZG point_evaluation precompile stub. COC runs Cancun-fork
+// #594 / #608: KZG point_evaluation precompile stub. Palimesh runs Cancun-fork
 // but does NOT initialise the EIP-4844 KZG trusted setup, so @ethereumjs/vm
 // omits the precompile from its registry. Pre-fix calls to 0x000…000a fell
 // through as a regular CALL to an empty-code address and returned `"0x"` —
@@ -156,7 +157,7 @@ function kzgPrecompileStub(input: { data: Uint8Array; gasLimit: bigint }) {
   if (input.gasLimit < KZG_GAS_COST) {
     return { exceptionError: new EVMError("out of gas"), executionGasUsed: input.gasLimit, returnValue: new Uint8Array() }
   }
-  const reason = "KZG point_evaluation not implemented on COC"
+  const reason = "KZG point_evaluation not implemented on Palimesh"
   const reasonBytes = new TextEncoder().encode(reason)
   const padded = new Uint8Array(Math.ceil(reasonBytes.length / 32) * 32)
   padded.set(reasonBytes)
@@ -175,7 +176,7 @@ function kzgPrecompileStub(input: { data: Uint8Array; gasLimit: bigint }) {
   }
 }
 
-const COC_CUSTOM_PRECOMPILES = [
+const PALI_CUSTOM_PRECOMPILES = [
   { address: KZG_PRECOMPILE_ADDRESS, function: kzgPrecompileStub },
 ] as const
 
@@ -211,12 +212,12 @@ export class EvmChain {
     stateManager?: unknown,
     opts?: { hardfork?: Hardfork; hardforkSchedule?: HardforkScheduleEntry[] },
   ): Promise<EvmChain> {
-    const base = getPresetChainConfig("mainnet")
+    const base = palimeshChainConfig()
     const hardfork = opts?.hardfork ?? Hardfork.Shanghai
-    const common = createCustomCommon({ chainId, networkId: chainId, name: "COC" }, base, {
+    const common = createCustomCommon({ chainId, networkId: chainId, name: "Palimesh" }, base, {
       hardfork,
     })
-    // #594 / #608: see module-level `kzgPrecompileStub` + `COC_CUSTOM_PRECOMPILES`
+    // #594 / #608: see module-level `kzgPrecompileStub` + `PALI_CUSTOM_PRECOMPILES`
     // comment for full context. Both the primary VM constructed here and every
     // historical/per-block VM constructed by `createVm()` MUST share the same
     // customPrecompiles list — pre-#608 only this site wired them in, so any
@@ -226,7 +227,7 @@ export class EvmChain {
     const vmOpts: Record<string, unknown> = {
       common,
       evmOpts: {
-        customPrecompiles: COC_CUSTOM_PRECOMPILES,
+        customPrecompiles: PALI_CUSTOM_PRECOMPILES,
       },
     }
     if (stateManager) {
@@ -1375,7 +1376,7 @@ export class EvmChain {
       common: this.createExecutionCommon(blockNumber),
       stateManager,
       evmOpts: {
-        customPrecompiles: COC_CUSTOM_PRECOMPILES,
+        customPrecompiles: PALI_CUSTOM_PRECOMPILES,
       },
     }
     return createVM(opts as Parameters<typeof createVM>[0])

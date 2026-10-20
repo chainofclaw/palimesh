@@ -1,4 +1,4 @@
-# COC Runtime Services (agent / relayer / reward-claim)
+# Palimesh Runtime Services (agent / relayer / reward-claim)
 FROM node:22-slim AS deps
 WORKDIR /app
 
@@ -31,8 +31,8 @@ COPY config.example.json ./
 COPY docker/runtime-entrypoint.sh /usr/local/bin/runtime-entrypoint.sh
 RUN chmod +x /usr/local/bin/runtime-entrypoint.sh
 
-ENV COC_DATA_DIR=/data/coc
-ENV COC_CONFIG=/data/coc/config.json
+ENV PALI_DATA_DIR=/data/coc
+ENV PALI_CONFIG=/data/coc/config.json
 
 # Pre-create + chown the directories that named volumes will mount onto.
 # When a named volume mounts an EMPTY directory, docker copies the image's
@@ -47,4 +47,4 @@ VOLUME /data/coc
 # the mounted volume on startup (see runtime-entrypoint.sh comment).
 # The script drops to uid 999 (coc) via `su` before exec'ing node.
 ENTRYPOINT ["/usr/local/bin/runtime-entrypoint.sh", "node", "--experimental-strip-types"]
-CMD ["runtime/coc-agent.ts"]
+CMD ["runtime/palimesh-agent.ts"]

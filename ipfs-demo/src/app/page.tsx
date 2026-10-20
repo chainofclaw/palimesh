@@ -41,7 +41,7 @@ export default function HomePage() {
       <header className="mb-8 flex items-center justify-between">
         <div className="flex items-center gap-3">
           <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-blue-600 text-sm font-bold">
-            COC
+            Palimesh
           </div>
           <h1 className="text-xl font-bold">IPFS File Manager</h1>
         </div>
@@ -56,7 +56,7 @@ export default function HomePage() {
             onClick={wallet.switchChain}
             className="font-medium underline hover:text-yellow-300"
           >
-            switch to COC Chain
+            switch to Palimesh Chain
           </button>{" "}
           to upload files.
         </div>
@@ -66,7 +66,7 @@ export default function HomePage() {
       {!wallet.connected && (
         <div className="mb-8 rounded-xl border border-gray-800 bg-gray-900 px-6 py-12 text-center">
           <h2 className="mb-2 text-xl font-semibold text-gray-200">
-            Welcome to COC IPFS
+            Welcome to Palimesh IPFS
           </h2>
           <p className="mb-6 text-gray-400">
             Connect your MetaMask wallet to upload and manage files on the

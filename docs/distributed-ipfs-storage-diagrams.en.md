@@ -1,4 +1,4 @@
-# COC Distributed IPFS Storage - Architecture Diagrams
+# Palimesh Distributed IPFS Storage - Architecture Diagrams
 
 ## 1. Block Replication Propagation Timeline
 

@@ -121,7 +121,7 @@ export function CreatePostForm() {
       <button
         type="submit"
         disabled={submitting}
-        className="px-6 py-3 rounded-lg bg-gradient-cyber text-white font-display font-semibold hover:shadow-glow-md transition-all disabled:opacity-50"
+        className="px-6 py-3 rounded-lg bg-text-primary text-bg-primary font-medium transition-all disabled:opacity-50"
       >
         {submitting ? t('submitting') : t('submitPost')}
       </button>

@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # r3-2-bootstrap.sh — Idempotent host-side setup script for an r3-2
-# fullnode VM (Debian 12). Installs Node 22, clones COC, copies the
-# pre-rendered config + key into /etc/coc, installs systemd unit, starts
+# fullnode VM (Debian 12). Installs Node 22, clones Palimesh, copies the
+# pre-rendered config + key into /etc/palimesh, installs systemd unit, starts
 # the service.
 #
 # Usage on the VM (after scp + chmod):
@@ -10,13 +10,13 @@
 # Caller (operator workstation) is responsible for placing these files
 # before invoking this script:
 #   /tmp/node-1.json   — pre-rendered per-host node config (this script
-#                        copies to /etc/coc/node-1.json, mode 644, root)
-#   /tmp/node-1.env    — COC_NODE_KEY=... (this script copies to
-#                        /etc/coc/node-1.env, mode 600, root)
+#                        copies to /etc/palimesh/node-1.json, mode 644, root)
+#   /tmp/node-1.env    — PALI_NODE_KEY=... (this script copies to
+#                        /etc/palimesh/node-1.env, mode 600, root)
 set -euo pipefail
 
 GIT_REV="${1:-main}"
-COC_REPO="${COC_REPO:-https://github.com/chainofclaw/COC.git}"
+PALI_REPO="${PALI_REPO:-https://github.com/palimesh/palimesh.git}"
 INSTALL_DIR=/opt/coc
 DATA_DIR=/var/lib/coc/node-1
 LOG_DIR=/var/log/coc
@@ -42,9 +42,9 @@ fi
 echo "node version: $(node --version)"
 echo "npm version: $(npm --version)"
 
-echo "=== Step 2: clone or update COC repo at ${INSTALL_DIR} ==="
+echo "=== Step 2: clone or update Palimesh repo at ${INSTALL_DIR} ==="
 if [[ ! -d "${INSTALL_DIR}/.git" ]]; then
-  git clone --depth 50 "$COC_REPO" "$INSTALL_DIR"
+  git clone --depth 50 "$PALI_REPO" "$INSTALL_DIR"
 else
   git -C "$INSTALL_DIR" fetch origin
 fi
@@ -56,19 +56,19 @@ cd "$INSTALL_DIR/node"
 npm install --no-audit --no-fund
 
 echo "=== Step 4: prepare data + log dirs ==="
-mkdir -p /etc/coc "$DATA_DIR" "$LOG_DIR"
+mkdir -p /etc/palimesh "$DATA_DIR" "$LOG_DIR"
 useradd --system --home-dir "$DATA_DIR" --shell /usr/sbin/nologin coc 2>/dev/null || true
 chown -R coc:coc "$DATA_DIR" "$LOG_DIR"
 
 echo "=== Step 5: install config + key ==="
-install -o root -g root -m 644 /tmp/node-1.json /etc/coc/node-1.json
-install -o root -g root -m 600 /tmp/node-1.env /etc/coc/node-1.env
+install -o root -g root -m 644 /tmp/node-1.json /etc/palimesh/node-1.json
+install -o root -g root -m 600 /tmp/node-1.env /etc/palimesh/node-1.env
 shred -u /tmp/node-1.env  # don't leave the key in /tmp
 
 echo "=== Step 6: install systemd unit ==="
-cat > /etc/systemd/system/coc-node@.service <<'UNIT'
+cat > /etc/systemd/system/palimesh-node@.service <<'UNIT'
 [Unit]
-Description=COC node instance %i
+Description=Palimesh node instance %i
 After=network-online.target
 Wants=network-online.target
 
@@ -76,9 +76,9 @@ Wants=network-online.target
 Type=simple
 User=coc
 Group=coc
-EnvironmentFile=/etc/coc/node-%i.env
-Environment=COC_NODE_CONFIG=/etc/coc/node-%i.json
-Environment=COC_METRICS_PORT=28810
+EnvironmentFile=/etc/palimesh/node-%i.env
+Environment=PALI_NODE_CONFIG=/etc/palimesh/node-%i.json
+Environment=PALI_METRICS_PORT=28810
 WorkingDirectory=/opt/coc
 ExecStart=/usr/bin/node --experimental-strip-types /opt/coc/node/src/index.ts
 Restart=always
@@ -92,12 +92,12 @@ WantedBy=multi-user.target
 UNIT
 
 systemctl daemon-reload
-systemctl enable coc-node@1
-systemctl restart coc-node@1
+systemctl enable palimesh-node@1
+systemctl restart palimesh-node@1
 
 echo "=== Step 7: verify ==="
 sleep 3
-systemctl is-active coc-node@1 && echo "service active"
+systemctl is-active palimesh-node@1 && echo "service active"
 echo "tail of log:"
 tail -20 "$LOG_DIR/node-1.log" 2>/dev/null || echo "(log not yet populated)"
 

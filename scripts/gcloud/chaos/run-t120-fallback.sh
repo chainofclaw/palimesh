@@ -33,7 +33,7 @@ DRY=0
 [[ "${1:-}" == "--dry-run" ]] && DRY=1
 
 RUN_TS=$(date -u +%Y%m%dT%H%M%SZ)
-LOG_FILE="/tmp/coc-t120-fallback-${RUN_TS}.jsonl"
+LOG_FILE="/tmp/palimesh-t120-fallback-${RUN_TS}.jsonl"
 ACTION_LOG="${LOG_FILE}.actions"
 echo "==> Run log: $LOG_FILE"
 echo "==> Action log: $ACTION_LOG"

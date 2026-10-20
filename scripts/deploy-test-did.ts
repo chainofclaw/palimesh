@@ -1,5 +1,5 @@
 /**
- * Deploy SoulRegistry + DIDRegistry + CidRegistry to COC testnet
+ * Deploy SoulRegistry + DIDRegistry + CidRegistry to Palimesh testnet
  * and run comprehensive DID functionality tests.
  *
  * Usage: node --experimental-strip-types scripts/deploy-test-did.ts [rpc_url]
@@ -41,7 +41,7 @@ async function deploy(name: string, args: unknown[] = []): Promise<ethers.BaseCo
 
 async function main() {
   console.log("══════════════════════════════════════════════════════")
-  console.log("  COC DID Contract Deploy + Test Suite")
+  console.log("  Palimesh DID Contract Deploy + Test Suite")
   console.log("══════════════════════════════════════════════════════")
   console.log(`  RPC: ${RPC}`)
   console.log(`  Height: ${await provider.getBlockNumber()}`)
@@ -193,15 +193,15 @@ async function main() {
   // ── Phase 5: DID RPC Integration ──
   console.log("\n── Phase 5: DID RPC Integration ──")
   console.log(`  Note: RPC DID methods need node restart with contract addresses:`)
-  console.log(`    COC_SOUL_REGISTRY_ADDRESS=${soulAddr}`)
-  console.log(`    COC_DID_REGISTRY_ADDRESS=${didAddr}`)
+  console.log(`    PALI_SOUL_REGISTRY_ADDRESS=${soulAddr}`)
+  console.log(`    PALI_DID_REGISTRY_ADDRESS=${didAddr}`)
 
   // Check if DID RPC methods are available (might not be configured yet)
   try {
-    const r = await provider.send("coc_resolveDid", [`did:coc:18780:${agentId}`])
-    pass("coc_resolveDid", JSON.stringify(r).slice(0, 60))
+    const r = await provider.send("pali_resolveDid", [`did:coc:18780:${agentId}`])
+    pass("pali_resolveDid", JSON.stringify(r).slice(0, 60))
   } catch (e: any) {
-    pass("coc_resolveDid", `not configured (expected before restart)`)
+    pass("pali_resolveDid", `not configured (expected before restart)`)
   }
 
   // ── Phase 6: Node Sync Check ──

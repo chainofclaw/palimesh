@@ -38,7 +38,7 @@ export default async function AddressPage({ params }: AddressPageProps) {
   // Fetch contract deployment info if this is a contract
   let contractMeta: ContractMeta | null = null
   if (isContract) {
-    contractMeta = await rpcCall<ContractMeta | null>('coc_getContractInfo', [address]).catch(() => null)
+    contractMeta = await rpcCall<ContractMeta | null>('pali_getContractInfo', [address]).catch(() => null)
   }
 
   return (

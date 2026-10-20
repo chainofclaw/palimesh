@@ -4,7 +4,7 @@
  * Since gen-5 (UUPS conversion), PoSeManagerV2 lives behind a proxy. To ship
  * a code change, this script compiles the new implementation, validates it
  * against the storage layout the OpenZeppelin upgrades plugin recorded in
- * `contracts/.openzeppelin/coc-88780.json`, and calls `upgradeToAndCall` on
+ * `contracts/.openzeppelin/palimesh-88780.json`, and calls `upgradeToAndCall` on
  * the existing proxy.
  *
  * The upgrade tx must be sent by the proxy's `owner` — which after the gen-5
@@ -21,7 +21,7 @@
  *                           if the deployer is not the owner. Use multisig
  *                           tooling to construct the tx if needed.
  *   POSEV2_PROXY_ADDR     — required; the existing PoSeManagerV2 proxy.
- *   COC_RPC_URL / COC_CHAIN_ID
+ *   PALI_RPC_URL / PALI_CHAIN_ID
  */
 const { ethers, upgrades } = require("hardhat")
 const { assertSafeDeployer } = require("./preflight.js")
@@ -47,7 +47,7 @@ async function main() {
   const NewFactory = await ethers.getContractFactory("PoSeManagerV2")
 
   // upgradeProxy will:
-  //   1. validate storage layout against contracts/.openzeppelin/coc-88780.json
+  //   1. validate storage layout against contracts/.openzeppelin/palimesh-88780.json
   //   2. deploy the new implementation if its bytecode hash differs
   //   3. call proxy.upgradeToAndCall(newImpl, "") — this requires the caller
   //      to be the proxy's `owner` (multisig in gen-5). If the deployer is

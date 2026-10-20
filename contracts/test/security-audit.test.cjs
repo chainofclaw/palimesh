@@ -1,5 +1,5 @@
 /**
- * Security Audit Tests for COC Governance & Settlement Contracts
+ * Security Audit Tests for Palimesh Governance & Settlement Contracts
  *
  * Covers: reentrancy, access control, parameter boundaries, replay protection,
  * bicameral voting, proposal lifecycle, arbitrary call risks, slash edge cases.

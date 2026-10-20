@@ -1,4 +1,4 @@
-// COC Testnet Faucet HTTP Server
+// Palimesh Testnet Faucet HTTP Server
 import { createServer, type IncomingMessage, type ServerResponse } from "node:http"
 import { readFileSync } from "node:fs"
 import { join, dirname } from "node:path"
@@ -9,18 +9,18 @@ import { Faucet, FaucetError } from "./faucet.ts"
 const __dirname = dirname(fileURLToPath(import.meta.url))
 const INDEX_HTML = readFileSync(join(__dirname, "..", "public", "index.html"), "utf-8")
 
-const PORT = Number(process.env.COC_FAUCET_PORT ?? 3003)
-const BIND = process.env.COC_FAUCET_BIND ?? "0.0.0.0"
+const PORT = Number(process.env.PALI_FAUCET_PORT ?? 3003)
+const BIND = process.env.PALI_FAUCET_BIND ?? "0.0.0.0"
 
 const faucet = new Faucet({
-  rpcUrl: process.env.COC_FAUCET_RPC_URL ?? "http://127.0.0.1:18780",
-  privateKey: process.env.COC_FAUCET_PRIVATE_KEY ?? (() => {
-    console.error("COC_FAUCET_PRIVATE_KEY environment variable is required")
+  rpcUrl: process.env.PALI_FAUCET_RPC_URL ?? "http://127.0.0.1:18780",
+  privateKey: process.env.PALI_FAUCET_PRIVATE_KEY ?? (() => {
+    console.error("PALI_FAUCET_PRIVATE_KEY environment variable is required")
     process.exit(1)
   })(),
-  dripAmountEth: process.env.COC_FAUCET_DRIP_AMOUNT ?? "10",
-  dailyGlobalLimitEth: process.env.COC_FAUCET_DAILY_LIMIT ?? "10000",
-  perAddressCooldownMs: Number(process.env.COC_FAUCET_COOLDOWN_MS ?? 86_400_000),
+  dripAmountEth: process.env.PALI_FAUCET_DRIP_AMOUNT ?? "10",
+  dailyGlobalLimitEth: process.env.PALI_FAUCET_DAILY_LIMIT ?? "10000",
+  perAddressCooldownMs: Number(process.env.PALI_FAUCET_COOLDOWN_MS ?? 86_400_000),
 })
 
 // Simple IP-based rate limiter
@@ -164,7 +164,7 @@ const server = createServer(async (req: IncomingMessage, res: ServerResponse) =>
       jsonResponse(res, 200, {
         txHash: result.txHash,
         amount: result.amount,
-        unit: "COC",
+        unit: "PALI",
       })
       return
     }
@@ -181,7 +181,7 @@ const server = createServer(async (req: IncomingMessage, res: ServerResponse) =>
 })
 
 server.listen(PORT, BIND, () => {
-  console.log(`COC Faucet server listening on ${BIND}:${PORT}`)
+  console.log(`Palimesh Faucet server listening on ${BIND}:${PORT}`)
   console.log(`Faucet address: ${faucet.address}`)
 })
 

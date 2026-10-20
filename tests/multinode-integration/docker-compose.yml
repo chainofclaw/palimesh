@@ -15,7 +15,7 @@ services:
     build:
       context: ../..
       dockerfile: docker/Dockerfile.node
-    container_name: coc-mn-node-1
+    container_name: palimesh-mn-node-1
     hostname: node-1
     ports:
       - "38780:18780"   # RPC
@@ -24,10 +24,10 @@ services:
       - ./configs/node-1.json:/data/coc/node-config.json:ro
       - mn-node1-data:/data/coc
     environment:
-      - COC_DATA_DIR=/data/coc
-      - COC_BFT_AUTO_RECOVERY=1
+      - PALI_DATA_DIR=/data/coc
+      - PALI_BFT_AUTO_RECOVERY=1
     networks:
-      - coc-multinode
+      - palimesh-multinode
     restart: unless-stopped
     healthcheck:
       test: ["CMD-SHELL", "curl -fsS http://localhost:18780 -X POST -H 'Content-Type: application/json' -d '{\"jsonrpc\":\"2.0\",\"method\":\"eth_blockNumber\",\"params\":[],\"id\":1}' || exit 1"]
@@ -39,7 +39,7 @@ services:
     build:
       context: ../..
       dockerfile: docker/Dockerfile.node
-    container_name: coc-mn-node-2
+    container_name: palimesh-mn-node-2
     hostname: node-2
     ports:
       - "38782:18780"
@@ -48,10 +48,10 @@ services:
       - ./configs/node-2.json:/data/coc/node-config.json:ro
       - mn-node2-data:/data/coc
     environment:
-      - COC_DATA_DIR=/data/coc
-      - COC_BFT_AUTO_RECOVERY=1
+      - PALI_DATA_DIR=/data/coc
+      - PALI_BFT_AUTO_RECOVERY=1
     networks:
-      - coc-multinode
+      - palimesh-multinode
     restart: unless-stopped
     healthcheck:
       test: ["CMD-SHELL", "curl -fsS http://localhost:18780 -X POST -H 'Content-Type: application/json' -d '{\"jsonrpc\":\"2.0\",\"method\":\"eth_blockNumber\",\"params\":[],\"id\":1}' || exit 1"]
@@ -63,7 +63,7 @@ services:
     build:
       context: ../..
       dockerfile: docker/Dockerfile.node
-    container_name: coc-mn-node-3
+    container_name: palimesh-mn-node-3
     hostname: node-3
     ports:
       - "38784:18780"
@@ -72,10 +72,10 @@ services:
       - ./configs/node-3.json:/data/coc/node-config.json:ro
       - mn-node3-data:/data/coc
     environment:
-      - COC_DATA_DIR=/data/coc
-      - COC_BFT_AUTO_RECOVERY=1
+      - PALI_DATA_DIR=/data/coc
+      - PALI_BFT_AUTO_RECOVERY=1
     networks:
-      - coc-multinode
+      - palimesh-multinode
     restart: unless-stopped
     healthcheck:
       test: ["CMD-SHELL", "curl -fsS http://localhost:18780 -X POST -H 'Content-Type: application/json' -d '{\"jsonrpc\":\"2.0\",\"method\":\"eth_blockNumber\",\"params\":[],\"id\":1}' || exit 1"]
@@ -87,7 +87,7 @@ services:
     build:
       context: ../..
       dockerfile: docker/Dockerfile.node
-    container_name: coc-mn-sync
+    container_name: palimesh-mn-sync
     hostname: sync-node
     ports:
       - "38786:18780"
@@ -96,9 +96,9 @@ services:
       - ./configs/sync-node.json:/data/coc/node-config.json:ro
       - mn-sync-data:/data/coc
     environment:
-      - COC_DATA_DIR=/data/coc
+      - PALI_DATA_DIR=/data/coc
     networks:
-      - coc-multinode
+      - palimesh-multinode
     restart: unless-stopped
     depends_on:
       node-1:
@@ -115,6 +115,6 @@ volumes:
   mn-sync-data:
 
 networks:
-  coc-multinode:
+  palimesh-multinode:
     driver: bridge
-    name: coc-multinode
+    name: palimesh-multinode

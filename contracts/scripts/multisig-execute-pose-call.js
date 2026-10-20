@@ -9,8 +9,8 @@
  *   - other one-off owner-only calls that aren't proxy upgrades
  *
  * USAGE
- *   COC_RPC_URL=https://clawchain.io/api/testnet/rpc \
- *   COC_CHAIN_ID=88780 \
+ *   PALI_RPC_URL=https://palimesh.io/api/testnet/rpc \
+ *   PALI_CHAIN_ID=88780 \
  *   DEPLOYER_PRIVATE_KEY=0x<...> \
  *   PHASE_B_INPUT=tmp/<your-prepared.json> \
  *   npx hardhat run scripts/multisig-execute-pose-call.js --network coc

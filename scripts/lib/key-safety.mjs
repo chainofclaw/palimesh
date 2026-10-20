@@ -35,7 +35,7 @@ export function isLocalOrDevnetRpc(rpcUrl) {
   try {
     const parsed = new URL(rpcUrl)
     const host = parsed.hostname.toLowerCase()
-    return LOCAL_HOSTS.has(host) || /^node-\d+$/.test(host) || /^coc-node-\d+$/.test(host)
+    return LOCAL_HOSTS.has(host) || /^node-\d+$/.test(host) || /^palimesh-node-\d+$/.test(host)
   } catch {
     return false
   }

@@ -30,8 +30,8 @@ interface ProposalItem {
 
 export default async function GovernancePage() {
   const [daoStats, proposals] = await Promise.all([
-    rpcCall<DaoStats>('coc_getDaoStats').catch(() => null),
-    rpcCall<ProposalItem[]>('coc_getDaoProposals').catch(() => []),
+    rpcCall<DaoStats>('pali_getDaoStats').catch(() => null),
+    rpcCall<ProposalItem[]>('pali_getDaoProposals').catch(() => []),
   ])
 
   const governanceEnabled = daoStats?.enabled ?? false
@@ -62,8 +62,8 @@ export default async function GovernancePage() {
       {/* Summary cards */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         <StatCard label="Active Validators" value={String(daoStats?.activeValidators ?? 0)} />
-        <StatCard label="Total Stake" value={`${formatStake(totalStake)} COC`} />
-        <StatCard label="Treasury" value={`${formatStake(treasuryBalance)} COC`} />
+        <StatCard label="Total Stake" value={`${formatStake(totalStake)} Palimesh`} />
+        <StatCard label="Treasury" value={`${formatStake(treasuryBalance)} Palimesh`} />
         <StatCard
           label="Proposals"
           value={`${daoStats?.pendingProposals ?? 0} pending / ${daoStats?.totalProposals ?? 0} total`}
@@ -81,7 +81,7 @@ export default async function GovernancePage() {
                 <div className="mt-1 text-lg font-bold">{data.members} members</div>
                 {data.totalStake && (
                   <div className="text-xs text-gray-400 font-mono">
-                    {formatStake(BigInt(data.totalStake))} COC
+                    {formatStake(BigInt(data.totalStake))} Palimesh
                   </div>
                 )}
               </div>
@@ -152,7 +152,7 @@ function ProposalTable({ proposals, currentEpoch }: { proposals: ProposalItem[];
                     <span className="text-gray-500">{p.targetId}</span>
                   )}
                   {p.stakeAmount && (
-                    <div className="text-xs text-gray-400">{formatStake(BigInt(p.stakeAmount))} COC</div>
+                    <div className="text-xs text-gray-400">{formatStake(BigInt(p.stakeAmount))} Palimesh</div>
                   )}
                 </td>
                 <td className="px-4 py-3 text-sm font-mono">

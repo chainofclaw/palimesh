@@ -9,7 +9,7 @@
  * The bridge is plumbing-only: encoding evidence to ABI calldata,
  * deriving the target nodeId from the validator address, and providing
  * a single `buildSubmitEvidenceCall` helper that callers (e.g.
- * coc-relayer.ts tick) can use to construct a transaction.
+ * palimesh-relayer.ts tick) can use to construct a transaction.
  *
  * It does NOT submit the tx itself — the caller owns wallet/signer
  * concerns, gas pricing, retry, and idempotency. That separation keeps

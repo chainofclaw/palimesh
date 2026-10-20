@@ -121,7 +121,7 @@ export class RuntimeNodeOpsController {
       const response = await requestJson(this.options.nodeUrl, "POST", {
         jsonrpc: "2.0",
         id: 1,
-        method: "coc_getNetworkStats",
+        method: "pali_getNetworkStats",
         params: [],
       })
       const latencyMs = Math.max(1, Date.now() - startedAt)

@@ -10,18 +10,18 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 . "$SCRIPT_DIR/_lib.sh"
 require_gcloud
 
-PROJ="$COC_GCP_PROJECT"
-NET="$COC_GCP_NETWORK"
-SUBNET="$COC_GCP_SUBNET"
+PROJ="$PALI_GCP_PROJECT"
+NET="$PALI_GCP_NETWORK"
+SUBNET="$PALI_GCP_SUBNET"
 
-if [[ -z "${COC_GCP_OPERATOR_IP_CIDR:-}" || "$COC_GCP_OPERATOR_IP_CIDR" == "REPLACE_WITH_YOUR_OPERATOR_IP/32" ]]; then
-  echo "ERROR: set COC_GCP_OPERATOR_IP_CIDR to your operator IP/CIDR before creating management firewall rules." >&2
+if [[ -z "${PALI_GCP_OPERATOR_IP_CIDR:-}" || "$PALI_GCP_OPERATOR_IP_CIDR" == "REPLACE_WITH_YOUR_OPERATOR_IP/32" ]]; then
+  echo "ERROR: set PALI_GCP_OPERATOR_IP_CIDR to your operator IP/CIDR before creating management firewall rules." >&2
   exit 3
 fi
 
-if [[ "$COC_GCP_OPERATOR_IP_CIDR" == "0.0.0.0/0" && "${COC_GCP_ALLOW_OPEN_OPERATOR_CIDR:-0}" != "1" ]]; then
+if [[ "$PALI_GCP_OPERATOR_IP_CIDR" == "0.0.0.0/0" && "${PALI_GCP_ALLOW_OPEN_OPERATOR_CIDR:-0}" != "1" ]]; then
   echo "ERROR: refusing to open RPC/SSH/metrics management ports to 0.0.0.0/0." >&2
-  echo "       Set COC_GCP_ALLOW_OPEN_OPERATOR_CIDR=1 only for an isolated lab network." >&2
+  echo "       Set PALI_GCP_ALLOW_OPEN_OPERATOR_CIDR=1 only for an isolated lab network." >&2
   exit 3
 fi
 
@@ -58,8 +58,8 @@ if ! gcloud compute firewall-rules describe "${NET}-rpc" --project="$PROJ" >/dev
     --direction=INGRESS \
     --action=ALLOW \
     --rules=tcp:28780-28781 \
-    --source-ranges="$COC_GCP_OPERATOR_IP_CIDR" \
-    --target-tags=coc-fullnode
+    --source-ranges="$PALI_GCP_OPERATOR_IP_CIDR" \
+    --target-tags=palimesh-fullnode
 else
   echo "   ${NET}-rpc (already exists)"
 fi
@@ -73,7 +73,7 @@ if ! gcloud compute firewall-rules describe "${NET}-p2p" --project="$PROJ" >/dev
     --action=ALLOW \
     --rules=tcp:29780,tcp:29781,tcp:28786 \
     --source-ranges=0.0.0.0/0 \
-    --target-tags=coc-fullnode
+    --target-tags=palimesh-fullnode
 else
   echo "   ${NET}-p2p (already exists)"
 fi
@@ -86,8 +86,8 @@ if ! gcloud compute firewall-rules describe "${NET}-ssh" --project="$PROJ" >/dev
     --direction=INGRESS \
     --action=ALLOW \
     --rules=tcp:22 \
-    --source-ranges="$COC_GCP_OPERATOR_IP_CIDR" \
-    --target-tags=coc-fullnode
+    --source-ranges="$PALI_GCP_OPERATOR_IP_CIDR" \
+    --target-tags=palimesh-fullnode
 else
   echo "   ${NET}-ssh (already exists)"
 fi
@@ -100,8 +100,8 @@ if ! gcloud compute firewall-rules describe "${NET}-metrics" --project="$PROJ" >
     --direction=INGRESS \
     --action=ALLOW \
     --rules=tcp:9101 \
-    --source-ranges="$COC_GCP_OPERATOR_IP_CIDR" \
-    --target-tags=coc-fullnode
+    --source-ranges="$PALI_GCP_OPERATOR_IP_CIDR" \
+    --target-tags=palimesh-fullnode
 else
   echo "   ${NET}-metrics (already exists)"
 fi

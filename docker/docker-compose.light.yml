@@ -1,8 +1,8 @@
-# COC light peer profile (Phase D1).
+# Palimesh light peer profile (Phase D1).
 #
 # Brings up 1-2 docker light peers that join the Prowl testnet as observers
 # (no BFT participation). Each container caps its IPFS blockstore at 200MB
-# via `COC_IPFS_MAX_BYTES` and runs in `nodeMode=light` to keep the LevelDB
+# via `PALI_IPFS_MAX_BYTES` and runs in `nodeMode=light` to keep the LevelDB
 # chain history at ~128 blocks.
 #
 # Targets:
@@ -17,7 +17,7 @@
 #   docker compose -f docker/docker-compose.light.yml down
 
 x-light-base: &light-base
-  image: ${COC_NODE_IMAGE:-coc-node}:${IMAGE_TAG:-phase-j-local-m1}
+  image: ${PALI_NODE_IMAGE:-palimesh-node}:${IMAGE_TAG:-phase-j-local-m1}
   build:
     context: ..
     dockerfile: docker/Dockerfile.node
@@ -32,7 +32,7 @@ x-light-base: &light-base
 services:
   light-1:
     <<: *light-base
-    container_name: coc-light-1
+    container_name: palimesh-light-1
     ports:
       - "38780:18780"   # RPC
       - "38781:18781"   # WS
@@ -52,17 +52,17 @@ services:
           size: 209715200
           mode: 0o1777
     environment:
-      - COC_DATA_DIR=/data/coc
-      - COC_NODE_CONFIG=/data/coc/node-config.json
-      - COC_NODE_KEY=${COC_LIGHT1_KEY:?set COC_LIGHT1_KEY in the deployment environment}
-      - COC_NODE_MODE=light
-      - COC_IPFS_MAX_BYTES=200000000
-      - COC_DEV_RELAXED_QUORUM=0
-      - COC_BFT_AUTO_RECOVERY=0
+      - PALI_DATA_DIR=/data/coc
+      - PALI_NODE_CONFIG=/data/coc/node-config.json
+      - PALI_NODE_KEY=${PALI_LIGHT1_KEY:?set PALI_LIGHT1_KEY in the deployment environment}
+      - PALI_NODE_MODE=light
+      - PALI_IPFS_MAX_BYTES=200000000
+      - PALI_DEV_RELAXED_QUORUM=0
+      - PALI_BFT_AUTO_RECOVERY=0
 
   light-2:
     <<: *light-base
-    container_name: coc-light-2
+    container_name: palimesh-light-2
     ports:
       - "38782:18780"
       - "38783:18781"
@@ -78,16 +78,16 @@ services:
           size: 209715200
           mode: 0o1777
     environment:
-      - COC_DATA_DIR=/data/coc
-      - COC_NODE_CONFIG=/data/coc/node-config.json
-      - COC_NODE_KEY=${COC_LIGHT2_KEY:?set COC_LIGHT2_KEY in the deployment environment}
-      - COC_NODE_MODE=light
-      - COC_IPFS_MAX_BYTES=200000000
-      - COC_DEV_RELAXED_QUORUM=0
-      - COC_BFT_AUTO_RECOVERY=0
+      - PALI_DATA_DIR=/data/coc
+      - PALI_NODE_CONFIG=/data/coc/node-config.json
+      - PALI_NODE_KEY=${PALI_LIGHT2_KEY:?set PALI_LIGHT2_KEY in the deployment environment}
+      - PALI_NODE_MODE=light
+      - PALI_IPFS_MAX_BYTES=200000000
+      - PALI_DEV_RELAXED_QUORUM=0
+      - PALI_BFT_AUTO_RECOVERY=0
 
 volumes:
   light1-data:
-    name: coc-light1-data
+    name: palimesh-light1-data
   light2-data:
-    name: coc-light2-data
+    name: palimesh-light2-data

@@ -10,7 +10,7 @@
 // IpfsBlockstore.put + DHT push-to-K wiring.
 //
 // See docs/phase-q-erasure-coding.md for the design and tracking issue
-// chainofclaw/COC#68 for the milestone breakdown.
+// palimesh/palimesh#68 for the milestone breakdown.
 
 import { createRequire } from "node:module"
 import { CID } from "multiformats/cid"

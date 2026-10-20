@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
-# COC Testnet Cron Stress Test
+# Palimesh Testnet Cron Stress Test
 # Runs every minute via cron, sends a batch of signed transactions and logs results.
 #
 # Install:
-#   crontab -e → * * * * * /root/clawd/COC/scripts/cron-stress.sh >> /var/log/coc-stress.log 2>&1
+#   crontab -e → * * * * * /root/clawd/Palimesh/scripts/cron-stress.sh >> /var/log/palimesh-stress.log 2>&1
 #
 # Each run sends 3 signed ETH transfers, waits up to 30s for confirmation,
 # checks node sync, and logs a single status line.
@@ -11,7 +11,7 @@
 set -uo pipefail
 
 # Prevent concurrent runs
-LOCKFILE="/tmp/coc-stress.lock"
+LOCKFILE="/tmp/palimesh-stress.lock"
 if [ -f "$LOCKFILE" ]; then
   pid=$(cat "$LOCKFILE" 2>/dev/null)
   if kill -0 "$pid" 2>/dev/null; then
@@ -21,11 +21,11 @@ fi
 echo $$ > "$LOCKFILE"
 trap 'rm -f "$LOCKFILE"' EXIT
 
-RPC_URL="${COC_STRESS_RPC:-http://127.0.0.1:28780}"
-LOG_DIR="/var/log/coc-stress"
-STATE_FILE="/tmp/coc-stress-state.json"
+RPC_URL="${PALI_STRESS_RPC:-http://127.0.0.1:28780}"
+LOG_DIR="/var/log/palimesh-stress"
+STATE_FILE="/tmp/palimesh-stress-state.json"
 NODE_BIN="$(which node 2>/dev/null || echo /usr/local/bin/node)"
-WORKER_DIR="/root/coc-stress"
+WORKER_DIR="/root/palimesh-stress"
 
 mkdir -p "$LOG_DIR"
 ts() { date -u +"%Y-%m-%dT%H:%M:%SZ"; }

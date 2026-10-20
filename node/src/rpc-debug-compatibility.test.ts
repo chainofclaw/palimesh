@@ -296,10 +296,10 @@ describe("RPC debug compatibility", () => {
   let engine: PersistentChainEngine
   let rpc: RpcModule
   const p2p = { receiveTx: async () => {} } as P2PNode
-  const originalDebugEnv = process.env.COC_DEBUG_RPC
+  const originalDebugEnv = process.env.PALI_DEBUG_RPC
 
   beforeEach(async () => {
-    process.env.COC_DEBUG_RPC = "1"
+    process.env.PALI_DEBUG_RPC = "1"
     rpc = await import("./rpc.ts")
     tmpDir = await mkdtemp(join(tmpdir(), "rpc-debug-compat-"))
     evm = await EvmChain.create(CHAIN_ID)
@@ -324,8 +324,8 @@ describe("RPC debug compatibility", () => {
   afterEach(async () => {
     await engine.close()
     await rm(tmpDir, { recursive: true, force: true }).catch(() => {})
-    if (originalDebugEnv === undefined) delete process.env.COC_DEBUG_RPC
-    else process.env.COC_DEBUG_RPC = originalDebugEnv
+    if (originalDebugEnv === undefined) delete process.env.PALI_DEBUG_RPC
+    else process.env.PALI_DEBUG_RPC = originalDebugEnv
   })
 
   it("debug_traceTransaction and trace_transaction expose replay-backed traces", async () => {
@@ -1271,7 +1271,7 @@ describe("RPC debug compatibility", () => {
     assert.equal(result.web3, "1.0")
     assert.equal(result.coc, "1.0")
     assert.equal(result.txpool, "1.0")
-    // debug/trace depend on COC_DEBUG_RPC env var (set in beforeEach)
+    // debug/trace depend on PALI_DEBUG_RPC env var (set in beforeEach)
     assert.equal(result.debug, "1.0")
     assert.equal(result.trace, "1.0")
   })
@@ -1427,7 +1427,7 @@ describe("RPC debug compatibility", () => {
     // `trace_transaction` (rpc.ts:1623) already pre-located + threw
     // -32004 "transaction not found", so callers using either family got
     // inconsistent codes for the same condition.  Geth returns -32000 for
-    // not-found; -32004 is COC's choice (already in use by trace_*) so
+    // not-found; -32004 is Palimesh's choice (already in use by trace_*) so
     // both families converge on the same code.
     const unknownHash = "0x" + "ab".repeat(32)
     let err: { code?: number; message?: string } | undefined

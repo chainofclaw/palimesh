@@ -83,6 +83,46 @@ export function computeEpochRewards(
   }
 }
 
+/**
+ * Storage-only reward split for the $MESH StorageRewardManager path.
+ *
+ * Allocates the whole `storagePool` across nodes by their storage weight
+ * (`storageWeight`: sqrt-decayed GB × success bps, thresholded, min-samples),
+ * then applies the same anti-hoarding soft cap. This is the "S" bucket of
+ * computeEpochRewards pulled out on its own — the uptime/relay ($PALI) path is
+ * untouched. Nodes with no qualifying storage proof get 0; if nobody qualifies
+ * the result is all-zero (caller should skip submitting an empty epoch).
+ */
+export function computeStorageRewards(
+  storagePool: bigint,
+  stats: EpochNodeStats[],
+  cfg: ScoringConfig = DEFAULT_SCORING_CONFIG,
+): EpochRewardResult {
+  if (storagePool < 0n) {
+    throw new Error("storagePool must be non-negative")
+  }
+
+  const rewardMap = new Map<Hex32, bigint>()
+  for (const s of stats) {
+    rewardMap.set(s.nodeId, 0n)
+  }
+
+  allocateBucket(rewardMap, stats, storagePool, (s) => storageWeight(s, cfg))
+  const capped = applySoftCap(rewardMap, cfg.softCapMultiplier)
+
+  const rewards: Record<Hex32, bigint> = Object.create(null) as Record<Hex32, bigint>
+  for (const [nodeId, value] of rewardMap.entries()) {
+    rewards[nodeId] = value
+  }
+
+  return {
+    rewards,
+    bucketRewards: { uptime: 0n, storage: storagePool, relay: 0n },
+    cappedNodes: [...capped.cappedNodes],
+    treasuryOverflow: capped.treasuryOverflow,
+  }
+}
+
 function splitBuckets(pool: bigint, cfg: ScoringConfig): { uptime: bigint; storage: bigint; relay: bigint } {
   const uptime = (pool * BigInt(cfg.uptimeBucketBps)) / BASIS_POINTS
   const storage = (pool * BigInt(cfg.storageBucketBps)) / BASIS_POINTS

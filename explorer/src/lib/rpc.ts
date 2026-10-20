@@ -3,8 +3,8 @@ import { getEffectiveRpcUrl } from './provider.ts'
 let rpcId = 1
 
 /**
- * Send a raw JSON-RPC call to the COC node.
- * Uses COC_RPC_URL on the server (SSR) and NEXT_PUBLIC_RPC_URL on the client,
+ * Send a raw JSON-RPC call to the Palimesh node.
+ * Uses PALI_RPC_URL on the server (SSR) and NEXT_PUBLIC_RPC_URL on the client,
  * matching the ethers.js provider to avoid data inconsistency.
  */
 export async function rpcCall<T = unknown>(method: string, params: unknown[] = []): Promise<T> {
@@ -58,5 +58,5 @@ export async function getTransactionsByAddress(
   limit = 50,
   reverse = true,
 ): Promise<AddressTx[]> {
-  return rpcCall<AddressTx[]>('coc_getTransactionsByAddress', [address, limit, reverse])
+  return rpcCall<AddressTx[]>('pali_getTransactionsByAddress', [address, limit, reverse])
 }

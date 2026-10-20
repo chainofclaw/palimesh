@@ -565,7 +565,7 @@ describe("DhtNetwork", () => {
 })
 
 // --- Phase C1.1: provider records + TTL.
-// See plans/coc-evm-abstract-turtle.md §C1.1. Locks in that
+// See plans/palimesh-evm-abstract-turtle.md §C1.1. Locks in that
 //   putProvider / findProviders form a content-routing layer on top of the
 //   Kademlia peer-routing table, and that TTL expiry both happens lazily
 //   on query (so callers never see stale entries) and actively on refresh.

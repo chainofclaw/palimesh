@@ -14,12 +14,12 @@
 # block's stateRoot to a poisoned value, restart.
 #
 # Usage: ./inject-stateroot-corruption.sh <node-name> [<height>]
-#   node-name: coc-mn-node-1 | coc-mn-node-2 | coc-mn-node-3
+#   node-name: palimesh-mn-node-1 | palimesh-mn-node-2 | palimesh-mn-node-3
 #   height:    block number to corrupt (default: 5)
 
 set -euo pipefail
 
-NODE="${1:-coc-mn-node-1}"
+NODE="${1:-palimesh-mn-node-1}"
 HEIGHT="${2:-5}"
 POISON_ROOT="0xdeadbeef00000000000000000000000000000000000000000000000000000000"
 
@@ -34,20 +34,20 @@ docker stop "${NODE}" >/dev/null
 # Stash the current stateRoot for diagnostic logging
 echo "Pre-corruption stateRoot at height ${HEIGHT}:"
 docker run --rm \
-  -v "$(docker volume ls --format '{{.Name}}' | grep "$(echo "${NODE}" | sed 's/coc-mn-/mn-/')-data" | head -1)":/data:ro \
+  -v "$(docker volume ls --format '{{.Name}}' | grep "$(echo "${NODE}" | sed 's/palimesh-mn-/mn-/')-data" | head -1)":/data:ro \
   -w /work \
   -v "$(pwd)/scripts":/work:ro \
   --entrypoint node \
-  ghcr.io/chainofclaw/coc-node:latest \
+  ghcr.io/palimesh/palimesh-node:latest \
   --experimental-strip-types /work/leveldb-poke.ts read "${HEIGHT}" || true
 
 echo "Injecting stateRoot=${POISON_ROOT} at height ${HEIGHT} on ${NODE}..."
 docker run --rm \
-  -v "$(docker volume ls --format '{{.Name}}' | grep "$(echo "${NODE}" | sed 's/coc-mn-/mn-/')-data" | head -1)":/data:rw \
+  -v "$(docker volume ls --format '{{.Name}}' | grep "$(echo "${NODE}" | sed 's/palimesh-mn-/mn-/')-data" | head -1)":/data:rw \
   -w /work \
   -v "$(pwd)/scripts":/work:ro \
   --entrypoint node \
-  ghcr.io/chainofclaw/coc-node:latest \
+  ghcr.io/palimesh/palimesh-node:latest \
   --experimental-strip-types /work/leveldb-poke.ts write "${HEIGHT}" "${POISON_ROOT}"
 
 echo "Restarting ${NODE}..."

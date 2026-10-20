@@ -162,7 +162,7 @@ export class Mempool {
     if (!tx.from) {
       throw new Error("invalid tx: missing sender")
     }
-    // Reject blob transactions (type 3) — COC has no blob sidecar support.
+    // Reject blob transactions (type 3) — Palimesh has no blob sidecar support.
     if (tx.type === 3) {
       throw new Error("blob transactions (type 3) are not supported")
     }
@@ -188,7 +188,7 @@ export class Mempool {
       )
     }
     // #638: reject a tx whose fee cap is below the MIN_BASE_FEE floor.
-    // COC's baseFee (base-fee.ts) can never decay below MIN_BASE_FEE, so a
+    // Palimesh's baseFee (base-fee.ts) can never decay below MIN_BASE_FEE, so a
     // tx whose maxFeePerGas (or legacy gasPrice) is under that floor can
     // NEVER pay baseFee and thus never be included in a block. Pre-fix
     // eth_sendRawTransaction still accepted it, returned a hash, and let it

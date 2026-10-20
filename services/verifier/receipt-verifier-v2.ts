@@ -69,7 +69,7 @@ export class ReceiptVerifierV2 {
     // so we never poison the nonce registry on a failed-sig attempt.
     // Same defensive ordering as receipt-verifier.ts:28. Currently this
     // path is reached only from local-trusted callers (pose-engine,
-    // coc-agent), so the attack isn't reachable today, but moving the
+    // palimesh-agent), so the attack isn't reachable today, but moving the
     // sig check first is fail-fast and survives any future externally-
     // reachable receipt endpoint.
 

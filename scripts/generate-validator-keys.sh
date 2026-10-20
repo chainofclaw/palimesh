@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Generate validator key pairs for COC testnet
+# Generate validator key pairs for Palimesh testnet
 # Usage: bash scripts/generate-validator-keys.sh [count] [output_dir]
 #
 # Outputs:
@@ -33,9 +33,9 @@ for (let i = 1; i <= count; i++) {
 
   // Per-validator .env (private, mode 0600)
   const env = [
-    '# COC Prowl Testnet - validator-' + i,
-    'COC_NODE_KEY=' + wallet.privateKey,
-    'COC_NODE_ID=' + addr,
+    '# Palimesh Prowl Testnet - validator-' + i,
+    'PALI_NODE_KEY=' + wallet.privateKey,
+    'PALI_NODE_ID=' + addr,
     '',
   ].join('\n');
 

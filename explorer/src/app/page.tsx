@@ -19,9 +19,9 @@ interface ChainStatsRpc {
 }
 
 async function getChainStats() {
-  // Use coc_chainStats for efficient server-side aggregation
+  // Use pali_chainStats for efficient server-side aggregation
   const [chainStats, gasPrice, syncing, peerCount] = await Promise.all([
-    rpcCall<ChainStatsRpc>('coc_chainStats').catch(() => null),
+    rpcCall<ChainStatsRpc>('pali_chainStats').catch(() => null),
     rpcCall<string>('eth_gasPrice').catch(() => '0x0'),
     rpcCall<boolean>('eth_syncing').catch(() => false),
     rpcCall<string>('net_peerCount').catch(() => '0x0'),
@@ -164,7 +164,7 @@ export default async function HomePage() {
           <p><span className="font-medium">HTTP RPC:</span> <code className="bg-blue-100 px-1.5 sm:px-2 py-0.5 sm:py-1 rounded text-[11px] sm:text-sm break-all">{RPC_URL}</code></p>
           <p><span className="font-medium">WebSocket:</span> <code className="bg-blue-100 px-1.5 sm:px-2 py-0.5 sm:py-1 rounded text-[11px] sm:text-sm break-all">{WS_URL}</code></p>
           <p><span className="font-medium">Chain ID:</span> <code className="bg-blue-100 px-1.5 sm:px-2 py-0.5 sm:py-1 rounded text-[11px] sm:text-sm">{stats.chainId} (0x{stats.chainId.toString(16)})</code></p>
-          <p><span className="font-medium">Network:</span> ChainOfClaw (COC)</p>
+          <p><span className="font-medium">Network:</span> Palimesh (Palimesh)</p>
         </div>
       </div>
     </div>

@@ -22,7 +22,7 @@ function sampleRecord(overrides: Partial<PendingChallengeRecord> = {}): PendingC
 }
 
 test("pending challenge store persists and reloads records", () => {
-  const dir = mkdtempSync(join(tmpdir(), "coc-pending-challenge-store-"))
+  const dir = mkdtempSync(join(tmpdir(), "palimesh-pending-challenge-store-"))
   const path = join(dir, "pending-challenges.json")
 
   const store = new PendingChallengeStore(path)
@@ -34,7 +34,7 @@ test("pending challenge store persists and reloads records", () => {
 })
 
 test("pending challenge store overwrites by commit hash", () => {
-  const dir = mkdtempSync(join(tmpdir(), "coc-pending-challenge-store-"))
+  const dir = mkdtempSync(join(tmpdir(), "palimesh-pending-challenge-store-"))
   const path = join(dir, "pending-challenges.json")
 
   const store = new PendingChallengeStore(path)
@@ -54,7 +54,7 @@ test("pending challenge store overwrites by commit hash", () => {
 })
 
 test("pending challenge store removes records and syncs disk", () => {
-  const dir = mkdtempSync(join(tmpdir(), "coc-pending-challenge-store-"))
+  const dir = mkdtempSync(join(tmpdir(), "palimesh-pending-challenge-store-"))
   const path = join(dir, "pending-challenges.json")
 
   const store = new PendingChallengeStore(path)

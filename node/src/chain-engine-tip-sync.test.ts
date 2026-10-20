@@ -202,7 +202,7 @@ test("PR-1G: verifyAndPromoteTipWithPeers — peer-quorum agrees, no demotion", 
   const { PersistentChainEngine } = await import("./chain-engine-persistent.ts")
   const { EvmChain } = await import("./evm.ts")
 
-  const dataDir = "/tmp/coc-test-pr1g-" + Math.random().toString(36).slice(2)
+  const dataDir = "/tmp/palimesh-test-pr1g-" + Math.random().toString(36).slice(2)
   const evm = new EvmChain({ chainId: 18780 })
   const engine = new PersistentChainEngine(
     {
@@ -249,7 +249,7 @@ test("PR-1G: verifyAndPromoteTipWithPeers — phantom mismatch demotes to backwa
   const { PersistentChainEngine } = await import("./chain-engine-persistent.ts")
   const { EvmChain } = await import("./evm.ts")
 
-  const dataDir = "/tmp/coc-test-pr1g-" + Math.random().toString(36).slice(2)
+  const dataDir = "/tmp/palimesh-test-pr1g-" + Math.random().toString(36).slice(2)
   const evm = new EvmChain({ chainId: 18780 })
   const engine = new PersistentChainEngine(
     {
@@ -300,7 +300,7 @@ test("PR-1G: verifyAndPromoteTipWithPeers — no peers responding keeps LATEST",
   const { PersistentChainEngine } = await import("./chain-engine-persistent.ts")
   const { EvmChain } = await import("./evm.ts")
 
-  const dataDir = "/tmp/coc-test-pr1g-" + Math.random().toString(36).slice(2)
+  const dataDir = "/tmp/palimesh-test-pr1g-" + Math.random().toString(36).slice(2)
   const evm = new EvmChain({ chainId: 18780 })
   const engine = new PersistentChainEngine(
     {
@@ -334,7 +334,7 @@ test("PR-1G: verifyAndPromoteTipWithPeers — fetchSnapshots throws falls back t
   const { PersistentChainEngine } = await import("./chain-engine-persistent.ts")
   const { EvmChain } = await import("./evm.ts")
 
-  const dataDir = "/tmp/coc-test-pr1g-" + Math.random().toString(36).slice(2)
+  const dataDir = "/tmp/palimesh-test-pr1g-" + Math.random().toString(36).slice(2)
   const evm = new EvmChain({ chainId: 18780 })
   const engine = new PersistentChainEngine(
     {
@@ -367,7 +367,7 @@ test("PR-1K: pruneStalePhantoms removes blocks above tip and with invalid propos
   const { PersistentChainEngine } = await import("./chain-engine-persistent.ts")
   const { EvmChain } = await import("./evm.ts")
 
-  const dataDir = "/tmp/coc-test-pr1k-" + Math.random().toString(36).slice(2)
+  const dataDir = "/tmp/palimesh-test-pr1k-" + Math.random().toString(36).slice(2)
   const evm = new EvmChain({ chainId: 18780 })
   const engine = new PersistentChainEngine(
     {
@@ -432,7 +432,7 @@ test("PR-1K: pruneStalePhantoms is idempotent (second call prunes 0)", async () 
   const { PersistentChainEngine } = await import("./chain-engine-persistent.ts")
   const { EvmChain } = await import("./evm.ts")
 
-  const dataDir = "/tmp/coc-test-pr1k-" + Math.random().toString(36).slice(2)
+  const dataDir = "/tmp/palimesh-test-pr1k-" + Math.random().toString(36).slice(2)
   const evm = new EvmChain({ chainId: 18780 })
   const engine = new PersistentChainEngine(
     {
@@ -463,7 +463,7 @@ test("PR-1G: verifyAndPromoteTipWithPeers — no local tip is a no-op", async ()
   const { PersistentChainEngine } = await import("./chain-engine-persistent.ts")
   const { EvmChain } = await import("./evm.ts")
 
-  const dataDir = "/tmp/coc-test-pr1g-" + Math.random().toString(36).slice(2)
+  const dataDir = "/tmp/palimesh-test-pr1g-" + Math.random().toString(36).slice(2)
   const evm = new EvmChain({ chainId: 18780 })
   const engine = new PersistentChainEngine(
     {

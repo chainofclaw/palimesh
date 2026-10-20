@@ -2,7 +2,7 @@
 
 ## 概述
 
-AI Silicon Immortality 是 COC 用来保证 AI Agent 在宿主机故障、进程崩溃、节点迁移后仍能保留认知状态的一套基础设施。它把链上身份锚定、加密 IPFS 备份、增量状态快照和跨节点自动复活组合成一个统一系统。
+AI Silicon Immortality 是 Palimesh 用来保证 AI Agent 在宿主机故障、进程崩溃、节点迁移后仍能保留认知状态的一套基础设施。它把链上身份锚定、加密 IPFS 备份、增量状态快照和跨节点自动复活组合成一个统一系统。
 
 **核心保证：** AI Agent 的身份、记忆、对话历史和配置会持续备份到 IPFS，并在链上做完整性锚定。如果宿主机故障，最新状态可以从 IPFS 和链上状态恢复；如果一个合法的复活请求被送到载体节点，该载体可以自动恢复 Agent、启动进程、完成链上复活，并恢复心跳证明。
 
@@ -27,7 +27,7 @@ AI Silicon Immortality 是 COC 用来保证 AI Agent 在宿主机故障、进程
 └──────────────────────────┬──────────────────────────────────────┘
                            │ EIP-712 签名交易
 ┌──────────────────────────┴──────────────────────────────────────┐
-│                     coc-backup 扩展层                           │
+│                     palimesh-backup 扩展层                           │
 │                                                                 │
 │  ┌─────────────┐  ┌──────────────┐  ┌────────────────────────┐ │
 │  │  备份       │  │  恢复        │  │  载体守护进程          │ │
@@ -63,7 +63,7 @@ AI Silicon Immortality 是 COC 用来保证 AI Agent 在宿主机故障、进程
 | config | `auth.json`, `identity/device.json`, `openclaw.json`, `credentials/*` | 是（AES-256-GCM） | 敏感配置 |
 | memory | `MEMORY.md`, `memory/*.md`, `USER.md` | 可选（`encryptMemory`） | 长期与短期记忆 |
 | chat | `agents/*/sessions/*.jsonl`, `agents/*/sessions/sessions.json` | 否 | 对话历史 |
-| workspace | `workspace-state.json`, `AGENTS.md`, `.coc-backup/context-snapshot.json` | 否 | 工作区元数据 |
+| workspace | `workspace-state.json`, `AGENTS.md`, `.palimesh-backup/context-snapshot.json` | 否 | 工作区元数据 |
 | database | `memory/*.sqlite`, `memory/lancedb/*` | 是 | 向量索引、embedding 数据 |
 
 ### 二进制数据库处理
@@ -142,7 +142,7 @@ SQLite 和 LanceDB 文件在备份时可能仍在被写入。`binary-handler.ts`
 
 | 层级 | 来源 | 速度 | 持久性 |
 |------|------|------|--------|
-| 1. 本地索引 | `.coc-backup/cid-index.json` | <1ms | 重启后仍可用 |
+| 1. 本地索引 | `.palimesh-backup/cid-index.json` | <1ms | 重启后仍可用 |
 | 2. MFS | `/soul-backups/{agentId}/cid-map.json` | 50-200ms | 去中心化，可跨节点 |
 | 3. 链上 | `CidRegistry.resolveCid(bytes32)` | 200-500ms | 区块链永久保存 |
 
@@ -297,7 +297,7 @@ Owner: cancelRecovery(requestId) — owner 可随时中止
     "enabled": true,
     "carrierId": "0x...",
     "agentEntryScript": "/path/to/openclaw/entry.js",
-    "workDir": "/data/coc-resurrections",
+    "workDir": "/data/palimesh-resurrections",
     "watchedAgents": ["0xAgentId1", "0xAgentId2"],
     "pendingRequestIds": [
       { "requestId": "0x...", "agentId": "0x..." }
@@ -341,36 +341,36 @@ Owner: cancelRecovery(requestId) — owner 可随时中止
 ### 备份与恢复（Owner）
 
 ```bash
-coc-backup init [--agent-id] [--identity-cid] [--key-hash] [--max-offline]
-coc-backup backup [--full]
-coc-backup restore --manifest-cid <cid> [--target-dir <dir>] [--password <pwd>]
-coc-backup status [--json]
-coc-backup doctor [--json]
-coc-backup history [--limit <n>] [--json]
+palimesh-backup init [--agent-id] [--identity-cid] [--key-hash] [--max-offline]
+palimesh-backup backup [--full]
+palimesh-backup restore --manifest-cid <cid> [--target-dir <dir>] [--password <pwd>]
+palimesh-backup status [--json]
+palimesh-backup doctor [--json]
+palimesh-backup history [--limit <n>] [--json]
 ```
 
 ### 复活（Owner）
 
 ```bash
-coc-backup configure-resurrection --key-hash <hash> [--max-offline <sec>]
-coc-backup heartbeat
-coc-backup resurrect --carrier-id <id> --resurrection-key <key>
-coc-backup resurrection start|status|confirm|complete|cancel
+palimesh-backup configure-resurrection --key-hash <hash> [--max-offline <sec>]
+palimesh-backup heartbeat
+palimesh-backup resurrect --carrier-id <id> --resurrection-key <key>
+palimesh-backup resurrection start|status|confirm|complete|cancel
 ```
 
 ### Guardian 操作
 
 ```bash
-coc-backup guardian initiate --agent-id <id> --carrier-id <id>
-coc-backup guardian approve --request-id <id>
-coc-backup guardian status --request-id <id>
+palimesh-backup guardian initiate --agent-id <id> --carrier-id <id>
+palimesh-backup guardian approve --request-id <id>
+palimesh-backup guardian status --request-id <id>
 ```
 
 ### Carrier 管理
 
 ```bash
-coc-backup carrier register --carrier-id <id> --endpoint <url>
-coc-backup carrier submit-request --request-id <id> --agent-id <id>
+palimesh-backup carrier register --carrier-id <id> --endpoint <url>
+palimesh-backup carrier submit-request --request-id <id> --agent-id <id>
 ```
 
 ---
@@ -414,18 +414,18 @@ coc-backup carrier submit-request --request-id <id> --agent-id <id>
 
 ## 完整生命周期：从 Agent 自身视角看
 
-这一节描述的是当前代码库里**已经实现**的生命周期。它会用 Agent 视角来讲述，但每一步都对应 `SoulRegistry`、`coc-backup` 或 `node/src/did` 中真实存在的入口。
+这一节描述的是当前代码库里**已经实现**的生命周期。它会用 Agent 视角来讲述，但每一步都对应 `SoulRegistry`、`palimesh-backup` 或 `node/src/did` 中真实存在的入口。
 
 ### 范围澄清
 
 仓库里有两层相邻但不相同的能力：
 
-- **Soul / 备份 / 复活层**：`SoulRegistry.sol` + `extensions/coc-backup/`
+- **Soul / 备份 / 复活层**：`SoulRegistry.sol` + `extensions/palimesh-backup/`
 - **DID 解析层**：`contracts/contracts-src/governance/DIDRegistry.sol` + `node/src/did/*`
 
-第一层负责真正的初始化、备份、恢复和复活。第二层可以把同一个 `agentId` 解析成 W3C 风格的 `did:coc` 文档，但 `coc-backup init` **不会** 自动写入额外的 DIDRegistry 状态。换句话说：
+第一层负责真正的初始化、备份、恢复和复活。第二层可以把同一个 `agentId` 解析成 W3C 风格的 `did:coc` 文档，但 `palimesh-backup init` **不会** 自动写入额外的 DIDRegistry 状态。换句话说：
 
-- `coc-backup init` 创建的是 Agent 的链上 **soul identity basis**
+- `palimesh-backup init` 创建的是 Agent 的链上 **soul identity basis**
 - `did:coc:<agentId>` 可以随后由 DID resolver **推导并解析**
 - 更丰富的 DIDRegistry 方法是 **备份循环之外的独立层**
 
@@ -436,7 +436,7 @@ coc-backup carrier submit-request --request-id <id> --agent-id <id>
 **已实现流程**
 
 ```
-Owner 节点执行：coc-backup init [--key-hash <hash>] [--max-offline <sec>]
+Owner 节点执行：palimesh-backup init [--key-hash <hash>] [--max-offline <sec>]
   ↓
 1. 解析 agentId
    - 默认：deriveDefaultAgentId(ownerAddress)
@@ -456,8 +456,8 @@ Owner 节点执行：coc-backup init [--key-hash <hash>] [--max-offline <sec>]
    - scheduler.runBackup(true)
   ↓
 5. 写入本地元数据
-   - .coc-backup/state.json
-   - .coc-backup/latest-recovery.json
+   - .palimesh-backup/state.json
+   - .palimesh-backup/latest-recovery.json
   ↓
 6. 可选：配置复活
    - configureResurrection(agentId, resurrectionKeyHash, maxOfflineDuration)
@@ -488,13 +488,13 @@ Owner 节点执行：coc-backup init [--key-hash <hash>] [--max-offline <sec>]
 | before compaction | `backupOnSessionEnd && autoBackupEnabled` | 在 token/context 裁剪前备份 |
 | gateway stop | 总是注册；仅当 `autoBackupEnabled` 时执行备份 | 最终备份，然后停止 timer/daemon |
 | stop hook | 总是注册；仅当 `autoBackupEnabled` 时执行备份 | 兼容旧停机路径 |
-| 手动 | `coc-backup backup` 或 `soul-backup` | 按需备份 |
+| 手动 | `palimesh-backup backup` 或 `soul-backup` | 按需备份 |
 
 **已实现的备份流水线**
 
 ```
 1. captureContextSnapshot(baseDir)
-   → 写入 .coc-backup/context-snapshot.json
+   → 写入 .palimesh-backup/context-snapshot.json
 
 2. detectChanges(baseDir, config, previousManifest)
    → 按 identity/config/memory/chat/workspace/database 分类
@@ -549,7 +549,7 @@ Owner 节点执行：coc-backup init [--key-hash <hash>] [--max-offline <sec>]
 CLI：
 
 ```bash
-coc-backup restore --latest-local
+palimesh-backup restore --latest-local
 ```
 
 Tool：
@@ -590,7 +590,7 @@ Tool：
 
 6. 校验恢复到磁盘后的文件 SHA-256
 
-7. 写入 .coc-backup/restore-complete.json
+7. 写入 .palimesh-backup/restore-complete.json
 
 8. 尝试通过 SIGUSR2 通知运行中的 Agent
    - 如果没有运行中的进程，则在下次启动时拾取恢复状态
@@ -622,8 +622,8 @@ Tool：
 2. 旧宿主机停止发送 heartbeat
 
 3. Owner 发起复活
-   - coc-backup resurrect --carrier-id <id> --resurrection-key <hex>
-   - 或 coc-backup resurrection start ...
+   - palimesh-backup resurrect --carrier-id <id> --resurrection-key <hex>
+   - 或 palimesh-backup resurrection start ...
 
 4. Carrier 侧确认并完成
    - confirmCarrier(requestId)
@@ -643,14 +643,14 @@ Tool：
    - SoulRegistry.isOffline(agentId) 必须返回 true
 
 2. 某个 guardian 发起
-   - coc-backup guardian initiate --agent-id <id> --carrier-id <id>
+   - palimesh-backup guardian initiate --agent-id <id> --carrier-id <id>
 
 3. 其他 guardians 批准
-   - coc-backup guardian approve --request-id <id>
+   - palimesh-backup guardian approve --request-id <id>
 
 4. 请求送达 carrier daemon
    - 通过配置 carrier.pendingRequestIds
-   - 或 coc-backup carrier submit-request --request-id <id> --agent-id <id>
+   - 或 palimesh-backup carrier submit-request --request-id <id> --agent-id <id>
    - 或 tool soul-carrier-request
 
 5. Carrier daemon 执行纯 carrier 侧动作
@@ -719,7 +719,7 @@ run again with the same agentId
 2. **`carrier list` 仍是占位命令。** 它需要链上事件索引器才能枚举所有已注册载体。
 3. **每个进程只有一把 key。** 每个进程用一个 `privateKey` 执行该进程内的合约调用。多角色运行必须拆成多个进程。这是有意为之，因为它与合约的 `msg.sender` 约束一致。
 4. **Merkle 哈希实现存在分歧。** 备份 Merkle 树使用 SHA-256（离线完整性），而 node core 的 `ipfs-merkle.ts` 使用 Keccak-256（EVM 友好）。两者不能直接互验。
-5. **DID 增强是相邻层，不是 `coc-backup init` 的自动步骤。** soul 注册为 Agent 提供稳定的 `agentId` 和 DID basis；附加的 DIDRegistry verification methods、delegation、credentials 属于 `node/src/did` 层，不在备份 scheduler 的职责范围内。
+5. **DID 增强是相邻层，不是 `palimesh-backup init` 的自动步骤。** soul 注册为 Agent 提供稳定的 `agentId` 和 DID basis；附加的 DIDRegistry verification methods、delegation、credentials 属于 `node/src/did` 层，不在备份 scheduler 的职责范围内。
 
 ---
 
@@ -731,7 +731,7 @@ run again with the same agentId
 - `governance/CidRegistry.sol` — CID 注册表（约 90 行）
 - `governance/DIDRegistry.sol` — 可选 DID 增强层（约 612 行）
 
-### 扩展：`extensions/coc-backup/`
+### 扩展：`extensions/palimesh-backup/`
 
 | 目录 | 文件 | 用途 |
 |------|------|------|

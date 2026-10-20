@@ -90,7 +90,7 @@ function ContractCallHistory({ address }: { address: string }) {
   async function loadHistory(offset = 0) {
     setLoading(true)
     try {
-      const result = await rpcCall<typeof txs>('coc_getTransactionsByAddress', [
+      const result = await rpcCall<typeof txs>('pali_getTransactionsByAddress', [
         address, pageSize, true, offset,
       ])
       setTxs(Array.isArray(result) ? result : [])

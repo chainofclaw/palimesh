@@ -112,7 +112,7 @@ export function createPoseWitnessAuth(
  * socket peer is always 127.0.0.1 after TLS termination by the proxy).
  *
  * Operators that genuinely want token-less open access must set
- * `COC_POSE_WITNESS_ALLOW_INSECURE=1` (acknowledged misconfiguration).
+ * `PALI_POSE_WITNESS_ALLOW_INSECURE=1` (acknowledged misconfiguration).
  */
 export function assertPoseWitnessAuthConfigured(
   opts: PoseWitnessAuthOptions,
@@ -122,8 +122,8 @@ export function assertPoseWitnessAuthConfigured(
   if (runtime.mode() === "misconfigured" && !ctx.allowInsecure) {
     throw new Error(
       "pose-witness auth misconfigured: non-loopback bind requires either " +
-      "COC_POSE_WITNESS_AUTH_TOKEN or a non-empty COC_POSE_WITNESS_TRUSTED_PROXIES " +
-      "(set COC_POSE_WITNESS_ALLOW_INSECURE=1 to override — not recommended)"
+      "PALI_POSE_WITNESS_AUTH_TOKEN or a non-empty PALI_POSE_WITNESS_TRUSTED_PROXIES " +
+      "(set PALI_POSE_WITNESS_ALLOW_INSECURE=1 to override — not recommended)"
     );
   }
 }
@@ -131,7 +131,7 @@ export function assertPoseWitnessAuthConfigured(
 /**
  * @deprecated #750 — prefer {@link createPoseWitnessAuth}. Kept so
  * callers that haven't migrated continue to work; the new code path in
- * coc-node.ts is on the runtime form.
+ * palimesh-node.ts is on the runtime form.
  */
 export function isPoseWitnessRequestAuthorized(
   req: PoseWitnessAuthRequest,

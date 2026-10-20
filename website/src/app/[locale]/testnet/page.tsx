@@ -1,48 +1,38 @@
 'use client'
 
 import { useTranslations } from 'next-intl'
+import { AntiqueDivider } from '@/components/shared/Manuscript'
 import { Link } from '@/i18n/routing'
+import { site } from '@/config/site'
+import { TopologyDiagram } from '@/components/diagrams/TopologyDiagram'
 
 export default function TestnetPage() {
   const t = useTranslations('testnet')
+  const td = useTranslations('diagrams')
 
   return (
     <div className="relative">
       {/* Hero Section */}
-      <section className="relative min-h-[60vh] flex items-center overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-bg-primary via-bg-secondary to-bg-primary">
-          <div className="absolute inset-0 opacity-20">
-            <div className="absolute top-20 left-20 w-96 h-96 bg-accent-cyan rounded-full blur-[120px] animate-pulse-slow" />
-            <div className="absolute bottom-20 right-20 w-96 h-96 bg-accent-purple rounded-full blur-[120px] animate-pulse-slow delay-1000" />
-          </div>
-        </div>
-
-        <div className="container mx-auto px-4 py-20 relative z-10">
-          <div className="max-w-4xl mx-auto text-center">
-            <div className="inline-block mb-6 fade-in">
-              <div className="px-4 py-2 rounded-full border border-accent-cyan/30 bg-accent-cyan/5 backdrop-blur-sm">
-                <span className="font-display text-sm text-accent-cyan tracking-wider">
-                  &gt; CANARY_TESTNET_88780_LIVE
-                </span>
-              </div>
-            </div>
-
-            <h1 className="text-5xl md:text-6xl font-display font-bold mb-6 fade-in-delay-1">
-              <span className="gradient-text glow-text">{t('title')}</span>
+      <section className="manuscript-hero manuscript-hero--compact relative">
+        <div className="container mx-auto px-4 py-16 md:py-20">
+          <div className="max-w-3xl mx-auto text-center">
+            <p className="kicker mb-4">CANARY_TESTNET_88780_LIVE</p>
+            <h1 className="display-xl font-display font-bold mb-5">
+              <span className="ink-underline">{t('title')}</span>
             </h1>
-            <p className="text-xl text-text-secondary font-body mb-8 fade-in-delay-2">
+            <p className="text-lg text-text-secondary leading-relaxed mb-8">
               {t('subtitle')}
             </p>
 
             <div className="flex flex-col sm:flex-row gap-4 justify-center fade-in-delay-2">
               <Link
                 href="/docs"
-                className="px-8 py-3 rounded-lg bg-gradient-cyber text-white font-display font-semibold hover:shadow-glow-md transition-all hover:scale-105"
+                className="seal-button"
               >
                 {t('joinNow')}
               </Link>
               <a
-                href="https://faucet.clawchain.io"
+                href={site.chain.faucet}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="px-8 py-3 rounded-lg border border-accent-cyan/30 text-accent-cyan font-display font-semibold hover:bg-accent-cyan/10 transition-all"
@@ -50,51 +40,64 @@ export default function TestnetPage() {
                 {t('getFaucet')}
               </a>
             </div>
+
+            <p className="mt-8 inline-block rounded-lg border border-text-muted/20 px-4 py-2 text-text-muted text-sm">
+              {t('noIncentive')}
+            </p>
           </div>
         </div>
 
-        <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-accent-cyan to-transparent" />
       </section>
 
       <div className="container mx-auto px-4 py-16 max-w-6xl">
         {/* Network Info Cards */}
+        <AntiqueDivider />
         <section className="mb-16">
           <div className="text-center mb-12 fade-in-up">
             <h2 className="text-3xl md:text-4xl font-display font-bold mb-2">
-              <span className="gradient-text">{t('networkInfo')}</span>
+              <span>{t('networkInfo')}</span>
             </h2>
-            <div className="w-24 h-1 bg-gradient-cyber mx-auto mt-4 rounded-full" />
+            <div className="w-16 h-px bg-line mx-auto mt-4 rounded-full" />
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            <InfoCard label={t('chainId')} value="88780 (0x15acc)" />
-            <InfoCard label={t('rpcEndpoint')} value="https://rpc.clawchain.io" mono />
-            <InfoCard label={t('wsEndpoint')} value="wss://rpc.clawchain.io/ws" mono />
-            <InfoCard label={t('blockTime')} value="~2.1s" />
+            <InfoCard label={t('chainId')} value={`${site.chain.id} (0x${site.chain.id.toString(16)})`} />
+            <InfoCard label={t('rpcEndpoint')} value={site.chain.rpc} mono />
+            <InfoCard label={t('wsEndpoint')} value={site.chain.ws} mono />
+            <InfoCard label={t('blockTime')} value="~1s" />
             <InfoCard label={t('consensus')} value="BFT + PoSe" />
-            <InfoCard label={t('tokenSymbol')} value="COC" />
+            <InfoCard label={t('tokenSymbol')} value={site.chain.symbol} />
           </div>
+          <p className="text-text-muted text-sm text-center mt-6">{t('faucetLimit')}</p>
+          <TopologyDiagram
+            labels={{
+              aria: td('topo.aria'), caption: td('topo.caption'),
+              validator: td('topo.validator'), storage: td('topo.storage'),
+              relay: td('topo.relay'), rpc: td('topo.rpc'),
+            }}
+          />
         </section>
 
         {/* Quick Start */}
+        <AntiqueDivider />
         <section className="mb-16">
           <div className="text-center mb-6 fade-in-up">
             <h2 className="text-3xl md:text-4xl font-display font-bold mb-2">
-              <span className="gradient-text">{t('quickStart')}</span>
+              <span>{t('quickStart')}</span>
             </h2>
-            <div className="w-24 h-1 bg-gradient-cyber mx-auto mt-4 rounded-full" />
+            <div className="w-16 h-px bg-line mx-auto mt-4 rounded-full" />
           </div>
 
-          {/* Recommended deploy via coc-node skill */}
+          {/* Recommended deploy via palimesh-node skill */}
           <div className="max-w-3xl mx-auto mb-10">
-            <div className="rounded-xl border border-accent-cyan/30 bg-accent-cyan/5 backdrop-blur-sm px-5 py-4 flex items-start gap-3">
+            <div className="rounded-xl border border-accent-cyan/30 bg-accent-cyan/5 px-5 py-4 flex items-start gap-3">
               <span className="font-display text-xs text-accent-cyan tracking-wider px-2 py-0.5 rounded border border-accent-cyan/40 bg-accent-cyan/10 shrink-0 whitespace-nowrap mt-0.5">
-                {t('cocNodeBadge')}
+                {t('paliNodeBadge')}
               </span>
               <p className="text-text-secondary text-sm font-body leading-relaxed">
-                {t('cocNodeNote')}{' '}
+                {t('paliNodeNote')}{' '}
                 <Link href="/services" className="text-accent-cyan hover:text-accent-cyan/80 underline underline-offset-2">
-                  {t('cocNodeNoteLink')}
+                  {t('paliNodeNoteLink')}
                 </Link>
               </p>
             </div>
@@ -123,20 +126,21 @@ export default function TestnetPage() {
         </section>
 
         {/* Connect Wallet */}
+        <AntiqueDivider />
         <section className="mb-16">
-          <div className="bg-bg-secondary/50 backdrop-blur-lg rounded-2xl border border-text-muted/10 p-8 md:p-12">
+          <div className="vellum-card p-8 md:p-12">
             <div className="max-w-2xl mx-auto text-center">
               <h2 className="text-3xl font-display font-bold mb-4">
-                <span className="gradient-text">{t('connectWallet')}</span>
+                <span>{t('connectWallet')}</span>
               </h2>
               <p className="text-text-secondary font-body mb-8">{t('connectDescription')}</p>
 
               <div className="bg-bg-primary/50 rounded-lg p-6 text-left font-mono text-sm text-text-secondary space-y-2">
-                <p><span className="text-accent-cyan">Network Name:</span> ChainOfClaw Canary 88780</p>
-                <p><span className="text-accent-cyan">RPC URL:</span> https://rpc.clawchain.io</p>
-                <p><span className="text-accent-cyan">Chain ID:</span> 88780</p>
-                <p><span className="text-accent-cyan">Currency Symbol:</span> COC</p>
-                <p><span className="text-accent-cyan">Explorer:</span> https://explorer.clawchain.io</p>
+                <p><span className="text-accent-cyan">Network Name:</span> {site.chain.networkName}</p>
+                <p><span className="text-accent-cyan">RPC URL:</span> {site.chain.rpc}</p>
+                <p><span className="text-accent-cyan">Chain ID:</span> {site.chain.id}</p>
+                <p><span className="text-accent-cyan">Currency Symbol:</span> {site.chain.symbol}</p>
+                <p><span className="text-accent-cyan">Explorer:</span> {site.chain.explorer}</p>
               </div>
             </div>
           </div>
@@ -147,13 +151,13 @@ export default function TestnetPage() {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             <QuickLink
               title={t('links.explorer')}
-              href="https://explorer.clawchain.io"
+              href={site.chain.explorer}
               external
               icon="search"
             />
             <QuickLink
               title={t('links.faucet')}
-              href="https://faucet.clawchain.io"
+              href={site.chain.faucet}
               external
               icon="droplet"
             />
@@ -164,7 +168,7 @@ export default function TestnetPage() {
             />
             <QuickLink
               title={t('links.github')}
-              href="https://github.com/chainofclaw/COC"
+              href={site.github}
               external
               icon="code"
             />
@@ -177,7 +181,7 @@ export default function TestnetPage() {
 
 function InfoCard({ label, value, mono }: { label: string; value: string; mono?: boolean }) {
   return (
-    <div className="bg-bg-secondary/50 backdrop-blur-lg rounded-xl border border-text-muted/10 p-6 hover:border-accent-cyan/30 transition-colors">
+    <div className="vellum-card p-6 hover:border-accent-cyan/30 transition-colors">
       <div className="text-xs font-display text-text-muted uppercase tracking-wider mb-2">{label}</div>
       <div className={`text-xl font-bold text-text-primary ${mono ? 'font-mono text-base' : 'font-display'}`}>
         {value}
@@ -194,7 +198,7 @@ function StepCard({ step, title, description, color }: { step: string; title: st
   }
 
   return (
-    <div className={`bg-gradient-to-b ${colorMap[color] ?? colorMap.cyan} backdrop-blur-lg rounded-xl border p-6`}>
+    <div className={`bg-gradient-to-b ${colorMap[color] ?? colorMap.cyan} rounded-xl border p-6`}>
       <div className="text-3xl font-display font-bold text-text-muted/30 mb-4">{step}</div>
       <h3 className="text-lg font-display font-bold text-text-primary mb-2">{title}</h3>
       <p className="text-text-secondary text-sm font-body">{description}</p>
@@ -211,7 +215,7 @@ function QuickLink({ title, href, external, icon }: { title: string; href: strin
   }
 
   const content = (
-    <div className="bg-bg-secondary/50 backdrop-blur-lg rounded-xl border border-text-muted/10 p-6 hover:border-accent-cyan/30 transition-all hover:scale-105 group cursor-pointer">
+    <div className="vellum-card p-6 hover:border-accent-cyan/30 transition-all group cursor-pointer">
       <svg className="w-6 h-6 text-accent-cyan mb-3 group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d={icons[icon] ?? icons.code} />
       </svg>

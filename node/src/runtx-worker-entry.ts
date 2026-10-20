@@ -22,12 +22,12 @@ import { createVM, runTx } from "@ethereumjs/vm"
 import { createBlock } from "@ethereumjs/block"
 import { createTxFromRLP } from "@ethereumjs/tx"
 import {
-  Mainnet,
   Common,
   Hardfork,
   createCustomCommon as createCommonInternal,
 } from "@ethereumjs/common"
 import { Account, Address, bytesToHex, hexToBytes } from "@ethereumjs/util"
+import { palimeshWorkerChainConfig } from "./chain-common.ts"
 
 interface PreloadedAccount {
   address: string            // 0x…
@@ -64,7 +64,7 @@ interface WorkerRunTxResponse {
 async function handle(req: WorkerRunTxRequest): Promise<WorkerRunTxResponse> {
   try {
     const common = new Common({
-      chain: { ...Mainnet, chainId: req.chainId },
+      chain: palimeshWorkerChainConfig(req.chainId),
       hardfork: (req.hardfork as Hardfork) ?? Hardfork.Cancun,
     })
     const vm = await createVM({ common })

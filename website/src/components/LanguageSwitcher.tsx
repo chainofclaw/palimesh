@@ -5,11 +5,11 @@ import { usePathname, useRouter } from '@/i18n/routing'
 import { useState, useTransition } from 'react'
 
 const languages = [
-  { code: 'en', name: 'English', flag: '🇺🇸' },
-  { code: 'zh', name: '中文', flag: '🇨🇳' },
-  { code: 'es', name: 'Español', flag: '🇪🇸' },
-  { code: 'ja', name: '日本語', flag: '🇯🇵' },
-  { code: 'ko', name: '한국어', flag: '🇰🇷' },
+  { code: 'en', name: 'English', mark: 'EN' },
+  { code: 'zh', name: '中文', mark: '中' },
+  { code: 'es', name: 'Español', mark: 'ES' },
+  { code: 'ja', name: '日本語', mark: '日' },
+  { code: 'ko', name: '한국어', mark: '한' },
 ]
 
 export function LanguageSwitcher() {
@@ -32,10 +32,15 @@ export function LanguageSwitcher() {
     <div className="relative">
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="group flex items-center gap-1 md:gap-2 px-1.5 py-1 md:px-3 md:py-2 rounded-lg md:bg-accent-cyan/5 md:border md:border-accent-cyan/20 hover:bg-accent-cyan/10 md:hover:border-accent-cyan/40 transition-all font-display"
+        className="language-seal group flex min-h-11 items-center gap-2 rounded-md px-2.5 py-2 transition-colors font-display"
         disabled={isPending}
+        aria-label={`Language: ${currentLanguage.name}`}
+        aria-haspopup="listbox"
+        aria-expanded={isOpen}
       >
-        <span className="text-base md:text-xl filter grayscale-0">{currentLanguage.flag}</span>
+        <span className="inline-flex h-6 min-w-6 items-center justify-center rounded-full border border-accent-blue/25 px-1 font-mono text-[10px] font-semibold text-accent-blue">
+          {currentLanguage.mark}
+        </span>
         <span className="hidden sm:inline text-sm text-text-secondary group-hover:text-accent-cyan transition-colors">
           {currentLanguage.name}
         </span>
@@ -55,18 +60,22 @@ export function LanguageSwitcher() {
           <div className="fixed inset-0 z-40" onClick={() => setIsOpen(false)} />
 
           {/* Dropdown */}
-          <div className="absolute right-0 mt-2 w-56 bg-bg-elevated rounded-xl shadow-glow-md border border-accent-cyan/20 z-50 overflow-hidden backdrop-blur-xl">
+          <div className="absolute right-0 mt-2 w-56 bg-bg-elevated rounded-lg border border-line z-50 overflow-hidden" role="listbox">
             {languages.map((lang, index) => (
               <button
                 key={lang.code}
                 onClick={() => handleLanguageChange(lang.code)}
-                className={`group w-full flex items-center gap-3 px-4 py-3 hover:bg-accent-cyan/10 transition-all ${
+                className={`group min-h-11 w-full flex items-center gap-3 px-4 py-3 hover:bg-accent-blue/10 transition-colors ${
                   lang.code === locale
-                    ? 'bg-accent-cyan/5 text-accent-cyan border-l-2 border-accent-cyan'
+                    ? 'bg-accent-blue/5 text-accent-blue border-l-2 border-accent-blue'
                     : 'text-text-secondary hover:text-text-primary border-l-2 border-transparent'
                 } ${index === 0 ? 'rounded-t-xl' : ''} ${index === languages.length - 1 ? 'rounded-b-xl' : ''}`}
+                role="option"
+                aria-selected={lang.code === locale}
               >
-                <span className="text-2xl filter grayscale group-hover:grayscale-0 transition-all">{lang.flag}</span>
+                <span className="inline-flex h-7 min-w-7 items-center justify-center rounded-full border border-line px-1 font-mono text-[10px] font-semibold text-accent-blue">
+                  {lang.mark}
+                </span>
                 <span className="font-display font-medium text-sm flex-1 text-left">{lang.name}</span>
                 {lang.code === locale && (
                   <svg className="w-5 h-5 text-accent-cyan" fill="currentColor" viewBox="0 0 20 20">

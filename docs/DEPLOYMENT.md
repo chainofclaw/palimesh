@@ -586,3 +586,20 @@ curl -s https://faucet.clawchain.io/health
 **文档版本**: 2.0
 **最后更新**: 2026-03-15 16:30 UTC+7
 **状态**: ✅ 全部部署完成，待 Faucet 钱包配置
+
+
+---
+
+## 双站部署（2026-09 起：palium.io + palimesh.io）
+
+> 本节为当前有效配置；上文为历史快照。
+
+| 站点 | 域名 | systemd unit | 端口 | 构建产物 | 变体 |
+|---|---|---|---|---|---|
+| 公链站 | palium.io / www | `palium-website.service` | 3004 | `website/.next-palium` | `NEXT_PUBLIC_SITE=palium` |
+| 存储站 | palimesh.io / www | `palimesh-website.service` | 3001 | `website/.next-palimesh` | `NEXT_PUBLIC_SITE=palimesh` |
+
+- 两个 unit 同一 WorkingDirectory `/opt/coc/website`，共用 `.env.local` 与 `data/`（SQLite WAL）。unit 文件见 `ops/systemd/`。
+- explorer(3000) / faucet(3003) / rpc(28780, ws 28790) 只有一套，`explorer.palium.io` 与 `explorer.palimesh.io` 等子域都代理到同一后端；nginx 模板 `docker/nginx/palium.io.conf`。
+- 部署：`scripts/deploy-website.sh`（在 v3 上 `git checkout origin/main -- website` → `npm run build` → 重启两个 unit）。`/opt/coc` 同目录跑验证者，**严禁 checkout -f / reset / stash**。
+- 上线顺序：先装 palium.io 的 80 vhost + certbot 取证 → 更新代码并双 build（旧进程继续服务）→ 停 `coc-website`、启两个新 unit → 启用 palium.io 443 → 烟测 `website/scripts/smoke-variants.mjs`。回滚：`systemctl start coc-website`。

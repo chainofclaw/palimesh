@@ -14,7 +14,7 @@ const RPCS = [
   "http://199.192.16.79:38796",
 ]
 const REG = "0x162700d1613DfEC978032A909DE02643bC55df1A"
-const ART = "/passinger/projects/ClawdBot/COC/contracts/artifacts/contracts-src/governance/ValidatorRegistry.sol/ValidatorRegistry.json"
+const ART = "/passinger/projects/ClawdBot/Palimesh/contracts/artifacts/contracts-src/governance/ValidatorRegistry.sol/ValidatorRegistry.json"
 const { abi } = JSON.parse(await readFile(ART, "utf-8"))
 
 const TARGET_PK = "0x8b3a350cf5c34c9194ca85829a2df0ec3153be0318b5e2d3348e872092edffba"

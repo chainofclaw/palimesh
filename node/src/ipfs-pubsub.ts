@@ -39,7 +39,7 @@ export interface PubsubConfig {
 }
 
 const DEFAULT_CONFIG: PubsubConfig = {
-  nodeId: "coc-node",
+  nodeId: "palimesh-node",
   maxTopics: 100,
   maxSubscribersPerTopic: 50,
   maxMessageSize: 1024 * 1024, // 1 MB

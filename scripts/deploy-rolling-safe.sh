@@ -20,10 +20,10 @@ set -u
 TARGET="${1:-}"
 [ -z "$TARGET" ] && { echo "usage: $0 <target-sha>"; exit 2; }
 
-SSH_KEY="${COC_SSH_KEY:-$HOME/.ssh/openclaw_server_key}"
-RPC=https://clawchain.io/api/testnet/rpc
+SSH_KEY="${PALI_SSH_KEY:-$HOME/.ssh/openclaw_server_key}"
+RPC=https://palimesh.io/api/testnet/rpc
 SYNC_GRACE=180        # GATE 1: max wait for restarted node to catch up
-                      # (a cold COC node boot — state load + replay — can
+                      # (a cold Palimesh node boot — state load + replay — can
                       #  take 60-90s before RPC even answers; 120s left too
                       #  little headroom and false-aborted a healthy v3 on
                       #  the 2026-05-16 deploy)
@@ -33,11 +33,11 @@ SETTLE=20             # grace after a node passes both gates
 
 # name:host:unit:rpc_port
 validators=(
-  "v1:209.74.64.88:coc-node@88:38780"
-  "v2:159.198.44.136:coc-node@1:28780"
-  "v3:199.192.16.79:coc-node@88:28780"
-  "v4:159.198.36.3:coc-node@1:28780"
-  "v5:159.198.36.25:coc-node@1:28780"
+  "v1:209.74.64.88:palimesh-node@88:38780"
+  "v2:159.198.44.136:palimesh-node@1:28780"
+  "v3:199.192.16.79:palimesh-node@88:28780"
+  "v4:159.198.36.3:palimesh-node@1:28780"
+  "v5:159.198.36.25:palimesh-node@1:28780"
 )
 
 netTip() {

@@ -1,6 +1,6 @@
-# COC (ChainOfClaw)
+# Palimesh (Palimesh)
 
-COC is an EVM-compatible blockchain prototype with PoSe (Proof-of-Service) settlement and an IPFS-compatible storage interface.
+Palimesh is an EVM-compatible blockchain prototype with PoSe (Proof-of-Service) settlement and an IPFS-compatible storage interface.
 
 ## Structure
 
@@ -8,7 +8,7 @@ COC is an EVM-compatible blockchain prototype with PoSe (Proof-of-Service) settl
 - `specs/`: protocol/economics/roadmap specifications
 - `contracts/`: PoSe settlement contracts
 - `services/`: off-chain challenger/verifier/aggregator/relayer
-- `runtime/`: coc-node / coc-agent / coc-relayer
+- `runtime/`: palimesh-node / palimesh-agent / palimesh-relayer
 - `node/`: chain engine + RPC + P2P + storage
 - `wallet/`: minimal CLI wallet
 - `tests/`: integration and e2e tests
@@ -22,18 +22,18 @@ COC is an EVM-compatible blockchain prototype with PoSe (Proof-of-Service) settl
 - **Chain Engine**: block production, mempool (EIP-1559, replacement, eviction), snapshots, deterministic proposer rotation, basic finality
 - **P2P Networking**: HTTP-based gossip for tx/blocks, snapshot sync between peers
 - **EVM Execution**: in-memory + persistent state via `@ethereumjs/vm` and LevelDB-backed trie, historical state reads, `eth_getProof`, block-height-aware hardfork schedule support
-- **JSON-RPC**: 95 implemented methods spanning `eth_*`, `web3_*`, `net_*`, `debug_*`, `trace_*`, `txpool_*`, `admin_*`, and custom `coc_*` namespaces, with BigInt-safe serialization and structured parameter validation
+- **JSON-RPC**: 95 implemented methods spanning `eth_*`, `web3_*`, `net_*`, `debug_*`, `trace_*`, `txpool_*`, `admin_*`, and custom `pali_*` namespaces, with BigInt-safe serialization and structured parameter validation
 - **WebSocket RPC**: `eth_subscribe` / `eth_unsubscribe` for newHeads, newPendingTransactions, logs
 - **PoSe Protocol**:
   - Off-chain: challenge factory, receipt verification, batch aggregation, epoch scoring
   - On-chain: PoSeManager contract with registration, batch submission, challenge, finalize, slash
 - **Storage Layer**: IPFS-compatible HTTP APIs (add/cat/get/block/pin/ls/stat/id/version) + `/ipfs/<cid>` gateway + tar archive for `get`
 - **Runtime Services**:
-  - `coc-node`: PoSe challenge/receipt HTTP endpoints
-  - `coc-agent`: challenge generation, batch submission, node registration
-  - `coc-relayer`: epoch finalization and slash automation
+  - `palimesh-node`: PoSe challenge/receipt HTTP endpoints
+  - `palimesh-agent`: challenge generation, batch submission, node registration
+  - `palimesh-relayer`: epoch finalization and slash automation
 - **Node Operations**: YAML-based policy engine with agent lifecycle hooks
-- **Soul Identity & Backup**: On-chain identity registration via `SoulRegistry` contract (EIP-712 signatures, social recovery with guardian quorum), IPFS-based encrypted state backup with incremental Merkle-anchored snapshots, and multi-step recovery pipeline (`coc-backup` extension)
+- **Soul Identity & Backup**: On-chain identity registration via `SoulRegistry` contract (EIP-712 signatures, social recovery with guardian quorum), IPFS-based encrypted state backup with incremental Merkle-anchored snapshots, and multi-step recovery pipeline (`palimesh-backup` extension)
 - **Tooling**:
   - CLI wallet (create address, transfer, query balance)
   - Devnet scripts for 3/5/7 node networks
@@ -51,7 +51,7 @@ COC is an EVM-compatible blockchain prototype with PoSe (Proof-of-Service) settl
 - **Consensus Metrics**: Block production and sync performance tracking (propose/sync times, success rates, uptime)
 - **Dual Transport**: Parallel HTTP gossip + TCP wire protocol for block and transaction propagation
 - **Wire FIND_NODE**: DHT peer discovery via wire protocol request/response messages
-- **Network Stats RPC**: `coc_getNetworkStats` endpoint aggregating P2P, wire, DHT, BFT stats
+- **Network Stats RPC**: `pali_getNetworkStats` endpoint aggregating P2P, wire, DHT, BFT stats
 - **Wire Dedup & Relay**: Wire protocol Block/Tx dedup via BoundedSet (50K tx, 10K blocks), cross-protocol relay (Wire→HTTP), BFT dual transport (HTTP+TCP)
 - **DHT Enhancement**: wireClientByPeerId O(1) lookup for FIND_NODE, per-peer wire port from config
 - **Devnet Full Features**: Multi-node devnet enables BFT, Wire, DHT, SnapSync by default with per-node wire port and DHT bootstrap peers
@@ -83,7 +83,7 @@ The explorer (`explorer/`) is a Next.js 15 App Router application providing:
 | 5 | `df50eb3` | Contract call interface (eth_call UI with presets) and WebSocket BigInt serialization fix |
 | 6 | `c613d08` | eth_getBlockReceipts RPC method + enhanced block detail page with full tx table |
 | 7 | `114b650` | txpool_status/txpool_content RPC methods + mempool explorer page |
-| 8 | `684dffa` | Network status page (coc_nodeInfo RPC) + global 404 page |
+| 8 | `684dffa` | Network status page (pali_nodeInfo RPC) + global 404 page |
 | 9 | `8fbbbc7` | EVM bytecode disassembler + storage scanner with range scan and value interpretation |
 | 10 | `6339490` | Test coverage enhancement: 175 → 190 tests covering all new RPC methods and mempool APIs |
 
@@ -100,7 +100,7 @@ The explorer (`explorer/`) is a Next.js 15 App Router application providing:
 | 17 | `52f5f41` | Consensus error recovery with degraded mode and auto-recovery |
 | 18 | `9573e07` | Repair health checker (getHeight() fix), add memory/WS/storage diagnostics |
 | 19 | `1c42906` | P2P per-peer broadcast deduplication with BoundedSet and stats |
-| 20 | `278b7d9` | Validators explorer page + coc_validators RPC method |
+| 20 | `278b7d9` | Validators explorer page + pali_validators RPC method |
 
 ### Features & EIP-1559 (Cycles 21–25)
 
@@ -116,10 +116,10 @@ The explorer (`explorer/`) is a Next.js 15 App Router application providing:
 
 | Cycle | Commit | Summary |
 |-------|--------|---------|
-| 26 | `a8f70eb` | Contract registry index with `coc_getContractsByPage` RPC + contract call history component |
+| 26 | `a8f70eb` | Contract registry index with `pali_getContractsByPage` RPC + contract call history component |
 | 27 | `dc3796f` | Address tx history with operation type classification (transfer/contract_call/token_transfer) |
 | 28 | `d09409d` | Populate real stateRoot in block headers + internal transactions trace display |
-| 29 | `c64c2d6` | Enhanced validators page with governance stake/voting + coc_chainStats RPC |
+| 29 | `c64c2d6` | Enhanced validators page with governance stake/voting + pali_chainStats RPC |
 | 30 | `f429d4c` | Error boundaries, loading state, mempool sorting/filtering, WebSocket reconnecting indicator |
 | 31 | `edff796` | Homepage optimization + exponential backoff + as-any elimination + 6 new test suites |
 | 32 | `5ef183f` | Config validation + consensus recovery fix + PoSe engine tests + peer discovery tests |
@@ -139,7 +139,7 @@ The explorer (`explorer/`) is a Next.js 15 App Router application providing:
 | 41 | `770e857` | BFT coordinator bridging consensus engine and P2P layer |
 | 42 | `879d584` | EVM state snapshot export/import for fast sync |
 | 43 | `4775b4b` | P2P BFT message routing (`/p2p/bft-message` endpoint + `broadcastBft`) |
-| 44 | `333e2c2` | `coc_getBftStatus` RPC endpoint + debug-trace OpenEthereum format fix |
+| 44 | `333e2c2` | `pali_getBftStatus` RPC endpoint + debug-trace OpenEthereum format fix |
 | 45 | `583b541` | Full test suite verification (640 tests) + core algorithms documentation |
 | 46 | `6aa68ef` | Update all documentation for Phase 14-25 development progress |
 
@@ -151,7 +151,7 @@ The explorer (`explorer/`) is a Next.js 15 App Router application providing:
 | 48 | `3374448` | FIND_NODE wire protocol message (0x40/0x41) for DHT peer discovery via TCP |
 | 49 | `d0a645a` | BFT equivocation detection — double-vote tracking with slashing evidence |
 | 50 | `f0610f1` | Wire connection manager for outbound peer lifecycle (max connections, broadcast) |
-| 51 | `ddfae69` | `coc_getNetworkStats` RPC endpoint + fix bftCoordinator parameter threading |
+| 51 | `ddfae69` | `pali_getNetworkStats` RPC endpoint + fix bftCoordinator parameter threading |
 | 52 | `d7c8aab` | Dual HTTP+TCP block propagation in consensus engine |
 | 53 | `b24ecc4` | DHT periodic node announcement to connected peers (3-min interval) |
 | 54 | `c847e8b` | Consensus engine performance metrics tracking (propose/sync times, uptime) |
@@ -161,7 +161,7 @@ The explorer (`explorer/`) is a Next.js 15 App Router application providing:
 | 58 | — | Security hardening: node identity auth, BFT signing, DHT peer verification, per-IP limits, IPFS upload limits, MFS path traversal, timestamp validation, exponential ban, WebSocket timeout, dev accounts gate, rate limiting, governance self-vote removal, PoSeManager v-check, 755 tests |
 | 59 | — | P2P HTTP signed auth envelope (off/monitor/enforce), replay guard, nonce registry, PoSe auth, Prometheus metrics integration |
 | 60 | — | BFT slashing handler (equivocation → slash → treasury → auto-remove), relay witness security (17 tests), ops infrastructure (alerts, runbooks, testnet configs) |
-| 61 | — | Phase 34 Go/No-Go readiness, Phase 35 OpenClaw coc-nodeops extension (node types, network presets, init wizard, multi-node manager, 24 tests) |
+| 61 | — | Phase 34 Go/No-Go readiness, Phase 35 OpenClaw palimesh-nodeops extension (node types, network presets, init wizard, multi-node manager, 24 tests) |
 | 62 | — | Phase 36 ops hardening: SIGTERM shutdown, configurable bind addresses, LevelDB corruption recovery, RPC Bearer auth, admin RPC namespace |
 | 63 | `ed36f47` | BFT prepare timeout fix, testnet monitoring fixes (EVM state manager, estimateGas, faucet) |
 | 64 | `5c8befb` | Algorithm safety audit: 9 fixes across BFT, DHT, chain engine, snapshots — baseFee integration, signature enforcement, K-bucket ping-evict, full trie traversal, 905 tests |
@@ -185,7 +185,7 @@ npm run compile
 npm run deploy:pose:coc
 ```
 
-`npm run deploy:local` 仍保留为兼容别名，实际会转到同一条 COC PoSe 部署链路。
+`npm run deploy:local` 仍保留为兼容别名，实际会转到同一条 Palimesh PoSe 部署链路。
 
 ### Run devnet
 

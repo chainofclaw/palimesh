@@ -1,6 +1,6 @@
-# Contributing to COC (ChainOfClaw)
+# Contributing to Palimesh (Palimesh)
 
-Thank you for your interest in contributing to COC! We welcome developers, writers, security researchers, and node operators.
+Thank you for your interest in contributing to Palimesh! We welcome developers, writers, security researchers, and node operators.
 
 ## Bounty Program
 
@@ -15,7 +15,7 @@ All merged contributions are eligible for bounties:
 
 ## Getting Started
 
-1. **Find an issue**: Browse [open issues](https://github.com/chainofclaw/COC/issues) or the [Project Board](https://github.com/users/chainofclaw/projects/1)
+1. **Find an issue**: Browse [open issues](https://github.com/palimesh/palimesh/issues) or the [Project Board](https://github.com/users/palimesh/projects/1)
 2. **Claim it**: Comment "I'd like to work on this" on the issue
 3. **Fork & branch**: `git checkout -b feature/your-feature`
 4. **Code & test**: Follow the guidelines below
@@ -25,8 +25,8 @@ All merged contributions are eligible for bounties:
 
 ```bash
 # Prerequisites: Node.js 22+
-git clone https://github.com/chainofclaw/COC.git
-cd COC
+git clone https://github.com/palimesh/palimesh.git
+cd Palimesh
 npm install
 
 # Run node
@@ -75,11 +75,11 @@ cd website && npm run dev
 
 ## Testnet Milestones
 
-See [Milestones](https://github.com/chainofclaw/COC/milestones) for the Prowl testnet launch timeline.
+See [Milestones](https://github.com/palimesh/palimesh/milestones) for the Prowl testnet launch timeline.
 
 ## Community
 
-- [GitHub Discussions](https://github.com/chainofclaw/COC/discussions)
+- [GitHub Discussions](https://github.com/palimesh/palimesh/discussions)
 - Discord (coming soon)
 
 ## Security
@@ -90,5 +90,5 @@ severity-tier rewards (canary testnet: $100–$50,000 USD-equivalent),
 response timeline (24h ack for Critical), and safe-harbor terms. Quick
 paths:
 
-- Email `security@chainofclaw.io` (preferred for time-sensitive)
-- GitHub private advisory: <https://github.com/chainofclaw/COC/security/advisories/new>
+- Email `security@palimesh.io` (preferred for time-sensitive)
+- GitHub private advisory: <https://github.com/palimesh/palimesh/security/advisories/new>

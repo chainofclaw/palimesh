@@ -12,7 +12,7 @@ async function createTestRpc(): Promise<{ port: number; close: () => void; chain
   const evm = await EvmChain.create(18780)
   await evm.prefund([{ address: "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266", balanceWei: "10000000000000000000000" }])
   const chain = new ChainEngine(
-    { dataDir: "/tmp/coc-rpc-test-" + Date.now(), nodeId: NODE_ID, validators: [NODE_ID], finalityDepth: 3, maxTxPerBlock: 50, minGasPriceWei: 1n },
+    { dataDir: "/tmp/palimesh-rpc-test-" + Date.now(), nodeId: NODE_ID, validators: [NODE_ID], finalityDepth: 3, maxTxPerBlock: 50, minGasPriceWei: 1n },
     evm,
   )
   const p2p = new P2PNode({ bind: "127.0.0.1", port: 0, peers: [] }, {

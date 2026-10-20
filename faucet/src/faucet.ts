@@ -1,4 +1,4 @@
-// COC Testnet Faucet - Core logic
+// Palimesh Testnet Faucet - Core logic
 import { JsonRpcProvider, Wallet, parseEther, formatEther } from "ethers"
 
 export interface FaucetConfig {

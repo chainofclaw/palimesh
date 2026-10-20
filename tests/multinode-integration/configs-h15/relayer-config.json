@@ -1,5 +1,5 @@
 {
-  "_comment": "R2.1 Phase A — coc-relayer config for H15 fork-off chain (88888). poseManagerAddress + equivocationDetectorAddress are filled in by run-pose.sh from deployed-pose.json.",
+  "_comment": "R2.1 Phase A — palimesh-relayer config for H15 fork-off chain (88888). poseManagerAddress + equivocationDetectorAddress are filled in by run-pose.sh from deployed-pose.json.",
   "dataDir": "/data/coc",
   "nodeUrl": "http://h15-node-1:18780",
   "l1RpcUrl": "http://h15-node-1:18780",

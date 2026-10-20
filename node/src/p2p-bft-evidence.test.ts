@@ -3,7 +3,7 @@
  * evidence gossip wire. A real P2PNode "sender" calls broadcastBftEvidence;
  * a real P2PNode "receiver" listens on /p2p/bft-evidence and invokes its
  * onBftEvidence handler. Without the network layer this PR added, peer
- * gossip never reaches the receiver and `coc_getEquivocations` diverges
+ * gossip never reaches the receiver and `pali_getEquivocations` diverges
  * across nodes (live 88780 observed 0/0/1 across 3 nodes — issue #620).
  *
  * This file deliberately exercises the WIRE only (HTTP route + payload

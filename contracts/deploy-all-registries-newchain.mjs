@@ -24,7 +24,7 @@ const RPC = process.env.RPC || "http://209.74.64.88:28780"
 const DEPLOYER_KEY = process.env.DEPLOYER_KEY
   // Hardhat-0 — already prefunded on this testnet at genesis
   || "0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80"
-const ARTIFACTS = "/passinger/projects/ClawdBot/COC/contracts/artifacts/contracts-src"
+const ARTIFACTS = "/passinger/projects/ClawdBot/Palimesh/contracts/artifacts/contracts-src"
 
 const CONTRACTS = [
   { name: "SoulRegistry",      path: `${ARTIFACTS}/governance/SoulRegistry.sol/SoulRegistry.json`,      ctorArgs: () => [] },
@@ -134,7 +134,7 @@ for (const [name, info] of Object.entries(deployed)) {
   console.log(`| ${name} | \`${info.address}\` | ${info.block} | \`${info.txHash}\` |`)
 }
 
-const outPath = "/passinger/projects/ClawdBot/COC/contracts/deployed-registries-newchain.json"
+const outPath = "/passinger/projects/ClawdBot/Palimesh/contracts/deployed-registries-newchain.json"
 const out = {
   chainId: 18780,
   rpc: RPC,

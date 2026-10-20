@@ -7,17 +7,17 @@
  * config preserved). Covers: liveness under one fault, validator rejoin/catch-
  * up, rolling restart, and the N=5 fault boundary (two down breaches 3f+1).
  *
- * Opt-in — spawns N node processes (~minutes). Skips unless COC_CHAOS_DEVNET=1.
+ * Opt-in — spawns N node processes (~minutes). Skips unless PALI_CHAOS_DEVNET=1.
  *
- * Run: COC_CHAOS_DEVNET=1 node --experimental-strip-types --test tests/stress/chaos-devnet.test.ts
+ * Run: PALI_CHAOS_DEVNET=1 node --experimental-strip-types --test tests/stress/chaos-devnet.test.ts
  */
 import { describe, it, before, beforeEach, after } from "node:test"
 import assert from "node:assert/strict"
 import { execFileSync } from "node:child_process"
 import { tryGetHead, rpcResult } from "../../scripts/lib/rpc-helper.ts"
 
-const ENABLED = process.env.COC_CHAOS_DEVNET === "1"
-const NODES = Number(process.env.COC_CHAOS_NODES ?? 5)
+const ENABLED = process.env.PALI_CHAOS_DEVNET === "1"
+const NODES = Number(process.env.PALI_CHAOS_NODES ?? 5)
 const BASE_RPC = 28780
 const REPO = new URL("../..", import.meta.url).pathname
 
@@ -97,7 +97,7 @@ async function ensureClusterUp(): Promise<void> {
   }
 }
 
-describe("consensus chaos (process devnet)", { skip: !ENABLED ? "set COC_CHAOS_DEVNET=1 to run" : false }, () => {
+describe("consensus chaos (process devnet)", { skip: !ENABLED ? "set PALI_CHAOS_DEVNET=1 to run" : false }, () => {
   before(() => {
     // start-devnet.sh blocks until every node is ready (or fails loudly).
     sh("start-devnet.sh", [String(NODES)], 180_000)

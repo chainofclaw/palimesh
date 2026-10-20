@@ -14,10 +14,10 @@
  * narrows the core to Top-4 for the current 5-candidate 88780 deployment.
  *
  * USAGE
- *   COC_RPC_URL=https://clawchain.io/api/testnet/rpc \
- *   COC_CHAIN_ID=88780 \
+ *   PALI_RPC_URL=https://clawchain.io/api/testnet/rpc \
+ *   PALI_CHAIN_ID=88780 \
  *   DEPLOYER_PRIVATE_KEY=0x<deployer/slasher> \
- *   [COC_CORE_SET_RELAYER=0x<relayer EOA, default=manifest.deployer>] \
+ *   [PALI_CORE_SET_RELAYER=0x<relayer EOA, default=manifest.deployer>] \
  *   npx hardhat run scripts/deploy-core-set-manager-88780.js --network coc
  *
  * Outputs
@@ -57,7 +57,7 @@ async function main() {
   const registry = deployed.contracts.ValidatorRegistry
   const pose = deployed.contracts.PoSeManagerV2
   const multisig = deployed.owner
-  const relayer = process.env.COC_CORE_SET_RELAYER || deployed.deployer
+  const relayer = process.env.PALI_CORE_SET_RELAYER || deployed.deployer
   for (const [k, v] of Object.entries({ registry, pose, multisig, relayer })) {
     if (!isAddr(v)) throw new Error(`bad/missing address for ${k}: ${v}`)
   }

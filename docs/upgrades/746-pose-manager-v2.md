@@ -3,7 +3,7 @@
 Upgrade target: live 88780 `PoSeManagerV2` proxy →
 implementation containing the protocol fix for issue #746 (V3 typehash
 binds `resultCode`, `v2SunsetEpoch` soft sunset, legacy `submitBatchV2`
-no-metadata path hard-cut), [PR #766](https://github.com/chainofclaw/COC/pull/766) + [PR #767](https://github.com/chainofclaw/COC/pull/767).
+no-metadata path hard-cut), [PR #766](https://github.com/palimesh/palimesh/pull/766) + [PR #767](https://github.com/palimesh/palimesh/pull/767).
 
 This runbook is the structural sibling of [`667-pose-manager-v2.md`](./667-pose-manager-v2.md);
 read that first for general context on UUPS multisig upgrades. This file
@@ -20,7 +20,7 @@ captures only the #746-specific details.
    `LegacyBatchPathSunset()`. The witness-on-batch-root rubber-stamp
    surface is gone. Anything still calling that path needs migration
    to `submitBatchV2WithMetadata` **before** the multisig executes.
-3. **Off-chain rollout knob** `COC_POSE_WITNESS_LAYER7_VERIFY=1` enables
+3. **Off-chain rollout knob** `PALI_POSE_WITNESS_LAYER7_VERIFY=1` enables
    the witness's independent Layer-7 verifier on each host. Default
    off — the soft sunset on `v2SunsetEpoch` carries the migration
    gracefully without forcing fleet-wide simultaneous restarts.
@@ -32,8 +32,8 @@ captures only the #746-specific details.
 | Storage layout compatible | `npx hardhat run scripts/upgrade-pose-manager-v2-746.js --network coc` (step 1 internally — validates without writing) |
 | Local dry-run upgrade simulation | `npx hardhat run scripts/test-upgrade-dry-run-746.js` |
 | Proxy owner is the expected Safe | `cast call <PROXY> "owner()"`; compare to `POSE_MULTISIG_ADDRESS` |
-| New ABI in `@chainofclaw/soul@2.2.0` matches | PR #51 on claw-mem, merged |
-| Aggregator/agent fleet running PR #767 (off-chain v3 path) | `coc-agent --version` on each operator host; check that `services/aggregator/batch-aggregator-v2.ts` includes `metadata.resultCodes` |
+| New ABI in `@palimesh/soul@2.2.0` matches | PR #51 on claw-mem, merged |
+| Aggregator/agent fleet running PR #767 (off-chain v3 path) | `palimesh-agent --version` on each operator host; check that `services/aggregator/batch-aggregator-v2.ts` includes `metadata.resultCodes` |
 | No live consumers of `submitBatchV2` (no-metadata) | grep prod ops scripts; any still on that path must migrate first |
 
 ## Order of operations
@@ -42,7 +42,7 @@ captures only the #746-specific details.
 
 ```bash
 cd contracts
-COC_RPC_URL=https://prod-1.coc:28780 \
+PALI_RPC_URL=https://prod-1.coc:28780 \
 npx hardhat run scripts/upgrade-pose-manager-v2-746.js --network coc
 ```
 
@@ -97,8 +97,8 @@ threshold), then executes from owner-1 in one fully offline session:
 
 ```bash
 cd contracts
-COC_RPC_URL=https://clawchain.io/api/testnet/rpc \
-COC_CHAIN_ID=88780 \
+PALI_RPC_URL=https://palimesh.io/api/testnet/rpc \
+PALI_CHAIN_ID=88780 \
 DEPLOYER_PRIVATE_KEY=0x<deployer-funding-key> \
 PHASE_B_INPUT=tmp/upgrade-746-multisig.json \
 npx hardhat run scripts/multisig-execute-security-upgrades.js --network coc
@@ -113,7 +113,7 @@ execute tx hashes for the runbook log.
 
 ### 3. Coordinate the cut-over window
 
-1. **Pause aggregator submissions** on the per-host `coc-agent`
+1. **Pause aggregator submissions** on the per-host `palimesh-agent`
    instances. Existing receipts queue without loss.
 2. **Wait for dispute window** to clear (~2 epochs ≈ 2 h on 88780).
 3. **Run the multisig executor** (step 2 above). It will:
@@ -125,15 +125,15 @@ execute tx hashes for the runbook log.
    ```bash
    curl -fsS -X POST -H "Content-Type: application/json" \
      --data '{"jsonrpc":"2.0","id":1,"method":"eth_getStorageAt","params":["<PROXY>","0x360894a13ba1a3210667c828492db98dca3e2076cc3735a920a3ca505d382bbc","latest"]}' \
-     https://clawchain.io/api/testnet/rpc | jq -r '.result'
+     https://palimesh.io/api/testnet/rpc | jq -r '.result'
    # Expect: 0x...<address from tmp/upgrade-746-prepared.json:newImpl>
 
    curl -fsS -X POST -H "Content-Type: application/json" \
      --data '{"jsonrpc":"2.0","id":1,"method":"eth_call","params":[{"to":"<PROXY>","data":"0x417db998"},"latest"]}' \
-     https://clawchain.io/api/testnet/rpc | jq -r '.result'
+     https://palimesh.io/api/testnet/rpc | jq -r '.result'
    # Expect: 0x...0 (v2SunsetEpoch = 0 = unlimited)
    ```
-5. **Resume aggregators** + per-host **set `COC_POSE_WITNESS_LAYER7_VERIFY=1`**
+5. **Resume aggregators** + per-host **set `PALI_POSE_WITNESS_LAYER7_VERIFY=1`**
    and restart witness daemons. Witnesses begin signing v3 (in addition
    to v1 + v2) immediately.
 6. **Smoke test the new path** — submit one v3-signed batch via an
@@ -187,7 +187,7 @@ PR #767+ must downgrade in lockstep.
       multisig executes — else `metadata.resultCodes` won't be sent
       and the contract rejects with `MetadataLengthMismatch`.
 - [ ] Decide which fraction of witness hosts gets
-      `COC_POSE_WITNESS_LAYER7_VERIFY=1` first (canary subset
+      `PALI_POSE_WITNESS_LAYER7_VERIFY=1` first (canary subset
       recommended for 24 h before fleet-wide enable).
 
 ## r4 execution record (2026-06-30)

@@ -2,9 +2,9 @@
  * R2.1 Phase A — PoSe end-to-end epoch sanity check
  *
  * Why this exists:
- *   The COC repo has 22 PoSe service unit tests + 6 contract E2E tests +
+ *   The Palimesh repo has 22 PoSe service unit tests + 6 contract E2E tests +
  *   5 runtime integration tests, but ZERO end-to-end tests where
- *   coc-agent + coc-relayer + 5 BFT validators all run simultaneously
+ *   palimesh-agent + palimesh-relayer + 5 BFT validators all run simultaneously
  *   on the same chain. This is the first such test.
  *
  * Setup (started by scripts/run-pose.sh up):
@@ -12,23 +12,23 @@
  *   - PoSeManagerV2 + ValidatorRegistry + InsuranceFund + EquivocationDetector
  *     deployed via deploy-pose-on-h15.mjs
  *   - 5 validators staked into ValidatorRegistry (each 32 ETH)
- *   - coc-agent (anvil-0) running with 15 s tick interval
- *   - coc-relayer (anvil-3) running with 20 s tick interval
+ *   - palimesh-agent (anvil-0) running with 15 s tick interval
+ *   - palimesh-relayer (anvil-3) running with 20 s tick interval
  *
  * What we assert (deliberately liberal — this is a sanity check, not
  * a tight regression):
  *   1. PoSeManagerV2 is initialized (DOMAIN_SEPARATOR != 0)
  *   2. ValidatorRegistry has 5 active validators
- *   3. coc-agent reached its init checkpoint (emitted "endpoint fingerprint mode"
+ *   3. palimesh-agent reached its init checkpoint (emitted "endpoint fingerprint mode"
  *      + "reward targets refreshed" logs). Note: real ChallengeIssued/BatchSubmitted
- *      emission requires runtime/coc-node.ts PoSe HTTP servers running on each
+ *      emission requires runtime/palimesh-node.ts PoSe HTTP servers running on each
  *      validator node (so the agent's tryChallenge POST has a target). The h15
  *      fixture only runs the BFT chain (node/src/index.ts), not the PoSe HTTP
  *      service — so the agent's tick succeeds in setup but POST /pose/challenge
  *      silently fails. The sanity gate is therefore a startup readiness check;
  *      M2-M7 故障 scenarios assert infrastructure-level resilience (container
  *      survival, BFT continuity) rather than full PoSe business-flow.
- *   4. coc-relayer has not crashed in 60 s.
+ *   4. palimesh-relayer has not crashed in 60 s.
  *
  * Total runtime: ~3-4 min once the fixture is already up.
  */
@@ -39,7 +39,7 @@ import { readFileSync, existsSync } from "node:fs"
 import { Contract, JsonRpcProvider } from "ethers"
 
 const RPC = "http://localhost:38790"
-const DEPLOYED_PATH = "/passinger/projects/ClawdBot/COC/tests/multinode-integration/configs-h15/deployed-pose.json"
+const DEPLOYED_PATH = "/passinger/projects/ClawdBot/Palimesh/tests/multinode-integration/configs-h15/deployed-pose.json"
 
 const POSE_ABI = [
   "function DOMAIN_SEPARATOR() view returns (bytes32)",
@@ -97,15 +97,15 @@ describe("R2.1 — PoSe end-to-end epoch sanity", { timeout: 360_000 }, () => {
     console.log(`  ✅ 5 active validators staked`)
   })
 
-  it("coc-agent and coc-relayer containers are alive", () => {
-    assert.ok(containerAlive("coc-h15-agent"), "coc-h15-agent container not running")
-    assert.ok(containerAlive("coc-h15-relayer"), "coc-h15-relayer container not running")
+  it("palimesh-agent and palimesh-relayer containers are alive", () => {
+    assert.ok(containerAlive("palimesh-h15-agent"), "palimesh-h15-agent container not running")
+    assert.ok(containerAlive("palimesh-h15-relayer"), "palimesh-h15-relayer container not running")
     console.log(`  ✅ both sidecars alive`)
   })
 
   it("agent reached init checkpoint (config loaded, reward targets refreshed)", async () => {
     await sleep(15_000) // allow init logs
-    const agentLogs = execSync(`docker logs coc-h15-agent 2>&1 || true`, { encoding: "utf-8" })
+    const agentLogs = execSync(`docker logs palimesh-h15-agent 2>&1 || true`, { encoding: "utf-8" })
     const hasFingerprintMode = agentLogs.includes("endpoint fingerprint mode")
     const hasRewardTargets = agentLogs.includes("reward targets refreshed")
     if (!hasFingerprintMode || !hasRewardTargets) {
@@ -118,9 +118,9 @@ describe("R2.1 — PoSe end-to-end epoch sanity", { timeout: 360_000 }, () => {
 
   it("relayer container has not crashed (no restart in 60 s)", async () => {
     await sleep(60_000)
-    assert.ok(containerAlive("coc-h15-relayer"), "coc-h15-relayer crashed")
-    const restarts = execSync(`docker inspect --format '{{.RestartCount}}' coc-h15-relayer 2>/dev/null || echo 0`, { encoding: "utf-8" }).trim()
-    assert.ok(Number(restarts) <= 1, `coc-h15-relayer restarted ${restarts} times`)
+    assert.ok(containerAlive("palimesh-h15-relayer"), "palimesh-h15-relayer crashed")
+    const restarts = execSync(`docker inspect --format '{{.RestartCount}}' palimesh-h15-relayer 2>/dev/null || echo 0`, { encoding: "utf-8" }).trim()
+    assert.ok(Number(restarts) <= 1, `palimesh-h15-relayer restarted ${restarts} times`)
     console.log(`  ✅ relayer stable (restarts=${restarts})`)
   })
 })

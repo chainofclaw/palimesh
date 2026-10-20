@@ -68,9 +68,9 @@ function createMockDidOpts() {
 describe("DID RPC methods via handleRpcMethod", () => {
   const opts = createMockDidOpts()
 
-  it("coc_resolveDid returns DIDResolutionResult", async () => {
+  it("pali_resolveDid returns DIDResolutionResult", async () => {
     const result = await handleRpcMethod(
-      "coc_resolveDid", ["did:coc:0xtest"],
+      "pali_resolveDid", ["did:coc:0xtest"],
       CHAIN_ID, stubEvm, stubChain, stubP2p, undefined, opts,
     ) as any
     assert.ok(result.didDocument)
@@ -78,9 +78,9 @@ describe("DID RPC methods via handleRpcMethod", () => {
     assert.ok(result.didResolutionMetadata)
   })
 
-  it("coc_getDIDDocument returns DIDDocument, not DIDResolutionResult", async () => {
+  it("pali_getDIDDocument returns DIDDocument, not DIDResolutionResult", async () => {
     const result = await handleRpcMethod(
-      "coc_getDIDDocument", ["0xtest"],
+      "pali_getDIDDocument", ["0xtest"],
       CHAIN_ID, stubEvm, stubChain, stubP2p, undefined, opts,
     ) as any
     assert.equal(result.id, "did:coc:0xtest")
@@ -88,9 +88,9 @@ describe("DID RPC methods via handleRpcMethod", () => {
     assert.equal(result.didResolutionMetadata, undefined)
   })
 
-  it("coc_getAgentCapabilities returns { capabilities, bitmask }", async () => {
+  it("pali_getAgentCapabilities returns { capabilities, bitmask }", async () => {
     const result = await handleRpcMethod(
-      "coc_getAgentCapabilities", ["0x" + "aa".repeat(32)],
+      "pali_getAgentCapabilities", ["0x" + "aa".repeat(32)],
       CHAIN_ID, stubEvm, stubChain, stubP2p, undefined, opts,
     ) as any
     assert.ok(Array.isArray(result.capabilities))
@@ -99,9 +99,9 @@ describe("DID RPC methods via handleRpcMethod", () => {
     assert.ok(result.capabilities.includes("storage"))
   })
 
-  it("coc_getDelegations returns DelegationRecord[]", async () => {
+  it("pali_getDelegations returns DelegationRecord[]", async () => {
     const result = await handleRpcMethod(
-      "coc_getDelegations", ["0x" + "aa".repeat(32)],
+      "pali_getDelegations", ["0x" + "aa".repeat(32)],
       CHAIN_ID, stubEvm, stubChain, stubP2p, undefined, opts,
     ) as DelegationRecord[]
     assert.ok(Array.isArray(result))
@@ -111,9 +111,9 @@ describe("DID RPC methods via handleRpcMethod", () => {
     assert.equal(typeof result[0].revoked, "boolean")
   })
 
-  it("coc_getAgentLineage returns lineage with bigint serialized", async () => {
+  it("pali_getAgentLineage returns lineage with bigint serialized", async () => {
     const result = await handleRpcMethod(
-      "coc_getAgentLineage", ["0x" + "aa".repeat(32)],
+      "pali_getAgentLineage", ["0x" + "aa".repeat(32)],
       CHAIN_ID, stubEvm, stubChain, stubP2p, undefined, opts,
     ) as any
     assert.ok(result)
@@ -123,9 +123,9 @@ describe("DID RPC methods via handleRpcMethod", () => {
     assert.equal(result.generation, 2)
   })
 
-  it("coc_getVerificationMethods returns array", async () => {
+  it("pali_getVerificationMethods returns array", async () => {
     const result = await handleRpcMethod(
-      "coc_getVerificationMethods", ["0x" + "aa".repeat(32)],
+      "pali_getVerificationMethods", ["0x" + "aa".repeat(32)],
       CHAIN_ID, stubEvm, stubChain, stubP2p, undefined, opts,
     ) as any[]
     assert.ok(Array.isArray(result))
@@ -135,10 +135,10 @@ describe("DID RPC methods via handleRpcMethod", () => {
     assert.equal(result[0].active, true)
   })
 
-  it("coc_getCredentialAnchor returns { valid, error?, anchor? }", async () => {
+  it("pali_getCredentialAnchor returns { valid, error?, anchor? }", async () => {
     // Valid anchor
     const valid = await handleRpcMethod(
-      "coc_getCredentialAnchor", ["0x" + "99".repeat(32)],
+      "pali_getCredentialAnchor", ["0x" + "99".repeat(32)],
       CHAIN_ID, stubEvm, stubChain, stubP2p, undefined, opts,
     ) as OnChainCredentialAnchorResult
     assert.equal(valid.valid, true)
@@ -147,7 +147,7 @@ describe("DID RPC methods via handleRpcMethod", () => {
 
     // Not found
     const notFound = await handleRpcMethod(
-      "coc_getCredentialAnchor", ["0x" + "00".repeat(32)],
+      "pali_getCredentialAnchor", ["0x" + "00".repeat(32)],
       CHAIN_ID, stubEvm, stubChain, stubP2p, undefined, opts,
     ) as OnChainCredentialAnchorResult
     assert.equal(notFound.valid, false)
@@ -155,9 +155,9 @@ describe("DID RPC methods via handleRpcMethod", () => {
   })
 
   it("bigint fields serialize as hex strings through jsonStringify", async () => {
-    // coc_getAgentLineage returns bigint forkHeight
+    // pali_getAgentLineage returns bigint forkHeight
     const lineage = await handleRpcMethod(
-      "coc_getAgentLineage", ["0x" + "aa".repeat(32)],
+      "pali_getAgentLineage", ["0x" + "aa".repeat(32)],
       CHAIN_ID, stubEvm, stubChain, stubP2p, undefined, opts,
     ) as { forkHeight: bigint; generation: number; parentAgentId: string }
 
@@ -173,9 +173,9 @@ describe("DID RPC methods via handleRpcMethod", () => {
     assert.equal(wireShape.parentAgentId, "0x" + "ee".repeat(32))
   })
 
-  it("coc_getVerificationMethods bigint timestamps serialize as hex", async () => {
+  it("pali_getVerificationMethods bigint timestamps serialize as hex", async () => {
     const methods = await handleRpcMethod(
-      "coc_getVerificationMethods", ["0x" + "aa".repeat(32)],
+      "pali_getVerificationMethods", ["0x" + "aa".repeat(32)],
       CHAIN_ID, stubEvm, stubChain, stubP2p, undefined, opts,
     ) as Array<{ addedAt: bigint; revokedAt: bigint; keyAddress: string }>
 
@@ -188,9 +188,9 @@ describe("DID RPC methods via handleRpcMethod", () => {
     assert.equal(wireShape[0].keyAddress, "0x" + "11".repeat(20)) // addresses unchanged
   })
 
-  it("coc_getCredentialAnchor wire shape: hex bytes32 + number timestamps", async () => {
+  it("pali_getCredentialAnchor wire shape: hex bytes32 + number timestamps", async () => {
     const result = await handleRpcMethod(
-      "coc_getCredentialAnchor", ["0x" + "99".repeat(32)],
+      "pali_getCredentialAnchor", ["0x" + "99".repeat(32)],
       CHAIN_ID, stubEvm, stubChain, stubP2p, undefined, opts,
     ) as OnChainCredentialAnchorResult
 
@@ -228,11 +228,11 @@ describe("DID RPC methods via handleRpcMethod", () => {
 
   it("DID RPCs throw when resolver not configured", async () => {
     await assert.rejects(
-      () => handleRpcMethod("coc_resolveDid", ["did:coc:0x1"], CHAIN_ID, stubEvm, stubChain, stubP2p),
+      () => handleRpcMethod("pali_resolveDid", ["did:coc:0x1"], CHAIN_ID, stubEvm, stubChain, stubP2p),
       { message: /DID resolver not configured/ },
     )
     await assert.rejects(
-      () => handleRpcMethod("coc_getAgentCapabilities", ["0x1"], CHAIN_ID, stubEvm, stubChain, stubP2p),
+      () => handleRpcMethod("pali_getAgentCapabilities", ["0x1"], CHAIN_ID, stubEvm, stubChain, stubP2p),
       { message: /DID data provider not configured/ },
     )
   })

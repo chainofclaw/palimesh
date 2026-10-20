@@ -162,7 +162,7 @@ describe("Prowl wallet/toolchain RPC compatibility", () => {
     const txHash = await rpcCall(rpcPort, "eth_sendRawTransaction", [deployTx]) as string
     await engine.proposeNextBlock()
 
-    // #466: COC normalizes all address fields to lowercase (geth/erigon
+    // #466: Palimesh normalizes all address fields to lowercase (geth/erigon
     // parity); getCreateAddress returns EIP-55 mixed-case, so lowercase
     // here to match the wire format the receipt will carry.
     const contractAddress = getCreateAddress({ from: wallet.address, nonce: 0 }).toLowerCase()

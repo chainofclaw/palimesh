@@ -26,7 +26,7 @@ import { Contract, JsonRpcProvider } from "ethers"
 import { readFileSync, existsSync } from "node:fs"
 
 const RPC_PORTS = [38790, 38792, 38794, 38796, 38798] as const
-const DEPLOYED_PATH = "/passinger/projects/ClawdBot/COC/tests/multinode-integration/configs-h15/deployed-pose.json"
+const DEPLOYED_PATH = "/passinger/projects/ClawdBot/Palimesh/tests/multinode-integration/configs-h15/deployed-pose.json"
 
 describe("R2.1.f — slash event consistency", { timeout: 60_000 }, () => {
   let deployed: any
@@ -72,7 +72,7 @@ describe("R2.1.f — slash event consistency", { timeout: 60_000 }, () => {
 
   it("slash via EquivocationDetector is left for R3.1 follow-up", () => {
     console.log(`  ℹ️  Real slash flow needs EquivocationDetector.report() commit-reveal-settle`)
-    console.log(`     This is M10 (R3.1) — runtime/coc-equivocation-monitor.ts bridge`)
+    console.log(`     This is M10 (R3.1) — runtime/palimesh-equivocation-monitor.ts bridge`)
     console.log(`     Current invariant: ValidatorRegistry state is consistent across nodes`)
   })
 })

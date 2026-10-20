@@ -73,7 +73,7 @@ test("#320: invalid maxEntries rejected", () => {
 });
 
 test("#320: default cap matches MAX_CHALLENGES_DEFAULT", () => {
-  // Sanity — the default must match what coc-node uses, otherwise the
+  // Sanity — the default must match what palimesh-node uses, otherwise the
   // unit test wouldn't reflect production behaviour.
   assert.equal(MAX_CHALLENGES_DEFAULT, 100_000);
 });

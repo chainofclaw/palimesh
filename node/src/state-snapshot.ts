@@ -176,7 +176,7 @@ export async function importStateSnapshot(
       // "Stack underflow" (testnet repro 2026-04-25).
       // For accounts WITHOUT storage we keep the peer's storageRoot verbatim:
       // it might be the EthereumJS canonical empty (KECCAK256_RLP_S =
-      // 0x56e81f17…) for EVM-touched accounts, or COC's 0x000… sentinel for
+      // 0x56e81f17…) for EVM-touched accounts, or Palimesh's 0x000… sentinel for
       // accounts only ever written through our trie. Overriding either form
       // with the other diverges the encoded account JSON and cascades into
       // the account trie root → stateRoot mismatch.

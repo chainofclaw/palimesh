@@ -6,10 +6,10 @@ on:
 
 env:
   REGISTRY: ghcr.io
-  NODE_IMAGE: ghcr.io/chainofclaw/coc-node
-  RUNTIME_IMAGE: ghcr.io/chainofclaw/coc-runtime
-  EXPLORER_IMAGE: ghcr.io/chainofclaw/coc-explorer
-  FAUCET_IMAGE: ghcr.io/chainofclaw/coc-faucet
+  NODE_IMAGE: ghcr.io/palimesh/palimesh-node
+  RUNTIME_IMAGE: ghcr.io/palimesh/palimesh-runtime
+  EXPLORER_IMAGE: ghcr.io/palimesh/palimesh-explorer
+  FAUCET_IMAGE: ghcr.io/palimesh/palimesh-faucet
 
 jobs:
   build-and-push:

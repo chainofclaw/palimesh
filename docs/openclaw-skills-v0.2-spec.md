@@ -1,7 +1,7 @@
-# OpenClaw COC Skills v0.2 — Specification
+# OpenClaw Palimesh Skills v0.2 — Specification
 
 > **Audience**: skill implementers, OpenClaw plugin reviewers.
-> **Scope**: contract for the four new skills shipping with `coc-nodeops`
+> **Scope**: contract for the four new skills shipping with `palimesh-nodeops`
 > v0.2 (90-day roadmap Weeks 7–8). The CLI surface, JSON output schemas,
 > and exit codes are FROZEN by this spec; implementations may evolve
 > internals freely.
@@ -27,7 +27,7 @@ All four skills follow:
 - **Standard flags** (every skill must accept):
   - `--node <id>`: select node from `~/.coc/nodeops.json` (default: `default`)
   - `--rpc <url>`: bypass config, hit URL directly
-  - `--auth-token <token>`: admin RPC token (also reads `COC_RPC_AUTH_TOKEN`)
+  - `--auth-token <token>`: admin RPC token (also reads `PALI_RPC_AUTH_TOKEN`)
   - `--json`: structured output
   - `--timeout-ms <n>`: RPC call timeout (default 5000)
   - `--help`: print synopsis + exit 2
@@ -40,7 +40,7 @@ All four skills follow:
 
 **Purpose / 用途**: report the PoSe epoch state and per-node challenge
 metrics in a single roll-up. Replaces the manual chain of
-`curl /pose/status` + `coc_chainStats` + `coc-relayer` log scraping.
+`curl /pose/status` + `pali_chainStats` + `palimesh-relayer` log scraping.
 
 **Synopsis**:
 
@@ -64,7 +64,7 @@ openclaw coc pose-status [--node <id>] [--epoch <n>] [--json] [--watch]
   "node": {
     "id": "0xf39f…b92266",
     "rpc": "http://127.0.0.1:18780",
-    "version": "COC/0.2"
+    "version": "Palimesh/0.2"
   },
   "epoch": {
     "current": 142,
@@ -91,9 +91,9 @@ openclaw coc pose-status [--node <id>] [--epoch <n>] [--json] [--watch]
 - Pretty-printed banner identifies the failing leg in human mode; JSON
   mode encodes via the `health.issues` array.
 
-**Backing RPC calls**: `coc_nodeInfo`, `coc_chainStats`, `coc_getBftStatus`
-(BFT-progress signals, partial substitute for the `coc_poseStatus` originally
-sketched here), `coc_getEquivocations`. All read-only.
+**Backing RPC calls**: `pali_nodeInfo`, `pali_chainStats`, `pali_getBftStatus`
+(BFT-progress signals, partial substitute for the `pali_poseStatus` originally
+sketched here), `pali_getEquivocations`. All read-only.
 
 ## 2. `openclaw coc chain-stats`
 
@@ -133,16 +133,16 @@ openclaw coc chain-stats [--node <id>] [--window <duration>] [--validators] [--j
 }
 ```
 
-**Backing**: `coc_chainStats`, `eth_getBlockByNumber` for sampled blocks,
-`coc_validators` (per-validator stake + voting power; the
-`coc_validatorActivity` previously referenced here is not implemented —
+**Backing**: `pali_chainStats`, `eth_getBlockByNumber` for sampled blocks,
+`pali_validators` (per-validator stake + voting power; the
+`pali_validatorActivity` previously referenced here is not implemented —
 the `blocksProposed` / `missedRotations` fields above are computed
 skill-side by walking sampled blocks).
 
 ## 3. `openclaw coc health`
 
 **Purpose / 用途**: aggregated health diagnostic — composes the existing
-`coc_diagnostics` output with skill-side checks (BFT progress, sync gap,
+`pali_diagnostics` output with skill-side checks (BFT progress, sync gap,
 validator rotation participation, mempool size). Returns a single
 boolean + a list of issues.
 
@@ -202,8 +202,8 @@ openclaw coc upgrade [--node <id>] [--target <tag>] [--apply] [--json]
   "schemaVersion": "0.2",
   "skill": "coc.upgrade",
   "node": { "id": "...", "rpc": "..." },
-  "current": { "image": "ghcr.io/.../coc-node@sha256:abc...", "version": "COC/0.2" },
-  "target":  { "image": "ghcr.io/.../coc-node:latest",        "digest":  "sha256:def..." },
+  "current": { "image": "ghcr.io/.../palimesh-node@sha256:abc...", "version": "Palimesh/0.2" },
+  "target":  { "image": "ghcr.io/.../palimesh-node:latest",        "digest":  "sha256:def..." },
   "actions": [
     { "step": "docker pull",            "skipped": false },
     { "step": "docker compose up -d",   "skipped": false },
@@ -218,7 +218,7 @@ step's actual exit code.
 
 **Safety bars**:
 
-- `--apply` requires `COC_OPS_CONFIRM=1` env or `--yes` to proceed.
+- `--apply` requires `PALI_OPS_CONFIRM=1` env or `--yes` to proceed.
 - Aborts if the validator is currently the expected proposer for the
   next 3 heights (would induce stuck-round per J2.2's recovery path).
 - Post-upgrade validation polls `coc.health` for ≤60 s; if not green,
@@ -271,7 +271,7 @@ JSON schema requires either:
 1. Backwards-compatible additive change (new optional fields) — bump to
    `0.2.x` (no spec freeze churn).
 2. Breaking change — bump to `0.3` and update this spec; coordinate a
-   release of `coc-nodeops` accordingly.
+   release of `palimesh-nodeops` accordingly.
 
 ## 6. Out of scope (Phase L follow-ups)
 
@@ -285,7 +285,7 @@ JSON schema requires either:
 **Cross-references**
 
 - Roadmap: `docs/90-day-release-roadmap.zh-en.md` Week 7–8
-- Implementation example: `extensions/coc-nodeops/skills/pose-status/`
+- Implementation example: `extensions/palimesh-nodeops/skills/pose-status/`
   (this session)
-- Existing CLAUDE.md note: `coc-nodeops` was migrated to
-  `@chainofclaw/claw-mem` npm package; v0.2 lands the new skills there.
+- Existing CLAUDE.md note: `palimesh-nodeops` was migrated to
+  `@palimesh/claw-mem` npm package; v0.2 lands the new skills there.

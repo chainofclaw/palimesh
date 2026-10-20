@@ -364,7 +364,7 @@ export class BlockIndex implements IBlockIndex {
     }
     // #624: contract-creation txs carry `to: null` and the new contract's
     // address is in `receipt.contractAddress` instead. Pre-fix the index
-    // only saw `from` and `to`, so querying coc_getTransactionsByAddress
+    // only saw `from` and `to`, so querying pali_getTransactionsByAddress
     // for the contract returned an empty list even though the creation
     // tx IS part of the address's history (etherscan/explorer convention).
     // Index under contractAddress too so the deploy tx surfaces when a

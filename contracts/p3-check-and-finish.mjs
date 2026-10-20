@@ -11,7 +11,7 @@ const TXS = [
   "0x71cdb5b34497b37013fdbc65d37efee0b068164108364966c9edbed80dbd5dfa",  // anchor-1 stake
   "0x27112c6b6fd9ca4a46f7845c66f1948d4ffa1d8421ba79b4f24fe5f945b66fbb",  // anchor-2 stake
 ]
-const { abi } = JSON.parse(await readFile("/passinger/projects/ClawdBot/COC/contracts/artifacts/contracts-src/governance/ValidatorRegistry.sol/ValidatorRegistry.json","utf-8"))
+const { abi } = JSON.parse(await readFile("/passinger/projects/ClawdBot/Palimesh/contracts/artifacts/contracts-src/governance/ValidatorRegistry.sol/ValidatorRegistry.json","utf-8"))
 
 for (const rpc of RPCS) {
   console.log(`\n--- ${rpc} ---`)

@@ -49,7 +49,7 @@ import assert from "node:assert/strict"
 import { execSync } from "node:child_process"
 
 const RPC_PORTS = [38790, 38792, 38794, 38796, 38798] as const
-const STOPPED_NODE = "coc-h15-node-1"
+const STOPPED_NODE = "palimesh-h15-node-1"
 
 // Hardcoded in node/src/consensus.ts L72 — keep in sync.
 const NO_PROGRESS_TIMEOUT_MS = 600_000
@@ -168,7 +168,7 @@ describe("R1.4 — H15 staggered-fallback proposer override", { timeout: 1_500_0
     // line. At least one of them must have armed the override.
     let h15ObservedOn: string | null = null
     for (const i of [2, 3, 4, 5]) {
-      const container = `coc-h15-node-${i}`
+      const container = `palimesh-h15-node-${i}`
       try {
         const logs = execSync(`docker logs --tail 500 ${container} 2>&1 || true`, { encoding: "utf-8" })
         if (

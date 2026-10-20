@@ -1,5 +1,5 @@
 /**
- * Deploy ALL COC contracts to 88780 R3.2 testnet (UUPS proxies — gen-5)
+ * Deploy ALL Palimesh contracts to 88780 R3.2 testnet (UUPS proxies — gen-5)
  *
  * Run AFTER scripts/deploy-governance.js (which deploys FactionRegistry/DAO/
  * Treasury proxies). Picks up existing governance addresses from env if
@@ -11,8 +11,8 @@
  *
  * Usage:
  *   DEPLOYER_PRIVATE_KEY=0x...  (non-public — preflight enforces)
- *   COC_RPC_URL=http://209.74.64.88:38780
- *   COC_CHAIN_ID=88780
+ *   PALI_RPC_URL=http://209.74.64.88:38780
+ *   PALI_CHAIN_ID=88780
  *   MULTISIG_ADDRESS=0x...
  *   FACTION_REGISTRY=0x... GOVERNANCE_DAO=0x... TREASURY=0x...
  *     npx hardhat run scripts/deploy-all-88780.js --network coc
@@ -42,7 +42,7 @@ async function main() {
   // #683: address seeded into the RollupStateManager proposer allowlist.
   const outputProposer = process.env.OUTPUT_PROPOSER_ADDRESS || ethers.ZeroAddress
 
-  console.log("=== COC R3.2 88780 Full Contract Deploy (UUPS gen-5) ===")
+  console.log("=== Palimesh R3.2 88780 Full Contract Deploy (UUPS gen-5) ===")
   console.log(`Network:  ${network.name} (chainId: ${network.chainId})`)
   console.log(`Deployer: ${deployer.address}`)
   const bal = await ethers.provider.getBalance(deployer.address)
@@ -200,7 +200,7 @@ async function main() {
   console.log("=== Deployment Summary ===")
   console.log(JSON.stringify(deployed, null, 2))
   console.log(`\nManifest: ${outPath}`)
-  console.log("\nDon't forget to commit `contracts/.openzeppelin/coc-88780.json` —")
+  console.log("\nDon't forget to commit `contracts/.openzeppelin/palimesh-88780.json` —")
   console.log("the OZ upgrades plugin needs it to validate storage layout on future")
   console.log("upgradeProxy() calls. Losing it loses the safety check.")
 }

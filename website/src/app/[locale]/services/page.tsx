@@ -1,34 +1,31 @@
 'use client'
 
-import { useTranslations } from 'next-intl'
+import { useLocale, useTranslations } from 'next-intl'
+import { site, crossSiteUrl } from '@/config/site'
+import { AntiqueDivider } from '@/components/shared/Manuscript'
 import { Link } from '@/i18n/routing'
 
 export default function ServicesPage() {
   const t = useTranslations('services')
+  const tc = useTranslations('common')
+  const locale = useLocale()
 
   return (
     <div className="relative">
       {/* Hero */}
-      <section className="relative min-h-[60vh] flex items-center overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-bg-primary via-bg-secondary to-bg-primary">
-          <div className="absolute inset-0 opacity-20">
-            <div className="absolute top-20 left-20 w-96 h-96 bg-accent-cyan rounded-full blur-[120px] animate-pulse-slow" />
-            <div className="absolute bottom-20 right-20 w-96 h-96 bg-accent-purple rounded-full blur-[120px] animate-pulse-slow delay-1000" />
-          </div>
-        </div>
-
-        <div className="container mx-auto px-4 py-20 relative z-10">
+      <section className="manuscript-hero manuscript-hero--compact relative">
+        <div className="container mx-auto px-4 py-16 md:py-20 relative z-10">
           <div className="max-w-4xl mx-auto text-center">
             <div className="inline-block mb-6 fade-in">
-              <div className="px-4 py-2 rounded-full border border-accent-cyan/30 bg-accent-cyan/5 backdrop-blur-sm">
-                <span className="font-display text-sm text-accent-cyan tracking-wider">
+              <div className="">
+                <span className="kicker">
                   {t('heroBadge')}
                 </span>
               </div>
             </div>
 
             <h1 className="text-5xl md:text-6xl font-display font-bold mb-6 fade-in-delay-1">
-              <span className="gradient-text glow-text">{t('title')}</span>
+              <span className="ink-underline">{t('title')}</span>
             </h1>
             <p className="text-xl text-text-secondary font-body mb-4 fade-in-delay-2">
               {t('heroTagline')}
@@ -42,6 +39,7 @@ export default function ServicesPage() {
         <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-accent-cyan to-transparent" />
       </section>
 
+      <AntiqueDivider />
       <div className="container mx-auto px-4 py-16 max-w-6xl">
         {/* Service 1: DID */}
         <ServiceCard
@@ -51,7 +49,7 @@ export default function ServicesPage() {
           tagline={t('did.tagline')}
           features={[t('did.f1'), t('did.f2'), t('did.f3'), t('did.f4'), t('did.f5')]}
           installCmd={t('did.install')}
-          npmUrl="https://www.npmjs.com/package/@chainofclaw/coc-soul"
+          npmUrl="https://www.npmjs.com/package/@palimesh/palimesh-soul"
           contracts={[
             { name: 'SoulRegistry', addr: '0x959922bE3CAee4b8Cd9a407cc3ac1C251C2007B1' },
             { name: 'DIDRegistry', addr: '0x9A9f2CCfdE556A7E9Ff0848998Aa4a0CFD8863AE' },
@@ -67,7 +65,7 @@ export default function ServicesPage() {
           tagline={t('memory.tagline')}
           features={[t('memory.f1'), t('memory.f2'), t('memory.f3'), t('memory.f4'), t('memory.f5')]}
           installCmd={t('memory.install')}
-          npmUrl="https://www.npmjs.com/package/@chainofclaw/claw-mem"
+          npmUrl="https://www.npmjs.com/package/@palimesh/claw-mem"
           contracts={[
             { name: 'CidRegistry', addr: '0x68B1D87F95878fE05B998F19b66F4baba5De1aed' },
           ]}
@@ -76,15 +74,26 @@ export default function ServicesPage() {
 
         {/* Service 3: Node */}
         <ServiceCard
+          id="node"
           color="blue"
           badge={t('node.badge')}
           title={t('node.title')}
           tagline={t('node.tagline')}
           features={[t('node.f1'), t('node.f2'), t('node.f3'), t('node.f4'), t('node.f5')]}
           installCmd={t('node.install')}
-          npmUrl="https://www.npmjs.com/package/@chainofclaw/coc-node"
+          npmUrl="https://www.npmjs.com/package/@palimesh/palimesh-node"
           contracts={[]}
-          docsHref="/testnet"
+          docsHref="/docs"
+          footer={
+            <a
+              href={crossSiteUrl(locale, '/testnet')}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="ink-button text-sm"
+            >
+              {t('chainParams')}
+            </a>
+          }
         />
 
         {/* OpenClaw Marketplace listings */}
@@ -96,67 +105,66 @@ export default function ServicesPage() {
               </div>
             </div>
             <h2 className="text-3xl md:text-4xl font-display font-bold mb-2">
-              <span className="gradient-text">{t('openclawTitle')}</span>
+              <span>{t('openclawTitle')}</span>
             </h2>
             <p className="text-text-secondary font-body max-w-2xl mx-auto">
               {t('openclawSubtitle')}
             </p>
-            <div className="w-24 h-1 bg-gradient-cyber mx-auto mt-4 rounded-full" />
+            <div className="w-16 h-px bg-line mx-auto mt-4 rounded-full" />
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             <OpenclawCard
-              title="Memory system for claws"
+              title={t('openclawCards.mem.title')}
               skillId="//claw-mem"
               version="v2.3.1"
-              description="Give an AI agent persistent semantic memory that survives restarts and compaction. Captures structured observations from tool calls, summarizes sessions (LLM)…"
+              description={t('openclawCards.mem.description')}
               overall="review"
               scans={{ vt: 'suspicious', llm: 'suspicious', static: 'suspicious' }}
-              stats={{ downloads: 289, stars: 0, versions: 11, updated: 'May 11' }}
               color="purple"
             />
             <OpenclawCard
-              title="Node of COC testnet"
-              skillId="//coc-node"
+              title={t('openclawCards.node.title')}
+              skillId="//palimesh-node"
               version="v1.2.0"
-              description="Operate COC (ChainOfClaw) blockchain nodes — install, start, stop, monitor, and remove validator, fullnode, archive, gateway, and dev nodes. Use when the user…"
+              description={t('openclawCards.node.description')}
               overall="pass"
               scans={{ vt: 'pass', llm: 'pass', static: 'pass' }}
-              stats={{ downloads: 243, stars: 0, versions: 6, updated: 'May 11' }}
               color="blue"
             />
             <OpenclawCard
-              title="COC Soul Immortality"
-              skillId="//coc-soul"
+              title={t('openclawCards.soul.title')}
+              skillId="//palimesh-soul"
               version="v1.2.10"
-              description="Give an AI agent a persistent on-chain soul on COC — register and manage the agent's decentralized identity (DID), anchor encrypted backups to IPFS + SoulReg…"
+              description={t('openclawCards.soul.description')}
               overall="review"
               scans={{ vt: 'suspicious', llm: 'suspicious', static: 'pass' }}
-              stats={{ downloads: 323, stars: 1, versions: 13, updated: 'May 11' }}
               color="cyan"
             />
           </div>
         </section>
 
-        {/* Silicon Immortality narrative */}
+        {/* Lifecycle narrative */}
         <section className="mt-20 mb-8">
-          <div className="bg-gradient-to-br from-accent-cyan/10 via-accent-purple/10 to-accent-blue/10 backdrop-blur-lg rounded-2xl border border-accent-cyan/20 p-8 md:p-12">
+          <div className="bg-gradient-to-br from-accent-cyan/10 via-accent-purple/10 to-accent-blue/10 rounded-2xl border border-accent-cyan/20 p-8 md:p-12">
             <div className="max-w-3xl mx-auto text-center">
               <h2 className="text-3xl md:text-4xl font-display font-bold mb-6">
-                <span className="gradient-text">{t('immortalityTitle')}</span>
+                <span>{t('immortalityTitle')}</span>
               </h2>
               <p className="text-text-secondary font-body leading-relaxed">
                 {t('immortalityNarrative')}
               </p>
               <div className="mt-8 flex flex-wrap justify-center gap-4">
-                <Link
-                  href="/testnet"
-                  className="px-6 py-2 rounded-lg bg-gradient-cyber text-white font-display font-semibold hover:shadow-glow-md transition-all hover:scale-105 text-sm"
-                >
-                  R3.2 Testnet
-                </Link>
                 <a
-                  href="https://github.com/chainofclaw/COC"
+                  href={crossSiteUrl(locale, '/testnet')}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="px-6 py-2 rounded-lg seal-button text-sm"
+                >
+                  {tc('testnet')}
+                </a>
+                <a
+                  href={site.github}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="px-6 py-2 rounded-lg border border-accent-cyan/30 text-accent-cyan font-display font-semibold hover:bg-accent-cyan/10 transition-all text-sm"
@@ -175,6 +183,7 @@ export default function ServicesPage() {
 // ----- Components -----
 
 function ServiceCard({
+  id,
   color,
   badge,
   title,
@@ -184,7 +193,9 @@ function ServiceCard({
   npmUrl,
   contracts,
   docsHref,
+  footer,
 }: {
+  id?: string
   color: 'cyan' | 'purple' | 'blue'
   badge: string
   title: string
@@ -194,6 +205,7 @@ function ServiceCard({
   npmUrl: string
   contracts: Array<{ name: string; addr: string }>
   docsHref: string
+  footer?: React.ReactNode
 }) {
   const t = useTranslations('services')
   const colorMap: Record<string, { border: string; bg: string; text: string; gradient: string }> = {
@@ -201,7 +213,7 @@ function ServiceCard({
       border: 'border-accent-cyan/30',
       bg: 'from-accent-cyan/10 to-accent-cyan/5',
       text: 'text-accent-cyan',
-      gradient: 'bg-gradient-cyber',
+      gradient: 'bg-accent-purple',
     },
     purple: {
       border: 'border-accent-purple/30',
@@ -219,7 +231,7 @@ function ServiceCard({
   const c = colorMap[color]
 
   return (
-    <section className={`mb-12 rounded-2xl border ${c.border} bg-gradient-to-br ${c.bg} backdrop-blur-lg p-6 md:p-10`}>
+    <section id={id} className={`mb-12 rounded-2xl border ${c.border} bg-gradient-to-br ${c.bg} p-6 md:p-10`}>
       <div className={`inline-block text-xs font-mono ${c.text} mb-4 px-3 py-1 rounded-full border ${c.border}`}>
         {badge}
       </div>
@@ -261,7 +273,7 @@ function ServiceCard({
                 {contracts.map((ct) => (
                   <a
                     key={ct.addr}
-                    href={`https://explorer.clawchain.io/address/${ct.addr}`}
+                    href={`${site.chain.explorer}/address/${ct.addr}`}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="block bg-bg-primary/40 rounded p-2 hover:bg-bg-primary/60 transition-colors group"
@@ -281,7 +293,7 @@ function ServiceCard({
               href={npmUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className={`px-4 py-2 rounded-lg ${c.gradient} text-white font-display font-semibold text-sm hover:scale-105 transition-all`}
+              className={`px-4 py-2 rounded-lg ${c.gradient} text-white font-display font-semibold text-sm transition-all`}
             >
               {t('viewOnNpm')}
             </a>
@@ -294,6 +306,7 @@ function ServiceCard({
           </div>
         </div>
       </div>
+      {footer && <div className="mt-6 pt-6 border-t border-text-muted/10 flex flex-wrap gap-3">{footer}</div>}
     </section>
   )
 }
@@ -307,7 +320,6 @@ function OpenclawCard({
   description,
   overall,
   scans,
-  stats,
   color,
 }: {
   title: string
@@ -316,7 +328,6 @@ function OpenclawCard({
   description: string
   overall: ScanStatus
   scans: { vt: ScanStatus; llm: ScanStatus; static: ScanStatus }
-  stats: { downloads: number; stars: number; versions: number; updated: string }
   color: 'cyan' | 'purple' | 'blue'
 }) {
   const t = useTranslations('services')
@@ -350,7 +361,7 @@ function OpenclawCard({
 
   return (
     <div
-      className={`bg-bg-secondary/40 backdrop-blur-lg rounded-xl border ${borderMap[color]} p-5 transition-all hover:scale-[1.02] flex flex-col h-full`}
+      className={`vellum-card rounded-xl border ${borderMap[color]} p-5 transition-all hover:scale-[1.02] flex flex-col h-full`}
     >
       <div className="flex items-start justify-between mb-3 gap-2">
         <h3 className="text-base font-display font-bold text-text-primary leading-snug">{title}</h3>
@@ -388,21 +399,6 @@ function OpenclawCard({
         </div>
       </div>
 
-      <div className="grid grid-cols-4 gap-2 text-center text-xs font-mono mt-auto pt-3 border-t border-text-muted/10">
-        <StatCell label={t('downloads')} value={stats.downloads.toLocaleString()} />
-        <StatCell label={t('stars')} value={String(stats.stars)} />
-        <StatCell label={t('versions')} value={String(stats.versions)} />
-        <StatCell label={t('updated')} value={stats.updated} />
-      </div>
-    </div>
-  )
-}
-
-function StatCell({ label, value }: { label: string; value: string }) {
-  return (
-    <div>
-      <div className="text-text-primary font-display font-bold text-sm">{value}</div>
-      <div className="text-[10px] text-text-muted uppercase tracking-wider mt-0.5">{label}</div>
     </div>
   )
 }

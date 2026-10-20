@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-COC (ChainOfClaw) is an EVM-compatible blockchain prototype integrating a PoSe (Proof-of-Service) settlement mechanism and an IPFS-compatible storage interface.
+Palimesh (Palimesh) is an EVM-compatible blockchain prototype integrating a PoSe (Proof-of-Service) settlement mechanism and an IPFS-compatible storage interface.
 
 ## Workspace Structure
 
@@ -13,18 +13,18 @@ The project uses npm workspaces to manage multiple packages:
 - `node/`: Blockchain core engine (ChainEngine, EVM, P2P, RPC, IPFS)
 - `contracts/`: Solidity smart contracts (PoSeManager settlement contract)
 - `services/`: PoSe off-chain services (challenger, verifier, aggregator, relayer)
-- `runtime/`: Runtime executables (coc-node, coc-agent, coc-relayer)
+- `runtime/`: Runtime executables (palimesh-node, palimesh-agent, palimesh-relayer)
 - `nodeops/`: Node operations and policy engine
 - `wallet/`: CLI wallet tool
 - `tests/`: Integration and end-to-end tests
 - `explorer/`: Next.js blockchain explorer
 - `website/`: Project website
 
-> **Note:** The previous `extensions/coc-nodeops/` and `extensions/coc-backup/`
+> **Note:** The previous `extensions/palimesh-nodeops/` and `extensions/palimesh-backup/`
 > folders have been migrated to the standalone
-> [`@chainofclaw/claw-mem`](https://www.npmjs.com/package/@chainofclaw/claw-mem)
-> npm package. Install it directly (`npm install @chainofclaw/claw-mem`) —
-> COC no longer hosts the extension code.
+> [`@palimesh/claw-mem`](https://www.npmjs.com/package/@palimesh/claw-mem)
+> npm package. Install it directly (`npm install @palimesh/claw-mem`) —
+> Palimesh no longer hosts the extension code.
 
 ## Runtime Requirements
 
@@ -49,7 +49,7 @@ npm test                 # Hardhat tests
 npm run coverage         # Coverage check
 npm run coverage:check   # Verify coverage thresholds
 npm run deploy:local     # Deploy to local network
-npm run deploy:governance:coc   # Deploy governance contracts to the default COC network alias
+npm run deploy:governance:coc   # Deploy governance contracts to the default Palimesh network alias
 # Contract verification is exposed through explorer /verify,
 # not a Hardhat verify:pose script
 ```
@@ -83,11 +83,11 @@ Policy files are located at `nodeops/policies/*.yaml` and can be loaded and eval
 ## Test Strategy
 
 Uses Node.js built-in test framework and Hardhat test runner (`1682` tests across `155` test files, excluding vendored `node_modules` tests):
-- **Node layer tests**: `node/src/*.test.ts node/src/**/*.test.ts` (`899` tests, `75` files) - chain engine, EVM, RPC, WebSocket, P2P, mempool, storage, IPFS, PoSe, BFT consensus, DHT, wire protocol, fork choice, state snapshot, wire server, DHT network, snap sync, consensus-BFT integration, consensus metrics, wire connection manager, wire tx relay, sync progress, gas histogram, governance stats, wire dedup/relay, security hardening, P2P auth, wire auth handshake, replay guard, nonce registry, PoSe auth, Prometheus metrics, BFT slashing, Phase 36 ops hardening, algorithm safety audit round 3, P2P benchmarks, wire priority frames, stateRoot verification, speculative execution, coc_getEquivocations, ethers toolchain compatibility, viem toolchain compatibility, fee oracle, RPC data accuracy, block format standardization
+- **Node layer tests**: `node/src/*.test.ts node/src/**/*.test.ts` (`899` tests, `75` files) - chain engine, EVM, RPC, WebSocket, P2P, mempool, storage, IPFS, PoSe, BFT consensus, DHT, wire protocol, fork choice, state snapshot, wire server, DHT network, snap sync, consensus-BFT integration, consensus metrics, wire connection manager, wire tx relay, sync progress, gas histogram, governance stats, wire dedup/relay, security hardening, P2P auth, wire auth handshake, replay guard, nonce registry, PoSe auth, Prometheus metrics, BFT slashing, Phase 36 ops hardening, algorithm safety audit round 3, P2P benchmarks, wire priority frames, stateRoot verification, speculative execution, pali_getEquivocations, ethers toolchain compatibility, viem toolchain compatibility, fee oracle, RPC data accuracy, block format standardization
 - **Services + NodeOps tests**: `services/**/*.test.ts` + `nodeops/*.test.ts` (`164` tests, `25` files) - PoSe v2 services, reward tree, scoring determinism, challenger rewards, policy DSL, policy hot reload
-- **Runtime tests**: `runtime/lib/*.test.ts` + `runtime/coc-relayer.test.ts` (`72` tests, `16` files) - pending retention, runtime metrics, agent metrics server, reward manifest, pose-v2 fault proof, relayer dispute recovery, BFT slash bridge
+- **Runtime tests**: `runtime/lib/*.test.ts` + `runtime/palimesh-relayer.test.ts` (`72` tests, `16` files) - pending retention, runtime metrics, agent metrics server, reward manifest, pose-v2 fault proof, relayer dispute recovery, BFT slash bridge
 - **Tests workspace**: `tests/**/*.test.ts` (`178` tests, `14` files) - integration, e2e, stress, chaos, governance scripts, infra validation, v1 reward scoring, contract lifecycle
-- **Wallet tests**: `wallet/coc-wallet.test.ts` (`8` tests, `1` file) - wallet CLI, keystore, import/export, formatting
+- **Wallet tests**: `wallet/palimesh-wallet.test.ts` (`8` tests, `1` file) - wallet CLI, keystore, import/export, formatting
 - **Explorer tests**: `explorer/src/lib/*.test.ts` (`43` tests, `3` files) - ABI decoding, provider helpers, Solidity compiler version resolution
 - **Faucet tests**: `faucet/src/*.test.ts` (`26` tests, `3` files) - drip flow, web UI, server wiring, cooldown logic
 - **Contract deploy tests**: `contracts/deploy/*.test.ts` (`18` tests, `2` files) - deploy config resolution, CLI wrapper, PoSe deploy helper validation
@@ -100,31 +100,31 @@ Uses Node.js built-in test framework and Hardhat test runner (`1682` tests acros
 Running tests:
 ```bash
 # Node layer tests
-cd /path/to/COC && node --experimental-strip-types --test $(find node/src -name '*.test.ts' -type f | sort)
+cd /path/to/Palimesh && node --experimental-strip-types --test $(find node/src -name '*.test.ts' -type f | sort)
 
 # Runtime tests
-cd /path/to/COC && node --experimental-strip-types --test $(find runtime/lib -name '*.test.ts' -type f | sort) runtime/coc-relayer.test.ts
+cd /path/to/Palimesh && node --experimental-strip-types --test $(find runtime/lib -name '*.test.ts' -type f | sort) runtime/palimesh-relayer.test.ts
 
 # Service + ops tests
-cd /path/to/COC && node --experimental-strip-types --test services/**/*.test.ts nodeops/*.test.ts
+cd /path/to/Palimesh && node --experimental-strip-types --test services/**/*.test.ts nodeops/*.test.ts
 
 # Tests workspace
-cd /path/to/COC && node --experimental-strip-types --test tests/**/*.test.ts
+cd /path/to/Palimesh && node --experimental-strip-types --test tests/**/*.test.ts
 
 # Wallet tests
-cd /path/to/COC && node --experimental-strip-types --test wallet/coc-wallet.test.ts
+cd /path/to/Palimesh && node --experimental-strip-types --test wallet/palimesh-wallet.test.ts
 
 # Explorer tests
-cd /path/to/COC && node --experimental-default-type=module --experimental-strip-types --test explorer/src/lib/*.test.ts
+cd /path/to/Palimesh && node --experimental-default-type=module --experimental-strip-types --test explorer/src/lib/*.test.ts
 
 # Faucet tests
-cd /path/to/COC && node --experimental-strip-types --test faucet/src/*.test.ts
+cd /path/to/Palimesh && node --experimental-strip-types --test faucet/src/*.test.ts
 
-# claw-mem tests (formerly coc-nodeops + coc-backup extensions)
+# claw-mem tests (formerly palimesh-nodeops + palimesh-backup extensions)
 cd /path/to/claw-mem && npm test
 
 # Contract deploy config tests
-cd /path/to/COC && node --experimental-default-type=module --experimental-strip-types --test contracts/deploy/*.test.ts
+cd /path/to/Palimesh && node --experimental-default-type=module --experimental-strip-types --test contracts/deploy/*.test.ts
 
 # Contract tests
 cd contracts && npm test
@@ -139,7 +139,7 @@ cd contracts && npm test
 - `p2p.ts`: HTTP gossip network (per-peer dedup, request body limits, broadcast concurrency control)
 - `rpc.ts`: JSON-RPC interface (83+ methods, parameter validation, structured error codes)
 - `websocket-rpc.ts`: WebSocket RPC (eth_subscribe, subscription validation and limits, idle timeout)
-- `config.ts`: Node configuration with validation (chainId, ports, validators, storage, enableBft, enableWireProtocol, enableDht, enableSnapSync, rpcAuthToken, enableAdminRpc, COC_*_BIND env vars, nodeMode full/archive/light)
+- `config.ts`: Node configuration with validation (chainId, ports, validators, storage, enableBft, enableWireProtocol, enableDht, enableSnapSync, rpcAuthToken, enableAdminRpc, PALI_*_BIND env vars, nodeMode full/archive/light)
 - `mempool.ts`: Transaction mempool (EIP-1559 effective gas price sorting)
 - `base-fee.ts`: EIP-1559 dynamic baseFee calculation
 - `fee-oracle.ts`: Fee estimation module (priority fee median, fee history reward percentiles, cache)
@@ -180,9 +180,9 @@ cd contracts && npm test
 - `common/`: Shared types, Merkle tree, and role registry
 
 ### Runtime Services (runtime/)
-- `coc-node.ts`: PoSe challenge/receipt HTTP endpoints, dual-version signing (v1 EIP-191 / v2 EIP-712), `/pose/witness` endpoint
-- `coc-agent.ts`: Challenge generation, batch submission, node registration, v2 witness collection, persistent pending store, runtime metrics (JSON + Prometheus + HTTP), tick reentrance guard
-- `coc-relayer.ts`: Epoch finalization (v1 + v2), fault proof submission, slash hooks, tick reentrance guard
+- `palimesh-node.ts`: PoSe challenge/receipt HTTP endpoints, dual-version signing (v1 EIP-191 / v2 EIP-712), `/pose/witness` endpoint
+- `palimesh-agent.ts`: Challenge generation, batch submission, node registration, v2 witness collection, persistent pending store, runtime metrics (JSON + Prometheus + HTTP), tick reentrance guard
+- `palimesh-relayer.ts`: Epoch finalization (v1 + v2), fault proof submission, slash hooks, tick reentrance guard
 - `lib/`: Runtime utilities (pending-retention, runtime-metrics, agent-metrics-server, witness-collector, contract-reader, config, evidence-store)
 
 ### Node Operations (nodeops/)
@@ -200,13 +200,13 @@ cd contracts && npm test
   - `alerts-policy.yaml`: Alerts policy
 
 ### Blockchain Explorer (explorer/)
-- `src/app/page.tsx`: Home - chain stats dashboard (coc_chainStats) + latest blocks + WebSocket real-time updates
+- `src/app/page.tsx`: Home - chain stats dashboard (pali_chainStats) + latest blocks + WebSocket real-time updates
 - `src/app/block/[id]/page.tsx`: Block detail page (full tx table, method decoding, gas utilization, proposer, stateRoot)
 - `src/app/tx/[hash]/page.tsx`: Transaction detail page (receipt, logs, token transfers, internal transactions trace)
 - `src/app/address/[address]/page.tsx`: Address page (balance, tx history with type classification, contract deployment metadata)
 - `src/app/mempool/page.tsx`: Mempool page (pool stats, pending/queued tabs, sorting, filtering)
 - `src/app/validators/page.tsx`: Validators page (governance stake, voting power, validator status)
-- `src/app/stats/page.tsx`: Stats page (chain activity, TPS, gas usage visualization, coc_chainStats)
+- `src/app/stats/page.tsx`: Stats page (chain activity, TPS, gas usage visualization, pali_chainStats)
 - `src/app/contracts/page.tsx`: Contracts page (indexed lookup via contract registry, pagination)
 - `src/app/network/page.tsx`: Network page (node info, connection endpoints)
 - `src/app/verify/page.tsx`: Contract verification page (solc-js source verification, M7)
@@ -294,9 +294,9 @@ cd contracts && npm test
 
 ## Known issues (testnet debugging record, 2026-04)
 
-Tracked on [github.com/NGPlateform/COC/issues](https://github.com/NGPlateform/COC/issues):
+Tracked on [github.com/NGPlateform/Palimesh/issues](https://github.com/NGPlateform/Palimesh/issues):
 
-- **#2** — Peer identity verification fails when peers advertise docker-internal DNS URLs. Fixed by #4 (`fix/advertised-url-peer-discovery`): `NodePeer.advertisedUrl` + `NodeConfig.advertisedP2pUrl` + env `COC_ADVERTISED_P2P_URL`. Deployments behind NAT/docker must set the advertised URL for external observers.
+- **#2** — Peer identity verification fails when peers advertise docker-internal DNS URLs. Fixed by #4 (`fix/advertised-url-peer-discovery`): `NodePeer.advertisedUrl` + `NodeConfig.advertisedP2pUrl` + env `PALI_ADVERTISED_P2P_URL`. Deployments behind NAT/docker must set the advertised URL for external observers.
 - **#3** — Validators on the same network commit divergent state tries (same block number → different stateRoot per validator), and tx deploys show up on only 2 of 3 validators' `eth_getCode` even with `receipt.status=1`. Likely downstream of #2 — validators couldn't verify each other's identity so BFT quorum never formed. Re-validate after deploying the #4 fix.
 
 When debugging a multi-node cluster, the quick diagnostic is:

@@ -16,7 +16,7 @@ require_gcloud
 stop_one() {
   local name="$1" zone="$2"
   local state
-  state=$(gcloud compute instances describe "$name" --zone="$zone" --project="$COC_GCP_PROJECT" \
+  state=$(gcloud compute instances describe "$name" --zone="$zone" --project="$PALI_GCP_PROJECT" \
     --format="value(status)" 2>/dev/null || echo MISSING)
   if [[ "$state" == "MISSING" ]]; then
     echo "  $name: not found"; return
@@ -25,11 +25,11 @@ stop_one() {
     echo "  $name: already stopped"; return
   fi
   echo "  $name ($zone): stopping..."
-  gcloud compute instances stop "$name" --zone="$zone" --project="$COC_GCP_PROJECT" --quiet
+  gcloud compute instances stop "$name" --zone="$zone" --project="$PALI_GCP_PROJECT" --quiet
 }
 
 case "${1:-}" in
-  anchor-1) stop_one "$COC_ANCHOR_1_NAME" "$COC_ANCHOR_1_ZONE" ;;
-  anchor-2) stop_one "$COC_ANCHOR_2_NAME" "$COC_ANCHOR_2_ZONE" ;;
+  anchor-1) stop_one "$PALI_ANCHOR_1_NAME" "$PALI_ANCHOR_1_ZONE" ;;
+  anchor-2) stop_one "$PALI_ANCHOR_2_NAME" "$PALI_ANCHOR_2_ZONE" ;;
   *) echo "usage: $0 {anchor-1|anchor-2}" >&2; exit 2 ;;
 esac

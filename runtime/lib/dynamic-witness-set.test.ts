@@ -6,7 +6,7 @@
 // `_validateWitnessQuorumV2` recovered signers that didn't sit at the
 // contract-expected slots and every batch reverted `InvalidWitnessQuorum()`.
 //
-// Fix (Option A, coc-agent.ts:computeDynamicWitnessNodesForEpoch): call
+// Fix (Option A, palimesh-agent.ts:computeDynamicWitnessNodesForEpoch): call
 // `getWitnessSet(epochId)` at every tick and translate the returned
 // nodeIds into WitnessNodeConfig entries whose `witnessIndex = position
 // in getWitnessSet(...) result`. The tests below assert the alignment
@@ -25,7 +25,7 @@ const RESPONSE_BODY_HASH: Hex32 = ("0x" + "cc".repeat(32)) as Hex32
 
 /**
  * Simulate the per-epoch dynamic witnessSet build. This mirrors the shape
- * `computeDynamicWitnessNodesForEpoch` produces in coc-agent.ts, minus
+ * `computeDynamicWitnessNodesForEpoch` produces in palimesh-agent.ts, minus
  * the on-chain lookup — we're testing that the resulting shape drives
  * `collectWitnesses` to write a bitmap whose bit positions match the
  * on-chain witnessSet indices.
@@ -89,7 +89,7 @@ test("#772: bitmap from collectWitnesses matches the sparse witnessIndex layout 
 
   // Mock requestFn: each witness echoes the exact witnessIndex the
   // collector sent, plus a fake sig. This is what a well-behaved
-  // coc-pose-witness does after our fix — the index it signs with is
+  // palimesh-pose-witness does after our fix — the index it signs with is
   // the one the challenger assigned, not one it picked itself.
   let sigCounter = 0
   const requestFn = async (

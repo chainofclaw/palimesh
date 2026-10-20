@@ -19,7 +19,7 @@ import type { CidString } from "./ipfs-types.ts"
 // Bypass for the whole test run; the limiter's own unit tests cover its
 // behaviour, and the IPFS HTTP routes don't change behaviour based on
 // whether the limiter is enabled.
-process.env.COC_RPC_RATE_LIMIT_DISABLED = "1"
+process.env.PALI_RPC_RATE_LIMIT_DISABLED = "1"
 
 let tmpDir: string
 let store: IpfsBlockstore
@@ -90,7 +90,7 @@ describe("IpfsHttpServer", () => {
     assert.equal(res.status, 200)
     const body = await res.json() as Record<string, string>
     assert.equal(body.Version, "0.1.0-coc")
-    assert.equal(body.Repo, "coc-ipfs")
+    assert.equal(body.Repo, "palimesh-ipfs")
   })
 
   it("GET /api/v0/id returns node identity", async () => {
@@ -116,7 +116,7 @@ describe("IpfsHttpServer", () => {
   })
 
   it("#590: POST /api/v0/swarm/peers returns wired peer set in kubo wire shape", async () => {
-    // With getSwarmPeers wired, the route maps the COC peer set to kubo's
+    // With getSwarmPeers wired, the route maps the Palimesh peer set to kubo's
     // `{Peer, Addr, Direction, Latency, Muxer, Streams}` per-entry shape.
     // Wire a fresh server with a stub peer-getter.
     const port2 = 30000 + Math.floor(Math.random() * 10000)
@@ -146,7 +146,7 @@ describe("IpfsHttpServer", () => {
       assert.equal(body.Peers[0].Addr, "http://10.0.0.1:29780", "no advertisedUrl → use url")
       assert.equal(body.Peers[1].Peer, "0xnode-2")
       assert.equal(body.Peers[1].Addr, "http://203.0.113.2:29780",
-        "advertisedUrl takes precedence over internal url (parity with coc_getPeers #108)")
+        "advertisedUrl takes precedence over internal url (parity with pali_getPeers #108)")
       // Wire-shape parity: kubo always emits these 6 keys.
       for (const p of body.Peers) {
         assert.ok("Peer" in p && "Addr" in p && "Direction" in p && "Latency" in p && "Muxer" in p && "Streams" in p,
@@ -887,8 +887,8 @@ describe("IpfsHttpServer", () => {
     assert.match(body.error, /invalid pin type/)
   })
 
-  it("#308 GET /api/v0/pin/ls?type=direct returns empty Keys (COC has no direct pins)", async () => {
-    // COC's pin model is recursive-only — direct/indirect filters must
+  it("#308 GET /api/v0/pin/ls?type=direct returns empty Keys (Palimesh has no direct pins)", async () => {
+    // Palimesh's pin model is recursive-only — direct/indirect filters must
     // return an empty result, NOT the full recursive set. Pre-fix every
     // type filter returned the same set, so a client filtering by
     // direct got recursive pins mis-labeled.
@@ -919,7 +919,7 @@ describe("IpfsHttpServer", () => {
     assert.equal(direct.status, 200)
     const directJson = await direct.json() as { Keys: Record<string, unknown> }
     assert.deepStrictEqual(directJson.Keys, {},
-      "type=direct must return empty Keys (COC has no direct pins) — pre-fix returned full recursive list")
+      "type=direct must return empty Keys (Palimesh has no direct pins) — pre-fix returned full recursive list")
 
     // type=indirect → empty
     const indirect = await fetch("/api/v0/pin/ls?type=indirect")
@@ -1608,7 +1608,7 @@ describe("IpfsHttpServer", () => {
     // Pre-fix isValidCid had `cid.length < 10 → invalid`, rejecting
     // `bafkqaaa` — the universally-accepted CIDv1 identity-hash empty
     // raw block (codec=raw, multihash=identity, digest length 0).
-    // kubo and ipfs-http-client both treat it as valid; COC rejected
+    // kubo and ipfs-http-client both treat it as valid; Palimesh rejected
     // it as "invalid cid", breaking interop with any tooling that
     // emits identity-hash CIDs (inline data, dag-cbor canonical
     // empty representations, etc.).
@@ -1965,7 +1965,7 @@ describe("IpfsHttpServer", () => {
   // client — repo/gc thrashes disk with GC scans + can wipe in-flight
   // unpinned blocks; block/rm deletes arbitrary blocks (including
   // pinned ones, since removeBlock unpins as part of removal). Restrict
-  // to loopback by default; opt-in via X-COC-IPFS-Admin-Token header.
+  // to loopback by default; opt-in via X-Palimesh-IPFS-Admin-Token header.
   describe("#344 IPFS admin endpoint auth gate", () => {
     it("repo/gc from loopback (default test client) succeeds", async () => {
       // Test client connects to 127.0.0.1 → loopback path → no token needed
@@ -2040,10 +2040,10 @@ describe("IpfsHttpServer", () => {
     it("isIpfsAdminAuthorized: non-loopback with matching token accepted", () => {
       const cfgWithToken = { bind: "0.0.0.0", port: 0, storageDir: "/tmp", adminAuthToken: "secret-token-xyz" }
       // matching token
-      const reqOk = { headers: { "x-coc-ipfs-admin-token": "secret-token-xyz" } } as unknown as http.IncomingMessage
+      const reqOk = { headers: { "x-palimesh-ipfs-admin-token": "secret-token-xyz" } } as unknown as http.IncomingMessage
       assert.equal(isIpfsAdminAuthorized(reqOk, "203.0.113.7", cfgWithToken), true)
       // wrong token rejected
-      const reqBad = { headers: { "x-coc-ipfs-admin-token": "wrong-token" } } as unknown as http.IncomingMessage
+      const reqBad = { headers: { "x-palimesh-ipfs-admin-token": "wrong-token" } } as unknown as http.IncomingMessage
       assert.equal(isIpfsAdminAuthorized(reqBad, "203.0.113.7", cfgWithToken), false)
       // missing header rejected
       const reqMissing = { headers: {} } as http.IncomingMessage
@@ -2195,7 +2195,7 @@ describe("#9 /api/v0/add auth + quota gate", () => {
 
   it("admin token caller bypasses the gate even from non-loopback", () => {
     const fakeReq = {
-      headers: { "x-coc-ipfs-admin-token": "supersecret", "content-length": "999999" },
+      headers: { "x-palimesh-ipfs-admin-token": "supersecret", "content-length": "999999" },
     } as unknown as http.IncomingMessage
     const cfg = { ...baseCfg, adminAuthToken: "supersecret" }
     const r = enforceAddAuth(fakeReq, "203.0.113.7", cfg, null)
@@ -2209,7 +2209,7 @@ describe("#9 /api/v0/add auth + quota gate", () => {
     if (!r.ok) {
       assert.equal(r.status, 403)
       assert.equal(r.body.error, "forbidden")
-      assert.equal(r.headers?.["www-authenticate"], "X-COC-IPFS-Admin-Token")
+      assert.equal(r.headers?.["www-authenticate"], "X-Palimesh-IPFS-Admin-Token")
     }
   })
 
@@ -2244,7 +2244,7 @@ describe("#9 /api/v0/add auth + quota gate", () => {
     if (!r.ok) {
       assert.equal(r.status, 413)
       assert.equal(r.body.scope, "per-key")
-      assert.equal(r.headers?.["x-coc-quota-scope"], "per-key")
+      assert.equal(r.headers?.["x-palimesh-quota-scope"], "per-key")
     }
   })
 
@@ -2318,7 +2318,7 @@ describe("#9 /api/v0/add auth + quota gate", () => {
 //
 // Fix: anonymous read paths build the InterfaceBlockstoreAdapter with
 // `localOnly:true`, which propagates `{localOnly:true}` to
-// `IpfsBlockstore.get`. Admin tier (loopback / X-COC-IPFS-Admin-Token)
+// `IpfsBlockstore.get`. Admin tier (loopback / X-Palimesh-IPFS-Admin-Token)
 // keeps the transparent peer-fetch so operator tooling still works.
 describe("#8 isLocalOnlyRead — anonymous read tier defense", () => {
   const baseCfg = { bind: "0.0.0.0", port: 0, storageDir: "/tmp" }
@@ -2335,7 +2335,7 @@ describe("#8 isLocalOnlyRead — anonymous read tier defense", () => {
 
   it("non-loopback caller with valid admin token is NOT local-only", () => {
     const fakeReq = {
-      headers: { "x-coc-ipfs-admin-token": "tokA" },
+      headers: { "x-palimesh-ipfs-admin-token": "tokA" },
       socket: { remoteAddress: "203.0.113.7" },
     } as unknown as http.IncomingMessage
     const cfg = { ...baseCfg, adminAuthToken: "tokA" }
@@ -2344,7 +2344,7 @@ describe("#8 isLocalOnlyRead — anonymous read tier defense", () => {
 
   it("non-loopback caller with wrong admin token IS local-only", () => {
     const fakeReq = {
-      headers: { "x-coc-ipfs-admin-token": "wrong" },
+      headers: { "x-palimesh-ipfs-admin-token": "wrong" },
       socket: { remoteAddress: "203.0.113.7" },
     } as unknown as http.IncomingMessage
     const cfg = { ...baseCfg, adminAuthToken: "tokA" }
@@ -2422,10 +2422,10 @@ describe("IpfsHttpServer Phase Q erasure coding", () => {
     assert.equal(res.status, 200)
     const json = await res.json() as Record<string, string>
     assert.ok(json.Hash, "manifest CID returned")
-    assert.equal(res.headers["x-coc-erasure-scheme"], "rs(4+2)")
-    assert.ok(typeof res.headers["x-coc-erasure-original-cid"] === "string", "original-cid header present")
+    assert.equal(res.headers["x-palimesh-erasure-scheme"], "rs(4+2)")
+    assert.ok(typeof res.headers["x-palimesh-erasure-original-cid"] === "string", "original-cid header present")
     // manifest CID and original-CID must differ (codecs differ).
-    assert.notEqual(json.Hash, res.headers["x-coc-erasure-original-cid"])
+    assert.notEqual(json.Hash, res.headers["x-palimesh-erasure-original-cid"])
     assert.equal(json.Size, String(payload.length))
   })
 
@@ -2475,7 +2475,7 @@ describe("IpfsHttpServer Phase Q erasure coding", () => {
       headers: { "content-type": contentType },
       body,
     })
-    const originalCid = String(addRes.headers["x-coc-erasure-original-cid"] ?? "")
+    const originalCid = String(addRes.headers["x-palimesh-erasure-original-cid"] ?? "")
     assert.ok(originalCid, "original CID header")
     const getRes = await fetch(`/api/v0/cat?arg=${originalCid}`)
     assert.equal(getRes.status, 200)
@@ -2503,7 +2503,7 @@ describe("IpfsHttpServer Phase Q erasure coding", () => {
       body,
     })
     assert.equal(res.status, 200)
-    assert.equal(res.headers["x-coc-erasure-scheme"], undefined)
+    assert.equal(res.headers["x-palimesh-erasure-scheme"], undefined)
   })
 
   it("GET /api/v0/erasure/status returns per-stripe availability", async () => {
@@ -2581,7 +2581,7 @@ describe("IpfsHttpServer Phase Q erasure coding", () => {
   })
 })
 
-// Phase C3.1: PUT awaits replication, emits X-COC-Replicas-Warning when
+// Phase C3.1: PUT awaits replication, emits X-Palimesh-Replicas-Warning when
 // the worst-case per-chunk replica count is below minReplicas.
 describe("IpfsHttpServer C3.1 replication warning", () => {
   let rTmpDir: string
@@ -2662,7 +2662,7 @@ describe("IpfsHttpServer C3.1 replication warning", () => {
     return { body, headers: { "content-type": `multipart/form-data; boundary=${boundary}` } }
   }
 
-  it("emits X-COC-Replicas-Warning when worst chunk < minReplicas", async () => {
+  it("emits X-Palimesh-Replicas-Warning when worst chunk < minReplicas", async () => {
     // Every CID reports only 1 successful replica; minReplicas=2.
     const awaiter: AwaitFn = async () => ({
       attempted: 3, succeeded: ["peerA"], failed: ["peerB", "peerC"], skippedLowPeers: false,
@@ -2672,12 +2672,12 @@ describe("IpfsHttpServer C3.1 replication warning", () => {
     const { body, headers } = makeMultipart("short file, single chunk")
     const res = await rFetch("/api/v0/add", { method: "POST", headers, body })
     assert.equal(res.status, 200)
-    const warning = res.headers["x-coc-replicas-warning"]
-    assert.ok(warning, `expected X-COC-Replicas-Warning header, got ${JSON.stringify(res.headers)}`)
+    const warning = res.headers["x-palimesh-replicas-warning"]
+    assert.ok(warning, `expected X-Palimesh-Replicas-Warning header, got ${JSON.stringify(res.headers)}`)
     assert.match(String(warning), /got 1\/2/)
   })
 
-  it("omits X-COC-Replicas-Warning when all chunks meet minReplicas", async () => {
+  it("omits X-Palimesh-Replicas-Warning when all chunks meet minReplicas", async () => {
     const awaiter: AwaitFn = async () => ({
       attempted: 3, succeeded: ["peerA", "peerB", "peerC"], failed: [], skippedLowPeers: false,
     })
@@ -2686,7 +2686,7 @@ describe("IpfsHttpServer C3.1 replication warning", () => {
     const { body, headers } = makeMultipart("abundantly replicated")
     const res = await rFetch("/api/v0/add", { method: "POST", headers, body })
     assert.equal(res.status, 200)
-    assert.equal(res.headers["x-coc-replicas-warning"], undefined)
+    assert.equal(res.headers["x-palimesh-replicas-warning"], undefined)
   })
 
   it("omits warning when awaiter returns null for every CID (no tracked pushes)", async () => {
@@ -2698,7 +2698,7 @@ describe("IpfsHttpServer C3.1 replication warning", () => {
     const { body, headers } = makeMultipart("no tracked push")
     const res = await rFetch("/api/v0/add", { method: "POST", headers, body })
     assert.equal(res.status, 200)
-    assert.equal(res.headers["x-coc-replicas-warning"], undefined)
+    assert.equal(res.headers["x-palimesh-replicas-warning"], undefined)
   })
 
   it("warning reflects the worst-case CID across the DAG", async () => {
@@ -2731,7 +2731,7 @@ describe("IpfsHttpServer C3.1 replication warning", () => {
 
     const res = await rFetch("/api/v0/add", { method: "POST", headers, body })
     assert.equal(res.status, 200)
-    const warning = String(res.headers["x-coc-replicas-warning"] ?? "")
+    const warning = String(res.headers["x-palimesh-replicas-warning"] ?? "")
     assert.match(warning, /got 0\/2 \(cid=/, `expected 0/2 with cid=..., got "${warning}"`)
   })
 })
@@ -3149,14 +3149,14 @@ describe("#468 UnixFS directory DAG", () => {
 
   it("gateway serves index.html for a directory CID", async () => {
     const { lines } = await addDir([
-      { filename: "index.html", content: "<title>COC</title>" },
+      { filename: "index.html", content: "<title>Palimesh</title>" },
       { filename: "other.txt", content: "x" },
     ])
     const root = lines[lines.length - 1].Hash
     const res = await fetch(`/ipfs/${root}`)
     assert.equal(res.status, 200)
     assert.match(String(res.headers["content-type"]), /text\/html/)
-    assert.equal(await res.text(), "<title>COC</title>")
+    assert.equal(await res.text(), "<title>Palimesh</title>")
   })
 
   it("gateway returns 404 for a missing path component", async () => {
@@ -3249,7 +3249,7 @@ describe("#468 UnixFS directory DAG", () => {
   // computes the merkle commitment for every file leaf via
   // computeFileMerkle (proven bit-equivalent to addFile in
   // ipfs-unixfs.test.ts) and persists it to file-meta.json. The
-  // X-COC-PoSe-Coverage response header surfaces the result.
+  // X-Palimesh-PoSe-Coverage response header surfaces the result.
   describe("#10 PoSe coverage on directory uploads", () => {
     async function readFileMeta(): Promise<Record<string, { merkleRoot?: string; merkleLeaves?: string[] }>> {
       const path = join(tmpDir, "file-meta.json")
@@ -3268,7 +3268,7 @@ describe("#468 UnixFS directory DAG", () => {
         body: multipart([{ filename: "doc.txt", content: "covered by PoSe" }]).body,
       })
       assert.equal(res.status, 200)
-      assert.equal(res.headers["x-coc-pose-coverage"], "files=1,skipped=0",
+      assert.equal(res.headers["x-palimesh-pose-coverage"], "files=1,skipped=0",
         "exactly one file must have been PoSe-covered")
       const raw = await res.text()
       const lines = raw.trim().split("\n").map((l) => JSON.parse(l) as Record<string, string>)
@@ -3296,7 +3296,7 @@ describe("#468 UnixFS directory DAG", () => {
         body,
       })
       assert.equal(res.status, 200)
-      assert.equal(res.headers["x-coc-pose-coverage"], "files=3,skipped=0",
+      assert.equal(res.headers["x-palimesh-pose-coverage"], "files=3,skipped=0",
         "all three file leaves must be PoSe-covered")
       const meta = await readFileMeta()
       const fileCount = Object.values(meta).filter((m) => m.merkleRoot && (m.merkleLeaves?.length ?? 0) > 0).length
@@ -3354,7 +3354,7 @@ describe("#468 UnixFS directory DAG", () => {
         body,
       })
       assert.equal(res.status, 200)
-      assert.equal(res.headers["x-coc-pose-coverage"], "files=0,skipped=0",
+      assert.equal(res.headers["x-palimesh-pose-coverage"], "files=0,skipped=0",
         "zero-file directory → zero coverage required, zero skipped")
     })
   })

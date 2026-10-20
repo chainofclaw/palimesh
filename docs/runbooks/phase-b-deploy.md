@@ -1,8 +1,8 @@
 # Phase B Deploy Runbook — BFT stateRoot pair-quorum
 
-Branch: `fix/reenable-bft-stateroot-vote` (pushed to NGPlateform/COC)
+Branch: `fix/reenable-bft-stateroot-vote` (pushed to NGPlateform/Palimesh)
 Commits: `ace850b` → `c557952` → `c5d6a2f` → `54e32f7` → `57f740f`
-Plan: `/home/baominghao/.claude/plans/coc-phase-b-stateroot-vote.md`
+Plan: `/home/baominghao/.claude/plans/palimesh-phase-b-stateroot-vote.md`
 
 ## What changes
 
@@ -29,11 +29,11 @@ Run from your laptop, not the testnet host:
 
 ```bash
 # Confirm the branch exists upstream on the fork
-gh api repos/NGPlateform/COC/branches/fix/reenable-bft-stateroot-vote \
+gh api repos/NGPlateform/Palimesh/branches/fix/reenable-bft-stateroot-vote \
   --jq '.commit.sha' | grep -q "^57f740f" && echo "branch ok"
 
 # Confirm the Phase A merge is already on main (prerequisite)
-gh api repos/NGPlateform/COC/commits/main --jq '.sha' | grep -q "^a07a8d8\|" \
+gh api repos/NGPlateform/Palimesh/commits/main --jq '.sha' | grep -q "^a07a8d8\|" \
   || echo "WARN: expected main at a07a8d8 or descendant"
 ```
 
@@ -42,7 +42,7 @@ gh api repos/NGPlateform/COC/commits/main --jq '.sha' | grep -q "^a07a8d8\|" \
 SSH to the testnet host and run:
 
 ```bash
-cd /path/to/COC  # the same dir your Phase A deploy used
+cd /path/to/Palimesh  # the same dir your Phase A deploy used
 git fetch origin
 git checkout fix/reenable-bft-stateroot-vote
 git pull --ff-only
@@ -107,10 +107,10 @@ for node in node-1 node-2 node-3; do
   echo "$node: $count speculative failures"
 done
 
-# 5. Production gate: COC_UNSAFE_ADVERSARIAL_SPEC_ROOT must NOT be set.
+# 5. Production gate: PALI_UNSAFE_ADVERSARIAL_SPEC_ROOT must NOT be set.
 for node in node-1 node-2 node-3; do
   docker compose -f docker/docker-compose.testnet.yml exec -T "$node" env \
-    | grep -q COC_UNSAFE_ADVERSARIAL_SPEC_ROOT \
+    | grep -q PALI_UNSAFE_ADVERSARIAL_SPEC_ROOT \
     && echo "FAIL $node: adversarial env leaked to production!" \
     || echo "ok   $node"
 done
@@ -145,7 +145,7 @@ while true; do
     [[ "$sr" != "$first" ]] && agree=0
   done
   # SSH to a validator to count speculative failures (needs ssh access)
-  spec_fail=$(ssh <host> "cd /path/to/COC && docker compose -f docker/docker-compose.testnet.yml logs --since=1m node-1 | grep -c 'speculative stateRoot compute failed'" 2>/dev/null || echo "N/A")
+  spec_fail=$(ssh <host> "cd /path/to/Palimesh && docker compose -f docker/docker-compose.testnet.yml logs --since=1m node-1 | grep -c 'speculative stateRoot compute failed'" 2>/dev/null || echo "N/A")
   delta=$((tip_dec - prev_tip))
   echo "$now|$tip_dec|$agree|$spec_fail|$delta" >> "$LOG"
   [[ "$agree" != "1" ]] && echo "$now DIVERGE at $bn"
@@ -170,7 +170,7 @@ done
   Collect `applyBlock phase` logs from all three nodes.
 - **BFT round time p95** > 2× Phase A baseline → perf regression. Phase
   B5 (empty-block short-circuit, timeout wrapper) goes live. Plan:
-  `coc-phase-b-stateroot-vote.md` §B5.
+  `palimesh-phase-b-stateroot-vote.md` §B5.
 
 ## Rollback
 

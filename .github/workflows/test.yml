@@ -192,3 +192,22 @@ jobs:
             exit 1
           fi
           echo "All test suites passed"
+
+  test-website:
+    name: Website (i18n + dual-variant build)
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - run: cd website && npm install --no-audit --no-fund
+      - name: i18n key alignment + brand-literal check
+        run: cd website && npm run check:i18n
+      - name: lib unit tests
+        run: cd website && node --experimental-strip-types --test $(find src/lib -name '*.test.ts' -type f | sort)
+      - name: Build palium variant
+        run: cd website && npm run build:palium
+      - name: Build palimesh variant
+        run: cd website && npm run build:palimesh

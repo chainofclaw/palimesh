@@ -1,18 +1,18 @@
 /**
  * RPC input-validation stress test — captures the Ralph-loop (2026-05-17)
- * coc_* malformed-input probes as a reusable suite: every malformed param must
+ * pali_* malformed-input probes as a reusable suite: every malformed param must
  * return a clean -32602 (invalid params), never -32603 / HTTP 500 / crash.
  *
- * Targets a live chain via COC_STRESS_RPC (default 127.0.0.1:18780). The whole
+ * Targets a live chain via PALI_STRESS_RPC (default 127.0.0.1:18780). The whole
  * suite skips gracefully when no chain is reachable, so it is CI-safe.
  *
- * Run: COC_STRESS_RPC=http://host:port node --experimental-strip-types --test tests/stress/rpc-validation.test.ts
+ * Run: PALI_STRESS_RPC=http://host:port node --experimental-strip-types --test tests/stress/rpc-validation.test.ts
  */
 import { describe, it } from "node:test"
 import assert from "node:assert/strict"
 import { rpc, tryGetHead } from "../../scripts/lib/rpc-helper.ts"
 
-const RPC = process.env.COC_STRESS_RPC ?? "http://127.0.0.1:18780"
+const RPC = process.env.PALI_STRESS_RPC ?? "http://127.0.0.1:18780"
 const reachable = (await tryGetHead(RPC)) !== null
 
 const INVALID_PARAMS = -32602
@@ -32,42 +32,42 @@ const MALFORMED: ReadonlyArray<readonly [string, unknown]> = [
 ]
 
 describe("RPC input validation (live chain)", { skip: !reachable ? `no chain at ${RPC}` : false }, () => {
-  it("coc_chainStats responds cleanly (no-param sanity)", async () => {
-    const r = await rpc(RPC, "coc_chainStats", [])
-    assert.equal(r.error, undefined, "coc_chainStats must not error")
-    assert.notEqual(r.result, undefined, "coc_chainStats returns a result")
+  it("pali_chainStats responds cleanly (no-param sanity)", async () => {
+    const r = await rpc(RPC, "pali_chainStats", [])
+    assert.equal(r.error, undefined, "pali_chainStats must not error")
+    assert.notEqual(r.result, undefined, "pali_chainStats returns a result")
   })
 
-  it("coc_getContractInfo rejects every malformed address with -32602", async () => {
+  it("pali_getContractInfo rejects every malformed address with -32602", async () => {
     for (const [label, value] of MALFORMED) {
-      const r = await rpc(RPC, "coc_getContractInfo", [value])
+      const r = await rpc(RPC, "pali_getContractInfo", [value])
       assert.ok(r.error, `${label}: must produce an error envelope`)
       assert.notEqual(r.error!.code, INTERNAL_ERROR, `${label}: must not be -32603 internal error`)
       assert.equal(r.error!.code, INVALID_PARAMS, `${label}: must be -32602 invalid params`)
     }
   })
 
-  it("coc_getTransactionsByAddress rejects malformed address with -32602", async () => {
+  it("pali_getTransactionsByAddress rejects malformed address with -32602", async () => {
     for (const [label, value] of MALFORMED) {
-      const r = await rpc(RPC, "coc_getTransactionsByAddress", [value])
+      const r = await rpc(RPC, "pali_getTransactionsByAddress", [value])
       assert.ok(r.error, `${label}: must produce an error envelope`)
       assert.notEqual(r.error!.code, INTERNAL_ERROR, `${label}: must not be -32603 internal error`)
       assert.equal(r.error!.code, INVALID_PARAMS, `${label}: must be -32602 invalid params`)
     }
   })
 
-  it("coc_getTransactionsByAddress rejects malformed limit/offset with -32602", async () => {
+  it("pali_getTransactionsByAddress rejects malformed limit/offset with -32602", async () => {
     const valid = "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266"
     for (const bad of [-1, 0, 99_999_999, "lots", {}, [5]]) {
-      const r = await rpc(RPC, "coc_getTransactionsByAddress", [valid, bad])
+      const r = await rpc(RPC, "pali_getTransactionsByAddress", [valid, bad])
       assert.ok(r.error, `limit=${JSON.stringify(bad)}: must error`)
       assert.notEqual(r.error!.code, INTERNAL_ERROR, `limit=${JSON.stringify(bad)}: not -32603`)
       assert.equal(r.error!.code, INVALID_PARAMS, `limit=${JSON.stringify(bad)}: -32602`)
     }
   })
 
-  it("coc_getContractInfo accepts a well-formed address (no -32602)", async () => {
-    const r = await rpc(RPC, "coc_getContractInfo", ["0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266"])
+  it("pali_getContractInfo accepts a well-formed address (no -32602)", async () => {
+    const r = await rpc(RPC, "pali_getContractInfo", ["0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266"])
     assert.equal(r.error, undefined, "valid address must not be rejected")
   })
 

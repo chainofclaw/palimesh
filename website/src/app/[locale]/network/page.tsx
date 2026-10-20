@@ -4,6 +4,9 @@ import { NetworkStats } from '@/components/NetworkStats'
 import { rpcCall } from '@/lib/rpc'
 import Link from 'next/link'
 import { useLocale, useTranslations } from 'next-intl'
+import { PageHero, AntiqueDivider } from '@/components/shared/Manuscript'
+import { site } from '@/config/site'
+import { ConstellationInk } from '@/components/ink/InkArt'
 import { useEffect, useState } from 'react'
 
 // Moved to client component for consistency with design system
@@ -133,13 +136,13 @@ export default function NetworkPage() {
           daoStatsData,
           blockNumberHex
         ] = await Promise.all([
-          rpcCall<NodeInfo>('coc_nodeInfo').catch(() => null),
-          rpcCall<Validator[]>('coc_validators').catch(() => []),
-          rpcCall<ChainStats>('coc_chainStats').catch(() => null),
-          rpcCall<BftStatus>('coc_getBftStatus').catch(() => null),
-          rpcCall<NetworkStats>('coc_getNetworkStats').catch(() => null),
+          rpcCall<NodeInfo>('pali_nodeInfo').catch(() => null),
+          rpcCall<Validator[]>('pali_validators').catch(() => []),
+          rpcCall<ChainStats>('pali_chainStats').catch(() => null),
+          rpcCall<BftStatus>('pali_getBftStatus').catch(() => null),
+          rpcCall<NetworkStats>('pali_getNetworkStats').catch(() => null),
           rpcCall<MemPoolStatus>('txpool_status').catch(() => null),
-          rpcCall<DaoStats>('coc_getDaoStats').catch(() => null),
+          rpcCall<DaoStats>('pali_getDaoStats').catch(() => null),
           rpcCall<string>('eth_blockNumber').catch(() => '0x0')
         ])
 
@@ -210,64 +213,18 @@ export default function NetworkPage() {
   return (
     <div className="relative min-h-screen">
       {/* Hero Header */}
-      <section className="relative py-20 overflow-hidden">
-        {/* Animated Background */}
-        <div className="absolute inset-0 bg-gradient-to-br from-bg-primary via-bg-secondary to-bg-primary">
-          <div className="absolute inset-0 opacity-20">
-            <div className="absolute top-10 left-10 w-96 h-96 bg-accent-cyan rounded-full blur-[100px] animate-pulse-slow" />
-            <div className="absolute bottom-10 right-10 w-96 h-96 bg-accent-blue rounded-full blur-[100px] animate-pulse-slow delay-1000" />
-          </div>
-        </div>
-
-        <div className="container mx-auto px-4 relative z-10">
-          <div className="max-w-4xl mx-auto text-center">
-            {/* Pre-title */}
-            <div className="inline-block mb-6 fade-in">
-              <div className="px-4 py-2 rounded-full border border-accent-cyan/30 bg-accent-cyan/5 backdrop-blur-sm">
-                <span className="font-display text-sm text-accent-cyan tracking-wider">
-                  &gt; NETWORK_STATUS_MONITOR
-                </span>
-              </div>
-            </div>
-
-            <h1 className="text-4xl md:text-6xl font-display font-bold mb-4 fade-in-delay-1">
-              <span className="gradient-text glow-text">{t('title')}</span>
-            </h1>
-            <p className="text-xl text-text-secondary font-body fade-in-delay-2">
-              {t('subtitle')}
-            </p>
-
-            {/* Canary 88780 status banner (replaces obsolete launch countdown) */}
-            <div className="mt-12 mb-6 fade-in-delay-3">
-              <div className="inline-block px-6 py-4 rounded-lg border border-accent-cyan/50 bg-accent-cyan/10 backdrop-blur-sm">
-                <p className="text-sm text-accent-cyan font-display uppercase tracking-widest mb-2">
-                  🟢 {t('canaryBanner.title')}
-                </p>
-                <p className="text-base text-text-primary font-display">
-                  {t('canaryBanner.subtitle')}
-                </p>
-                <p className="text-xs text-accent-cyan/70 mt-3">
-                  <Link href="/docs" className="hover:text-accent-blue transition-colors">
-                    {t('canaryBanner.cta')} →
-                  </Link>
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Bottom Glow Line */}
-        <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-accent-cyan to-transparent" />
-      </section>
+      
+      <PageHero kicker="NETWORK_STATUS_MONITOR" title={t('title')} subtitle={t('subtitle')} mark={<ConstellationInk size={40} />} />
 
       <div className="container mx-auto px-4 py-12">
         {/* Real-time Stats */}
+        <AntiqueDivider />
         <section className="mb-16">
           <div className="text-center mb-8 fade-in-up">
             <h2 className="text-3xl md:text-4xl font-display font-bold mb-2">
-              <span className="gradient-text">{t('realTimeStats')}</span>
+              <span>{t('realTimeStats')}</span>
             </h2>
-            <div className="w-24 h-1 bg-gradient-cyber mx-auto mt-4 rounded-full" />
+            <div className="w-16 h-px bg-line mx-auto mt-4 rounded-full" />
           </div>
           <div className="fade-in-delay-1">
             <NetworkStats />
@@ -313,7 +270,7 @@ export default function NetworkPage() {
             <h2 className="text-2xl md:text-3xl font-display font-bold mb-6 text-text-primary">
               {t('bftStatus.title')}
             </h2>
-            <div className="bg-bg-elevated rounded-xl p-8 border border-text-muted/10 hover:border-accent-cyan/30 transition-all duration-500 shadow-glow-sm hover:shadow-glow-md noise-texture">
+            <div className="bg-bg-elevated rounded-xl p-8 border border-text-muted/10 hover:border-accent-cyan/30 transition-all duration-500">
               <div className="grid md:grid-cols-2 gap-6">
                 <InfoRow
                   label={t('bftStatus.enabled')}
@@ -437,7 +394,7 @@ export default function NetworkPage() {
             <h2 className="text-2xl md:text-3xl font-display font-bold mb-6 text-text-primary">
               {t('nodeInfo.title')}
             </h2>
-            <div className="bg-bg-elevated rounded-xl p-8 border border-text-muted/10 hover:border-accent-cyan/30 transition-all duration-500 shadow-glow-sm hover:shadow-glow-md noise-texture">
+            <div className="bg-bg-elevated rounded-xl p-8 border border-text-muted/10 hover:border-accent-cyan/30 transition-all duration-500">
               <div className="grid md:grid-cols-2 gap-6">
                 {nodeInfo.runtime && <InfoRow label={t('nodeInfo.runtime')} value={nodeInfo.runtime} />}
                 {nodeInfo.version && <InfoRow label={t('nodeInfo.version')} value={nodeInfo.version} />}
@@ -492,7 +449,7 @@ export default function NetworkPage() {
             <h2 className="text-2xl md:text-3xl font-display font-bold mb-6 text-text-primary">
               {t('validators.title')}
             </h2>
-            <div className="bg-bg-elevated rounded-xl overflow-hidden border border-text-muted/10 hover:border-accent-cyan/30 transition-all duration-500 shadow-glow-sm hover:shadow-glow-md">
+            <div className="bg-bg-elevated rounded-xl overflow-hidden border border-text-muted/10 hover:border-accent-cyan/30 transition-all duration-500">
               <div className="overflow-x-auto">
                 <table className="min-w-full">
                   <thead className="bg-bg-secondary border-b border-text-muted/10">
@@ -537,7 +494,7 @@ export default function NetworkPage() {
                 {t('recentBlocks.title')}
               </h2>
               <a
-                href="https://explorer.clawchain.io"
+                href={site.chain.explorer}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="group inline-flex items-center gap-2 font-display text-accent-cyan hover:text-accent-blue transition-colors"
@@ -553,7 +510,7 @@ export default function NetworkPage() {
                 </svg>
               </a>
             </div>
-            <div className="bg-bg-elevated rounded-xl overflow-hidden border border-text-muted/10 hover:border-accent-cyan/30 transition-all duration-500 shadow-glow-sm hover:shadow-glow-md">
+            <div className="bg-bg-elevated rounded-xl overflow-hidden border border-text-muted/10 hover:border-accent-cyan/30 transition-all duration-500">
               <div className="overflow-x-auto">
                 <table className="min-w-full">
                   <thead className="bg-bg-secondary border-b border-text-muted/10">
@@ -577,7 +534,7 @@ export default function NetworkPage() {
                       <tr key={block.number} className="group hover:bg-accent-cyan/5 transition-colors duration-300">
                         <td className="px-6 py-4 font-display text-sm">
                           <a
-                            href={`https://explorer.clawchain.io/block/${block.number}`}
+                            href={`${site.chain.explorer}/block/${block.number}`}
                             target="_blank"
                             rel="noopener noreferrer"
                             className="text-accent-cyan hover:text-accent-blue transition-colors"
@@ -605,9 +562,9 @@ export default function NetworkPage() {
 
         {/* Quick Links */}
         <section className="fade-in-delay-3">
-          <div className="relative bg-gradient-to-br from-accent-cyan/10 via-accent-blue/10 to-accent-purple/10 rounded-xl p-8 border border-accent-cyan/20 noise-texture overflow-hidden">
+          <div className="relative vellum-card rounded-xl p-8 overflow-hidden">
             {/* Background Glow */}
-            <div className="absolute inset-0 bg-gradient-cyber opacity-5" />
+            <div className="absolute inset-0 bg-accent-blue opacity-[0.04]" />
 
             <div className="relative z-10">
               <h3 className="text-xl md:text-2xl font-display font-bold text-text-primary mb-6">
@@ -617,7 +574,7 @@ export default function NetworkPage() {
                 <QuickLink
                   title={t('quickLinks.explorer.title')}
                   description={t('quickLinks.explorer.description')}
-                  href="https://explorer.clawchain.io"
+                  href={site.chain.explorer}
                   external
                 />
                 <QuickLink
@@ -678,21 +635,20 @@ function MetricCard({
   }
 
   return (
-    <div className={`group relative bg-bg-elevated rounded-xl p-6 border border-text-muted/10 hover:border-accent-cyan/50 transition-all duration-500 ${trendGlow[trend]} hover:${trendGlow[trend].replace('sm', 'md')} noise-texture`}>
+    <div className={`group relative bg-bg-elevated rounded-xl p-6 border border-text-muted/10 hover:border-accent-cyan/50 transition-all duration-500 ${trendGlow[trend]} hover:${trendGlow[trend].replace('sm', 'md')}`}>
       {/* Background Gradient on Hover */}
-      <div className="absolute inset-0 bg-gradient-cyber opacity-0 group-hover:opacity-5 rounded-xl transition-opacity duration-500" />
+      <div className="absolute inset-0 bg-accent-blue opacity-0 group-hover:opacity-5 rounded-xl transition-opacity duration-500" />
 
       <div className="relative z-10">
         <h3 className="text-xs font-display font-semibold text-text-muted uppercase tracking-wider mb-3">
           {title}
         </h3>
-        <p className={`text-3xl md:text-4xl font-display font-bold ${trendColors[trend]} group-hover:glow-text transition-all duration-500`}>
+        <p className={`text-3xl md:text-4xl font-display font-bold ${trendColors[trend]} transition-all duration-500`}>
           {value}
         </p>
       </div>
 
       {/* Bottom Border Accent */}
-      <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-accent-cyan to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
     </div>
   )
 }
@@ -714,13 +670,13 @@ function StatMetricCard({
   const statusBg = status === 'enabled' ? 'bg-green-500/10' : status === 'disabled' ? 'bg-gray-500/10' : ''
 
   return (
-    <div className={`group relative bg-bg-elevated rounded-xl p-6 border border-text-muted/10 hover:border-accent-cyan/50 transition-all duration-500 shadow-glow-sm hover:shadow-glow-md noise-texture ${statusBg}`}>
+    <div className={`group relative bg-bg-elevated rounded-xl p-6 border border-text-muted/10 hover:border-accent-cyan/50 transition-all duration-500 ${statusBg}`}>
       <div className="relative z-10">
         <h3 className="text-xs font-display font-semibold text-text-muted uppercase tracking-wider mb-3">
           {title}
         </h3>
         <div className="flex flex-col items-start gap-1">
-          <p className="text-2xl md:text-3xl font-display font-bold text-accent-cyan group-hover:glow-text transition-all duration-500">
+          <p className="text-2xl md:text-3xl font-display font-bold text-accent-cyan transition-all duration-500">
             {value}
           </p>
           {unit && <p className="text-xs font-body text-text-secondary/70">{unit}</p>}
@@ -731,8 +687,6 @@ function StatMetricCard({
           </div>
         )}
       </div>
-
-      <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-accent-cyan to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
     </div>
   )
 }
@@ -758,10 +712,10 @@ function QuickLink({
     <Component
       href={href}
       {...linkProps}
-      className="group block relative bg-bg-elevated rounded-lg p-6 border border-text-muted/10 hover:border-accent-cyan/50 transition-all duration-500 hover:shadow-glow-md overflow-hidden"
+      className="group block relative bg-bg-elevated rounded-lg p-6 border border-text-muted/10 hover:border-accent-cyan/50 transition-all duration-500 overflow-hidden"
     >
       {/* Background Glow on Hover */}
-      <div className="absolute inset-0 bg-gradient-cyber opacity-0 group-hover:opacity-5 transition-opacity duration-500" />
+      <div className="absolute inset-0 bg-accent-blue opacity-0 group-hover:opacity-5 transition-opacity duration-500" />
 
       <div className="relative z-10">
         <h4 className="font-display font-bold text-text-primary group-hover:text-accent-cyan transition-colors mb-2 flex items-center gap-2">
@@ -776,7 +730,6 @@ function QuickLink({
       </div>
 
       {/* Bottom Border Accent */}
-      <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-accent-cyan to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
     </Component>
   )
 }

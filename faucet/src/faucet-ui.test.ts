@@ -21,7 +21,7 @@ describe("Faucet Web UI", () => {
     const html = readFileSync(INDEX_PATH, "utf-8")
 
     assert.ok(html.includes("<!DOCTYPE html>"), "should be valid HTML5")
-    assert.ok(html.includes("<title>COC Testnet Faucet</title>"), "should have correct title")
+    assert.ok(html.includes("<title>Palimesh Testnet Faucet</title>"), "should have correct title")
     assert.ok(html.includes('id="faucetForm"'), "should have faucet form")
     assert.ok(html.includes('id="address"'), "should have address input")
     assert.ok(html.includes('id="submitBtn"'), "should have submit button")

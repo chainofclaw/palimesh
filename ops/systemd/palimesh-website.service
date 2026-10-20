@@ -1,0 +1,18 @@
+# /etc/systemd/system/palimesh-website.service — palimesh.io (存储站),端口 3001
+# 取代旧 coc-website.service;构建产物在 .next-palimesh
+[Unit]
+Description=PaliMesh storage website (Next.js, palimesh.io)
+After=network.target
+
+[Service]
+Type=simple
+WorkingDirectory=/opt/coc/website
+Environment=NODE_ENV=production
+Environment=HOSTNAME=127.0.0.1
+ExecStart=/usr/bin/npm run start:palimesh
+Restart=always
+RestartSec=5
+User=root
+
+[Install]
+WantedBy=multi-user.target

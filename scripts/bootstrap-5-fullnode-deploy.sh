@@ -1,13 +1,13 @@
 #!/usr/bin/env bash
 # bootstrap-5-fullnode-deploy.sh — Generate per-host deploy bundles for 5 gcloud
-# fullnodes joining an existing COC testnet. Run ONCE on operator workstation.
+# fullnodes joining an existing Palimesh testnet. Run ONCE on operator workstation.
 #
 # These nodes start as OBSERVER fullnodes (no stake, no BFT votes) — they sync
 # the existing chain, relay BFT prepare/commit messages, and participate in DHT
 # + IPFS + erasure repair. Two of them (anchor-1, anchor-2) can later be
 # promoted to BFT validators via scripts/anchor-stake-register.sh.
 #
-# The bootstrap renders a full /etc/coc/node-1.json for each host with the
+# The bootstrap renders a full /etc/palimesh/node-1.json for each host with the
 # upstream validator set + peer list baked in, then writes deploy-vars-server-N.sh
 # files that base64-encode the JSON so the per-host deploy script does not need
 # its own template files.
@@ -25,7 +25,7 @@
 #   --validator-registry-from-block N   optional, from-block for event scan (0)
 #   --validator-registry-poll-ms N      optional, poll interval (60000, min 5000)
 #
-# Output dir /tmp/coc-5-fullnode/:
+# Output dir /tmp/palimesh-5-fullnode/:
 #   keys.txt                        — 5 fresh observer keys (chmod 600, NEVER reuse anvil)
 #   deploy-vars-server-N.sh         — per-host (sourceable). Embeds rendered JSON.
 #   summary.txt                     — port bundles + roles + reachability hints
@@ -51,7 +51,7 @@ declare -a GCLOUD_SHIFTS=(0 0 0 0 0)
 declare -a GCLOUD_ROLES=("anchor" "anchor" "burst" "burst" "burst")
 
 # R1.2: optional ValidatorRegistry hookup. When --validator-registry-address is
-# set, render_env emits COC_VALIDATOR_REGISTRY_* env vars so the node loads its
+# set, render_env emits PALI_VALIDATOR_REGISTRY_* env vars so the node loads its
 # BFT validator set from the on-chain registry instead of the hardcoded
 # upstream-validator list. Empty ADDRESS = registry disabled (legacy behavior).
 VALIDATOR_REGISTRY_ADDRESS="${VALIDATOR_REGISTRY_ADDRESS:-}"
@@ -124,7 +124,7 @@ if ! command -v openssl >/dev/null 2>&1 || ! command -v base64 >/dev/null 2>&1; 
   exit 2
 fi
 
-OUT_DIR=/tmp/coc-5-fullnode
+OUT_DIR=/tmp/palimesh-5-fullnode
 mkdir -p "$OUT_DIR"
 chmod 700 "$OUT_DIR"
 
@@ -142,7 +142,7 @@ done
 # Generate 5 fresh observer keys (NEVER reuse anvil keys for observers — those
 # correspond to the existing validator set and would collide on identity).
 declare -a KEY_ADDRS KEY_PRIVS
-echo "# COC 5-fullnode gcloud testnet observer keys (generated $(date -Iseconds))" > "$OUT_DIR/keys.txt"
+echo "# Palimesh 5-fullnode gcloud testnet observer keys (generated $(date -Iseconds))" > "$OUT_DIR/keys.txt"
 for i in 0 1 2 3 4; do
   K=$(openssl rand -hex 32)
   ADDR=$(node -e "
@@ -234,29 +234,29 @@ EOF
 render_env() {
   local self=$1
   cat <<EOF
-COC_DATA_DIR=/var/lib/coc/node-1
-COC_NODE_CONFIG=/etc/coc/node-1.json
-COC_NODE_KEY=${KEY_PRIVS[$self]}
-COC_RPC_BIND=0.0.0.0
-COC_RPC_PORT=${RPC[$self]}
-COC_WS_BIND=0.0.0.0
-COC_WS_PORT=${WS[$self]}
-COC_P2P_BIND=0.0.0.0
-COC_P2P_PORT=${P2P[$self]}
-COC_WIRE_BIND=0.0.0.0
-COC_WIRE_PORT=${WIRE[$self]}
-COC_IPFS_BIND=0.0.0.0
-COC_IPFS_PORT=${IPFS[$self]}
-COC_METRICS_PORT=${METRICS[$self]}
-COC_DEV_RELAXED_QUORUM=0
-COC_BFT_AUTO_RECOVERY=1
-COC_NODE_MODE=archive
+PALI_DATA_DIR=/var/lib/coc/node-1
+PALI_NODE_CONFIG=/etc/palimesh/node-1.json
+PALI_NODE_KEY=${KEY_PRIVS[$self]}
+PALI_RPC_BIND=0.0.0.0
+PALI_RPC_PORT=${RPC[$self]}
+PALI_WS_BIND=0.0.0.0
+PALI_WS_PORT=${WS[$self]}
+PALI_P2P_BIND=0.0.0.0
+PALI_P2P_PORT=${P2P[$self]}
+PALI_WIRE_BIND=0.0.0.0
+PALI_WIRE_PORT=${WIRE[$self]}
+PALI_IPFS_BIND=0.0.0.0
+PALI_IPFS_PORT=${IPFS[$self]}
+PALI_METRICS_PORT=${METRICS[$self]}
+PALI_DEV_RELAXED_QUORUM=0
+PALI_BFT_AUTO_RECOVERY=1
+PALI_NODE_MODE=archive
 EOF
   if [[ -n "$VALIDATOR_REGISTRY_ADDRESS" ]]; then
     cat <<EOF
-COC_VALIDATOR_REGISTRY_ADDRESS=$VALIDATOR_REGISTRY_ADDRESS
-COC_VALIDATOR_REGISTRY_FROM_BLOCK=$VALIDATOR_REGISTRY_FROM_BLOCK
-COC_VALIDATOR_REGISTRY_POLL_INTERVAL_MS=$VALIDATOR_REGISTRY_POLL_MS
+PALI_VALIDATOR_REGISTRY_ADDRESS=$VALIDATOR_REGISTRY_ADDRESS
+PALI_VALIDATOR_REGISTRY_FROM_BLOCK=$VALIDATOR_REGISTRY_FROM_BLOCK
+PALI_VALIDATOR_REGISTRY_POLL_INTERVAL_MS=$VALIDATOR_REGISTRY_POLL_MS
 EOF
   fi
 }
@@ -286,8 +286,8 @@ write_deploy_vars() {
 # Source me on gcloud-node-$idx (${GCLOUD_ROLES[$self]} role), then run
 # bash /opt/coc/scripts/deploy-fullnode.sh
 #
-# All connection info, including base64-encoded /etc/coc/node-1.json and
-# /etc/coc/node-1.env, is embedded here. The deploy script only decodes,
+# All connection info, including base64-encoded /etc/palimesh/node-1.json and
+# /etc/palimesh/node-1.env, is embedded here. The deploy script only decodes,
 # installs prereqs, and starts systemd.
 
 export NODE_ROLE="${GCLOUD_ROLES[$self]}"
@@ -302,12 +302,12 @@ export SELF_IPFS_PORT=${IPFS[$self]}
 export SELF_METRICS_PORT=${METRICS[$self]}
 
 # Embedded pre-rendered files (base64). Decoded by deploy-fullnode.sh.
-export COC_FULLNODE_ENV_B64="$env_b64"
-export COC_FULLNODE_CONFIG_B64="$cfg_b64"
+export PALI_FULLNODE_ENV_B64="$env_b64"
+export PALI_FULLNODE_CONFIG_B64="$cfg_b64"
 
 # Optional patch: chain-engine-persistent.ts with case-insensitive proposer check.
 # Empty if local repo doesn't carry the Phase X1.6 follow-up patch.
-export COC_PATCH_CHAIN_ENGINE_PERSISTENT_B64="$patch_b64"
+export PALI_PATCH_CHAIN_ENGINE_PERSISTENT_B64="$patch_b64"
 EOF
   chmod 600 "$out"
 }
@@ -318,7 +318,7 @@ done
 
 # Summary
 {
-  echo "# COC 5-fullnode bootstrap summary"
+  echo "# Palimesh 5-fullnode bootstrap summary"
   echo "Generated:        $(date -Iseconds)"
   echo "ChainId:          $CHAIN_ID"
   echo "Upstream validators (existing testnet):"
@@ -346,7 +346,7 @@ echo "==> Artifacts in $OUT_DIR (chmod 700, contains private keys):"
 ls -la "$OUT_DIR"
 echo ""
 echo "==> Next steps:"
-echo "  1. scp /tmp/coc-5-fullnode/deploy-vars-server-N.sh root@host-N:/root/"
+echo "  1. scp /tmp/palimesh-5-fullnode/deploy-vars-server-N.sh root@host-N:/root/"
 echo "  2. On EACH gcloud VM:"
 echo "     source /root/deploy-vars-server-N.sh && bash /opt/coc/scripts/deploy-fullnode.sh"
 echo "  3. Wait ~5 min for snap-sync to catch up to upstream chain head."

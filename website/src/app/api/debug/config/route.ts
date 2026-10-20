@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server'
 
 export async function GET() {
-  if (process.env.COC_DEBUG_CONFIG !== '1') {
+  if (process.env.PALI_DEBUG_CONFIG !== '1') {
     return new NextResponse(null, { status: 404 })
   }
 

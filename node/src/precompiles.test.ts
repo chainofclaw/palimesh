@@ -215,7 +215,7 @@ test("Precompiled Contracts - Edge Cases", async (t) => {
   })
 
   await t.test("#594: KZG point_evaluation (0x0a) reverts with explicit reason on Cancun chain (was silent 0x)", async () => {
-    // Pre-fix #594: COC runs Cancun-fork blocks but doesn't initialise the
+    // Pre-fix #594: Palimesh runs Cancun-fork blocks but doesn't initialise the
     // EIP-4844 KZG trusted setup, so @ethereumjs/vm omits precompile0a.
     // Calls fell through as a regular CALL to an empty-code address and
     // returned `"0x"` — masquerading as a successful no-op. Contracts
@@ -224,7 +224,7 @@ test("Precompiled Contracts - Edge Cases", async (t) => {
     // proof verified.
     //
     // Fix: register a customPrecompile at 0x0a that ALWAYS reverts with
-    // ABI-encoded Error("KZG point_evaluation not implemented on COC"),
+    // ABI-encoded Error("KZG point_evaluation not implemented on Palimesh"),
     // charging EIP-4844's POINT_EVALUATION_PRECOMPILE_GAS (50_000).
     // Callers now see an explicit revert (the documented EIP-4844
     // failure mode for invalid input) instead of silent empty bytes.
@@ -245,7 +245,7 @@ test("Precompiled Contracts - Edge Cases", async (t) => {
     const reasonBytes = Buffer.from(reasonHex, "hex")
     // Trim trailing zero padding
     const reasonStr = reasonBytes.toString("utf8").replace(/\0+$/, "")
-    assert.match(reasonStr, /KZG point_evaluation not implemented on COC/i,
+    assert.match(reasonStr, /KZG point_evaluation not implemented on Palimesh/i,
       `revert reason must mention KZG, got: ${reasonStr}`)
   })
 
@@ -287,7 +287,7 @@ test("Precompiled Contracts - Edge Cases", async (t) => {
       "returnValue must carry the same Error(string) revert payload as the primary-VM path")
     const reasonHex = result.returnValue.slice(2 + 136)
     const reasonStr = Buffer.from(reasonHex, "hex").toString("utf8").replace(/\0+$/, "")
-    assert.match(reasonStr, /KZG point_evaluation not implemented on COC/i,
+    assert.match(reasonStr, /KZG point_evaluation not implemented on Palimesh/i,
       `revert reason must propagate through createVm path, got: ${reasonStr}`)
   })
 })

@@ -457,7 +457,7 @@ describe("D1: WebSocket subscription idle timeout", () => {
 })
 
 describe("D2: Dev accounts gate", () => {
-  it("should only enable dev accounts with COC_DEV_ACCOUNTS=1", async () => {
+  it("should only enable dev accounts with PALI_DEV_ACCOUNTS=1", async () => {
     // The DEV_ACCOUNTS_ENABLED variable is module-level
     // We can verify the behavior by checking the source was updated
     const mod = await import("./rpc.ts")
@@ -722,8 +722,8 @@ describe("Phase 34B3: Pubsub peer message size check", () => {
 // =====================================================
 
 describe("Phase 34C2: Debug RPC access control", () => {
-  it("should gate debug methods behind COC_DEBUG_RPC env", async () => {
-    // When COC_DEBUG_RPC is not set, debug methods should throw
+  it("should gate debug methods behind PALI_DEBUG_RPC env", async () => {
+    // When PALI_DEBUG_RPC is not set, debug methods should throw
     const { handleRpcMethod } = await import("./rpc.ts")
     const chain = { getHeight: () => 0n } as any
     const evm = {} as any

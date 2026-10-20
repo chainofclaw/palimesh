@@ -6,7 +6,7 @@ import type { InterfaceBlockstoreAdapter } from "./ipfs-blockstore-adapter.ts"
 /**
  * Write-path directory DAG construction (issue #468).
  *
- * COC's bespoke `UnixFsBuilder.addFile` stays the single-file path (it
+ * Palimesh's bespoke `UnixFsBuilder.addFile` stays the single-file path (it
  * carries the PoSe `merkleRoot`/`merkleLeaves` side-tree). For multi-file
  * and nested-directory uploads we delegate to `ipfs-unixfs-importer`,
  * which builds the dag-pb directory tree from a flat list of POSIX paths

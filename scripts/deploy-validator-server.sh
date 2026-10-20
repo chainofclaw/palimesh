@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# deploy-validator-server.sh — One-shot deployment of a single COC validator
+# deploy-validator-server.sh — One-shot deployment of a single Palimesh validator
 # on a fresh Ubuntu 22.04+ server. Idempotent — safe to re-run.
 #
 # Inputs (env vars, source from deploy-vars-server-N.sh):
@@ -10,9 +10,9 @@
 #   VALIDATOR_1_ADDR, VALIDATOR_2_ADDR, VALIDATOR_3_ADDR
 #
 # Optional:
-#   COC_REPO_URL      — git URL (default: https://github.com/chainofclaw/COC.git)
-#   COC_REPO_REF      — branch/tag (default: main)
-#   COC_INSTALL_DIR   — install path (default: /opt/coc)
+#   PALI_REPO_URL      — git URL (default: https://github.com/palimesh/palimesh.git)
+#   PALI_REPO_REF      — branch/tag (default: main)
+#   PALI_INSTALL_DIR   — install path (default: /opt/coc)
 #
 # Run as root.
 
@@ -30,9 +30,9 @@ for v in "${required[@]}"; do
   fi
 done
 
-REPO_URL="${COC_REPO_URL:-https://github.com/chainofclaw/COC.git}"
-REPO_REF="${COC_REPO_REF:-main}"
-INSTALL_DIR="${COC_INSTALL_DIR:-/opt/coc}"
+REPO_URL="${PALI_REPO_URL:-https://github.com/palimesh/palimesh.git}"
+REPO_REF="${PALI_REPO_REF:-main}"
+INSTALL_DIR="${PALI_INSTALL_DIR:-/opt/coc}"
 
 if [[ "$EUID" -ne 0 ]]; then
   echo "ERROR: must run as root" >&2; exit 2
@@ -70,8 +70,8 @@ cd "$INSTALL_DIR"
 npm install --omit=dev --no-audit --no-fund 2>&1 | tail -5
 chown -R coc:coc "$INSTALL_DIR"
 
-echo "==> [6/9] /etc/coc and /var/lib/coc"
-mkdir -p /etc/coc /var/lib/coc/node-${INSTANCE_ID} /var/log/coc
+echo "==> [6/9] /etc/palimesh and /var/lib/coc"
+mkdir -p /etc/palimesh /var/lib/coc/node-${INSTANCE_ID} /var/log/coc
 chown coc:coc /var/lib/coc/node-${INSTANCE_ID} /var/log/coc
 
 # Render env file
@@ -85,9 +85,9 @@ sed \
   -e "s|__IPFS_PORT__|${SELF_IPFS_PORT}|g" \
   -e "s|__METRICS_PORT__|${SELF_METRICS_PORT}|g" \
   "$INSTALL_DIR/docker/systemd/native-env/node-multiserver.env.template" \
-  > /etc/coc/node-${INSTANCE_ID}.env
-chmod 640 /etc/coc/node-${INSTANCE_ID}.env
-chown root:coc /etc/coc/node-${INSTANCE_ID}.env
+  > /etc/palimesh/node-${INSTANCE_ID}.env
+chmod 640 /etc/palimesh/node-${INSTANCE_ID}.env
+chown root:coc /etc/palimesh/node-${INSTANCE_ID}.env
 
 # Render config file
 sed \
@@ -110,8 +110,8 @@ sed \
   -e "s|__VALIDATOR_2_ADDR__|${VALIDATOR_2_ADDR}|g" \
   -e "s|__VALIDATOR_3_ADDR__|${VALIDATOR_3_ADDR}|g" \
   "$INSTALL_DIR/docker/systemd/native-configs/node-multiserver.json.template" \
-  > /etc/coc/node-${INSTANCE_ID}.json
-chmod 644 /etc/coc/node-${INSTANCE_ID}.json
+  > /etc/palimesh/node-${INSTANCE_ID}.json
+chmod 644 /etc/palimesh/node-${INSTANCE_ID}.json
 
 echo "==> [7/9] Firewall (open ports: 22, $SELF_RPC_PORT, $SELF_WS_PORT, $SELF_P2P_PORT, $SELF_WIRE_PORT, $SELF_IPFS_PORT)"
 ufw --force enable >/dev/null
@@ -120,18 +120,18 @@ for port in 22 $SELF_RPC_PORT $SELF_WS_PORT $SELF_P2P_PORT $SELF_WIRE_PORT $SELF
 done
 
 echo "==> [8/9] systemd unit"
-cp "$INSTALL_DIR/docker/systemd/coc-node@.service" /etc/systemd/system/
+cp "$INSTALL_DIR/docker/systemd/palimesh-node@.service" /etc/systemd/system/
 systemctl daemon-reload
-systemctl enable coc-node@${INSTANCE_ID} >/dev/null
-systemctl restart coc-node@${INSTANCE_ID}
+systemctl enable palimesh-node@${INSTANCE_ID} >/dev/null
+systemctl restart palimesh-node@${INSTANCE_ID}
 
 echo "==> [9/9] Health check (waiting 30s)"
 sleep 30
-if systemctl is-active --quiet coc-node@${INSTANCE_ID}; then
+if systemctl is-active --quiet palimesh-node@${INSTANCE_ID}; then
   echo "service active"
 else
-  echo "ERROR: coc-node@${INSTANCE_ID} not active"
-  systemctl status coc-node@${INSTANCE_ID} --no-pager | tail -20
+  echo "ERROR: palimesh-node@${INSTANCE_ID} not active"
+  systemctl status palimesh-node@${INSTANCE_ID} --no-pager | tail -20
   exit 3
 fi
 

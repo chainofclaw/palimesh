@@ -71,8 +71,8 @@ export async function probeMountIsReadOnly(dir: string, opts: ProbeOpts = {}): P
 export interface GateOpts {
   /**
    * Set to false to allow RW mount with a warning instead of throwing.
-   * Maps to the `COC_REQUIRE_RO_STORAGE=0` env-var escape hatch in
-   * runtime/coc-node.ts. Validators (which legitimately own their
+   * Maps to the `PALI_REQUIRE_RO_STORAGE=0` env-var escape hatch in
+   * runtime/palimesh-node.ts. Validators (which legitimately own their
    * leveldb) override via this flag.
    */
   enforce?: boolean
@@ -110,11 +110,11 @@ export async function enforceReadOnlyStorage(
       `storageDir ${storageDir} is mounted RW. ` +
       `If this process is a prover sidecar sharing a validator's leveldb volume, ` +
       `this WILL eventually corrupt the chain (see incident 2026-04-25). ` +
-      `Mount the volume :ro, or set COC_REQUIRE_RO_STORAGE=0 to acknowledge and bypass.`
+      `Mount the volume :ro, or set PALI_REQUIRE_RO_STORAGE=0 to acknowledge and bypass.`
     if (enforce) {
       log.error(msg)
       throw new Error(
-        "storage volume must be read-only for prover sidecar (set COC_REQUIRE_RO_STORAGE=0 to bypass)",
+        "storage volume must be read-only for prover sidecar (set PALI_REQUIRE_RO_STORAGE=0 to bypass)",
       )
     }
     log.warn(msg)

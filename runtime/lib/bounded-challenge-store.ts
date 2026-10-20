@@ -1,8 +1,8 @@
 /**
- * #320: bounded in-memory store for coc-node's pose challenges.
+ * #320: bounded in-memory store for palimesh-node's pose challenges.
  *
- * coc-node has no runtime-layer rate limiter. Pre-fix the Map held by
- * `coc-node.ts` had no size cap, no TTL, and no LRU, so an attacker
+ * palimesh-node has no runtime-layer rate limiter. Pre-fix the Map held by
+ * `palimesh-node.ts` had no size cap, no TTL, and no LRU, so an attacker
  * could spam unique challengeIds and grow the Map until the process
  * OOMed. This module wraps the existing InMemoryStore with FIFO
  * eviction once the cap is hit. Eviction order is Map insertion order

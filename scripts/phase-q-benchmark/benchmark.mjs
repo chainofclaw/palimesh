@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// Phase Q.1 — benchmark @ronomon/reed-solomon for COC erasure coding.
+// Phase Q.1 — benchmark @ronomon/reed-solomon for Palimesh erasure coding.
 //
 // Measures end-to-end stripe encode + decode for file sizes 1 / 10 / 100 MB
 // across a few (N+M) configurations. Reports wall ms + throughput.

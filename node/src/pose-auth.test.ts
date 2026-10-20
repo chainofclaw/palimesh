@@ -74,7 +74,7 @@ describe("pose auth envelope", () => {
   })
 
   it("persists nonce across tracker restarts", () => {
-    const dir = mkdtempSync(join(tmpdir(), "coc-pose-auth-"))
+    const dir = mkdtempSync(join(tmpdir(), "palimesh-pose-auth-"))
     try {
       const file = join(dir, "nonce.log")
       const tracker1 = new PersistentPoseAuthNonceTracker({
@@ -98,7 +98,7 @@ describe("pose auth envelope", () => {
   })
 
   it("drops expired persisted nonce by ttl", () => {
-    const dir = mkdtempSync(join(tmpdir(), "coc-pose-auth-"))
+    const dir = mkdtempSync(join(tmpdir(), "palimesh-pose-auth-"))
     try {
       const file = join(dir, "nonce.log")
       writeFileSync(file, "100\told-nonce\n80\tolder-nonce\n")

@@ -88,7 +88,7 @@ function probeUpgrade(port: number, origin: string | null): Promise<ProbeResult>
 
 test("#374: WebSocket upgrade rejects cross-origin requests by default", async (t) => {
   // Default behaviour: allowlist is "http://localhost:3000" (per env default).
-  delete process.env.COC_WS_ORIGIN
+  delete process.env.PALI_WS_ORIGIN
 
   const tmp = await mkdtemp(join(tmpdir(), "ws-cswsh-test-"))
   const evm = await EvmChain.create(CHAIN_ID)
@@ -147,8 +147,8 @@ test("#374: WebSocket upgrade rejects cross-origin requests by default", async (
   assert.equal(nullOrig.status, 403)
 })
 
-test("#374: COC_WS_ORIGIN env extends the origin allowlist", async (t) => {
-  process.env.COC_WS_ORIGIN = "http://explorer.example.com,http://other.example.org"
+test("#374: PALI_WS_ORIGIN env extends the origin allowlist", async (t) => {
+  process.env.PALI_WS_ORIGIN = "http://explorer.example.com,http://other.example.org"
 
   const tmp = await mkdtemp(join(tmpdir(), "ws-cswsh-env-test-"))
   const evm = await EvmChain.create(CHAIN_ID)
@@ -181,7 +181,7 @@ test("#374: COC_WS_ORIGIN env extends the origin allowlist", async (t) => {
   t.after(async () => {
     server.stop()
     await engine.close()
-    delete process.env.COC_WS_ORIGIN
+    delete process.env.PALI_WS_ORIGIN
     await rm(tmp, { recursive: true, force: true }).catch(() => {})
     await new Promise((r) => setTimeout(r, 50))
   })
@@ -198,8 +198,8 @@ test("#374: COC_WS_ORIGIN env extends the origin allowlist", async (t) => {
   assert.equal(r3.status, 403)
 })
 
-test("#374: COC_WS_ORIGIN=\"*\" disables the origin check (operator opt-out)", async (t) => {
-  process.env.COC_WS_ORIGIN = "*"
+test("#374: PALI_WS_ORIGIN=\"*\" disables the origin check (operator opt-out)", async (t) => {
+  process.env.PALI_WS_ORIGIN = "*"
 
   const tmp = await mkdtemp(join(tmpdir(), "ws-cswsh-star-test-"))
   const evm = await EvmChain.create(CHAIN_ID)
@@ -232,12 +232,12 @@ test("#374: COC_WS_ORIGIN=\"*\" disables the origin check (operator opt-out)", a
   t.after(async () => {
     server.stop()
     await engine.close()
-    delete process.env.COC_WS_ORIGIN
+    delete process.env.PALI_WS_ORIGIN
     await rm(tmp, { recursive: true, force: true }).catch(() => {})
     await new Promise((r) => setTimeout(r, 50))
   })
 
   // With *, every origin upgrades — including the attacker's.
   const r = await probeUpgrade(WS_PORT + 2, "http://evil.com")
-  assert.equal(r.upgraded, true, 'COC_WS_ORIGIN="*" must accept every origin')
+  assert.equal(r.upgraded, true, 'PALI_WS_ORIGIN="*" must accept every origin')
 })

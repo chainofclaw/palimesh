@@ -1,10 +1,10 @@
 {
-  "name": "coc-wallet",
+  "name": "palimesh-wallet",
   "version": "0.1.0",
   "private": true,
   "type": "module",
   "bin": {
-    "coc-wallet": "coc-wallet.ts"
+    "palimesh-wallet": "palimesh-wallet.ts"
   },
   "dependencies": {
     "ethers": "^6.13.5"

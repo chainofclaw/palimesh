@@ -3,10 +3,10 @@
 # force the snap-sync recovery path (Phase H5 onPersistentDivergence).
 #
 # What it does:
-#   1. Stops coc-node@1 on the target VM
+#   1. Stops palimesh-node@1 on the target VM
 #   2. Picks a recent persisted block
 #   3. Overwrites its stateRoot field with a corrupted value
-#   4. Restarts coc-node@1
+#   4. Restarts palimesh-node@1
 #   5. Watches journalctl for "early peer-quorum divergence" and forceSnapSync
 #
 # Usage:
@@ -31,9 +31,9 @@ ZONE="$(resolve_zone "$NODE")"
 echo "==> Corrupting stateRoot on $NODE ($ZONE). This will trigger snap-sync."
 echo "    The node MUST be already deployed and synced."
 
-gcloud compute ssh "$NODE" --zone="$ZONE" --project="$COC_GCP_PROJECT" --quiet --command='
+gcloud compute ssh "$NODE" --zone="$ZONE" --project="$PALI_GCP_PROJECT" --quiet --command='
 set -e
-sudo systemctl stop coc-node@1
+sudo systemctl stop palimesh-node@1
 DATA_DIR=/var/lib/coc/node-1
 DB="$DATA_DIR/chaindata"
 if [[ ! -d "$DB" ]]; then
@@ -64,10 +64,10 @@ const { Level } = require("/opt/coc/node_modules/level");
 })().catch(e => { console.error(e); process.exit(2); });
 NODE_EOF
 
-sudo systemctl start coc-node@1
-echo "Restarted. Watch logs: sudo journalctl -u coc-node@1 -f | grep -E \"snap-sync|divergence|forceSnapSync\""
+sudo systemctl start palimesh-node@1
+echo "Restarted. Watch logs: sudo journalctl -u palimesh-node@1 -f | grep -E \"snap-sync|divergence|forceSnapSync\""
 '
 
 echo ""
 echo "==> Watch recovery on $NODE:"
-echo "    gcloud compute ssh $NODE --zone=$ZONE --command='sudo journalctl -u coc-node@1 -n 200 -f | grep -E \"snap-sync|divergence|forceSnapSync|finalized\"'"
+echo "    gcloud compute ssh $NODE --zone=$ZONE --command='sudo journalctl -u palimesh-node@1 -n 200 -f | grep -E \"snap-sync|divergence|forceSnapSync|finalized\"'"

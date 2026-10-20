@@ -172,7 +172,7 @@ describe("BftCoordinator", () => {
   })
 
   // --- Phase B integration: computeLocalStateRoot wired through to prepare vote.
-  // See plans/coc-phase-b-stateroot-vote.md §B2.7. Covers the end-to-end BFT
+  // See plans/palimesh-phase-b-stateroot-vote.md §B2.7. Covers the end-to-end BFT
   // contract that (a) prepare votes carry the stateRoot from the hook, and
   // (b) validators whose hook returns a different value form a separate
   // quorum group — the (blockHash, stateRoot) pair fails to reach 2/3 when
@@ -264,10 +264,14 @@ describe("BftCoordinator", () => {
     // an unhandled rejection.
     await new Promise((r) => setTimeout(r, 200))
 
-    // After timeout, round should have been cleared. Coordinator must
-    // remain usable for the next round (the dump must NOT corrupt state).
+    // After timeout the timed-out round is torn down and, because we already
+    // prepared this block, re-entered fresh (lost-vote livelock fix). The
+    // dump must NOT corrupt state: the coordinator is back in a clean
+    // prepare round for the same height.
     const state = coord.getRoundState()
-    assert.equal(state.active, false, "round must be cleared after timeout")
+    assert.equal(state.active, true, "round re-entered after timeout")
+    assert.equal(state.height, 1n)
+    assert.equal(state.phase, "prepare")
   })
 
   it("Phase H4: fires onPeerQuorumDiverged when ≥2/3 of OTHER validators converge on a stateRoot we can't reproduce", async () => {
@@ -620,6 +624,91 @@ describe("BftCoordinator", () => {
     assert.equal(fireCount, 2, "accepted fire must hold the dedup against further re-fires")
   })
 
+  it("Phase J1.1 follower fix: suppresses fire when the local chain already holds the exact peer-quorum block", async () => {
+    // 2026-08-30 v3 incident: a caught-up follower (applying blocks via BFT
+    // onFinalized without casting prepare votes) has no localVote, so
+    // localStateRoot is <unset> and J1.1 fired forceSnapSync in a loop —
+    // repeatedly re-importing state that was ALREADY byte-identical to the
+    // peer quorum (leveldb-state ballooned 30G). When the local chain holds
+    // the exact (blockHash, stateRoot) the peers agreed on, there is no
+    // divergence to cure — suppress the fire.
+    const peerRoot = ("0x" + "bb".repeat(32)) as Hex
+    const peerHash = ("0x" + "ab".repeat(32)) as Hex
+    let fireCount = 0
+    const coord = new BftCoordinator({
+      localId: "v1",
+      validators,
+      broadcastMessage: async () => {},
+      onFinalized: async () => {},
+      onPeerQuorumDiverged: () => { fireCount++ },
+      getLocalBlock: async (height) => ({ ...makeBlock(height), hash: peerHash, stateRoot: peerRoot }),
+    })
+
+    // No active round (follower mode) — prepares buffer, J1.1 evaluates.
+    await coord.handleMessage({ ...bftMsg("prepare", 1n, peerHash, "v2"), stateRoot: peerRoot })
+    await coord.handleMessage({ ...bftMsg("prepare", 1n, peerHash, "v3"), stateRoot: peerRoot })
+
+    assert.equal(fireCount, 0, "local chain already has the peer-quorum block+state — must not fire")
+  })
+
+  it("Phase J1.1 follower fix: still fires when the local block's stateRoot truly diverges", async () => {
+    const peerRoot = ("0x" + "bb".repeat(32)) as Hex
+    const peerHash = ("0x" + "ab".repeat(32)) as Hex
+    const divergedRoot = ("0x" + "dd".repeat(32)) as Hex
+    let fireCount = 0
+    const coord = new BftCoordinator({
+      localId: "v1",
+      validators,
+      broadcastMessage: async () => {},
+      onFinalized: async () => {},
+      onPeerQuorumDiverged: () => { fireCount++ },
+      getLocalBlock: async (height) => ({ ...makeBlock(height), hash: peerHash, stateRoot: divergedRoot }),
+    })
+
+    await coord.handleMessage({ ...bftMsg("prepare", 1n, peerHash, "v2"), stateRoot: peerRoot })
+    await coord.handleMessage({ ...bftMsg("prepare", 1n, peerHash, "v3"), stateRoot: peerRoot })
+
+    assert.equal(fireCount, 1, "a real stateRoot divergence must still fire")
+  })
+
+  it("Phase J1.1 follower fix: still fires when the local chain has no block at that height (truly stuck)", async () => {
+    const peerRoot = ("0x" + "bb".repeat(32)) as Hex
+    const peerHash = ("0x" + "ab".repeat(32)) as Hex
+    let fireCount = 0
+    const coord = new BftCoordinator({
+      localId: "v1",
+      validators,
+      broadcastMessage: async () => {},
+      onFinalized: async () => {},
+      onPeerQuorumDiverged: () => { fireCount++ },
+      getLocalBlock: async () => null,
+    })
+
+    await coord.handleMessage({ ...bftMsg("prepare", 1n, peerHash, "v2"), stateRoot: peerRoot })
+    await coord.handleMessage({ ...bftMsg("prepare", 1n, peerHash, "v3"), stateRoot: peerRoot })
+
+    assert.equal(fireCount, 1, "no local block at the diverged height — genuinely behind, must fire")
+  })
+
+  it("Phase J1.1 follower fix: fails open (fires) when getLocalBlock throws", async () => {
+    const peerRoot = ("0x" + "bb".repeat(32)) as Hex
+    const peerHash = ("0x" + "ab".repeat(32)) as Hex
+    let fireCount = 0
+    const coord = new BftCoordinator({
+      localId: "v1",
+      validators,
+      broadcastMessage: async () => {},
+      onFinalized: async () => {},
+      onPeerQuorumDiverged: () => { fireCount++ },
+      getLocalBlock: async () => { throw new Error("leveldb closed") },
+    })
+
+    await coord.handleMessage({ ...bftMsg("prepare", 1n, peerHash, "v2"), stateRoot: peerRoot })
+    await coord.handleMessage({ ...bftMsg("prepare", 1n, peerHash, "v3"), stateRoot: peerRoot })
+
+    assert.equal(fireCount, 1, "confirm-lookup failure must not mask a potential divergence (fail open)")
+  })
+
   it("Phase J1.1: does NOT fire when local stateRoot matches peer quorum", async () => {
     const agreedRoot = ("0x" + "cc".repeat(32)) as Hex
     const blockHashHex = ("0x" + "ab".repeat(32)) as Hex
@@ -861,7 +950,11 @@ describe("BftCoordinator", () => {
     // PR-1F: should NOT have marked v2 unreachable — the round was in commit
     // phase, meaning v2 successfully proposed and collected peer prepares.
     assert.equal(stuckCalls.length, 0, "no onProposerStuck on commit-phase timeout")
-    assert.equal(coord.getRoundState().active, false, "round was cleared")
+    // The commit-phase round was torn down and re-entered fresh at the
+    // same height (we prepared it), so we keep voting instead of going idle.
+    const st = coord.getRoundState()
+    assert.equal(st.height, 1n, "round re-entered at the same height")
+    assert.equal(st.phase, "prepare")
   })
 
   it("PR-1F: onProposerStuck DOES fire on prepare-phase timeout with no peer prepares (regression)", async () => {
@@ -1022,5 +1115,279 @@ describe("BftCoordinator.replayUnfinalizedVotes (restart liveness, 2026-08-05)",
     assert.equal(res.commits, 0)
     assert.equal(res.prepares, 0)
     assert.equal(sent.length, 0)
+  })
+
+  // --- Lost-vote livelock fix (88780, 2026-10-13 height 1934977) ---
+  describe("prepare retransmission + timeout re-entry", () => {
+    const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms))
+
+    it("re-broadcasts the identical prepare (with stateRoot) while the round is unfinalized", async () => {
+      const sent: BftMessage[] = []
+      const root = ("0x" + "c7".repeat(32)) as Hex
+      const coord = new BftCoordinator({
+        localId: "v1",
+        validators,
+        voteRetryIntervalMs: 20,
+        broadcastMessage: async (msg) => { sent.push(msg) },
+        onFinalized: async () => {},
+        computeLocalStateRoot: async () => root,
+      })
+      try {
+        const block = makeBlock(1n)
+        await coord.startRound(block)
+        await sleep(90)
+        const prepares = sent.filter((m) => m.type === "prepare")
+        assert.ok(prepares.length >= 3, `expected retransmits, got ${prepares.length}`)
+        for (const m of prepares) {
+          assert.equal(m.blockHash, block.hash)
+          assert.equal(m.height, 1n)
+          assert.equal(m.stateRoot, root)
+        }
+      } finally {
+        coord.stop()
+      }
+    })
+
+    it("keeps re-broadcasting prepare in commit phase and stops once finalized", async () => {
+      const sent: BftMessage[] = []
+      const coord = new BftCoordinator({
+        localId: "v1",
+        validators,
+        voteRetryIntervalMs: 20,
+        broadcastMessage: async (msg) => { sent.push(msg) },
+        onFinalized: async () => {},
+      })
+      try {
+        const block = makeBlock(1n)
+        await coord.startRound(block)
+        await coord.handleMessage(bftMsg("prepare", 1n, block.hash, "v2"))
+        await coord.handleMessage(bftMsg("prepare", 1n, block.hash, "v3"))
+        assert.equal(coord.getRoundState().phase, "commit")
+        const before = sent.filter((m) => m.type === "prepare").length
+        await sleep(70)
+        assert.ok(sent.filter((m) => m.type === "prepare").length > before, "prepare retried in commit phase")
+
+        await coord.handleMessage(bftMsg("commit", 1n, block.hash, "v2"))
+        await coord.handleMessage(bftMsg("commit", 1n, block.hash, "v3"))
+        assert.equal(coord.getRoundState().active, false)
+        await sleep(3_200) // let the 3s linger window drain
+        const settled = sent.length
+        await sleep(80)
+        assert.equal(sent.length, settled, "no retransmits after finalize + linger")
+      } finally {
+        coord.stop()
+      }
+    })
+
+    it("a non-validator observer never retransmits", async () => {
+      const sent: BftMessage[] = []
+      const coord = new BftCoordinator({
+        localId: "observer",
+        validators,
+        voteRetryIntervalMs: 10,
+        broadcastMessage: async (msg) => { sent.push(msg) },
+        onFinalized: async () => {},
+      })
+      try {
+        await coord.startRound(makeBlock(1n))
+        await sleep(50)
+        assert.equal(sent.length, 0)
+      } finally {
+        coord.stop()
+      }
+    })
+
+    it("re-enters the round for the locally-prepared block after a timeout", async () => {
+      const sent: BftMessage[] = []
+      const coord = new BftCoordinator({
+        localId: "v2",
+        validators,
+        prepareTimeoutMs: 15,
+        commitTimeoutMs: 15,
+        voteRetryIntervalMs: 1_000_000,
+        broadcastMessage: async (msg) => { sent.push(msg) },
+        onFinalized: async () => {},
+      })
+      try {
+        const block = makeBlock(1n, "v1")
+        await coord.handleReceivedBlock(block)
+        assert.equal(sent.filter((m) => m.type === "prepare").length, 1)
+        await sleep(100)
+        // Each timeout re-enters on the same block → a fresh prepare each time.
+        const prepares = sent.filter((m) => m.type === "prepare")
+        assert.ok(prepares.length >= 2, `expected re-entry prepares, got ${prepares.length}`)
+        assert.ok(prepares.every((m) => m.blockHash === block.hash))
+        const st = coord.getRoundState()
+        assert.equal(st.active, true)
+        assert.equal(st.height, 1n)
+      } finally {
+        coord.stop()
+      }
+    })
+
+    it("a re-entered round never holds back a block for a higher height", async () => {
+      const sent: BftMessage[] = []
+      const coord = new BftCoordinator({
+        localId: "v2",
+        validators,
+        prepareTimeoutMs: 15,
+        commitTimeoutMs: 15,
+        voteRetryIntervalMs: 1_000_000,
+        broadcastMessage: async (msg) => { sent.push(msg) },
+        onFinalized: async () => {},
+      })
+      try {
+        await coord.handleReceivedBlock(makeBlock(1n, "v1"))
+        await sleep(45) // timed out at least once → re-entered height 1
+        assert.equal(coord.getRoundState().height, 1n)
+        const next: ChainBlock = { ...makeBlock(2n, "v3"), hash: ("0x" + "cd".repeat(32)) as Hex }
+        await coord.startRound(next)
+        const st = coord.getRoundState()
+        assert.equal(st.height, 2n, "height 2 starts immediately instead of being deferred")
+        assert.ok(sent.some((m) => m.type === "prepare" && m.height === 2n))
+      } finally {
+        coord.stop()
+      }
+    })
+
+    it("a re-entered round keeps re-sending a commit we already cast", async () => {
+      const sent: BftMessage[] = []
+      const coord = new BftCoordinator({
+        localId: "v1",
+        validators,
+        prepareTimeoutMs: 25,
+        commitTimeoutMs: 25,
+        voteRetryIntervalMs: 15,
+        broadcastMessage: async (msg) => { sent.push(msg) },
+        onFinalized: async () => {},
+      })
+      try {
+        const block = makeBlock(1n)
+        await coord.startRound(block)
+        await coord.handleMessage(bftMsg("prepare", 1n, block.hash, "v2"))
+        await coord.handleMessage(bftMsg("prepare", 1n, block.hash, "v3"))
+        assert.equal(coord.getRoundState().phase, "commit")
+        await sleep(80) // commit round times out → re-entered in prepare phase
+        const st = coord.getRoundState()
+        assert.equal(st.height, 1n)
+        assert.equal(st.phase, "prepare")
+        const mark = sent.length
+        await sleep(60)
+        const later = sent.slice(mark)
+        assert.ok(later.some((m) => m.type === "commit" && m.blockHash === block.hash), "commit re-sent from prepare phase")
+        assert.ok(later.every((m) => m.blockHash === block.hash))
+      } finally {
+        coord.stop()
+      }
+    })
+
+    it("stop() halts re-entry and every retransmit timer", async () => {
+      const sent: BftMessage[] = []
+      const coord = new BftCoordinator({
+        localId: "v2",
+        validators,
+        prepareTimeoutMs: 10,
+        commitTimeoutMs: 10,
+        voteRetryIntervalMs: 10,
+        broadcastMessage: async (msg) => { sent.push(msg) },
+        onFinalized: async () => {},
+      })
+      await coord.handleReceivedBlock(makeBlock(1n, "v1"))
+      await sleep(25) // timeout fires → re-entry may be in flight
+      coord.stop()
+      await sleep(10)
+      const settled = sent.length
+      await sleep(80)
+      assert.equal(sent.length, settled, "nothing broadcast after stop()")
+      assert.equal(coord.getRoundState().active, false)
+      await coord.startRound(makeBlock(2n, "v1"))
+      assert.equal(coord.getRoundState().active, false, "startRound is a no-op after stop()")
+    })
+
+    it("does not re-enter once the height is at or below the chain tip", async () => {
+      const sent: BftMessage[] = []
+      let tip = 0n
+      const coord = new BftCoordinator({
+        localId: "v2",
+        validators,
+        prepareTimeoutMs: 15,
+        commitTimeoutMs: 15,
+        voteRetryIntervalMs: 1_000_000,
+        getChainHeight: () => tip,
+        broadcastMessage: async (msg) => { sent.push(msg) },
+        onFinalized: async () => {},
+      })
+      try {
+        await coord.handleReceivedBlock(makeBlock(1n, "v1"))
+        tip = 1n // height 1 got applied via sync while our round was open
+        await sleep(100)
+        assert.equal(sent.filter((m) => m.type === "prepare").length, 1, "no re-entry at a stale height")
+        assert.equal(coord.getRoundState().active, false)
+      } finally {
+        coord.stop()
+      }
+    })
+  })
+})
+
+describe("Phase J1.1 follower fix: in-flight round is not a stall", () => {
+  // 2026-09-05 v3 recurrence: for the height currently UNDER consensus
+  // (tip+1) the local chain never has a block yet, so getLocalBlock()
+  // returns null and the earlier fix fell through to the "truly stuck"
+  // fire path. A slow-but-caught-up validator (v3, shared host) that
+  // misses casting its prepare before the peer quorum forms then fired
+  // forceSnapSync every cooldown window and ballooned leveldb-state
+  // again (64G). Being one in-flight round behind on VOTES is not a
+  // stall: only fire when the local TIP is genuinely behind the peer
+  // quorum height. A real J1.1 dead-zone (tip frozen while peers
+  // advance) still fires as soon as peers move one block ahead.
+  const peerRoot = ("0x" + "bb".repeat(32)) as Hex
+  const peerHash = ("0x" + "ab".repeat(32)) as Hex
+
+  it("suppresses fire when height is the in-flight round (tip+1)", async () => {
+    let fireCount = 0
+    const coord = new BftCoordinator({
+      localId: "v1",
+      validators,
+      broadcastMessage: async () => {},
+      onFinalized: async () => {},
+      onPeerQuorumDiverged: () => { fireCount++ },
+      getLocalBlock: async () => null,
+      getChainHeight: () => 0n, // tip=0 → height 1 is the in-flight round
+    })
+    await coord.handleMessage({ ...bftMsg("prepare", 1n, peerHash, "v2"), stateRoot: peerRoot })
+    await coord.handleMessage({ ...bftMsg("prepare", 1n, peerHash, "v3"), stateRoot: peerRoot })
+    assert.equal(fireCount, 0, "one in-flight round behind on votes is not a stall")
+  })
+
+  it("still fires when the local tip is genuinely behind (height > tip+1)", async () => {
+    let fireCount = 0
+    const coord = new BftCoordinator({
+      localId: "v1",
+      validators,
+      broadcastMessage: async () => {},
+      onFinalized: async () => {},
+      onPeerQuorumDiverged: () => { fireCount++ },
+      getLocalBlock: async () => null,
+      getChainHeight: () => 0n, // tip=0, peers at height 3 → genuinely behind
+    })
+    await coord.handleMessage({ ...bftMsg("prepare", 3n, peerHash, "v2"), stateRoot: peerRoot })
+    await coord.handleMessage({ ...bftMsg("prepare", 3n, peerHash, "v3"), stateRoot: peerRoot })
+    assert.equal(fireCount, 1, "tip frozen while peers advanced — must fire")
+  })
+
+  it("fires when getChainHeight is not provided (no silent behavior change)", async () => {
+    let fireCount = 0
+    const coord = new BftCoordinator({
+      localId: "v1",
+      validators,
+      broadcastMessage: async () => {},
+      onFinalized: async () => {},
+      onPeerQuorumDiverged: () => { fireCount++ },
+      getLocalBlock: async () => null,
+    })
+    await coord.handleMessage({ ...bftMsg("prepare", 1n, peerHash, "v2"), stateRoot: peerRoot })
+    await coord.handleMessage({ ...bftMsg("prepare", 1n, peerHash, "v3"), stateRoot: peerRoot })
+    assert.equal(fireCount, 1, "without a tip source, keep the fail-open fire")
   })
 })

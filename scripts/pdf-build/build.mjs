@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// Build COC_business_plan.zh.md → PDF
+// Build palimesh_business_plan.zh.md → PDF
 // Usage: node build.mjs <input.md> <output.pdf>
 
 import { readFileSync, writeFileSync, existsSync } from 'node:fs';
@@ -11,8 +11,8 @@ import markdownItAnchor from 'markdown-it-anchor';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
-const inputPath = resolve(process.argv[2] || '../coc-bp-input.md');
-const outputPath = resolve(process.argv[3] || '../coc-bp-output.pdf');
+const inputPath = resolve(process.argv[2] || '../palimesh-bp-input.md');
+const outputPath = resolve(process.argv[3] || '../palimesh-bp-output.pdf');
 const tmpHtml = resolve(__dirname, '_tmp_build.html');
 
 if (!existsSync(inputPath)) {
@@ -34,7 +34,7 @@ const renderedBody = md.render(markdownContent);
 
 // Extract document title from first H1
 const titleMatch = markdownContent.match(/^#\s+(.+)$/m);
-const docTitle = titleMatch ? titleMatch[1].trim() : 'COC Document';
+const docTitle = titleMatch ? titleMatch[1].trim() : 'Palimesh Document';
 
 const css = `
 @page {

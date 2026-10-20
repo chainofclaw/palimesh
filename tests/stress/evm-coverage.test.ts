@@ -3,10 +3,10 @@
  * as a reusable suite: runtime-pool deploy+execute, CREATE determinism,
  * factory (CREATE-from-contract), SELFDESTRUCT, and the tx-type matrix.
  *
- * Targets a live chain via COC_STRESS_RPC (default 127.0.0.1:18780). The whole
+ * Targets a live chain via PALI_STRESS_RPC (default 127.0.0.1:18780). The whole
  * suite skips gracefully when no chain is reachable, so it is CI-safe.
  *
- * Run: COC_STRESS_RPC=http://host:port node --experimental-strip-types --test tests/stress/evm-coverage.test.ts
+ * Run: PALI_STRESS_RPC=http://host:port node --experimental-strip-types --test tests/stress/evm-coverage.test.ts
  */
 import { describe, it } from "node:test"
 import assert from "node:assert/strict"
@@ -15,11 +15,11 @@ import { rpcResult, tryGetHead, waitForReceipt } from "../../scripts/lib/rpc-hel
 import { hdWallet, wrapInitCode, createAddress } from "../../scripts/lib/wallet.ts"
 import { RUNTIMES, FACTORY_RET2A, buildSelfdestruct } from "../../scripts/lib/probe-runtimes.ts"
 
-const RPC = process.env.COC_STRESS_RPC ?? "http://127.0.0.1:18780"
+const RPC = process.env.PALI_STRESS_RPC ?? "http://127.0.0.1:18780"
 // Tx-sending suites need an exclusively-owned funded account: when several
 // run concurrently against one chain, give each a distinct funded index via
-// COC_STRESS_WALLET_INDEX, or run them sequentially.
-const WALLET_INDEX = Number(process.env.COC_STRESS_WALLET_INDEX ?? 0)
+// PALI_STRESS_WALLET_INDEX, or run them sequentially.
+const WALLET_INDEX = Number(process.env.PALI_STRESS_WALLET_INDEX ?? 0)
 const reachable = (await tryGetHead(RPC)) !== null
 
 const provider = reachable ? new ethers.JsonRpcProvider(RPC) : null

@@ -19,7 +19,7 @@
  *     on success; rejects with a typed error on lookup miss / encoder
  *     reject / chain reject.
  *
- * The caller (coc-relayer tick) decides on/off via env. This module does
+ * The caller (palimesh-relayer tick) decides on/off via env. This module does
  * NOT poll on its own.
  */
 

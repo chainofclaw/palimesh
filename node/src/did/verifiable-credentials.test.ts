@@ -16,7 +16,7 @@ describe("computeCredentialHash", () => {
   it("produces deterministic hash", () => {
     const cred = {
       "@context": ["https://www.w3.org/2018/credentials/v1"] as string[],
-      type: ["VerifiableCredential", "CocCapabilityCredential"],
+      type: ["VerifiableCredential", "PaliCapabilityCredential"],
       issuer: ISSUER,
       issuanceDate: "2026-03-15T00:00:00Z",
       credentialSubject: {

@@ -69,7 +69,7 @@ describe("J3.02 — stuck proposer self-clear", () => {
     //     observes stuckProposer=self + activeRound=true + elapsed>threshold
     //     → forceClearRound → next tick re-proposes → quorum forms.
     execSync(
-      `bash ${import.meta.dirname}/../scripts/freeze-bft-output.sh coc-mn-node-2 ${PARTITION_DURATION_S}`,
+      `bash ${import.meta.dirname}/../scripts/freeze-bft-output.sh palimesh-mn-node-2 ${PARTITION_DURATION_S}`,
       { stdio: "inherit" },
     )
 

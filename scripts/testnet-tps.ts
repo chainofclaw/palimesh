@@ -1,5 +1,5 @@
 /**
- * COC Testnet TPS Benchmark
+ * Palimesh Testnet TPS Benchmark
  *
  * Measures actual on-chain TPS by:
  *   1. Funding sender wallets
@@ -12,9 +12,9 @@
 import { ethers } from "ethers"
 import { HARDHAT_DEV_PRIVATE_KEYS, resolvePrivateKeyForRpc } from "./lib/key-safety.mjs"
 
-const RPC = process.argv[2] || process.env.COC_STRESS_RPC || "http://127.0.0.1:28780"
+const RPC = process.argv[2] || process.env.PALI_STRESS_RPC || "http://127.0.0.1:28780"
 const DEPLOYER_KEY = resolvePrivateKeyForRpc({
-  envValue: process.env.DEPLOYER_PRIVATE_KEY ?? process.env.COC_STRESS_PRIVATE_KEY,
+  envValue: process.env.DEPLOYER_PRIVATE_KEY ?? process.env.PALI_STRESS_PRIVATE_KEY,
   envName: "DEPLOYER_PRIVATE_KEY",
   fallbackDevKey: HARDHAT_DEV_PRIVATE_KEYS[0],
   rpcUrl: RPC,
@@ -312,7 +312,7 @@ async function benchHeavyCompute(): Promise<void> {
 
 async function main() {
   console.log("══════════════════════════════════════════════════════")
-  console.log("  COC Testnet TPS Benchmark")
+  console.log("  Palimesh Testnet TPS Benchmark")
   console.log("══════════════════════════════════════════════════════")
   console.log(`  RPC: ${RPC}`)
 

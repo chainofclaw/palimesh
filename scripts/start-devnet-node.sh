@@ -41,9 +41,9 @@ NODE_KEY="${ANVIL_KEYS[$IDX]}"
 METRICS_PORT=$((28810 + IDX))
 
 env \
-  COC_METRICS_PORT="${METRICS_PORT}" \
-  COC_NODE_KEY="${NODE_KEY}" \
-  COC_NODE_CONFIG="${CONFIG}" \
+  PALI_METRICS_PORT="${METRICS_PORT}" \
+  PALI_NODE_KEY="${NODE_KEY}" \
+  PALI_NODE_CONFIG="${CONFIG}" \
   node --experimental-strip-types "${ROOT}/node/src/index.ts" >>"${LOG_FILE}" 2>&1 &
 PID=$!
 echo "$PID" > "$PIDFILE"

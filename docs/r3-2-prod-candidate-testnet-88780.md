@@ -2,7 +2,7 @@
 
 ## Status
 Pre-deploy SOP. Actual chain bring-up deferred until R1-R3 milestones land
-in upstream COC repo.
+in upstream Palimesh repo.
 
 ## Goal
 Stand up a "production candidate" testnet at chainId **88780** with all 10
@@ -31,15 +31,15 @@ All 7 keys must be **distinct** (no shared anvil keys like in current 18780).
 - [ ] Reserve chainId 88780 in genesis config
 - [ ] Generate 7 fresh BIP-39 seeds; store in `~/.coc/keys/prod-candidate/`
   (chmod 600, never commit)
-- [ ] Update `scripts/gcloud/config.env` to add `COC_PROD_CANDIDATE_CHAIN_ID=88780`
+- [ ] Update `scripts/gcloud/config.env` to add `PALI_PROD_CANDIDATE_CHAIN_ID=88780`
 - [ ] Provision 5 GCP VMs reusing R1 fixture template
 - [ ] Bring up validators 6+7 on lab hardware
 - [x] Deploy contracts via `contracts/scripts/deploy-multisig-88780.js`,
-  `deploy-governance.js`, then `deploy-all-88780.js` (`COC_RPC_URL` /
-  `COC_CHAIN_ID=88780`, `DEPLOYER_PRIVATE_KEY` must be **non-public** —
+  `deploy-governance.js`, then `deploy-all-88780.js` (`PALI_RPC_URL` /
+  `PALI_CHAIN_ID=88780`, `DEPLOYER_PRIVATE_KEY` must be **non-public** —
   `preflight.js:assertSafeDeployer` rejects the 20 default Hardhat test keys).
   All 13 deployed addresses are recorded in `configs/deployed-contracts-88780.json`
-  — the canonical manifest; the `@chainofclaw/soul` 88780 manifest is kept in
+  — the canonical manifest; the `@palimesh/soul` 88780 manifest is kept in
   sync.
   Current generation: **gen-5 (2026-05-20)** — every contract is now a UUPS
   upgradeable proxy (PR #707). The same 3-of-5 MultiSigWallet
@@ -53,7 +53,7 @@ All 7 keys must be **distinct** (no shared anvil keys like in current 18780).
   gen-4 log (immutable contracts era): `docs/88780-redeploy-2026-05-19.md`.
 - [ ] All 7 validators stake 32 ETH into ValidatorRegistry
 - [ ] All 7 register in PoSeManagerV2 with serviceFlags=7
-- [ ] enableEmission with COC token (real ERC20, not deployer-as-stub)
+- [ ] enableEmission with PALI token (real ERC20, not deployer-as-stub)
 - [ ] Setup Prometheus + Grafana for the cluster
 
 ## 30-day SLA Targets
@@ -79,7 +79,7 @@ All 7 keys must be **distinct** (no shared anvil keys like in current 18780).
 ## Roll-out Plan
 
 1. **Week -1**: deploy + warmup (1 day chain stability)
-2. **Week 0-1**: invite outside operators to spin up validators on COC SDK
+2. **Week 0-1**: invite outside operators to spin up validators on Palimesh SDK
 3. **Week 1-2**: run weekly churn drill; observe metrics
 4. **Week 2-3**: governance proposal demonstrating Treasury budget cap change
 5. **Week 3-4**: equivocation drill (controlled double-sign by trusted operator)

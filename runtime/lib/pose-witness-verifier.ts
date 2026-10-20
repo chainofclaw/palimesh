@@ -84,10 +84,10 @@ export type PushVerifyResult =
   | { ok: false; status: number; error: string }
 
 /**
- * Stable JSON stringification — must match `runtime/coc-node.ts:stableStringify`
+ * Stable JSON stringification — must match `runtime/palimesh-node.ts:stableStringify`
  * (the prover's encoding) byte-for-byte, otherwise `responseBodyHash` won't
  * match. Keep these in sync. Pulled into this module rather than imported
- * from coc-node.ts because that file is a runtime entry point with side
+ * from palimesh-node.ts because that file is a runtime entry point with side
  * effects on import (binds sockets, reads env, etc.).
  */
 export function stableStringify(value: unknown): string {
@@ -158,7 +158,7 @@ export async function verifyPushedReceipt(
     registeredOperator = (await opts.contractReader.getNodeOperator(input.nodeId as Hex32)).toLowerCase()
   } catch (err) {
     // RPC failure / contract not configured — fail closed. Caller already
-    // gated the push path on COC_POSE_WITNESS_REQUIRE_VERIFIED, so reaching
+    // gated the push path on PALI_POSE_WITNESS_REQUIRE_VERIFIED, so reaching
     // here means we explicitly want strict verification.
     return { ok: false, status: 502, error: "operator lookup failed" }
   }

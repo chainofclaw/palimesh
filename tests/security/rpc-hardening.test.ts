@@ -3,20 +3,20 @@
  * (2026-05-17) into a reusable regression test: dangerous-method gating,
  * malformed-input handling, and DoS-amplification limits.
  *
- * Distinct from tests/stress/rpc-validation.test.ts (which checks coc_* param
+ * Distinct from tests/stress/rpc-validation.test.ts (which checks pali_* param
  * validation): this suite is the attack-surface / hardening view — what an
  * unauthenticated client must NOT be able to do.
  *
- * Targets a live chain via COC_STRESS_RPC (default 127.0.0.1:28780). Skips
+ * Targets a live chain via PALI_STRESS_RPC (default 127.0.0.1:28780). Skips
  * gracefully when no chain is reachable, so it is CI-safe.
  *
- * Run: COC_STRESS_RPC=http://host:port node --experimental-strip-types --test tests/security/rpc-hardening.test.ts
+ * Run: PALI_STRESS_RPC=http://host:port node --experimental-strip-types --test tests/security/rpc-hardening.test.ts
  */
 import { describe, it } from "node:test"
 import assert from "node:assert/strict"
 import { rpc, tryGetHead } from "../../scripts/lib/rpc-helper.ts"
 
-const RPC = process.env.COC_STRESS_RPC ?? "http://127.0.0.1:28780"
+const RPC = process.env.PALI_STRESS_RPC ?? "http://127.0.0.1:28780"
 const reachable = (await tryGetHead(RPC)) !== null
 
 const METHOD_NOT_FOUND = -32601

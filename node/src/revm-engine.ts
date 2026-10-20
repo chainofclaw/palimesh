@@ -21,7 +21,7 @@ let RevmInstance: any = null
 async function loadRevm(): Promise<any> {
   if (RevmInstance) return RevmInstance
   try {
-    const mod = await import("../revm-wasm/pkg/coc_revm_wasm.js")
+    const mod = await import("../revm-wasm/pkg/pali_revm_wasm.js")
     RevmInstance = mod.RevmInstance ?? mod.default?.RevmInstance
     return RevmInstance
   } catch {

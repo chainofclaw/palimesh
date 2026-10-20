@@ -29,5 +29,5 @@ export interface WalletState {
   wrongChain: boolean;
 }
 
-export const COC_CHAIN_ID = 18780;
+export const PALI_CHAIN_ID = 18780;
 export const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB

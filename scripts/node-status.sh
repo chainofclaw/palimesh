@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Query COC node status via RPC
+# Query Palimesh node status via RPC
 # Usage: bash scripts/node-status.sh [rpc_url]
 set -euo pipefail
 
@@ -15,7 +15,7 @@ rpc() {
 
 extract() { node --experimental-strip-types -e "const r=JSON.parse(process.argv[1]); $2" "$1"; }
 
-echo "=== COC Node Status ==="
+echo "=== Palimesh Node Status ==="
 echo "RPC: ${RPC_URL}"
 echo ""
 
@@ -48,7 +48,7 @@ GAS_PRICE=$((${GAS_HEX}))
 echo "Gas price:     ${GAS_PRICE} wei"
 
 # Mempool
-POOL_RESP=$(rpc "coc_mempoolStats")
+POOL_RESP=$(rpc "pali_mempoolStats")
 if echo "$POOL_RESP" | node -e "const r=JSON.parse(require('fs').readFileSync('/dev/stdin','utf-8')); process.exit(r.result?0:1)" 2>/dev/null; then
   POOL_INFO=$(echo "$POOL_RESP" | node -e "
     const r=JSON.parse(require('fs').readFileSync('/dev/stdin','utf-8')).result;
@@ -60,7 +60,7 @@ fi
 echo ""
 
 # BFT status
-BFT_RESP=$(rpc "coc_getBftStatus")
+BFT_RESP=$(rpc "pali_getBftStatus")
 if echo "$BFT_RESP" | node -e "const r=JSON.parse(require('fs').readFileSync('/dev/stdin','utf-8')); process.exit(r.result?0:1)" 2>/dev/null; then
   echo "=== BFT Consensus ==="
   echo "$BFT_RESP" | node -e "
@@ -75,7 +75,7 @@ if echo "$BFT_RESP" | node -e "const r=JSON.parse(require('fs').readFileSync('/d
 fi
 
 # Network stats
-NET_RESP=$(rpc "coc_getNetworkStats")
+NET_RESP=$(rpc "pali_getNetworkStats")
 if echo "$NET_RESP" | node -e "const r=JSON.parse(require('fs').readFileSync('/dev/stdin','utf-8')); process.exit(r.result?0:1)" 2>/dev/null; then
   echo "=== Network Stats ==="
   echo "$NET_RESP" | node -e "
@@ -89,7 +89,7 @@ if echo "$NET_RESP" | node -e "const r=JSON.parse(require('fs').readFileSync('/d
 fi
 
 # Chain stats
-STATS_RESP=$(rpc "coc_chainStats")
+STATS_RESP=$(rpc "pali_chainStats")
 if echo "$STATS_RESP" | node -e "const r=JSON.parse(require('fs').readFileSync('/dev/stdin','utf-8')); process.exit(r.result?0:1)" 2>/dev/null; then
   echo "=== Chain Stats ==="
   echo "$STATS_RESP" | node -e "

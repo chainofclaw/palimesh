@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# deploy-fullnode.sh — Install + start a COC fullnode that joins an existing
+# deploy-fullnode.sh — Install + start a Palimesh fullnode that joins an existing
 # testnet. Designed for gcloud VMs (Ubuntu 22.04+). Idempotent.
 #
 # Inputs (env vars, source from deploy-vars-server-N.sh produced by
@@ -9,13 +9,13 @@
 #   PUBLIC_HOST            advertised hostname/IP
 #   NODE_ADDR              this fullnode's observer address (informational)
 #   SELF_*_PORT            port bundle (RPC/WS/P2P/Wire/IPFS/Metrics)
-#   COC_FULLNODE_ENV_B64   base64-encoded /etc/coc/node-1.env
-#   COC_FULLNODE_CONFIG_B64 base64-encoded /etc/coc/node-1.json
+#   PALI_FULLNODE_ENV_B64   base64-encoded /etc/palimesh/node-1.env
+#   PALI_FULLNODE_CONFIG_B64 base64-encoded /etc/palimesh/node-1.json
 #
 # Optional:
-#   COC_REPO_URL  (default: https://github.com/chainofclaw/COC.git)
-#   COC_REPO_REF  (default: main)
-#   COC_INSTALL_DIR (default: /opt/coc)
+#   PALI_REPO_URL  (default: https://github.com/palimesh/palimesh.git)
+#   PALI_REPO_REF  (default: main)
+#   PALI_INSTALL_DIR (default: /opt/coc)
 #
 # Run as root.
 
@@ -23,7 +23,7 @@ set -euo pipefail
 
 required=(NODE_ROLE NODE_INDEX PUBLIC_HOST NODE_ADDR
   SELF_RPC_PORT SELF_WS_PORT SELF_P2P_PORT SELF_WIRE_PORT SELF_IPFS_PORT SELF_METRICS_PORT
-  COC_FULLNODE_ENV_B64 COC_FULLNODE_CONFIG_B64)
+  PALI_FULLNODE_ENV_B64 PALI_FULLNODE_CONFIG_B64)
 for v in "${required[@]}"; do
   if [[ -z "${!v:-}" ]]; then
     echo "ERROR: env var $v missing — did you source deploy-vars-server-N.sh?" >&2
@@ -31,9 +31,9 @@ for v in "${required[@]}"; do
   fi
 done
 
-REPO_URL="${COC_REPO_URL:-https://github.com/chainofclaw/COC.git}"
-REPO_REF="${COC_REPO_REF:-main}"
-INSTALL_DIR="${COC_INSTALL_DIR:-/opt/coc}"
+REPO_URL="${PALI_REPO_URL:-https://github.com/palimesh/palimesh.git}"
+REPO_REF="${PALI_REPO_REF:-main}"
+INSTALL_DIR="${PALI_INSTALL_DIR:-/opt/coc}"
 INSTANCE_ID=1   # one node per VM, always instance 1
 
 if [[ "$EUID" -ne 0 ]]; then
@@ -72,28 +72,28 @@ npm install --omit=dev --no-audit --no-fund 2>&1 | tail -5
 # Without this, fullnodes joining an existing testnet stall at the first
 # remote-proposer block they try to verify (mixed-case proposer vs lowercase
 # validators[] config). See chain-engine-persistent.ts:1362-1376.
-if [[ -n "${COC_PATCH_CHAIN_ENGINE_PERSISTENT_B64:-}" ]]; then
+if [[ -n "${PALI_PATCH_CHAIN_ENGINE_PERSISTENT_B64:-}" ]]; then
   echo "    applying chain-engine-persistent.ts patch (case-insensitive proposer check)"
-  printf "%s" "$COC_PATCH_CHAIN_ENGINE_PERSISTENT_B64" | base64 -d > "$INSTALL_DIR/node/src/chain-engine-persistent.ts"
+  printf "%s" "$PALI_PATCH_CHAIN_ENGINE_PERSISTENT_B64" | base64 -d > "$INSTALL_DIR/node/src/chain-engine-persistent.ts"
 fi
 
 chown -R coc:coc "$INSTALL_DIR"
 
-echo "==> [6/9] Decode and install /etc/coc/node-1.{env,json}"
-mkdir -p /etc/coc "/var/lib/coc/node-${INSTANCE_ID}" /var/log/coc
+echo "==> [6/9] Decode and install /etc/palimesh/node-1.{env,json}"
+mkdir -p /etc/palimesh "/var/lib/coc/node-${INSTANCE_ID}" /var/log/coc
 chown coc:coc "/var/lib/coc/node-${INSTANCE_ID}" /var/log/coc
 
-printf "%s" "$COC_FULLNODE_ENV_B64" | base64 -d > "/etc/coc/node-${INSTANCE_ID}.env"
-chmod 640 "/etc/coc/node-${INSTANCE_ID}.env"
-chown root:coc "/etc/coc/node-${INSTANCE_ID}.env"
+printf "%s" "$PALI_FULLNODE_ENV_B64" | base64 -d > "/etc/palimesh/node-${INSTANCE_ID}.env"
+chmod 640 "/etc/palimesh/node-${INSTANCE_ID}.env"
+chown root:coc "/etc/palimesh/node-${INSTANCE_ID}.env"
 
-printf "%s" "$COC_FULLNODE_CONFIG_B64" | base64 -d > "/etc/coc/node-${INSTANCE_ID}.json"
-chmod 644 "/etc/coc/node-${INSTANCE_ID}.json"
+printf "%s" "$PALI_FULLNODE_CONFIG_B64" | base64 -d > "/etc/palimesh/node-${INSTANCE_ID}.json"
+chmod 644 "/etc/palimesh/node-${INSTANCE_ID}.json"
 
 # Validate JSON to fail fast on a corrupted base64 payload
-if ! jq . "/etc/coc/node-${INSTANCE_ID}.json" >/dev/null; then
+if ! jq . "/etc/palimesh/node-${INSTANCE_ID}.json" >/dev/null; then
   echo "ERROR: rendered config is not valid JSON" >&2
-  cat "/etc/coc/node-${INSTANCE_ID}.json" >&2
+  cat "/etc/palimesh/node-${INSTANCE_ID}.json" >&2
   exit 5
 fi
 
@@ -104,16 +104,16 @@ for port in 22 "$SELF_RPC_PORT" "$SELF_WS_PORT" "$SELF_P2P_PORT" "$SELF_WIRE_POR
 done
 
 echo "==> [8/9] systemd unit"
-cp "$INSTALL_DIR/docker/systemd/coc-node@.service" /etc/systemd/system/
+cp "$INSTALL_DIR/docker/systemd/palimesh-node@.service" /etc/systemd/system/
 systemctl daemon-reload
-systemctl enable "coc-node@${INSTANCE_ID}" >/dev/null
-systemctl restart "coc-node@${INSTANCE_ID}"
+systemctl enable "palimesh-node@${INSTANCE_ID}" >/dev/null
+systemctl restart "palimesh-node@${INSTANCE_ID}"
 
 echo "==> [9/9] Health check (waiting 30s for snap-sync handshake)"
 sleep 30
-if ! systemctl is-active --quiet "coc-node@${INSTANCE_ID}"; then
-  echo "ERROR: coc-node@${INSTANCE_ID} not active"
-  systemctl status "coc-node@${INSTANCE_ID}" --no-pager | tail -20
+if ! systemctl is-active --quiet "palimesh-node@${INSTANCE_ID}"; then
+  echo "ERROR: palimesh-node@${INSTANCE_ID} not active"
+  systemctl status "palimesh-node@${INSTANCE_ID}" --no-pager | tail -20
   exit 3
 fi
 echo "service active"
@@ -140,5 +140,5 @@ cat <<EOF
     local height: ${local_height} (will catch up via snap-sync within minutes)
 
 ==> Watch sync progress:
-    journalctl -u coc-node@${INSTANCE_ID} -f | grep -E 'snap-sync|height|finalized'
+    journalctl -u palimesh-node@${INSTANCE_ID} -f | grep -E 'snap-sync|height|finalized'
 EOF

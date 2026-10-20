@@ -14,7 +14,7 @@
 # (needs 4/5 voters on the same pair), so the two scenarios diverge cleanly:
 #
 #   Scenario A — "single liar, honest majority outvotes" (5 validators):
-#     node-1 launched with COC_UNSAFE_ADVERSARIAL_SPEC_ROOT set to a fixed
+#     node-1 launched with PALI_UNSAFE_ADVERSARIAL_SPEC_ROOT set to a fixed
 #     poisoned 0x…deadbeef… value. Its speculativelyComputeStateRoot
 #     short-circuits and returns that poison on every block, so its BFT
 #     prepare votes land in (blockHash, poisonRoot). Nodes 2-5 run clean
@@ -105,17 +105,17 @@ scenario() {
   echo "================================================================"
   stop_quiet
   sleep 1
-  # COC_SKIP_SOUL_DEPLOY=1 is essential: Scenario B deliberately stalls the
+  # PALI_SKIP_SOUL_DEPLOY=1 is essential: Scenario B deliberately stalls the
   # cluster, and start-devnet's final SoulRegistry deploy step waits for tx
   # finalization that will never come. Skipping keeps start-devnet.sh from
   # hanging the whole harness in those scenarios. Safe for A too — neither
   # scenario exercises the SoulRegistry contract.
-  env COC_SKIP_SOUL_DEPLOY=1 "$@" bash "${ROOT}/scripts/start-devnet.sh" "$NODES" 2>&1 | sed -u 's/^/  start-devnet: /'
+  env PALI_SKIP_SOUL_DEPLOY=1 "$@" bash "${ROOT}/scripts/start-devnet.sh" "$NODES" 2>&1 | sed -u 's/^/  start-devnet: /'
 }
 
 # ── Scenario A: single liar, chain should advance ───────────────────────
 scenario "A: single liar (node-1 poisoned to ${POISON_A})" \
-  "COC_NODE_1_ENV=COC_UNSAFE_ADVERSARIAL_SPEC_ROOT=${POISON_A}"
+  "PALI_NODE_1_ENV=PALI_UNSAFE_ADVERSARIAL_SPEC_ROOT=${POISON_A}"
 
 echo
 echo "Watching chain for 20 s …"
@@ -175,8 +175,8 @@ echo "PASS (A): chain advanced, honest stateRoots agree, node-1's poisoned vote 
 
 # ── Scenario B: two liars (distinct poisons) — cluster should stall ─────
 scenario "B: two liars (node-1→${POISON_A:0:18}…, node-2→${POISON_B:0:18}…)" \
-  "COC_NODE_1_ENV=COC_UNSAFE_ADVERSARIAL_SPEC_ROOT=${POISON_A}" \
-  "COC_NODE_2_ENV=COC_UNSAFE_ADVERSARIAL_SPEC_ROOT=${POISON_B}"
+  "PALI_NODE_1_ENV=PALI_UNSAFE_ADVERSARIAL_SPEC_ROOT=${POISON_A}" \
+  "PALI_NODE_2_ENV=PALI_UNSAFE_ADVERSARIAL_SPEC_ROOT=${POISON_B}"
 
 echo
 echo "Watching chain for 30 s …"

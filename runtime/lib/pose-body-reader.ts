@@ -1,7 +1,7 @@
-// #292: bounded HTTP request body reader for coc-node's /pose/* POST
+// #292: bounded HTTP request body reader for palimesh-node's /pose/* POST
 // endpoints. Pre-fix the runtime used `let body = ""; req.on("data", c =>
 // body += c)` with no size cap and no stream-error handler — an attacker
-// streaming a multi-GB body could OOM the coc-node process and halt
+// streaming a multi-GB body could OOM the palimesh-node process and halt
 // PoSe reception. node/src/pose-http.ts already enforces 1 MB via
 // MAX_POSE_BODY; this is the runtime-side symmetric cap.
 import type http from "node:http";

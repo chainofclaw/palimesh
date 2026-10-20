@@ -1,10 +1,10 @@
 {
-  "name": "coc-node",
+  "name": "palimesh-node",
   "version": "0.1.0",
   "private": true,
   "type": "module",
   "bin": {
-    "coc-node": "bin/coc-node.js"
+    "palimesh-node": "bin/palimesh-node.js"
   },
   "scripts": {
     "start": "node --experimental-strip-types src/index.ts",

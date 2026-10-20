@@ -62,7 +62,7 @@ export interface CidRegisteredLogLike {
  * Minimal DHT surface we need. Intentionally returns `string[] | Promise<string[]>`
  * so both in-process callers (node/src/dht-network.ts findProviders is sync)
  * and HTTP-proxy callers (the agent process talks to the node via
- * `coc_dhtFindProviders`) can satisfy it without adapters.
+ * `pali_dhtFindProviders`) can satisfy it without adapters.
  */
 export interface DhtLike {
   findProviders(cid: string, maxK?: number): string[] | Promise<string[]>
@@ -233,7 +233,7 @@ export function makeCidRegistryEventReader(
   contract: CidRegistryContractLike,
   opts?: { blockChunk?: number; latestBlock?: () => Promise<number> },
 ): () => Promise<string[]> {
-  // COC nodes cap eth_getLogs at 10 000 blocks per call, so a naive
+  // Palimesh nodes cap eth_getLogs at 10 000 blocks per call, so a naive
   // `0..latest` scan fails once the chain passes 10 000 blocks. Chunk
   // the scan into windows and concat; each window still only returns
   // the contract's own CidRegistered events so the total bandwidth

@@ -9,8 +9,8 @@
  * here via PHASE_B_INPUT).
  *
  * USAGE
- *   COC_RPC_URL=https://clawchain.io/api/testnet/rpc \
- *   COC_CHAIN_ID=88780 \
+ *   PALI_RPC_URL=https://clawchain.io/api/testnet/rpc \
+ *   PALI_CHAIN_ID=88780 \
  *   DEPLOYER_PRIVATE_KEY=0x<deployer> \
  *   npx hardhat run scripts/prepare-pose-getnodebond-upgrade.js --network coc
  *

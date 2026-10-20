@@ -1,6 +1,6 @@
 {
   "_comment_template": "Observer fullnode for chainId 88780. Does NOT participate in BFT (enableBft=false), nodeId is a generated random key per host (NOT in validators[]). Replace ${...} placeholders before deploy.",
-  "_comment_keys": "Set COC_NODE_KEY env to a freshly-generated random hex (NOT one of the 5 validator keys). bash scripts/generate-validator-keys.sh 1 ~/.coc/keys/88780-observer-N/ produces a usable key file (rename validator-1 → observer-N).",
+  "_comment_keys": "Set PALI_NODE_KEY env to a freshly-generated random hex (NOT one of the 5 validator keys). bash scripts/generate-validator-keys.sh 1 ~/.coc/keys/88780-observer-N/ produces a usable key file (rename validator-1 → observer-N).",
   "dataDir": "/var/lib/coc/node-1",
   "nodeId": "${OBSERVER_NODE_ID}",
   "chainId": 88780,

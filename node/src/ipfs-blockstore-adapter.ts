@@ -3,7 +3,7 @@ import type { Blockstore } from "interface-blockstore"
 import type { IpfsBlockstore } from "./ipfs-blockstore.ts"
 
 /**
- * Bridges COC's string-keyed {@link IpfsBlockstore} to the
+ * Bridges Palimesh's string-keyed {@link IpfsBlockstore} to the
  * `interface-blockstore` `Blockstore` that `ipfs-unixfs-importer` and
  * `ipfs-unixfs-exporter` expect.
  *
@@ -14,7 +14,7 @@ import type { IpfsBlockstore } from "./ipfs-blockstore.ts"
  * wherever a `Blockstore` is wanted.
  *
  * The CID <-> string conversion is the only translation — block bytes pass
- * through verbatim. `get` routes through COC's `store.get`, which
+ * through verbatim. `get` routes through Palimesh's `store.get`, which
  * transparently peer-fetches absent blocks (C1.3) and content-verifies
  * them, so directory-DAG navigation works even over a partially-local DAG.
  *
@@ -32,7 +32,7 @@ export interface BlockstoreAdapterLimits {
    * public-facing read path (anonymous gateway / cat / ls / get) so an
    * attacker cannot weaponize the node as a DHT-reflection / SSRF
    * amplifier via arbitrary unknown CIDs. Admin-authorized callers
-   * (loopback / X-COC-IPFS-Admin-Token) leave it false / undefined so
+   * (loopback / X-Palimesh-IPFS-Admin-Token) leave it false / undefined so
    * operator tooling keeps the transparent peer-fetch behaviour.
    */
   localOnly?: boolean
@@ -125,10 +125,10 @@ export class InterfaceBlockstoreAdapter implements Pick<Blockstore, "get" | "put
     }
   }
 
-  // GC is owned by COC's IpfsBlockstore (pins.json + gc()); deletion through
+  // GC is owned by Palimesh's IpfsBlockstore (pins.json + gc()); deletion through
   // the adapter is a no-op so the importer/exporter can never drop blocks.
   async delete(_cid: CID): Promise<void> {
-    /* no-op — COC GC owns deletion */
+    /* no-op — Palimesh GC owns deletion */
   }
 
   async *deleteMany(source: AsyncIterable<CID> | Iterable<CID>): AsyncGenerator<CID> {

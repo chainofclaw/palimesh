@@ -1,13 +1,13 @@
 /**
  * R2.1.d — Aggregator crash + recovery (M4)
  *
- * Infrastructure-level invariant: docker kill the coc-h15-agent container,
+ * Infrastructure-level invariant: docker kill the palimesh-h15-agent container,
  * confirm container restarts via systemd-style restart policy + relayer
  * unaffected + cluster keeps producing blocks.
  *
  * Asserts:
  *   1. baseline healthy
- *   2. docker kill coc-h15-agent → docker auto-restarts (restart: unless-stopped)
+ *   2. docker kill palimesh-h15-agent → docker auto-restarts (restart: unless-stopped)
  *   3. agent comes back to "endpoint fingerprint mode" log within 30 s
  *   4. relayer ticks uninterrupted; chain advances ≥3 blocks in 30 s
  */
@@ -17,7 +17,7 @@ import { execSync } from "node:child_process"
 import { existsSync } from "node:fs"
 
 const RPC_PORTS = [38790, 38792, 38794, 38796, 38798] as const
-const DEPLOYED_PATH = "/passinger/projects/ClawdBot/COC/tests/multinode-integration/configs-h15/deployed-pose.json"
+const DEPLOYED_PATH = "/passinger/projects/ClawdBot/Palimesh/tests/multinode-integration/configs-h15/deployed-pose.json"
 
 async function getBlockNumber(port: number): Promise<bigint> {
   try {
@@ -52,7 +52,7 @@ describe("R2.1.d — aggregator (agent) crash + recovery", { timeout: 180_000 },
   it("baseline healthy", async () => {
     const tip = await maxClusterHeight()
     assert.ok(tip > 0n)
-    assert.ok(alive("coc-h15-agent") && alive("coc-h15-relayer"))
+    assert.ok(alive("palimesh-h15-agent") && alive("palimesh-h15-relayer"))
   })
 
   it("docker restart agent → container alive after restart", async () => {
@@ -61,15 +61,15 @@ describe("R2.1.d — aggregator (agent) crash + recovery", { timeout: 180_000 },
     // (observed 2026-05-09 on this host: RestartCount stayed 0 after kill).
     // We use `docker restart` (= stop + start) which is unambiguous and
     // exercises the same recovery path: agent re-initializes from disk state.
-    console.log(`  restarting coc-h15-agent`)
-    execSync(`docker restart -t 1 coc-h15-agent`, { stdio: "inherit" })
+    console.log(`  restarting palimesh-h15-agent`)
+    execSync(`docker restart -t 1 palimesh-h15-agent`, { stdio: "inherit" })
 
     let restoredAt: number | null = null
     let aliveCount = 0
     const deadline = Date.now() + 120_000
     while (Date.now() < deadline) {
       await sleep(3_000)
-      if (alive("coc-h15-agent")) {
+      if (alive("palimesh-h15-agent")) {
         aliveCount++
         if (aliveCount >= 3) {
           restoredAt = Date.now()
@@ -80,13 +80,13 @@ describe("R2.1.d — aggregator (agent) crash + recovery", { timeout: 180_000 },
       }
     }
     assert.ok(restoredAt !== null, "agent did not stay running within 120s of restart")
-    const logs = execSync(`docker logs --tail 100 coc-h15-agent 2>&1 || true`, { encoding: "utf-8" })
+    const logs = execSync(`docker logs --tail 100 palimesh-h15-agent 2>&1 || true`, { encoding: "utf-8" })
     const hasInit = logs.includes("endpoint fingerprint mode") || logs.includes("reward targets refreshed") || logs.includes("CidRegistryReader")
     console.log(`  ✅ agent restarted & alive (init log seen: ${hasInit})`)
   })
 
   it("relayer + chain unaffected during agent restart", async () => {
-    assert.ok(alive("coc-h15-relayer"), "relayer crashed during agent restart")
+    assert.ok(alive("palimesh-h15-relayer"), "relayer crashed during agent restart")
     const start = await maxClusterHeight()
     let end = start
     const deadline = Date.now() + 90_000

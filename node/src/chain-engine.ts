@@ -689,7 +689,7 @@ export class ChainEngine {
     const parentExcessBlobGas = tip?.excessBlobGas ?? 0n
     const parentBlobGasUsed = tip?.blobGasUsed ?? 0n
     const excessBlobGas = calculateExcessBlobGas(parentExcessBlobGas, parentBlobGasUsed)
-    const blobGasUsed = 0n  // COC does not support blob transactions
+    const blobGasUsed = 0n  // Palimesh does not support blob transactions
     const parentBeaconBlockRoot = zeroHash()
 
     const hash = hashBlockPayload({

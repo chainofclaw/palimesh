@@ -6,7 +6,7 @@
 
 ## English
 
-ChainOfClaw (COC) takes security seriously. This document describes how to
+Palimesh (Palimesh) takes security seriously. This document describes how to
 report a vulnerability and what to expect in return.
 
 ### Reporting a vulnerability
@@ -14,9 +14,9 @@ report a vulnerability and what to expect in return.
 **Do not file public GitHub issues for security vulnerabilities.** Use one of
 these private channels:
 
-1. **Email**: `security@chainofclaw.io` (preferred for time-sensitive reports)
+1. **Email**: `security@palimesh.io` (preferred for time-sensitive reports)
 2. **GitHub private vulnerability report**: open one at
-   <https://github.com/chainofclaw/COC/security/advisories/new>
+   <https://github.com/palimesh/palimesh/security/advisories/new>
 
 If your finding is critical (active exploitation, validator-key compromise,
 funds at risk, chain liveness threat), email is fastest — we monitor that
@@ -54,7 +54,7 @@ or could affect a future mainnet launch:
 - Theoretical attacks without a working PoC against the current network
 - Spam / phishing in third-party channels we don't operate
 - Known issues already documented as `OPEN` in
-  [chainofclaw/COC issues](https://github.com/chainofclaw/COC/issues) (e.g.
+  [palimesh/Palimesh issues](https://github.com/palimesh/palimesh/issues) (e.g.
   #746 PoSe witness semantic verification — listed publicly because the
   affected code is dormant in production)
 
@@ -71,7 +71,7 @@ higher-tier bounty program.
 | **Medium** | Front-end XSS with auth implications, mempool eviction patterns, governance proposal griefing not blocked by economics | $500 – $2,500 |
 | **Low** | Information leaks of public-but-undocumented data, missing input validation without exploit path | $100 – $500 |
 
-Rewards are paid in COC (post-canary launch) or in stablecoin equivalent
+Rewards are paid in Palimesh (post-canary launch) or in stablecoin equivalent
 (if requested before payout). Payment requires a non-anonymous channel for
 tax / regulatory compliance — pseudonyms are fine for credit, real identity
 is required for payout.
@@ -105,9 +105,9 @@ disclose before the agreed timeline, safe harbor does not apply.
 Prior audit work is recorded in the [`docs/`](./docs/) directory and in
 sprint summaries within commit history. Recent in-house audit cycles
 (2026-04 to 2026-05) closed 15+ findings tracked publicly under
-[issue numbers #645–#754](https://github.com/chainofclaw/COC/issues?q=is%3Aissue+is%3Aclosed).
+[issue numbers #645–#754](https://github.com/palimesh/palimesh/issues?q=is%3Aissue+is%3Aclosed).
 The only remaining open item from those cycles is
-[#746](https://github.com/chainofclaw/COC/issues/746) (PoSe witness
+[#746](https://github.com/palimesh/palimesh/issues/746) (PoSe witness
 semantic verification — affected code is dormant in production).
 
 External third-party audits are planned before mainnet launch and will be
@@ -117,15 +117,15 @@ linked here when complete.
 
 ## 中文
 
-ChainOfClaw (COC) 对安全持严肃态度。本文档说明如何提交漏洞报告以及您可以期待的处理流程。
+Palimesh (Palimesh) 对安全持严肃态度。本文档说明如何提交漏洞报告以及您可以期待的处理流程。
 
 ### 提交漏洞
 
 **请不要为安全漏洞开公开的 GitHub issue。** 使用以下私密渠道之一:
 
-1. **邮件**:`security@chainofclaw.io`(紧急报告首选)
+1. **邮件**:`security@palimesh.io`(紧急报告首选)
 2. **GitHub 私密漏洞报告**:在
-   <https://github.com/chainofclaw/COC/security/advisories/new> 提交
+   <https://github.com/palimesh/palimesh/security/advisories/new> 提交
 
 如果是严重问题(正在被利用、validator 密钥泄漏、资金风险、链活性威胁),邮件最快——我们在工作时间监控该信箱,目标 24 小时内回复。
 
@@ -153,7 +153,7 @@ ChainOfClaw (COC) 对安全持严肃态度。本文档说明如何提交漏洞�
 - 自致问题(报告者自己丢失的私钥等)
 - 无可工作 PoC 的理论攻击
 - 我们不运营的第三方渠道中的钓鱼 / 垃圾邮件
-- 已在 [chainofclaw/COC issues](https://github.com/chainofclaw/COC/issues) 中以 `OPEN` 状态记录的已知问题
+- 已在 [palimesh/Palimesh issues](https://github.com/palimesh/palimesh/issues) 中以 `OPEN` 状态记录的已知问题
   (例如 #746 PoSe witness 语义校验——公开列出因受影响代码在生产中休眠)
 
 ### 严重度与奖励级别(canary 测试网)
@@ -167,7 +167,7 @@ ChainOfClaw (COC) 对安全持严肃态度。本文档说明如何提交漏洞�
 | **Medium** | 带 auth 影响的前端 XSS、mempool 驱逐模式、经济模型未阻挡的治理提案 griefing | $500 – $2,500 |
 | **Low** | 公开但未记录数据的信息泄漏、无利用路径的输入校验缺失 | $100 – $500 |
 
-奖励以 COC(canary 启动后)或稳定币等值支付(在支付前提出要求)。支付需要非匿名渠道用于税务 / 合规——化名用于致谢可以,但实际支付需要真实身份。
+奖励以 Palimesh(canary 启动后)或稳定币等值支付(在支付前提出要求)。支付需要非匿名渠道用于税务 / 合规——化名用于致谢可以,但实际支付需要真实身份。
 
 ### 分类与响应时间表
 
@@ -190,9 +190,9 @@ ChainOfClaw (COC) 对安全持严肃态度。本文档说明如何提交漏洞�
 
 历史审计工作记录在 [`docs/`](./docs/) 目录及 commit history 的 sprint 总结中。
 近期内部审计周期(2026-04 至 2026-05)关闭了 15+ 项发现,公开追踪于
-[#645–#754](https://github.com/chainofclaw/COC/issues?q=is%3Aissue+is%3Aclosed)。
+[#645–#754](https://github.com/palimesh/palimesh/issues?q=is%3Aissue+is%3Aclosed)。
 这些周期的唯一遗留开放项是
-[#746](https://github.com/chainofclaw/COC/issues/746)
+[#746](https://github.com/palimesh/palimesh/issues/746)
 (PoSe witness 语义校验——受影响代码在生产中休眠)。
 
 主网启动前计划进行外部第三方审计,完成后将链接于此。

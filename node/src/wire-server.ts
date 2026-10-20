@@ -713,7 +713,7 @@ export class WireServer {
         if (push) {
           // Push path: decode base64 content, verify keccak256(content)
           // matches the claimed CID at the hash fragment we can check
-          // (COC CIDs are "0x" + keccak256 hex, matching ipfs-blockstore
+          // (Palimesh CIDs are "0x" + keccak256 hex, matching ipfs-blockstore
           // layout at node/src/ipfs-blockstore.ts). Hash mismatch ⇒ reject
           // without invoking the handler so a malicious peer can't force
           // us to store arbitrary bytes under any label.
@@ -738,7 +738,7 @@ export class WireServer {
           }
           // Verify the claimed CID matches the bytes. Phase C supports two
           // CID conventions:
-          //   1. Legacy "0x..." keccak256 hex (COC raw-block blockstore layout)
+          //   1. Legacy "0x..." keccak256 hex (Palimesh raw-block blockstore layout)
           //   2. IPFS CIDv1 base32 (UnixFS / DAG-PB — what /api/v0/add emits)
           // Both must be checked; a mismatch in either ⇒ reject without
           // invoking the handler so a malicious peer can't mislabel bytes.
