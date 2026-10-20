@@ -1,6 +1,6 @@
 import { VM, createVM, runTx } from "@ethereumjs/vm"
 import { EVMError } from "@ethereumjs/evm"
-import { Hardfork, createCustomCommon, getPresetChainConfig } from "@ethereumjs/common"
+import { Hardfork, createCustomCommon } from "@ethereumjs/common"
 import { Account, Address, bytesToHex, hexToBytes, bigIntToBytes, bigIntToHex, setLengthLeft } from "@ethereumjs/util"
 import { createTxFromRLP, createLegacyTx } from "@ethereumjs/tx"
 import { createBlock } from "@ethereumjs/block"
@@ -11,6 +11,7 @@ import type { HardforkScheduleEntry } from "./config.ts"
 import type { CallTrace, CallTraceResult, RpcAccessListItem, TraceOptions, TraceStep, TransactionTrace, TxTraceResult } from "./trace-types.ts"
 import { RunTxWorkerPool, isSimpleTransfer, type PreloadedAccount } from "./runtx-worker-pool.ts"
 import { createLogger } from "./logger.ts"
+import { palimeshChainConfig } from "./chain-common.ts"
 
 const evmLog = createLogger("evm")
 // Opt-in (disabled by default): set PALI_USE_RUNTX_WORKER=1 to route
@@ -211,7 +212,7 @@ export class EvmChain {
     stateManager?: unknown,
     opts?: { hardfork?: Hardfork; hardforkSchedule?: HardforkScheduleEntry[] },
   ): Promise<EvmChain> {
-    const base = getPresetChainConfig("mainnet")
+    const base = palimeshChainConfig()
     const hardfork = opts?.hardfork ?? Hardfork.Shanghai
     const common = createCustomCommon({ chainId, networkId: chainId, name: "Palimesh" }, base, {
       hardfork,
