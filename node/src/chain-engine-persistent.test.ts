@@ -1840,3 +1840,126 @@ test("Phase X2 (#84): actual proposer applyBlock(., true) DOES sign stateRootSig
     await ctx.close()
   }
 })
+
+// ---------------------------------------------------------------------------
+// Epoch-fencing (2026-09-06): verifyBlockChain must check proposer membership
+// against the validator set of the block's ERA, not the current set.
+// ---------------------------------------------------------------------------
+
+function fencedBlocks(
+  specs: Array<{ n: bigint; proposer: string }>,
+  startParentHash: Hex = zeroHash(),
+  startTs = 1000,
+): ChainBlock[] {
+  const blocks: ChainBlock[] = []
+  let parentHash = startParentHash
+  let ts = startTs
+  for (const { n, proposer } of specs) {
+    const payload = { number: n, parentHash, proposer, timestampMs: ts, txs: [] as string[], cumulativeWeight: n }
+    const block: ChainBlock = { ...payload, hash: hashBlockPayload(payload), finalized: false }
+    blocks.push(block)
+    parentHash = block.hash
+    ts += 1
+  }
+  return blocks
+}
+
+test("epoch-fencing: catch-up adoption accepts blocks proposed by a since-demoted validator", async () => {
+  const tmpDir = mkdtempSync(join(tmpdir(), "coc-engine-test-"))
+  try {
+    const evm = await EvmChain.create(2077)
+    const engine = new PersistentChainEngine(
+      { dataDir: tmpDir, nodeId: "node2", chainId: 2077, validators: ["node1", "node2"], finalityDepth: 3, maxTxPerBlock: 100, minGasPriceWei: 1n },
+      evm,
+    )
+    await engine.init()
+
+    // init() auto-creates its own genesis (block 1, proposer node1) because
+    // validators are configured — chain the history off that tip.
+    const tip0 = await engine.getTip()
+    assert.ok(tip0, "engine should have created a genesis block")
+
+    // Era 1 (heights >= 2 here): {node1, node2}. Adopt node1's blocks 2-3.
+    const history = fencedBlocks([
+      { n: 2n, proposer: "node1" },
+      { n: 3n, proposer: "node1" },
+    ], tip0!.hash, Number(tip0!.timestampMs) + 1)
+    assert.strictEqual(await engine.maybeAdoptSnapshot(history), true, "era-1 history should adopt")
+
+    // Rotation: node1 demoted, node3 promoted. Era 2 starts at height 4.
+    engine.updateProposerSet(["node2", "node3"])
+    await new Promise((resolve) => setTimeout(resolve, 25)) // era record is async fire-and-forget
+
+    // A catch-up extension crossing the rotation boundary: block 4 was
+    // produced by the demoted node1 (peers switched slightly later than we
+    // recorded). Pre-fix this was validated against the current set
+    // {node2,node3} and node1's block wedged the whole adoption — the val6
+    // stall. Post-fix the era schedule (with neighbour-union boundary
+    // tolerance) admits it.
+    const spanning = fencedBlocks([
+      { n: 4n, proposer: "node1" },
+      { n: 5n, proposer: "node3" },
+      { n: 6n, proposer: "node2" },
+    ], history[1].hash, Number(tip0!.timestampMs) + 10)
+    assert.strictEqual(await engine.maybeAdoptSnapshot(spanning), true, "cross-era window must adopt")
+    assert.strictEqual(await engine.getHeight(), 6n)
+
+    await engine.close()
+  } finally {
+    rmSync(tmpDir, { recursive: true, force: true })
+  }
+})
+
+test("epoch-fencing: never-member proposer is still rejected", async () => {
+  const tmpDir = mkdtempSync(join(tmpdir(), "coc-engine-test-"))
+  try {
+    const evm = await EvmChain.create(2077)
+    const engine = new PersistentChainEngine(
+      { dataDir: tmpDir, nodeId: "node9", chainId: 2077, validators: ["node9"], finalityDepth: 3, maxTxPerBlock: 100, minGasPriceWei: 1n },
+      evm,
+    )
+    await engine.init()
+
+    const foreign = fencedBlocks([
+      { n: 1n, proposer: "node1" },
+      { n: 2n, proposer: "node1" },
+    ])
+    assert.strictEqual(await engine.maybeAdoptSnapshot(foreign), false, "unknown proposer must still be rejected")
+
+    await engine.close()
+  } finally {
+    rmSync(tmpDir, { recursive: true, force: true })
+  }
+})
+
+test("epoch-fencing: pre-schedule history (unknown era) is tolerated", async () => {
+  // Models a production node adopting the feature mid-chain: the schedule's
+  // first era starts far above existing history, so membership below it
+  // cannot be known — the check is skipped (hash integrity still applies).
+  const tmpDir = mkdtempSync(join(tmpdir(), "coc-engine-test-"))
+  try {
+    const { writeFileSync } = await import("node:fs")
+    writeFileSync(
+      join(tmpDir, "validator-set-schedule.json"),
+      JSON.stringify({ version: 1, entries: [{ fromHeight: "100", validators: ["node9"] }] }),
+    )
+    const evm = await EvmChain.create(2077)
+    const engine = new PersistentChainEngine(
+      // Same membership as the persisted era → init's seeding no-ops and the
+      // schedule keeps starting at height 100.
+      { dataDir: tmpDir, nodeId: "node9", chainId: 2077, validators: ["node9"], finalityDepth: 3, maxTxPerBlock: 100, minGasPriceWei: 1n },
+      evm,
+    )
+    await engine.init()
+
+    const preSchedule = fencedBlocks([
+      { n: 1n, proposer: "node1" },
+      { n: 2n, proposer: "node1" },
+    ])
+    assert.strictEqual(await engine.maybeAdoptSnapshot(preSchedule), true, "pre-schedule history must adopt")
+
+    await engine.close()
+  } finally {
+    rmSync(tmpDir, { recursive: true, force: true })
+  }
+})

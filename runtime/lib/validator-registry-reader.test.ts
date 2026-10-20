@@ -234,3 +234,59 @@ test("ValidatorRegistryReader: re-registering same nodeId after deactivation re-
   assert.equal(active.length, 1)
   assert.equal(active[0].stake, 64n * 10n ** 18n)
 })
+
+test("ValidatorRegistryReader: sidecar round-trips the active set (pubkeys survive restart)", async () => {
+  // 2026-08-31 prod incident (twice): the sidecar stored only the scan cursor,
+  // so a restarted reader skipped the historical scan AND lost every pubkey
+  // (seedFromContractState can't recover them — the contract doesn't store
+  // pubkeys). The core-set relayer then had zero usable candidates until an
+  // operator manually deleted the sidecar. The sidecar must persist the full
+  // active set so a restart is lossless.
+  const dir = mkdtempSync(join(tmpdir(), "coc-vrr-roundtrip-"))
+  try {
+    const persistPath = join(dir, "state.json")
+    const w = new ValidatorRegistryReader({
+      rpcUrl: "http://127.0.0.1:1",
+      address: "0x0000000000000000000000000000000000000001",
+      persistPath,
+    })
+    w._replayEventForTest("ValidatorRegistered", [NODE_A, OP_X, 32n * 10n ** 18n, PUB_X], 100)
+    w._replayEventForTest("ValidatorRegistered", [NODE_B, OP_X, 32n * 10n ** 18n, PUB_X], 101)
+    w._replayEventForTest("ValidatorDeactivated", [NODE_B, 200n], 200) // B must NOT resurrect
+    await w._persistForTest(12345n)
+
+    const r = new ValidatorRegistryReader({
+      rpcUrl: "http://127.0.0.1:1",
+      address: "0x0000000000000000000000000000000000000001",
+      persistPath,
+    })
+    await r._hydrateFromSidecarForTest()
+
+    assert.equal(r._lastScannedBlockForTest(), 12345n, "cursor still hydrates")
+    const active = r.getActiveSet()
+    assert.equal(active.length, 1, "only the still-active validator is restored")
+    assert.equal(active[0].nodeId, NODE_A)
+    assert.equal(active[0].pubkey, PUB_X, "pubkey survives the restart round-trip")
+    assert.equal(active[0].stake, 32n * 10n ** 18n, "stake (bigint) survives serialization")
+  } finally {
+    rmSync(dir, { recursive: true, force: true })
+  }
+})
+
+test("ValidatorRegistryReader: legacy cursor-only sidecar still hydrates (no entries field)", async () => {
+  const dir = mkdtempSync(join(tmpdir(), "coc-vrr-legacy-"))
+  try {
+    const persistPath = join(dir, "state.json")
+    writeFileSync(persistPath, JSON.stringify({ lastScannedBlock: "555" }) + "\n")
+    const r = new ValidatorRegistryReader({
+      rpcUrl: "http://127.0.0.1:1",
+      address: "0x0000000000000000000000000000000000000001",
+      persistPath,
+    })
+    await r._hydrateFromSidecarForTest()
+    assert.equal(r._lastScannedBlockForTest(), 555n)
+    assert.equal(r.getActiveSet().length, 0, "legacy sidecar yields empty set, no crash")
+  } finally {
+    rmSync(dir, { recursive: true, force: true })
+  }
+})

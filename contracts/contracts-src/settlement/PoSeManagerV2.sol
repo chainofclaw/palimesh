@@ -855,6 +855,12 @@ contract PoSeManagerV2 is IPoSeManagerV2, PoSeManagerStorage, UUPSUpgradeable {
         return nodes[nodeId];
     }
 
+    /// @notice Lean accessor for a node's PoSe bond, used by CoreSetManager for
+    ///         the composite ranking score without pulling the full NodeRecord.
+    function getNodeBond(bytes32 nodeId) external view returns (uint256) {
+        return nodes[nodeId].bondAmount;
+    }
+
     function getBatch(bytes32 batchId) external view returns (PoSeTypes.BatchRecord memory) {
         return batches[batchId];
     }

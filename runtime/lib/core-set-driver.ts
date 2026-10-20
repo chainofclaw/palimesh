@@ -80,6 +80,30 @@ export class CoreSetDriver {
   private lastHandledEpoch = -1
   // First target epoch seen after startup (deferFirstApply); null = not yet seen.
   private deferredStartupEpoch: number | null = null
+  // Fingerprint (sorted "id:stake" joined) of the last set we applied.
+  // Re-applying an UNCHANGED set at every epoch boundary is not harmless:
+  // applySet routes through updateValidators, whose membership-churn handling
+  // clears BFT round state; per-node tick phase differs by seconds, so the
+  // in-flight round gets wiped on different nodes at different instants →
+  // divergent prepares → self-equivocation deadlock (observed 2026-09-05,
+  // one hour after a successful switch). Unchanged ⇒ no-op.
+  private lastAppliedFingerprint: string | null = null
+
+  private static fingerprint(set: Array<{ id: string; stake: bigint }>): string {
+    return set
+      .map((v) => `${v.id.toLowerCase()}:${v.stake}`)
+      .sort()
+      .join(",")
+  }
+
+  /** Apply unless identical to the last applied set. Returns true if applied. */
+  private applyIfChanged(next: Array<{ id: string; stake: bigint }>): boolean {
+    const fp = CoreSetDriver.fingerprint(next)
+    if (fp === this.lastAppliedFingerprint) return false
+    this.deps.applySet(next)
+    this.lastAppliedFingerprint = fp
+    return true
+  }
   private timer: ReturnType<typeof setInterval> | null = null
   private ticking = false
 
@@ -181,8 +205,11 @@ export class CoreSetDriver {
           })
           return
         }
-        this.deps.applySet(next)
-        this.deps.log.info("core-set: applied to BFT set (on-chain)", { epoch: targetEpoch, size: next.length })
+        if (this.applyIfChanged(next)) {
+          this.deps.log.info("core-set: applied to BFT set (on-chain)", { epoch: targetEpoch, size: next.length })
+        } else {
+          this.deps.log.info("core-set: set unchanged — skipping re-apply (on-chain)", { epoch: targetEpoch })
+        }
         return
       }
 
@@ -231,8 +258,11 @@ export class CoreSetDriver {
         return
       }
 
-      this.deps.applySet(next)
-      this.deps.log.info("core-set: applied to BFT set", { epoch: targetEpoch, size: next.length, ids: next.map((n) => n.id) })
+      if (this.applyIfChanged(next)) {
+        this.deps.log.info("core-set: applied to BFT set", { epoch: targetEpoch, size: next.length, ids: next.map((n) => n.id) })
+      } else {
+        this.deps.log.info("core-set: set unchanged — skipping re-apply", { epoch: targetEpoch })
+      }
     } finally {
       this.ticking = false
     }

@@ -87,6 +87,19 @@ type ReaderEvent = "validatorAdded" | "validatorRemoved"
 
 interface PersistState {
   lastScannedBlock: string // bigint serialized as decimal string for JSON
+  /**
+   * Full active set snapshot (2026-08-31). Without it, a restarted reader
+   * skipped the historical scan (cursor says "done") yet lost every pubkey —
+   * seedFromContractState cannot recover them because the contract doesn't
+   * store pubkeys. Optional for backward compat with cursor-only sidecars.
+   */
+  entries?: Array<{
+    nodeId: string
+    operator: string
+    pubkey: string
+    stake: string // bigint as decimal string
+    registeredAtBlock: string // bigint as decimal string
+  }>
 }
 
 export class ValidatorRegistryReader {
@@ -192,6 +205,23 @@ export class ValidatorRegistryReader {
         const raw = await readFile(this.cfg.persistPath, "utf-8")
         const state = JSON.parse(raw) as PersistState
         this.lastScannedBlock = BigInt(state.lastScannedBlock)
+        // Restore the full active set (pubkeys included) so a restart is
+        // lossless even though the cursor makes us skip the historical scan.
+        // Legacy cursor-only sidecars simply have no entries (empty set;
+        // seedFromContractState still provides operator/stake).
+        if (Array.isArray(state.entries)) {
+          for (const p of state.entries) {
+            const entry: ValidatorEntry = {
+              nodeId: p.nodeId as Hex,
+              operator: p.operator as Hex,
+              pubkey: p.pubkey as Hex,
+              stake: BigInt(p.stake),
+              registeredAtBlock: BigInt(p.registeredAtBlock),
+            }
+            this.activeSet.set(entry.nodeId, entry)
+            this.allKnown.set(entry.nodeId, entry)
+          }
+        }
       } catch (err) {
         log.warn("failed to load persisted lastScannedBlock; starting from configured fromBlock", {
           path: this.cfg.persistPath,
@@ -230,13 +260,16 @@ export class ValidatorRegistryReader {
         }
         if (!v.active) continue
         // pubkey is only emitted by ValidatorRegistered events, not retrievable
-        // from contract state. Seed with empty pubkey; subsequent event replay
-        // populates the full pubkey if a re-Register occurs. BFT consumes
-        // operator + stake, not pubkey, so this is safe for consensus use.
+        // from contract state. Seed with empty pubkey UNLESS we already hold a
+        // pubkey for this nodeId (hydrated from the sidecar or replayed from
+        // events) — overwriting it with "0x" would re-lose it on every init
+        // (the 2026-08-31 core-set no-candidates incident). BFT consumes
+        // operator + stake, not pubkey, so the empty fallback is consensus-safe.
+        const known = this.activeSet.get(nodeId) ?? this.allKnown.get(nodeId)
         const entry: ValidatorEntry = {
           nodeId,
           operator: v.operator,
-          pubkey: "0x" as Hex,
+          pubkey: known && known.pubkey.length > 2 ? known.pubkey : ("0x" as Hex),
           stake: BigInt(v.stake),
           registeredAtBlock: BigInt(v.registeredAt),
         }
@@ -423,7 +456,16 @@ export class ValidatorRegistryReader {
     if (!this.cfg.persistPath) return
     try {
       await mkdir(dirname(this.cfg.persistPath), { recursive: true })
-      const state: PersistState = { lastScannedBlock: this.lastScannedBlock.toString() }
+      const state: PersistState = {
+        lastScannedBlock: this.lastScannedBlock.toString(),
+        entries: [...this.activeSet.values()].map((e) => ({
+          nodeId: e.nodeId,
+          operator: e.operator,
+          pubkey: e.pubkey,
+          stake: e.stake.toString(),
+          registeredAtBlock: e.registeredAtBlock.toString(),
+        })),
+      }
       await writeFile(this.cfg.persistPath, JSON.stringify(state) + "\n")
     } catch (err) {
       log.warn("failed to persist lastScannedBlock (non-fatal)", {
