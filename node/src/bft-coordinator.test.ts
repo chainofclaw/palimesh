@@ -264,10 +264,14 @@ describe("BftCoordinator", () => {
     // an unhandled rejection.
     await new Promise((r) => setTimeout(r, 200))
 
-    // After timeout, round should have been cleared. Coordinator must
-    // remain usable for the next round (the dump must NOT corrupt state).
+    // After timeout the timed-out round is torn down and, because we already
+    // prepared this block, re-entered fresh (lost-vote livelock fix). The
+    // dump must NOT corrupt state: the coordinator is back in a clean
+    // prepare round for the same height.
     const state = coord.getRoundState()
-    assert.equal(state.active, false, "round must be cleared after timeout")
+    assert.equal(state.active, true, "round re-entered after timeout")
+    assert.equal(state.height, 1n)
+    assert.equal(state.phase, "prepare")
   })
 
   it("Phase H4: fires onPeerQuorumDiverged when ≥2/3 of OTHER validators converge on a stateRoot we can't reproduce", async () => {
@@ -946,7 +950,11 @@ describe("BftCoordinator", () => {
     // PR-1F: should NOT have marked v2 unreachable — the round was in commit
     // phase, meaning v2 successfully proposed and collected peer prepares.
     assert.equal(stuckCalls.length, 0, "no onProposerStuck on commit-phase timeout")
-    assert.equal(coord.getRoundState().active, false, "round was cleared")
+    // The commit-phase round was torn down and re-entered fresh at the
+    // same height (we prepared it), so we keep voting instead of going idle.
+    const st = coord.getRoundState()
+    assert.equal(st.height, 1n, "round re-entered at the same height")
+    assert.equal(st.phase, "prepare")
   })
 
   it("PR-1F: onProposerStuck DOES fire on prepare-phase timeout with no peer prepares (regression)", async () => {
@@ -1107,6 +1115,218 @@ describe("BftCoordinator.replayUnfinalizedVotes (restart liveness, 2026-08-05)",
     assert.equal(res.commits, 0)
     assert.equal(res.prepares, 0)
     assert.equal(sent.length, 0)
+  })
+
+  // --- Lost-vote livelock fix (88780, 2026-10-13 height 1934977) ---
+  describe("prepare retransmission + timeout re-entry", () => {
+    const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms))
+
+    it("re-broadcasts the identical prepare (with stateRoot) while the round is unfinalized", async () => {
+      const sent: BftMessage[] = []
+      const root = ("0x" + "c7".repeat(32)) as Hex
+      const coord = new BftCoordinator({
+        localId: "v1",
+        validators,
+        voteRetryIntervalMs: 20,
+        broadcastMessage: async (msg) => { sent.push(msg) },
+        onFinalized: async () => {},
+        computeLocalStateRoot: async () => root,
+      })
+      try {
+        const block = makeBlock(1n)
+        await coord.startRound(block)
+        await sleep(90)
+        const prepares = sent.filter((m) => m.type === "prepare")
+        assert.ok(prepares.length >= 3, `expected retransmits, got ${prepares.length}`)
+        for (const m of prepares) {
+          assert.equal(m.blockHash, block.hash)
+          assert.equal(m.height, 1n)
+          assert.equal(m.stateRoot, root)
+        }
+      } finally {
+        coord.stop()
+      }
+    })
+
+    it("keeps re-broadcasting prepare in commit phase and stops once finalized", async () => {
+      const sent: BftMessage[] = []
+      const coord = new BftCoordinator({
+        localId: "v1",
+        validators,
+        voteRetryIntervalMs: 20,
+        broadcastMessage: async (msg) => { sent.push(msg) },
+        onFinalized: async () => {},
+      })
+      try {
+        const block = makeBlock(1n)
+        await coord.startRound(block)
+        await coord.handleMessage(bftMsg("prepare", 1n, block.hash, "v2"))
+        await coord.handleMessage(bftMsg("prepare", 1n, block.hash, "v3"))
+        assert.equal(coord.getRoundState().phase, "commit")
+        const before = sent.filter((m) => m.type === "prepare").length
+        await sleep(70)
+        assert.ok(sent.filter((m) => m.type === "prepare").length > before, "prepare retried in commit phase")
+
+        await coord.handleMessage(bftMsg("commit", 1n, block.hash, "v2"))
+        await coord.handleMessage(bftMsg("commit", 1n, block.hash, "v3"))
+        assert.equal(coord.getRoundState().active, false)
+        await sleep(3_200) // let the 3s linger window drain
+        const settled = sent.length
+        await sleep(80)
+        assert.equal(sent.length, settled, "no retransmits after finalize + linger")
+      } finally {
+        coord.stop()
+      }
+    })
+
+    it("a non-validator observer never retransmits", async () => {
+      const sent: BftMessage[] = []
+      const coord = new BftCoordinator({
+        localId: "observer",
+        validators,
+        voteRetryIntervalMs: 10,
+        broadcastMessage: async (msg) => { sent.push(msg) },
+        onFinalized: async () => {},
+      })
+      try {
+        await coord.startRound(makeBlock(1n))
+        await sleep(50)
+        assert.equal(sent.length, 0)
+      } finally {
+        coord.stop()
+      }
+    })
+
+    it("re-enters the round for the locally-prepared block after a timeout", async () => {
+      const sent: BftMessage[] = []
+      const coord = new BftCoordinator({
+        localId: "v2",
+        validators,
+        prepareTimeoutMs: 15,
+        commitTimeoutMs: 15,
+        voteRetryIntervalMs: 1_000_000,
+        broadcastMessage: async (msg) => { sent.push(msg) },
+        onFinalized: async () => {},
+      })
+      try {
+        const block = makeBlock(1n, "v1")
+        await coord.handleReceivedBlock(block)
+        assert.equal(sent.filter((m) => m.type === "prepare").length, 1)
+        await sleep(100)
+        // Each timeout re-enters on the same block → a fresh prepare each time.
+        const prepares = sent.filter((m) => m.type === "prepare")
+        assert.ok(prepares.length >= 2, `expected re-entry prepares, got ${prepares.length}`)
+        assert.ok(prepares.every((m) => m.blockHash === block.hash))
+        const st = coord.getRoundState()
+        assert.equal(st.active, true)
+        assert.equal(st.height, 1n)
+      } finally {
+        coord.stop()
+      }
+    })
+
+    it("a re-entered round never holds back a block for a higher height", async () => {
+      const sent: BftMessage[] = []
+      const coord = new BftCoordinator({
+        localId: "v2",
+        validators,
+        prepareTimeoutMs: 15,
+        commitTimeoutMs: 15,
+        voteRetryIntervalMs: 1_000_000,
+        broadcastMessage: async (msg) => { sent.push(msg) },
+        onFinalized: async () => {},
+      })
+      try {
+        await coord.handleReceivedBlock(makeBlock(1n, "v1"))
+        await sleep(45) // timed out at least once → re-entered height 1
+        assert.equal(coord.getRoundState().height, 1n)
+        const next: ChainBlock = { ...makeBlock(2n, "v3"), hash: ("0x" + "cd".repeat(32)) as Hex }
+        await coord.startRound(next)
+        const st = coord.getRoundState()
+        assert.equal(st.height, 2n, "height 2 starts immediately instead of being deferred")
+        assert.ok(sent.some((m) => m.type === "prepare" && m.height === 2n))
+      } finally {
+        coord.stop()
+      }
+    })
+
+    it("a re-entered round keeps re-sending a commit we already cast", async () => {
+      const sent: BftMessage[] = []
+      const coord = new BftCoordinator({
+        localId: "v1",
+        validators,
+        prepareTimeoutMs: 25,
+        commitTimeoutMs: 25,
+        voteRetryIntervalMs: 15,
+        broadcastMessage: async (msg) => { sent.push(msg) },
+        onFinalized: async () => {},
+      })
+      try {
+        const block = makeBlock(1n)
+        await coord.startRound(block)
+        await coord.handleMessage(bftMsg("prepare", 1n, block.hash, "v2"))
+        await coord.handleMessage(bftMsg("prepare", 1n, block.hash, "v3"))
+        assert.equal(coord.getRoundState().phase, "commit")
+        await sleep(80) // commit round times out → re-entered in prepare phase
+        const st = coord.getRoundState()
+        assert.equal(st.height, 1n)
+        assert.equal(st.phase, "prepare")
+        const mark = sent.length
+        await sleep(60)
+        const later = sent.slice(mark)
+        assert.ok(later.some((m) => m.type === "commit" && m.blockHash === block.hash), "commit re-sent from prepare phase")
+        assert.ok(later.every((m) => m.blockHash === block.hash))
+      } finally {
+        coord.stop()
+      }
+    })
+
+    it("stop() halts re-entry and every retransmit timer", async () => {
+      const sent: BftMessage[] = []
+      const coord = new BftCoordinator({
+        localId: "v2",
+        validators,
+        prepareTimeoutMs: 10,
+        commitTimeoutMs: 10,
+        voteRetryIntervalMs: 10,
+        broadcastMessage: async (msg) => { sent.push(msg) },
+        onFinalized: async () => {},
+      })
+      await coord.handleReceivedBlock(makeBlock(1n, "v1"))
+      await sleep(25) // timeout fires → re-entry may be in flight
+      coord.stop()
+      await sleep(10)
+      const settled = sent.length
+      await sleep(80)
+      assert.equal(sent.length, settled, "nothing broadcast after stop()")
+      assert.equal(coord.getRoundState().active, false)
+      await coord.startRound(makeBlock(2n, "v1"))
+      assert.equal(coord.getRoundState().active, false, "startRound is a no-op after stop()")
+    })
+
+    it("does not re-enter once the height is at or below the chain tip", async () => {
+      const sent: BftMessage[] = []
+      let tip = 0n
+      const coord = new BftCoordinator({
+        localId: "v2",
+        validators,
+        prepareTimeoutMs: 15,
+        commitTimeoutMs: 15,
+        voteRetryIntervalMs: 1_000_000,
+        getChainHeight: () => tip,
+        broadcastMessage: async (msg) => { sent.push(msg) },
+        onFinalized: async () => {},
+      })
+      try {
+        await coord.handleReceivedBlock(makeBlock(1n, "v1"))
+        tip = 1n // height 1 got applied via sync while our round was open
+        await sleep(100)
+        assert.equal(sent.filter((m) => m.type === "prepare").length, 1, "no re-entry at a stale height")
+        assert.equal(coord.getRoundState().active, false)
+      } finally {
+        coord.stop()
+      }
+    })
   })
 })
 

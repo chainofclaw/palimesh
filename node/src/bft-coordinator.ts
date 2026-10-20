@@ -16,12 +16,26 @@ const log = createLogger("bft-coordinator")
 
 const DEFAULT_PREPARE_TIMEOUT_MS = 2_000
 const DEFAULT_COMMIT_TIMEOUT_MS = 2_000
+// Re-broadcast our own prepare while the round is unfinalized. Healthy rounds
+// finalize well inside this window, so steady-state traffic is unchanged.
+const DEFAULT_VOTE_RETRY_INTERVAL_MS = 2_000
 
 export interface BftCoordinatorConfig {
   localId: string
   validators: Array<{ id: string; stake: bigint }>
   prepareTimeoutMs?: number
   commitTimeoutMs?: number
+  /** Interval for re-broadcasting our own prepare vote (default 2s). */
+  voteRetryIntervalMs?: number
+  /**
+   * Re-gossip a block we prepared when we re-enter its round after a timeout,
+   * so a peer that missed the block itself (not just our votes) can join.
+   * Re-entry keeps the round active, which also suppresses consensus.ts's
+   * "re-broadcast timed-out proposal" path — this replaces it.
+   */
+  regossipBlock?: (block: ChainBlock) => void | Promise<void>
+  /** Liveness watchdog stall threshold (default 5 min). */
+  livenessTimeoutMs?: number
   /** Callback to broadcast a BFT message to peers */
   broadcastMessage: (msg: BftMessage) => Promise<void>
   /** Callback when a block is BFT-finalized */
@@ -161,6 +175,12 @@ export class BftCoordinator {
   private activeRound: BftRound | null = null
   private timeoutTimer: ReturnType<typeof setTimeout> | null = null
   private commitRetryTimer: ReturnType<typeof setInterval> | null = null
+  private prepareRetryTimer: ReturnType<typeof setInterval> | null = null
+  // Height whose round was re-entered after a timeout (lost-vote livelock fix).
+  // Such a round only keeps our vote alive; it must never hold back a block
+  // for a higher height, which proves the network already moved past it.
+  private reenteredHeight: bigint | null = null
+  private stopped = false
   private lingerTimer: ReturnType<typeof setInterval> | null = null
   private pendingMessages: BftMessage[] = []
   private deferredBlock: ChainBlock | null = null
@@ -224,7 +244,7 @@ export class BftCoordinator {
     // prepare, node-2 retried propose forever — restart of node-2 was
     // required to recover). Force-resetting our local state mimics a
     // restart in-process, letting fresh proposals start clean.
-    const LIVENESS_TIMEOUT_MS = 5 * 60 * 1000
+    const LIVENESS_TIMEOUT_MS = cfg.livenessTimeoutMs ?? 5 * 60 * 1000
     this.livenessWatchdogTimer = setInterval(() => {
       if (!this.activeRound) return
       const elapsedMs = Date.now() - this.lastFinalizedAtMs
@@ -235,13 +255,21 @@ export class BftCoordinator {
           activePhase: this.activeRound.state.phase,
           pendingCount: this.pendingMessages.length,
         })
+        const stuckHeight = this.activeRound.state.height
         this.clearRound()
         this.pendingMessages.length = 0
         this.deferredBlock = null
         // Reset the timer baseline so we don't log on every tick after reset
         this.lastFinalizedAtMs = Date.now()
+        // A real restart replays our persisted votes (replayUnfinalizedVotes);
+        // the in-process reset must not go idle on a height we prepared
+        // either, or a partition longer than this window re-wedges it.
+        this.reenterLocallyPreparedRound(stuckHeight)
+        this.processDeferredBlock().catch((err) => {
+          log.error("processDeferredBlock failed in liveness watchdog", { error: String(err) })
+        })
       }
-    }, 30_000)
+    }, Math.min(30_000, Math.max(10, Math.floor(LIVENESS_TIMEOUT_MS / 4))))
     if (this.livenessWatchdogTimer && typeof this.livenessWatchdogTimer.unref === "function") {
       this.livenessWatchdogTimer.unref()
     }
@@ -251,6 +279,8 @@ export class BftCoordinator {
    * Stop the coordinator: cancel all active timers so the process can exit cleanly.
    */
   stop(): void {
+    this.stopped = true
+    this.reenteredHeight = null
     this.clearRound()
     this.stopLinger()
     if (this.livenessWatchdogTimer) {
@@ -265,6 +295,7 @@ export class BftCoordinator {
    * Start a new BFT round for a proposed block.
    */
   async startRound(block: ChainBlock): Promise<void> {
+    if (this.stopped) return
     // Issue #73: gate against stale heights. `lastFinalizedHeight` only
     // advances on local BFT finalize; a node that catches up via gossip-
     // block keeps it stuck and lets stale proposals through. Querying the
@@ -291,7 +322,7 @@ export class BftCoordinator {
       const phase = this.activeRound.state.phase
       const hasProgress = this.activeRound.state.prepareVotes.size > 0
         || this.activeRound.state.commitVotes.size > 0
-      if ((phase === "prepare" || phase === "commit") && hasProgress) {
+      if ((phase === "prepare" || phase === "commit") && hasProgress && !this.isSupersededReentry(block)) {
         if (this.deferredBlock && this.deferredBlock.number < block.number) {
           log.warn("BFT overwriting deferred block (newer block arrived)", {
             droppedHeight: this.deferredBlock.number.toString(),
@@ -379,6 +410,7 @@ export class BftCoordinator {
 
     // Set timeout
     this.startTimeout()
+    if (outgoing.length > 0) this.startPrepareRetry()
 
     // Process buffered messages for this height; prune all stale entries (height <= current).
     // Track the round instance so we stop if handleMessage finalizes + starts a new round.
@@ -634,7 +666,7 @@ export class BftCoordinator {
       const phase = this.activeRound.state.phase
       const hasVotes = this.activeRound.state.prepareVotes.size > 1
         || this.activeRound.state.commitVotes.size > 0
-      if (phase === "commit" || (phase === "prepare" && hasVotes)) {
+      if ((phase === "commit" || (phase === "prepare" && hasVotes)) && !this.isSupersededReentry(block)) {
         if (this.deferredBlock && this.deferredBlock.number < block.number) {
           log.warn("BFT overwriting deferred block via gossip (newer block arrived)", {
             droppedHeight: this.deferredBlock.number.toString(),
@@ -693,6 +725,7 @@ export class BftCoordinator {
     this.localCommittedAt.clear()
     this.localPreparedBlock.clear()
     this.voteLedger.clearAll()
+    this.reenteredHeight = null
     // Pending messages may carry senderIds that are no longer validators;
     // drop them so handleMessage doesn't reject them one-by-one (and so
     // a removed peer's stale prepare can't influence quorum after they're out).
@@ -1178,8 +1211,10 @@ export class BftCoordinator {
           }
         }
 
+        const timedOutHeight = this.activeRound.state.height
         this.activeRound.fail()
         this.clearRound()
+        this.reenterLocallyPreparedRound(timedOutHeight)
         this.processDeferredBlock().catch((err) => {
           log.error("processDeferredBlock failed in timeout handler", { error: String(err) })
         })
@@ -1319,6 +1354,98 @@ export class BftCoordinator {
     }
   }
 
+  /**
+   * Lost-vote livelock fix (88780, 2026-10-13 height 1934977). Prepare votes
+   * used to go out exactly once: a transient partition that drops them leaves
+   * every validator holding a prepare for the SAME block but no quorum, and
+   * nothing ever re-sends them. Re-broadcast our own prepare — the identical
+   * signed (height, blockHash) — for as long as the round is unfinalized,
+   * including commit phase, where peers still in prepare need it to reach
+   * prepare quorum. Idempotent: receivers dedupe by sender, and the
+   * EquivocationDetector only flags a different blockHash.
+   */
+  private startPrepareRetry(): void {
+    if (this.prepareRetryTimer) return
+    const intervalMs = this.cfg.voteRetryIntervalMs ?? DEFAULT_VOTE_RETRY_INTERVAL_MS
+
+    this.prepareRetryTimer = setInterval(() => {
+      const round = this.activeRound
+      if (!round || (round.state.phase !== "prepare" && round.state.phase !== "commit")) {
+        this.stopPrepareRetry()
+        return
+      }
+      const blockHash = round.state.proposedBlock?.hash
+      if (!blockHash || this.localPreparedAt.get(round.state.height) !== blockHash) return
+      const msg: BftMessage = {
+        type: "prepare",
+        height: round.state.height,
+        blockHash,
+        senderId: this.cfg.localId,
+        signature: "" as Hex,
+      }
+      const ownStateRoot = round.state.prepareVotes.get(this.cfg.localId.toLowerCase())?.stateRoot
+      if (ownStateRoot !== undefined) msg.stateRoot = ownStateRoot
+      this.signMessage(msg)
+      void this.cfg.broadcastMessage(msg).catch(() => { /* retried next tick */ })
+      // A re-entered round restarts in prepare phase even if we had already
+      // committed this block; peers stuck one commit short still need it.
+      // (In commit phase startCommitRetry already covers this.)
+      if (round.state.phase === "prepare" && this.localCommittedAt.get(round.state.height) === blockHash) {
+        const commit: BftMessage = {
+          type: "commit",
+          height: round.state.height,
+          blockHash,
+          senderId: this.cfg.localId,
+          signature: "" as Hex,
+        }
+        this.signMessage(commit)
+        void this.cfg.broadcastMessage(commit).catch(() => { /* retried next tick */ })
+      }
+    }, intervalMs)
+    if (this.prepareRetryTimer && typeof this.prepareRetryTimer.unref === "function") {
+      this.prepareRetryTimer.unref()
+    }
+  }
+
+  private stopPrepareRetry(): void {
+    if (this.prepareRetryTimer) {
+      clearInterval(this.prepareRetryTimer)
+      this.prepareRetryTimer = null
+    }
+  }
+
+  /**
+   * After a round times out, a validator that already prepared a block at
+   * that height can only ever vote for that block again (Phase R). Going idle
+   * instead strands the height: the proposer's re-gossiped block is dropped
+   * by our seenBlocks cache, so we would never rejoin, and peers one vote
+   * short wait forever. Queue the same block as the deferred round so we
+   * re-enter it (processDeferredBlock re-checks the staleness floor, so a
+   * height finalized meanwhile is discarded). A newer deferred block wins.
+   */
+  private reenterLocallyPreparedRound(height: bigint): void {
+    if (this.stopped) return
+    if (this.deferredBlock && this.deferredBlock.number > height) return
+    const prepared = this.localPreparedBlock.get(height)
+    if (!prepared) return
+    log.info("BFT re-entering round for locally-prepared block after timeout", {
+      height: height.toString(),
+      blockHash: prepared.hash,
+    })
+    this.deferredBlock = prepared
+    this.reenteredHeight = height
+    if (this.cfg.regossipBlock) {
+      Promise.resolve()
+        .then(() => this.cfg.regossipBlock!(prepared))
+        .catch((err) => log.warn("BFT re-gossip of locally-prepared block failed", { height: height.toString(), error: String(err) }))
+    }
+  }
+
+  private isSupersededReentry(block: ChainBlock): boolean {
+    const active = this.activeRound
+    return !!active && active.state.height === this.reenteredHeight && block.number > active.state.height
+  }
+
   private stopCommitRetry(): void {
     if (this.commitRetryTimer) {
       clearInterval(this.commitRetryTimer)
@@ -1335,6 +1462,15 @@ export class BftCoordinator {
     const LINGER_INTERVAL_MS = 500
     const LINGER_COUNT = 6 // 3 seconds of linger broadcasts
     let remaining = LINGER_COUNT
+    // Lost-vote livelock fix: a peer that missed our prepare is still stuck in
+    // prepare phase and cannot count commits until it sees prepare quorum, so
+    // linger our prepare too. Captured now — called before clearRound/prune.
+    const lingerPrepare: BftMessage | null = this.localPreparedAt.get(height) === blockHash
+      ? { type: "prepare", height, blockHash, senderId: this.cfg.localId, signature: "" as Hex }
+      : null
+    const ownStateRoot = this.activeRound?.state.prepareVotes.get(this.cfg.localId.toLowerCase())?.stateRoot
+    if (lingerPrepare && ownStateRoot !== undefined) lingerPrepare.stateRoot = ownStateRoot
+    if (lingerPrepare) this.signMessage(lingerPrepare)
 
     this.lingerTimer = setInterval(() => {
       if (remaining <= 0) {
@@ -1342,6 +1478,7 @@ export class BftCoordinator {
         return
       }
       remaining--
+      if (lingerPrepare) void this.cfg.broadcastMessage(lingerPrepare)
       const msg: BftMessage = {
         type: "commit",
         height,
@@ -1393,6 +1530,7 @@ export class BftCoordinator {
   private clearRound(): void {
     this.activeRound = null
     this.stopCommitRetry()
+    this.stopPrepareRetry()
     // Keep pendingMessages — they may contain messages for future heights
     // Note: do NOT stop linger timer here — it intentionally outlives the round
     if (this.timeoutTimer) {
@@ -1454,6 +1592,7 @@ export class BftCoordinator {
     for (const h of this.localPreparedBlock.keys()) {
       if (h <= finalizedHeight) this.localPreparedBlock.delete(h)
     }
+    if (this.reenteredHeight !== null && this.reenteredHeight <= finalizedHeight) this.reenteredHeight = null
     this.voteLedger.prune(finalizedHeight)
   }
 

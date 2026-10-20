@@ -636,6 +636,16 @@ if (bftEnabled) {
       // Also broadcast BFT messages via wire protocol (dual transport)
       wireBftBroadcastFn?.(msg)
     },
+    // Lost-vote livelock fix: when the coordinator re-enters a round for a
+    // block it already prepared, re-gossip that block over both transports
+    // so peers that missed the block itself can join. Clearing our own
+    // seenBlocks entry mirrors consensus.ts's re-broadcast path; per-peer
+    // delivery dedup keeps peers that already have it from being re-sent.
+    regossipBlock: async (block: ChainBlock) => {
+      p2p.seenBlocks.delete(block.hash)
+      await p2p.receiveBlock(block)
+      wireBroadcastFn?.(block)
+    },
     // Speculatively execute `block` against current state and return the
     // post-execution stateRoot that this node would commit to — lets BFT
     // quorum require agreement on (blockHash, stateRoot) instead of hash

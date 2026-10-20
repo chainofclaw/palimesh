@@ -373,8 +373,9 @@ describe("BFT coordinator 3-validator round", () => {
       prepareTimeoutMs: 50,
       commitTimeoutMs: 50,
       broadcastMessage: async () => {},
-      onFinalized: async () => {},
+      onFinalized: async () => { finalized = true },
     })
+    let finalized = false
 
     const block = makeBlock(1)
     await coordinator.startRound(block)
@@ -382,8 +383,14 @@ describe("BFT coordinator 3-validator round", () => {
     // Wait for timeout
     await new Promise((r) => setTimeout(r, 150))
 
+    // The round fails without finalizing; since we already prepared this
+    // block, the coordinator re-enters a fresh round for it instead of going
+    // idle (lost-vote livelock fix) — never a different block.
+    assert.equal(finalized, false, "insufficient votes must not finalize")
     const state = coordinator.getRoundState()
-    assert.equal(state.active, false, "round should be cleared after timeout")
+    assert.equal(state.height, 1n, "re-entered the same height after timeout")
+    assert.equal(state.phase, "prepare")
+    coordinator.stop()
   })
 })
 
