@@ -1010,7 +1010,10 @@ if (bftEnabled) {
       // exposed a snapshot endpoint yet (bootstrap window). Catch and log
       // so a transient peer issue doesn't crash the listener; the next
       // round timeout will retry under cooldown.
-      consensus.forceSnapSync().catch((err) => {
+      // No local vote and no local block at this height means we were
+      // merely behind — no evidence our state is wrong, so skip the import
+      // if normal block application caught us up meanwhile.
+      consensus.forceSnapSync({ onlyIfBehind: info.noLocalBlock === true }).catch((err) => {
         log.warn("BFT peer-quorum forceSnapSync failed", { error: String(err) })
       })
       return true

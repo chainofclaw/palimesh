@@ -1023,8 +1023,13 @@ export class ConsensusEngine {
    * advanced; false when no peer responded with a usable snapshot.
    * Idempotent: a sync already in flight short-circuits to false rather
    * than racing.
+   *
+   * `onlyIfBehind`: skip the import when the local tip already reached the
+   * best peer tip. For callers whose trigger is "we did not vote" rather
+   * than evidence of a corrupted trie (H11 with an unset local stateRoot):
+   * catching up by normal applyBlock already verified our state roots.
    */
-  async forceSnapSync(): Promise<boolean> {
+  async forceSnapSync(opts: { onlyIfBehind?: boolean } = {}): Promise<boolean> {
     if (!this.cfg.enableSnapSync || !this.snapSync) {
       log.warn("forceSnapSync called but snap-sync disabled or unavailable")
       return false
@@ -1066,9 +1071,17 @@ export class ConsensusEngine {
         })
         return false
       }
+      const localHeight = await Promise.resolve(this.chain.getHeight())
+      if (opts.onlyIfBehind && localHeight >= bestHeight) {
+        log.info("forceSnapSync skipped — local tip already at best peer tip", {
+          bestPeerTipHeight: bestHeight.toString(),
+          localHeight: localHeight.toString(),
+        })
+        return false
+      }
       log.warn("forceSnapSync: starting state-snapshot import from peers", {
         bestPeerTipHeight: bestHeight.toString(),
-        localHeight: (await Promise.resolve(this.chain.getHeight())).toString(),
+        localHeight: localHeight.toString(),
       })
       const ok = await this.trySnapSync(best)
       log.warn("forceSnapSync: complete", {
