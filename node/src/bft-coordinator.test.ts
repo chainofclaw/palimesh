@@ -1343,6 +1343,7 @@ describe("Phase J1.1 follower fix: in-flight round is not a stall", () => {
   // advance) still fires as soon as peers move one block ahead.
   const peerRoot = ("0x" + "bb".repeat(32)) as Hex
   const peerHash = ("0x" + "ab".repeat(32)) as Hex
+  const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms))
 
   it("suppresses fire when height is the in-flight round (tip+1)", async () => {
     let fireCount = 0
@@ -1389,5 +1390,156 @@ describe("Phase J1.1 follower fix: in-flight round is not a stall", () => {
     await coord.handleMessage({ ...bftMsg("prepare", 1n, peerHash, "v2"), stateRoot: peerRoot })
     await coord.handleMessage({ ...bftMsg("prepare", 1n, peerHash, "v3"), stateRoot: peerRoot })
     assert.equal(fireCount, 1, "without a tip source, keep the fail-open fire")
+  })
+
+  // 2026-10-21 v3 (719 fires/day, each followed by a ~36s forceSnapSync and
+  // a chain-wide pause when v3 was due to propose): we finalized H-1 and
+  // onFinalized (applyBlock) is still running, so the chain tip is H-2.
+  // Peers' prepares for H arrive in that window → H > tip+1 → false fire.
+  // A height we already finalized must count as our tip.
+  it("suppresses fire while the just-finalized block is still being applied", async () => {
+    let fireCount = 0
+    let releaseApply: () => void = () => {}
+    const applying = new Promise<void>((r) => { releaseApply = r })
+    let applyStarted = false
+    const block = makeBlock(1n, "v2")
+    const coord = new BftCoordinator({
+      localId: "v1",
+      validators,
+      broadcastMessage: async () => {},
+      onFinalized: async () => { applyStarted = true; await applying },
+      onPeerQuorumDiverged: () => { fireCount++ },
+      getLocalBlock: async () => null,
+      getChainHeight: () => 0n, // applyBlock(1) not done → tip still 0
+    })
+    try {
+      await coord.handleReceivedBlock(block)
+      await coord.handleMessage(bftMsg("prepare", 1n, block.hash, "v2"))
+      await coord.handleMessage(bftMsg("prepare", 1n, block.hash, "v3"))
+      await coord.handleMessage(bftMsg("commit", 1n, block.hash, "v2"))
+      const finalizing = coord.handleMessage(bftMsg("commit", 1n, block.hash, "v3"))
+      await sleep(5)
+      assert.equal(applyStarted, true, "height 1 finalized; applyBlock in flight")
+      await coord.handleMessage({ ...bftMsg("prepare", 2n, peerHash, "v2"), stateRoot: peerRoot })
+      await coord.handleMessage({ ...bftMsg("prepare", 2n, peerHash, "v3"), stateRoot: peerRoot })
+      assert.equal(fireCount, 0, "height 2 is the next round after finalized height 1, not a stall")
+      releaseApply()
+      await finalizing
+    } finally {
+      releaseApply()
+      coord.stop()
+    }
+  })
+
+  // Same incident, other shape (03:58:03 @2113082): our round for H-1 is
+  // still collecting votes while peers already prepare H. We hold block
+  // H-1 and will finalize it within milliseconds — not a stall.
+  it("suppresses fire while our own round for the previous height is active", async () => {
+    let fireCount = 0
+    const coord = new BftCoordinator({
+      localId: "v1",
+      validators,
+      broadcastMessage: async () => {},
+      onFinalized: async () => {},
+      onPeerQuorumDiverged: () => { fireCount++ },
+      getLocalBlock: async () => null,
+      getChainHeight: () => 0n,
+    })
+    try {
+      await coord.handleReceivedBlock(makeBlock(1n, "v2"))
+      assert.equal(coord.getRoundState().height, 1n)
+      await coord.handleMessage({ ...bftMsg("prepare", 2n, peerHash, "v2"), stateRoot: peerRoot })
+      await coord.handleMessage({ ...bftMsg("prepare", 2n, peerHash, "v3"), stateRoot: peerRoot })
+      assert.equal(fireCount, 0, "one round behind with H-1 in hand is not a stall")
+      await coord.handleMessage({ ...bftMsg("prepare", 3n, peerHash, "v2"), stateRoot: peerRoot })
+      await coord.handleMessage({ ...bftMsg("prepare", 3n, peerHash, "v3"), stateRoot: peerRoot })
+      assert.equal(fireCount, 1, "peers two heights past our active round → fire")
+    } finally {
+      coord.stop()
+    }
+  })
+
+  // Review finding: a node whose chain tip is frozen (applyBlock failing)
+  // still opens and finalizes LIVE rounds, so lastFinalizedHeight and the
+  // active round track the network, not the tip. The one-block allowance
+  // must not hide that dead-zone.
+  it("still fires for a frozen tip even while finalizing live rounds", async () => {
+    let fireCount = 0
+    const hashAt = (n: bigint) => ("0x" + n.toString(16).padStart(64, "a")) as Hex
+    const coord = new BftCoordinator({
+      localId: "v1",
+      validators,
+      broadcastMessage: async () => {},
+      onFinalized: async () => { throw new Error("parent missing") },
+      onPeerQuorumDiverged: () => { fireCount++ },
+      getLocalBlock: async () => null,
+      getChainHeight: () => 10n,
+    })
+    try {
+      for (let n = 20n; n < 25n; n++) {
+        await coord.handleReceivedBlock({ ...makeBlock(n, n % 2n === 0n ? "v2" : "v3"), hash: hashAt(n) })
+        for (const s of ["v2", "v3"]) await coord.handleMessage({ ...bftMsg("prepare", n, hashAt(n), s), stateRoot: peerRoot })
+        for (const s of ["v2", "v3"]) await coord.handleMessage({ ...bftMsg("commit", n, hashAt(n), s), stateRoot: peerRoot })
+      }
+      assert.ok(fireCount > 0, `peers are 10+ blocks past our chain tip, fires=${fireCount}`)
+    } finally {
+      coord.stop()
+    }
+  })
+
+  it("reports noLocalBlock only when we hold no block at the height", async () => {
+    const infos: Array<{ noLocalBlock?: boolean }> = []
+    const make = (localBlock: ChainBlock | null) => new BftCoordinator({
+      localId: "v1",
+      validators,
+      broadcastMessage: async () => {},
+      onFinalized: async () => {},
+      onPeerQuorumDiverged: (info) => { infos.push(info) },
+      getLocalBlock: async () => localBlock,
+      getChainHeight: () => 0n,
+    })
+    const behind = make(null)
+    await behind.handleMessage({ ...bftMsg("prepare", 3n, peerHash, "v2"), stateRoot: peerRoot })
+    await behind.handleMessage({ ...bftMsg("prepare", 3n, peerHash, "v3"), stateRoot: peerRoot })
+    // A different local block at the height is fork evidence: the H11
+    // import must not be skipped just because our tip looks caught up.
+    const forked = make({ ...makeBlock(3n), hash: ("0x" + "cd".repeat(32)) as Hex, stateRoot: peerRoot })
+    await forked.handleMessage({ ...bftMsg("prepare", 3n, peerHash, "v2"), stateRoot: peerRoot })
+    await forked.handleMessage({ ...bftMsg("prepare", 3n, peerHash, "v3"), stateRoot: peerRoot })
+    assert.deepEqual(infos.map((i) => i.noLocalBlock), [true, false])
+  })
+
+  it("still fires when peers are two heights past the last finalized block", async () => {
+    let fireCount = 0
+    let releaseApply: () => void = () => {}
+    const applying = new Promise<void>((r) => { releaseApply = r })
+    let applyStarted = false
+    const block = makeBlock(1n, "v2")
+    const coord = new BftCoordinator({
+      localId: "v1",
+      validators,
+      broadcastMessage: async () => {},
+      onFinalized: async () => { applyStarted = true; await applying },
+      onPeerQuorumDiverged: () => { fireCount++ },
+      getLocalBlock: async () => null,
+      getChainHeight: () => 0n,
+    })
+    try {
+      await coord.handleReceivedBlock(block)
+      await coord.handleMessage(bftMsg("prepare", 1n, block.hash, "v2"))
+      await coord.handleMessage(bftMsg("prepare", 1n, block.hash, "v3"))
+      await coord.handleMessage(bftMsg("commit", 1n, block.hash, "v2"))
+      const finalizing = coord.handleMessage(bftMsg("commit", 1n, block.hash, "v3"))
+      await sleep(5)
+      assert.equal(applyStarted, true, "height 1 finalized; applyBlock in flight")
+      await coord.handleMessage({ ...bftMsg("prepare", 3n, peerHash, "v2"), stateRoot: peerRoot })
+      await coord.handleMessage({ ...bftMsg("prepare", 3n, peerHash, "v3"), stateRoot: peerRoot })
+      assert.equal(fireCount, 1, "finalized 1, peers at 3 → genuinely behind")
+      releaseApply()
+      await finalizing
+    } finally {
+      releaseApply()
+      coord.stop()
+    }
   })
 })

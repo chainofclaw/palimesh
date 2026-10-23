@@ -100,7 +100,17 @@ export interface BftCoordinatorConfig {
    *     until a successful round finalize naturally advances past it.
    */
   onPeerQuorumDiverged?: (
-    info: { height: bigint; peerBlockHash: Hex; peerStateRoot: Hex; localStateRoot?: Hex },
+    info: {
+      height: bigint
+      peerBlockHash: Hex
+      peerStateRoot: Hex
+      localStateRoot?: Hex
+      /**
+       * J1.1 only: we neither voted at this height nor hold a block for it,
+       * so the fire is "we are behind", not evidence our state is wrong.
+       */
+      noLocalBlock?: boolean
+    },
   ) => boolean | void
   /**
    * Phase H5: callback fired when peer-quorum divergence persists across
@@ -976,6 +986,7 @@ export class BftCoordinator {
     // per-height dedup here: a reorg could replace the local block, and a
     // later prepare at this height should then re-evaluate. Lookup failures
     // fail OPEN — a broken lookup must never mask a real divergence.
+    let noLocalBlock = false
     if (!localStateRoot && this.cfg.getLocalBlock) {
       // Guard the await window: another prepare at the same height arriving
       // mid-lookup must not run a second confirm + double-fire (the dedup
@@ -984,6 +995,7 @@ export class BftCoordinator {
       this.earlyDivergenceConfirmHeight = height
       try {
         const localBlock = await Promise.resolve(this.cfg.getLocalBlock(height))
+        noLocalBlock = !localBlock
         if (
           localBlock
           && localBlock.hash === divergence.peerBlockHash
@@ -1007,9 +1019,20 @@ export class BftCoordinator {
         // fires as soon as peers advance one block past our frozen tip.
         // A genuinely wedged in-flight round remains covered by the round
         // timeout (H4) and PR-1A proposer-unreachable paths.
+        // Our progress may run ONE block past the chain tip: a height we
+        // already finalized whose applyBlock is still running, or our own
+        // active round (we hold that block). 2026-10-21 v3: peers' prepares
+        // for H landed while H-1 was being applied or still collecting
+        // votes → false fire + a needless ~36s forceSnapSync, 700+ times a
+        // day. Capped at chainTip+1 so a node whose tip is frozen while it
+        // keeps finalizing live rounds (applyBlock failing) still fires.
         if (!localBlock && this.cfg.getChainHeight) {
           try {
-            const tip = await Promise.resolve(this.cfg.getChainHeight())
+            const chainTip = await Promise.resolve(this.cfg.getChainHeight())
+            const roundHeight = this.activeRound?.state.height ?? 0n
+            const tip = this.lastFinalizedHeight === chainTip + 1n || roundHeight === chainTip + 1n
+              ? chainTip + 1n
+              : chainTip
             if (height <= tip + 1n) {
               log.debug("Phase J1.1: quorum height is the in-flight round — not a stall", {
                 height: height.toString(),
@@ -1059,6 +1082,7 @@ export class BftCoordinator {
           peerBlockHash: divergence.peerBlockHash,
           peerStateRoot: divergence.peerStateRoot,
           localStateRoot: divergence.localStateRoot,
+          noLocalBlock,
         })
       } catch (err) {
         log.warn("Phase J1.1: onPeerQuorumDiverged callback threw", { error: String(err) })

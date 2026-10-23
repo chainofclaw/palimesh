@@ -357,6 +357,52 @@ describe("snap sync fallback behavior", () => {
   })
 })
 
+describe("forceSnapSync onlyIfBehind (H11 on an unvoted height)", () => {
+  // 2026-10-21 v3: J1.1 fired while H-1 was still being applied; by the
+  // time peers' snapshots arrived we were at or past their tip, yet a ~36s
+  // state import still ran and stalled the node. With onlyIfBehind the
+  // import is skipped once we caught up by normal block application.
+  function makeEngine(localHeight: bigint, peerTip: bigint) {
+    const block = (n: bigint): ChainBlock => ({
+      number: n,
+      hash: ("0x" + n.toString(16).padStart(64, "0")) as Hex,
+      parentHash: ("0x" + "00".repeat(32)) as Hex,
+      proposer: "node-1",
+      timestampMs: Number(n),
+      txs: [],
+      finalized: false,
+    })
+    const consensus = new ConsensusEngine(
+      { getHeight: () => localHeight } as any,
+      { fetchSnapshots: async (): Promise<ChainSnapshot[]> => [{ blocks: [block(peerTip)], updatedAtMs: Date.now() }] } as any,
+      { blockTimeMs: 1000, syncIntervalMs: 1000, enableSnapSync: true, snapSyncThreshold: 1 },
+      { snapSync: {} as SnapSyncProvider },
+    )
+    let imports = 0
+    ;(consensus as any).trySnapSync = async () => { imports++; return true }
+    return { consensus, imports: () => imports }
+  }
+
+  it("skips the import when the local tip already reached the best peer tip", async () => {
+    const { consensus, imports } = makeEngine(120n, 120n)
+    assert.equal(await consensus.forceSnapSync({ onlyIfBehind: true }), false)
+    assert.equal(imports(), 0)
+    assert.equal(consensus.isSnapSyncInFlight(), false)
+  })
+
+  it("still imports when the best peer tip is ahead", async () => {
+    const { consensus, imports } = makeEngine(119n, 121n)
+    assert.equal(await consensus.forceSnapSync({ onlyIfBehind: true }), true)
+    assert.equal(imports(), 1)
+  })
+
+  it("without the option imports at equal height (H5 corrupted-trie recovery)", async () => {
+    const { consensus, imports } = makeEngine(120n, 120n)
+    assert.equal(await consensus.forceSnapSync(), true)
+    assert.equal(imports(), 1)
+  })
+})
+
 describe("cumulative weight in blocks", () => {
   it("blocks include cumulativeWeight field", async () => {
     const { engine } = await createTestEngine()
